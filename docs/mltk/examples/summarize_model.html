@@ -1,0 +1,934 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tflite, embedded, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-965PJZXVMY"></script>
+<script>
+    window.gTrackingId = 'G-965PJZXVMY';
+</script>
+  
+  
+    <title>Model Summary API Examples &#8212; MLTK 0.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Model Visualizer API Examples" href="view_model.html" />
+    <link rel="prev" title="Model Evaluation API Examples" href="evaluate_model.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/examples/summarize_model" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.6.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.6.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Model Summary API Examples </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/examples.html" class="md-tabs__link">API Examples</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="profile_model.html" class="md-nav__link">Model Profiler API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="train_model.html" class="md-nav__link">Model Training API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="evaluate_model.html" class="md-nav__link">Model Evaluation API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Model Summary API Examples </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Model Summary API Examples</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-examples-summarize-model--page-root" class="md-nav__link">Model Summary API Examples</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#install-mltk-python-package" class="md-nav__link">Install MLTK Python Package</a>
+        </li>
+        <li class="md-nav__item"><a href="#import-python-packages" class="md-nav__link">Import Python Packages</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-1-summarize-keras-model" class="md-nav__link">Example 1: Summarize Keras model</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-2-summarize-tensorflow-lite-model" class="md-nav__link">Example 2: Summarize Tensorflow-Lite model</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-3-summarize-external-tensorflow-lite-model" class="md-nav__link">Example 3: Summarize external Tensorflow-Lite model</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-4-summarize-model-before-training" class="md-nav__link">Example 4: Summarize model before training</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/examples/summarize_model.ipynb.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="view_model.html" class="md-nav__link">Model Visualizer API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="update_params.html" class="md-nav__link">Update Model Parameters API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="quantize_model.html" class="md-nav__link">Model Quantization API Examples</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-examples-summarize-model--page-root" class="md-nav__link">Model Summary API Examples</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#install-mltk-python-package" class="md-nav__link">Install MLTK Python Package</a>
+        </li>
+        <li class="md-nav__item"><a href="#import-python-packages" class="md-nav__link">Import Python Packages</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-1-summarize-keras-model" class="md-nav__link">Example 1: Summarize Keras model</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-2-summarize-tensorflow-lite-model" class="md-nav__link">Example 2: Summarize Tensorflow-Lite model</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-3-summarize-external-tensorflow-lite-model" class="md-nav__link">Example 3: Summarize external Tensorflow-Lite model</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-4-summarize-model-before-training" class="md-nav__link">Example 4: Summarize model before training</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/examples/summarize_model.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li class="active"><a href="../../docs/examples.html" accesskey="U">API Examples</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="model-summary-api-examples">
+<h1 id="mltk-examples-summarize-model--page-root">Model Summary API Examples<a class="headerlink" href="#mltk-examples-summarize-model--page-root" title="Permalink to this headline">¶</a></h1>
+<p>This demonstrates how to use the <a class="reference external" href="../../docs/python_api/operations.html#summarize-model">summarize_model</a> API.</p>
+<p>Refer to the <a class="reference internal" href="../../docs/guides/model_summary.html"><span class="doc std std-doc">Model Summary</span></a> guide for more details.</p>
+<p><strong>NOTES:</strong></p>
+<ul class="simple">
+<li><p>Click here: <a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/examples/summarize_model.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"/></a> to run this example interactively in your browser</p></li>
+<li><p>Refer to the <a class="reference internal" href="../../docs/guides/notebook_examples_guide.html"><span class="doc std std-doc">Notebook Examples Guide</span></a> for how to run this example locally in VSCode</p></li>
+</ul>
+<section id="install-mltk-python-package">
+<h2 id="install-mltk-python-package">Install MLTK Python Package<a class="headerlink" href="#install-mltk-python-package" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the MLTK Python package (if necessary)</span>
+<span class="o">!</span>pip install --upgrade silabs-mltk
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="import-python-packages">
+<h2 id="import-python-packages">Import Python Packages<a class="headerlink" href="#import-python-packages" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the necessary MLTK APIs</span>
+<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">summarize_model</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-1-summarize-keras-model">
+<h2 id="example-1-summarize-keras-model">Example 1: Summarize Keras model<a class="headerlink" href="#example-1-summarize-keras-model" title="Permalink to this headline">¶</a></h2>
+<p>In this example, we generate a summary of the trained <code class="docutils literal notranslate"><span class="pre">.h5</span></code> model file in the <a class="reference internal" href="../../docs/python_api/models/examples/image_example1.html"><span class="doc std std-doc">image_example1</span></a> model’s <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">model archive</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_model</span><span class="p">(</span><span class="s1">'image_example1'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Model: "image_example1"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d (Conv2D)              (None, 48, 48, 24)        240       
+_________________________________________________________________
+average_pooling2d (AveragePo (None, 24, 24, 24)        0         
+_________________________________________________________________
+conv2d_1 (Conv2D)            (None, 11, 11, 16)        3472      
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, 9, 9, 24)          3480      
+_________________________________________________________________
+batch_normalization (BatchNo (None, 9, 9, 24)          96        
+_________________________________________________________________
+activation (Activation)      (None, 9, 9, 24)          0         
+_________________________________________________________________
+average_pooling2d_1 (Average (None, 4, 4, 24)          0         
+_________________________________________________________________
+flatten (Flatten)            (None, 384)               0         
+_________________________________________________________________
+dense (Dense)                (None, 3)                 1155      
+_________________________________________________________________
+activation_1 (Activation)    (None, 3)                 0         
+=================================================================
+Total params: 8,443
+Trainable params: 8,395
+Non-trainable params: 48
+_________________________________________________________________
+
+Total MACs: 1.197 M
+Total OPs: 2.528 M
+Name: image_example1
+Version: 1
+Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images
+Classes: rock, paper, scissor
+hash: None
+date: None
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-2-summarize-tensorflow-lite-model">
+<h2 id="example-2-summarize-tensorflow-lite-model">Example 2: Summarize Tensorflow-Lite model<a class="headerlink" href="#example-2-summarize-tensorflow-lite-model" title="Permalink to this headline">¶</a></h2>
+<p>In this example, we generate a summary of the trained <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file in the <a class="reference internal" href="../../docs/python_api/models/examples/image_example1.html"><span class="doc std std-doc">image_example1</span></a> model’s <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">model archive</span></a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_model</span><span class="p">(</span><span class="s1">'image_example1'</span><span class="p">,</span> <span class="n">tflite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
+| Index | OpCode          | Input(s)        | Output(s)       | Config                                              |
++-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
+| 0     | conv_2d         | 96x96x1 (int8)  | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |
+|       |                 | 3x3x1 (int8)    |                 |                                                     |
+|       |                 | 24 (int32)      |                 |                                                     |
+| 1     | average_pool_2d | 48x48x24 (int8) | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 2     | conv_2d         | 24x24x24 (int8) | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |
+|       |                 | 3x3x24 (int8)   |                 |                                                     |
+|       |                 | 16 (int32)      |                 |                                                     |
+| 3     | conv_2d         | 11x11x16 (int8) | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |
+|       |                 | 3x3x16 (int8)   |                 |                                                     |
+|       |                 | 24 (int32)      |                 |                                                     |
+| 4     | average_pool_2d | 9x9x24 (int8)   | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 5     | reshape         | 4x4x24 (int8)   | 384 (int8)      | BuiltinOptionsType=0                                |
+|       |                 | 2 (int32)       |                 |                                                     |
+| 6     | fully_connected | 384 (int8)      | 3 (int8)        | Activation:none                                     |
+|       |                 | 384 (int8)      |                 |                                                     |
+|       |                 | 3 (int32)       |                 |                                                     |
+| 7     | softmax         | 3 (int8)        | 3 (int8)        | BuiltinOptionsType=9                                |
++-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
+Total MACs: 1.197 M
+Total OPs: 2.524 M
+Name: image_example1
+Version: 1
+Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images
+Classes: rock, paper, scissor
+hash: 8bf54869131182b072b9ac3d65757a11
+date: 2021-10-19T18:50:46.802Z
+samplewise_norm.rescale: 0
+samplewise_norm.mean_and_std: True
+.tflite file size: 14.9kB
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-3-summarize-external-tensorflow-lite-model">
+<h2 id="example-3-summarize-external-tensorflow-lite-model">Example 3: Summarize external Tensorflow-Lite model<a class="headerlink" href="#example-3-summarize-external-tensorflow-lite-model" title="Permalink to this headline">¶</a></h2>
+<p>The given model need <em>not</em> be generated by the MLTK.
+External <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> or <code class="docutils literal notranslate"><span class="pre">.h5</span></code> model files are also supported by the summarize API.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span> 
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
+<span class="c1"># Use .tflite mode found here:</span>
+<span class="c1"># https://github.com/mlcommons/tiny/tree/master/benchmark/training/keyword_spotting/trained_models</span>
+<span class="c1"># NOTE: Update this URL to point to your model if necessary</span>
+<span class="n">TFLITE_MODEL_URL</span> <span class="o">=</span> <span class="s1">'https://github.com/mlcommons/tiny/raw/master/benchmark/training/keyword_spotting/trained_models/kws_ref_model.tflite'</span>
+
+<span class="c1"># Download the .tflite file and save to the temp dir</span>
+<span class="n">external_tflite_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">()</span><span class="si">}</span><span class="s1">/kws_ref_model.tflite'</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">external_tflite_path</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">TFLITE_MODEL_URL</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_model</span><span class="p">(</span><span class="n">external_tflite_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>+-------+-------------------+----------------+----------------+-------------------------------------------------------+
+| Index | OpCode            | Input(s)       | Output(s)      | Config                                                |
++-------+-------------------+----------------+----------------+-------------------------------------------------------+
+| 0     | conv_2d           | 49x10x1 (int8) | 25x5x64 (int8) | Padding:same stride:2x2 activation:relu               |
+|       |                   | 10x4x1 (int8)  |                |                                                       |
+|       |                   | 64 (int32)     |                |                                                       |
+| 1     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |
+|       |                   | 3x3x64 (int8)  |                |                                                       |
+|       |                   | 64 (int32)     |                |                                                       |
+| 2     | conv_2d           | 25x5x64 (int8) | 25x5x64 (int8) | Padding:same stride:1x1 activation:relu               |
+|       |                   | 1x1x64 (int8)  |                |                                                       |
+|       |                   | 64 (int32)     |                |                                                       |
+| 3     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |
+|       |                   | 3x3x64 (int8)  |                |                                                       |
+|       |                   | 64 (int32)     |                |                                                       |
+| 4     | conv_2d           | 25x5x64 (int8) | 25x5x64 (int8) | Padding:same stride:1x1 activation:relu               |
+|       |                   | 1x1x64 (int8)  |                |                                                       |
+|       |                   | 64 (int32)     |                |                                                       |
+| 5     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |
+|       |                   | 3x3x64 (int8)  |                |                                                       |
+|       |                   | 64 (int32)     |                |                                                       |
+| 6     | conv_2d           | 25x5x64 (int8) | 25x5x64 (int8) | Padding:same stride:1x1 activation:relu               |
+|       |                   | 1x1x64 (int8)  |                |                                                       |
+|       |                   | 64 (int32)     |                |                                                       |
+| 7     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |
+|       |                   | 3x3x64 (int8)  |                |                                                       |
+|       |                   | 64 (int32)     |                |                                                       |
+| 8     | conv_2d           | 25x5x64 (int8) | 25x5x64 (int8) | Padding:same stride:1x1 activation:relu               |
+|       |                   | 1x1x64 (int8)  |                |                                                       |
+|       |                   | 64 (int32)     |                |                                                       |
+| 9     | average_pool_2d   | 25x5x64 (int8) | 1x1x64 (int8)  | Padding:valid stride:5x25 filter:5x25 activation:none |
+| 10    | reshape           | 1x1x64 (int8)  | 64 (int8)      | BuiltinOptionsType=0                                  |
+|       |                   | 2 (int32)      |                |                                                       |
+| 11    | fully_connected   | 64 (int8)      | 12 (int8)      | Activation:none                                       |
+|       |                   | 64 (int8)      |                |                                                       |
+|       |                   | 12 (int32)     |                |                                                       |
+| 12    | softmax           | 12 (int8)      | 12 (int8)      | BuiltinOptionsType=9                                  |
++-------+-------------------+----------------+----------------+-------------------------------------------------------+
+Total MACs: 2.657 M
+Total OPs: 5.394 M
+Name: summarize_model
+Version: 1
+Description: Generated by Silicon Lab's MLTK Python package
+classes: []
+hash: None
+date: None
+.tflite file size: 53.9kB
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-4-summarize-model-before-training">
+<h2 id="example-4-summarize-model-before-training">Example 4: Summarize model before training<a class="headerlink" href="#example-4-summarize-model-before-training" title="Permalink to this headline">¶</a></h2>
+<p>Training a model can be very time-consuming, and it is useful to know basic information
+about a model before investing time and energy into training it.<br/>
+For this reason, the MLTK <code class="docutils literal notranslate"><span class="pre">summarize</span></code> API features a <code class="docutils literal notranslate"><span class="pre">build</span></code> argument to build a model
+and summarize it <em>before</em> the model is fully trained.</p>
+<p>In this example, the <a class="reference internal" href="../../docs/python_api/models/examples/image_example1.html"><span class="doc std std-doc">image_example1</span></a> model is built
+at API execution time and a summary is generated.<br/>
+Note that <em>only</em> the <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> script is required, it does <em>not</em> need to be trained first.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">summary</span> <span class="o">=</span> <span class="n">summarize_model</span><span class="p">(</span><span class="s1">'image_example1'</span><span class="p">,</span> <span class="n">tflite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">summary</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Enabling test mode
+Model: "image_example1"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+conv2d_3 (Conv2D)            (None, 48, 48, 24)        240       
+_________________________________________________________________
+average_pooling2d_2 (Average (None, 24, 24, 24)        0         
+_________________________________________________________________
+conv2d_4 (Conv2D)            (None, 11, 11, 16)        3472      
+_________________________________________________________________
+conv2d_5 (Conv2D)            (None, 9, 9, 24)          3480      
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 9, 9, 24)          96        
+_________________________________________________________________
+activation_2 (Activation)    (None, 9, 9, 24)          0         
+_________________________________________________________________
+average_pooling2d_3 (Average (None, 4, 4, 24)          0         
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 384)               0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 3)                 1155      
+_________________________________________________________________
+activation_3 (Activation)    (None, 3)                 0         
+=================================================================
+Total params: 8,443
+Trainable params: 8,395
+Non-trainable params: 48
+_________________________________________________________________
+
+Total MACs: 1.197 M
+Total OPs: 2.528 M
+Name: image_example1
+Version: 1
+Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images
+Classes: rock, paper, scissor
+hash: None
+date: None
+Test mode enabled, forcing max_samples_per_class=3, batch_size=3
+Training dataset: Found 9 samples belonging to 3 classes:
+      rock = 3
+     paper = 3
+   scissor = 3
+Validation dataset: Found 9 samples belonging to 3 classes:
+      rock = 3
+     paper = 3
+   scissor = 3
+Forcing epochs=1 since test=true
+Class weights:
+- rock = 1.00
+- paper = 1.00
+- scissor = 1.00
+Starting model training ...
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "3831d3e6c0844e46a20ed778c58b5f68", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1/1
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "a50f8a887d0941728af5d15eb856d0e5", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generating C:/Users/reed/.mltk/models/image_example1-test/image_example1.test.h5
+
+
+*** Best training val_accuracy = 0.222
+
+
+Training complete
+Training logs here: C:/Users/reed/.mltk/models/image_example1-test
+Trained model files here: c:/users/reed/workspace/silabs/mltk/mltk/models/examples/image_example1-test.mltk.zip
+ProcessPoolManager using 7 of 24 CPU cores
+NOTE: You may need to adjust the "cores" parameter of the data generator if you're experiencing performance issues
+Generating tflite_model
+INFO:tensorflow:Assets written to: E:\tmpevbj7v09\assets
++-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
+| Index | OpCode          | Input(s)        | Output(s)       | Config                                              |
++-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
+| 0     | conv_2d         | 96x96x1 (int8)  | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |
+|       |                 | 3x3x1 (int8)    |                 |                                                     |
+|       |                 | 24 (int32)      |                 |                                                     |
+| 1     | average_pool_2d | 48x48x24 (int8) | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 2     | conv_2d         | 24x24x24 (int8) | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |
+|       |                 | 3x3x24 (int8)   |                 |                                                     |
+|       |                 | 16 (int32)      |                 |                                                     |
+| 3     | conv_2d         | 11x11x16 (int8) | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |
+|       |                 | 3x3x16 (int8)   |                 |                                                     |
+|       |                 | 24 (int32)      |                 |                                                     |
+| 4     | average_pool_2d | 9x9x24 (int8)   | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 5     | reshape         | 4x4x24 (int8)   | 384 (int8)      | BuiltinOptionsType=0                                |
+|       |                 | 2 (int32)       |                 |                                                     |
+| 6     | fully_connected | 384 (int8)      | 3 (int8)        | Activation:none                                     |
+|       |                 | 384 (int8)      |                 |                                                     |
+|       |                 | 3 (int32)       |                 |                                                     |
+| 7     | softmax         | 3 (int8)        | 3 (int8)        | BuiltinOptionsType=9                                |
++-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
+Total MACs: 1.197 M
+Total OPs: 2.524 M
+Name: image_example1
+Version: 1
+Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images
+Classes: rock, paper, scissor
+hash: 0dd2d415f9fedd530c149e0ba870b44d
+date: 2021-10-19T18:55:40.561Z
+samplewise_norm.rescale: 0
+samplewise_norm.mean_and_std: True
+.tflite file size: 14.9kB
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="evaluate_model.html" title="Model Evaluation API Examples"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Model Evaluation API Examples </span>
+              </div>
+            </a>
+          
+          
+            <a href="view_model.html" title="Model Visualizer API Examples"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> Model Visualizer API Examples </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Apr 26, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

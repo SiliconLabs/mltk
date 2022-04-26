@@ -1,0 +1,212 @@
+Installation
+=================
+
+The MLTK supports three modes of installation:  
+- [Standard Python Package](#standard-python-package) - Use the MLTK like any other package in your local Python3 environment
+- [Google Colab](#google-colab) - Run the MLTK in the [Google Colab](https://colab.research.google.com/notebooks/welcome.ipynb) cloud servers. This is useful for training models.
+- [Local Development](#local-development) - Locally build the MLTK Python C++ wrappers from source
+
+
+```{note} 
+[Python3.7, Python3.8, or Python3.9](https://www.python.org/downloads/) is required
+```
+
+
+
+## Standard Python Package
+
+This describes how to install the MLTK Python package into your Python3 environment.  
+
+```{note} 
+- Before installing, you must have [Python3.7, 3.8, or 3.9](https://www.python.org/downloads/) installed on your computer.
+- Installing the MLTK will also install Google [Tensorflow](https://www.tensorflow.org/install) into your Python environment,  
+  if your computer has an NVidia GPU, then ensure the proper drivers are [installed](https://www.tensorflow.org/install/gpu).
+```
+
+
+1 ) __Optionally__ create and activate a Python [virtual environment](https://docs.python.org/3/tutorial/venv.html): 
+
+
+This step is __highly recommended__ as the MLTK installs other dependencies like Tensorflow into the Python environment.
+
+
+```{eval-rst}
+.. tabbed:: Windows
+
+   .. code-block:: shell
+
+     python  -m venv mltk_pyvenv
+     .\mltk_pyvenv\Scripts\activate.bat
+
+.. tabbed:: Linux
+
+   .. code-block:: shell
+
+     python3 -m venv mltk_pyvenv
+     source ./mltk_pyvenv/bin/activate
+```
+
+2 ) Install the MLTK Python package via [pip](https://pip.pypa.io/):  
+
+  This installs the pre-built Python package. This is the easiest and fastest approach to installing the MLTK.  
+  However, the package may not be up-to-date with the [Github repository](https://github.com/siliconlabs/mltk).
+
+  ```{eval-rst}
+  .. tabbed:: Windows
+
+    .. code-block:: shell
+
+        pip  install silabs-mltk --upgrade
+
+  .. tabbed:: Linux
+
+    .. code-block:: shell
+    
+        pip3 install silabs-mltk --upgrade
+  ```
+
+  __OR__
+
+  This builds and installs the Python package from the [Github repository](https://github.com/siliconlabs/mltk). This may take longer
+  to install but will use the most up-to-date source code.
+
+  ```{eval-rst}
+  .. tabbed:: Windows
+
+    .. code-block:: shell
+
+       pip  install git+https://github.com/siliconlabs/mltk.git
+
+  .. tabbed:: Linux
+
+    .. code-block:: shell
+    
+       pip3 install git+https://github.com/siliconlabs/mltk.git
+  ```
+
+  After the command completes, the MLTK should be available to the current Python environment.  
+  You can verify by issuing the command:  
+
+  ```shell
+  mltk --help
+  ```
+
+See the [Command-Line Guide](./command_line.md) for more details on how to use the command-line. 
+
+You can also import the MLTK via Python script, e.g.:
+
+```python
+from mltk.core import profile_model
+
+profile_model('~/my_model.tflite')
+```
+
+See the [API Examples](./examples.md) for more details on how to use the MLTK [Python API](./python_api/index.md).
+
+
+### Update Python Package
+
+If the MLTK Python package has already been installed, you may update to the latest MLTK by running the command:
+
+```{eval-rst}
+.. tabbed:: Windows
+
+   .. code-block:: shell
+
+      pip  install silabs-mltk --upgrade
+
+.. tabbed:: Linux
+
+   .. code-block:: shell
+
+      pip3 install silabs-mltk --upgrade
+```
+
+Alternatively, you can update to a specific version with:
+
+```{eval-rst}
+.. tabbed:: Windows
+
+   .. code-block:: shell
+
+      pip  install silabs-mltk==0.6.0
+
+.. tabbed:: Linux
+
+   .. code-block:: shell
+
+      pip3 install silabs-mltk==0.6.0
+```
+
+and replace `0.6.0` with the desired version.
+
+
+
+## Google Colab
+
+Google offers it own _free_ Cloud servers for model training, [Google Colaboratory](https://colab.research.google.com/notebooks/welcome.ipynb) (a.k.a. Colab).  
+This is very useful as you can leverage Google's cloud servers and GPUs for training your model.
+The following describes how to install the MLTK into a Colab notebook.
+
+1 ) Create a Google Account (if necessary)  
+    Go to the [Google Signup](https://accounts.google.com/signup) page.  
+    __NOTE:__ Click the __Use my current email address instead__ button to use your existing email instead of creating a gmail email address.
+
+2 ) Refer to the [Colab Basic Features Overview](https://colab.research.google.com/notebooks/basic_features_overview.ipynb) to get a basic idea of how notebooks work  
+3 ) Create a new Colab notebook  
+4 ) Create a Python code cell and copy & paste the following into the cell
+
+```shell
+!pip install --upgrade silabs-mltk
+```
+
+5 ) Execute the cell  
+    Once the cell executes, the MLTK will be installed.
+    You may import and use the MLTK package as normal from this point on inside the notebook
+
+
+## Local Development
+
+The MLTK can also be installed for local development. In this mode, the Python C++ wrappers are built from source.  
+Additionally, a new Python virtual environment is created specifically for the MLTK.
+
+```{note}
+Before installing, you must have [Python3.7, 3.8, or 3.9](https://www.python.org/downloads/) installed on your computer
+```
+
+1 ) Clone the MLTK GIT repository
+
+```shell
+git clone https://github.com/siliconlabs/mltk
+```
+
+2 ) Run the install script at the root of the repository
+
+
+```{eval-rst}
+.. tabbed:: Windows
+
+   .. code-block:: shell
+
+      cd mltk
+      python  .\install_mltk.py
+
+.. tabbed:: Linux
+
+   .. code-block:: shell
+
+      cd mltk
+      python3 ./install_mltk.py
+```
+
+The install script will:
+1. Create a python virtual environment at `<mltk root>/.venv`
+2. Install the MLTK Python package for local development into Python virtual environment:
+   ```shell
+   pip install -e .
+   ```
+
+
+```{seealso}  
+- [C++ Development](./cpp_development/index.md) - Describes how to build and run MLTK C++ applications
+```

@@ -1,0 +1,2 @@
+The libraries in this directory where copied from the Gecko SDK repo.
+The are added here so that we do not have to download all the files from the Gecko SDK repo git LFS which can take a long time to download.

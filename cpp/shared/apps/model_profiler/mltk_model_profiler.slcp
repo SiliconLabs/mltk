@@ -1,0 +1,50 @@
+# Silicon Labs Project Configuration Tools: slcp, v0, Component selection file.
+project_name: mltk_model_profiler
+label: MLTK - Model Profiler
+description: >
+  This application uses TensorFlow Lite for Microcontrollers to 
+  profile .tflite models as they execute on the embedded device.
+category: Example|Machine Learning Toolkit
+package: mltk
+quality: development
+sdk_extension:
+  - id: mltk
+    version: "1.0.0"
+source:
+- path: main.cc
+component:
+- id: iostream_recommended_stream
+- id: printf
+- id: iostream_retarget_stdio
+- id: sl_system
+- id: device_init
+- id: device_init_hfrco
+- id: silabs_core_sl_malloc
+- id: power_manager
+- id: sleeptimer
+- id: mltk_tflite_micro_model
+  from: mltk
+requires:
+- name: cpp_support
+provides:
+- name: mltk_tflite_micro_profiling_enabled
+toolchain_settings:
+  - option: gcc_linker_option
+    value: "-u _printf_float"
+configuration:
+- name: SL_BOARD_ENABLE_VCOM
+  value: '1'
+- name: SL_MVP_POWER_MODE
+  value: '1'
+
+config_file: 
+  - path: "config/tflite/image_classification.tflite"
+    directory: "tflite"
+
+readme:
+  - path: README.md
+tag:
+  - hardware:component:led:2+
+  - hardware:component:microphone
+  - hardware:device:ram:128
+  - hardware:device:flash:130

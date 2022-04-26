@@ -1,0 +1,167 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"extensions": {
+		"recommendations": [
+			"ms-python.python",
+			"ms-vscode.cpptools",
+			"marus25.cortex-debug",
+			"ms-vscode.cmake-tools"
+		]
+	},
+	"launch": {
+		"configurations": [
+			{
+				"name": "Python: Debug current file",
+				"type": "python",
+				"request": "launch",
+				"program": "${file}"
+			},
+			{
+				"name": "Python: GDB Attach",
+				"type": "cppdbg",
+				"request": "attach",
+				"windows": {
+					"program": "${workspaceRoot}\\.venv\\Scripts\\python.exe"
+				},
+				"linux": {
+					"program": "${workspaceRoot}/.venv/bin/python"
+				},
+				"processId": "${command:pickProcess}",
+				"MIMode": "gdb",
+				"setupCommands": [
+					{
+						"description": "Enable pretty-printing for gdb",
+						"text": "-enable-pretty-printing",
+						"ignoreFailures": true
+					}
+				]
+			}
+		],
+	},
+	"settings": {
+		"workbench.editor.enablePreview" : false,
+		"explorer.autoReveal": false,
+		"editor.emptySelectionClipboard": false,
+		"python.terminal.activateEnvironment": true,
+		"python.formatting.provider": "autopep8",
+		"python.linting.enabled": true,
+		"python.linting.pylintEnabled": true,
+		"python.testing.pytestEnabled": true,
+		"python.testing.pytestArgs": [
+			"-v",
+			"--html-report=~/.mltk/pytest_results/report.html",
+			"--log-cli-level=DEBUG",
+			"--show-capture=all",
+			"--color=yes",
+			"-o", "log_cli=true",
+			"--ignore=cpp",
+			"--ignore=build",
+			"--ignore=.venv"
+		],
+		"files.exclude": {
+			"**/.git": true,
+			"**/.svn": true,
+			"**/.hg": true,
+			"**/CVS": true,
+			"**/.DS_Store": true,
+			"**/__pycache__": true,
+			"**/.eggs": true,
+			"**/.pytest_cache": true, 
+			"**/mltk.egg-info": true,
+			"**/cpp/shared/platforms/silabs/brd4186/emlib": true,
+			"docs/_images": true,
+			"docs/_sources": true,
+			"docs/_modules": true,
+			"docs/_static": true,
+			"docs/mltk": true,
+			"docs/docs": true,
+			"docs/*.html": true,
+			"docs/*.js": true,
+		},
+		"files.watcherExclude": {
+			"**/.venv/**": true,
+			"**/.git/objects/**": true,
+			"**/.git/subtree-cache/**": true,
+			"**/node_modules/*/**": true,
+			"**/.hg/store/**": true,
+			"**/cpp/shared/**": true, 
+			"docs/_images": true,
+			"docs/_sources": true,
+			"docs/_modules": true,
+			"docs/_static": true,
+			"docs/mltk": true,
+			"docs/docs": true,
+		},
+		"cmake.configureOnOpen": false,
+		"cmake.buildDirectory": "${workspaceFolder}/build/${buildKitVendor}/${buildType}",
+		"cmake.generator": "Ninja",
+		"cmake.autoSelectActiveFolder": false,
+		"cmake.configureOnEdit": false,
+		"terminal.integrated.env.windows": {
+			"PATH": "~\\.mltk\\tools\\toolchains\\gcc\\windows\\8.4.0\\mingw64\\bin"
+		},
+		"jupyter.jupyterServerType": "local",
+		"cSpell.words": [
+			"atexit",
+			"Colab",
+			"Conv",
+			"Dequantize",
+			"dtype",
+			"ipynb",
+			"jlink",
+			"Keras",
+			"Microfrontend",
+			"mltk",
+			"MLTK",
+			"Netron",
+			"opencv",
+			"Popen",
+			"seealso",
+			"Silab's",
+			"silabs",
+			"sklearn",
+			"SRAM",
+			"struct",
+			"tensorboard",
+			"tflite",
+			"TFLM",
+			"tinyml",
+			"tqdm",
+			"typer",
+			"UART",
+			"utest"
+		],
+		"files.associations": {
+			"*.slcp": "yaml",
+			"*.slcc": "yaml",
+			"*.slcs": "yaml",
+			"*.slce": "yaml",
+			"atomic": "cpp",
+			"chrono": "cpp",
+			"memory": "cpp",
+			"system_error": "cpp",
+			"xhash": "cpp",
+			"app.h": "c",
+			"complex": "cpp",
+			"format": "cpp",
+			"array": "cpp",
+			"istream": "cpp",
+			"tuple": "cpp",
+			"type_traits": "cpp",
+			"utility": "cpp",
+			"variant": "cpp",
+			"xlocmes": "cpp",
+			"xlocmon": "cpp",
+			"xlocnum": "cpp",
+			"xloctime": "cpp",
+			"xutility": "cpp",
+			"sl_ml_audio_feature_generation_config.h": "c",
+			"cstdint": "cpp",
+			"sl_board_control.h": "c"
+		}
+	},
+}

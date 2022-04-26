@@ -1,0 +1,759 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tflite, embedded, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-965PJZXVMY"></script>
+<script>
+    window.gTrackingId = 'G-965PJZXVMY';
+</script>
+  
+  
+    <title>Installation &#8212; MLTK 0.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/clipboard.min.js"></script>
+    <script src="../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Command-Line" href="command_line.html" />
+    <link rel="prev" title="Why MLTK?" href="why_mltk.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#docs/installation" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../index.html" title="MLTK 0.6.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../_static/logo.png"
+                   alt="MLTK 0.6.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Installation </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+
+<div class="md-hero" data-md-component="hero">
+  <div class="md-hero__inner md-grid">
+    <p>Install the MLTK Python Package via PIP or in <a href="https://colab.research.google.com/notebooks/welcome.ipynb" target="_blank">Google Colab<a/></p>
+  </div>
+</div>
+
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../index.html"
+       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Installation </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Installation</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#docs-installation--page-root" class="md-nav__link">Installation</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#standard-python-package" class="md-nav__link">Standard Python Package</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#update-python-package" class="md-nav__link">Update Python Package</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#google-colab" class="md-nav__link">Google Colab</a>
+        </li>
+        <li class="md-nav__item"><a href="#local-development" class="md-nav__link">Local Development</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/docs/installation.md.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#standard-python-package" class="md-nav__link">Standard Python Package</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#google-colab" class="md-nav__link">Google Colab</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#local-development" class="md-nav__link">Local Development</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="tutorials.html" class="md-nav__link">Tutorials</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#docs-installation--page-root" class="md-nav__link">Installation</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#standard-python-package" class="md-nav__link">Standard Python Package</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#update-python-package" class="md-nav__link">Update Python Package</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#google-colab" class="md-nav__link">Google Colab</a>
+        </li>
+        <li class="md-nav__item"><a href="#local-development" class="md-nav__link">Local Development</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../_sources/docs/installation.md.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../index.html"><i class="md-icon">home</i></a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="installation">
+<h1 id="docs-installation--page-root">Installation<a class="headerlink" href="#docs-installation--page-root" title="Permalink to this headline">¶</a></h1>
+<p>The MLTK supports three modes of installation:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="#standard-python-package">Standard Python Package</a> - Use the MLTK like any other package in your local Python3 environment</p></li>
+<li><p><a class="reference external" href="#google-colab">Google Colab</a> - Run the MLTK in the <a class="reference external" href="https://colab.research.google.com/notebooks/welcome.ipynb">Google Colab</a> cloud servers. This is useful for training models.</p></li>
+<li><p><a class="reference external" href="#local-development">Local Development</a> - Locally build the MLTK Python C++ wrappers from source</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference external" href="https://www.python.org/downloads/">Python3.7, Python3.8, or Python3.9</a> is required</p>
+</div>
+<section id="standard-python-package">
+<h2 id="standard-python-package">Standard Python Package<a class="headerlink" href="#standard-python-package" title="Permalink to this headline">¶</a></h2>
+<p>This describes how to install the MLTK Python package into your Python3 environment.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Before installing, you must have <a class="reference external" href="https://www.python.org/downloads/">Python3.7, 3.8, or 3.9</a> installed on your computer.</p></li>
+<li><p>Installing the MLTK will also install Google <a class="reference external" href="https://www.tensorflow.org/install">Tensorflow</a> into your Python environment,<br/>
+if your computer has an NVidia GPU, then ensure the proper drivers are <a class="reference external" href="https://www.tensorflow.org/install/gpu">installed</a>.</p></li>
+</ul>
+</div>
+<p>1 ) <strong>Optionally</strong> create and activate a Python <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>:</p>
+<p>This step is <strong>highly recommended</strong> as the MLTK installs other dependencies like Tensorflow into the Python environment.</p>
+<div class="tabbed-set docutils">
+<input checked="checked" id="ed752fe5-f1cf-4a70-9c1d-3634fc5b9405" name="cf38fd2b-d411-4eb2-8f06-ece46405f64f" type="radio"/>
+<label class="tabbed-label" for="ed752fe5-f1cf-4a70-9c1d-3634fc5b9405">
+Windows</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python  -m venv mltk_pyvenv
+.<span class="se">\m</span>ltk_pyvenv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate.bat
+</pre></div>
+</div>
+</div>
+<input id="75b2d7d0-0cf1-4a6c-a495-5fb5376418de" name="cf38fd2b-d411-4eb2-8f06-ece46405f64f" type="radio"/>
+<label class="tabbed-label" for="75b2d7d0-0cf1-4a6c-a495-5fb5376418de">
+Linux</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python3 -m venv mltk_pyvenv
+<span class="nb">source</span> ./mltk_pyvenv/bin/activate
+</pre></div>
+</div>
+</div>
+</div>
+<p>2 ) Install the MLTK Python package via <a class="reference external" href="https://pip.pypa.io/">pip</a>:</p>
+<p>This installs the pre-built Python package. This is the easiest and fastest approach to installing the MLTK.<br/>
+However, the package may not be up-to-date with the <a class="reference external" href="https://github.com/siliconlabs/mltk">Github repository</a>.</p>
+<div class="tabbed-set docutils">
+<input checked="checked" id="68fd2189-97b4-4341-bb94-9bc10366e830" name="12702e69-9364-46bd-a584-16bdd4d87d48" type="radio"/>
+<label class="tabbed-label" for="68fd2189-97b4-4341-bb94-9bc10366e830">
+Windows</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip  install silabs-mltk --upgrade
+</pre></div>
+</div>
+</div>
+<input id="96ab13c6-8610-40b0-ba40-97a2969866ee" name="12702e69-9364-46bd-a584-16bdd4d87d48" type="radio"/>
+<label class="tabbed-label" for="96ab13c6-8610-40b0-ba40-97a2969866ee">
+Linux</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip3 install silabs-mltk --upgrade
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>OR</strong></p>
+<p>This builds and installs the Python package from the <a class="reference external" href="https://github.com/siliconlabs/mltk">Github repository</a>. This may take longer
+to install but will use the most up-to-date source code.</p>
+<div class="tabbed-set docutils">
+<input checked="checked" id="c17052cc-8987-48e2-9875-fa45c899f351" name="6312d2b6-8b30-451c-9029-cc917739d4f2" type="radio"/>
+<label class="tabbed-label" for="c17052cc-8987-48e2-9875-fa45c899f351">
+Windows</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip  install git+https://github.com/siliconlabs/mltk.git
+</pre></div>
+</div>
+</div>
+<input id="12e12783-ecf9-4a1f-81cc-fbb0e28fc320" name="6312d2b6-8b30-451c-9029-cc917739d4f2" type="radio"/>
+<label class="tabbed-label" for="12e12783-ecf9-4a1f-81cc-fbb0e28fc320">
+Linux</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip3 install git+https://github.com/siliconlabs/mltk.git
+</pre></div>
+</div>
+</div>
+</div>
+<p>After the command completes, the MLTK should be available to the current Python environment.<br/>
+You can verify by issuing the command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk --help
+</pre></div>
+</div>
+<p>See the <a class="reference internal" href="command_line.html"><span class="doc std std-doc">Command-Line Guide</span></a> for more details on how to use the command-line.</p>
+<p>You can also import the MLTK via Python script, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">profile_model</span>
+
+<span class="n">profile_model</span><span class="p">(</span><span class="s1">'~/my_model.tflite'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the <a class="reference internal" href="examples.html"><span class="doc std std-doc">API Examples</span></a> for more details on how to use the MLTK <a class="reference internal" href="python_api/index.html"><span class="doc std std-doc">Python API</span></a>.</p>
+<section id="update-python-package">
+<h3 id="update-python-package">Update Python Package<a class="headerlink" href="#update-python-package" title="Permalink to this headline">¶</a></h3>
+<p>If the MLTK Python package has already been installed, you may update to the latest MLTK by running the command:</p>
+<div class="tabbed-set docutils">
+<input checked="checked" id="13f47f94-6aaf-4681-b6a6-6f19d3e6de84" name="471540b1-85ef-4d64-a291-2860e411a492" type="radio"/>
+<label class="tabbed-label" for="13f47f94-6aaf-4681-b6a6-6f19d3e6de84">
+Windows</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip  install silabs-mltk --upgrade
+</pre></div>
+</div>
+</div>
+<input id="5f4b11ea-068c-41dc-ad46-9ea5982f766e" name="471540b1-85ef-4d64-a291-2860e411a492" type="radio"/>
+<label class="tabbed-label" for="5f4b11ea-068c-41dc-ad46-9ea5982f766e">
+Linux</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip3 install silabs-mltk --upgrade
+</pre></div>
+</div>
+</div>
+</div>
+<p>Alternatively, you can update to a specific version with:</p>
+<div class="tabbed-set docutils">
+<input checked="checked" id="70bd29e9-3c54-4b33-b879-6e76d9e50409" name="341fd270-5a6f-450d-b938-77fe13cb674b" type="radio"/>
+<label class="tabbed-label" for="70bd29e9-3c54-4b33-b879-6e76d9e50409">
+Windows</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip  install silabs-mltk<span class="o">==</span><span class="m">0</span>.6.0
+</pre></div>
+</div>
+</div>
+<input id="a9159907-5341-41dc-aab6-fe1e60c7de61" name="341fd270-5a6f-450d-b938-77fe13cb674b" type="radio"/>
+<label class="tabbed-label" for="a9159907-5341-41dc-aab6-fe1e60c7de61">
+Linux</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip3 install silabs-mltk<span class="o">==</span><span class="m">0</span>.6.0
+</pre></div>
+</div>
+</div>
+</div>
+<p>and replace <code class="docutils literal notranslate"><span class="pre">0.6.0</span></code> with the desired version.</p>
+</section>
+</section>
+<section id="google-colab">
+<h2 id="google-colab">Google Colab<a class="headerlink" href="#google-colab" title="Permalink to this headline">¶</a></h2>
+<p>Google offers it own <em>free</em> Cloud servers for model training, <a class="reference external" href="https://colab.research.google.com/notebooks/welcome.ipynb">Google Colaboratory</a> (a.k.a. Colab).<br/>
+This is very useful as you can leverage Google’s cloud servers and GPUs for training your model.
+The following describes how to install the MLTK into a Colab notebook.</p>
+<p>1 ) Create a Google Account (if necessary)<br/>
+Go to the <a class="reference external" href="https://accounts.google.com/signup">Google Signup</a> page.<br/>
+<strong>NOTE:</strong> Click the <strong>Use my current email address instead</strong> button to use your existing email instead of creating a gmail email address.</p>
+<p>2 ) Refer to the <a class="reference external" href="https://colab.research.google.com/notebooks/basic_features_overview.ipynb">Colab Basic Features Overview</a> to get a basic idea of how notebooks work<br/>
+3 ) Create a new Colab notebook<br/>
+4 ) Create a Python code cell and copy &amp; paste the following into the cell</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>!pip install --upgrade silabs-mltk
+</pre></div>
+</div>
+<p>5 ) Execute the cell<br/>
+Once the cell executes, the MLTK will be installed.
+You may import and use the MLTK package as normal from this point on inside the notebook</p>
+</section>
+<section id="local-development">
+<h2 id="local-development">Local Development<a class="headerlink" href="#local-development" title="Permalink to this headline">¶</a></h2>
+<p>The MLTK can also be installed for local development. In this mode, the Python C++ wrappers are built from source.<br/>
+Additionally, a new Python virtual environment is created specifically for the MLTK.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Before installing, you must have <a class="reference external" href="https://www.python.org/downloads/">Python3.7, 3.8, or 3.9</a> installed on your computer</p>
+</div>
+<p>1 ) Clone the MLTK GIT repository</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/siliconlabs/mltk
+</pre></div>
+</div>
+<p>2 ) Run the install script at the root of the repository</p>
+<div class="tabbed-set docutils">
+<input checked="checked" id="f0e375b2-45d5-423a-8111-166721d3273f" name="c0e01585-6367-430f-bd74-62ab67e2202c" type="radio"/>
+<label class="tabbed-label" for="f0e375b2-45d5-423a-8111-166721d3273f">
+Windows</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> mltk
+python  .<span class="se">\i</span>nstall_mltk.py
+</pre></div>
+</div>
+</div>
+<input id="4be2f88d-e30a-4039-b403-cf8606c5dee7" name="c0e01585-6367-430f-bd74-62ab67e2202c" type="radio"/>
+<label class="tabbed-label" for="4be2f88d-e30a-4039-b403-cf8606c5dee7">
+Linux</label><div class="tabbed-content docutils">
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> mltk
+python3 ./install_mltk.py
+</pre></div>
+</div>
+</div>
+</div>
+<p>The install script will:</p>
+<ol>
+<li><p>Create a python virtual environment at <code class="docutils literal notranslate"><span class="pre">&lt;mltk</span> <span class="pre">root&gt;/.venv</span></code></p></li>
+<li><p>Install the MLTK Python package for local development into Python virtual environment:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -e .
+</pre></div>
+</div>
+</li>
+</ol>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="cpp_development/index.html"><span class="doc std std-doc">C++ Development</span></a> - Describes how to build and run MLTK C++ applications</p></li>
+</ul>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="why_mltk.html" title="Why MLTK?"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Why MLTK? </span>
+              </div>
+            </a>
+          
+          
+            <a href="command_line.html" title="Command-Line"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> Command-Line </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Apr 26, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

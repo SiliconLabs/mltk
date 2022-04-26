@@ -1,0 +1,76 @@
+# MVP Python Wrapper
+
+This allows for running the MVP-accelerated Tensorflow-Lite Micro (TFLM) [kernels](../../cpp/shared/gecko_sdk/tflite_micro_mvp_kernels) from a Python script.
+
+This is useful as it allows for running `.tflite` model files in the MVP simulator and determining values such as:  
+- Required runtime memory (i.e. RAM)
+- Number of MVP clock cycles required to execute model
+- Which parts the model were not able to be accelerated
+
+
+This wrapper is not used directly. Instead, it is loaded by the [TfliteMicro](mltk.core.tflite_micro.TfliteMicro) Python package when specifying the `accelerator = mvp`.
+
+
+## Source Code
+
+- [Python wrapper](../../cpp/mvp_wrapper) - This makes the MVP-accelerated TFLM kernels accessible to Python
+- [MVP Tensorflow-Lite Micro Kernels](../../cpp/shared/gecko_sdk/tflite_micro_mvp_kernels) - The MVP-accelerated Tensorflow-Lite Micro kernels. These run on the embedded device _or_ in the MVP simulator
+- [Python API](../../mltk/core/tflite_micro) - Python package that loads the TFLM [wrapper](./tflite_micro_wrapper.md) as well as this Python wrapper
+
+
+
+## Additional Links
+
+- [Python API documentation](mltk.core.tflite_micro.TfliteMicro)
+- [C++ Development documentation](../../../../docs/cpp_development/index.md)
+
+
+
+## Building the Wrapper
+
+### Pre-built
+
+This wrapper comes pre-built when installing the MLTK Python package, e.g.:
+
+```shell 
+pip install silabs-mltk
+```
+
+
+### Automatic Build
+
+This wrapper is automatically built when installing from source, e.g.:
+
+```shell
+git clone https://github.com/siliconlabs/mltk.git
+cd mltk
+pip install -e .
+```
+
+### Manual build via MLTK command
+
+To manually build this wrapper, issue the MLTK command:
+
+```shell
+mltk build mvp_wrapper
+```
+
+
+### Manual build via CMake
+
+This wrapper can also be built via CMake using [Visual Studio Code](../../../../docs/cpp_development/vscode.md) or the [Command Line](../../../../docs/cpp_development/command_line.md).
+
+To build the wrapper, the [build_options.cmake](../../../../docs/cpp_development/build_options.md) file needs to be modified.
+
+Create the file `<mltk repo root>/user_options.cmake` and add:
+
+```
+mltk_set(MLTK_TARGET mltk_mvp_wrapper)
+```
+
+```{note}
+You must remove this option and clean the build directory before building the example applications
+```
+
+Then configure the CMake project using the Window/Linux GCC toolchain and build the target: `mltk_mvp_wrapper`.
+

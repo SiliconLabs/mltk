@@ -1,0 +1,226 @@
+{
+
+ "cells": [
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "# Model Quantization API Examples\n",
+
+    "\n",
+
+    "This demonstrates how to use the [quantize_model](../../docs/python_api/operations.html#quantize-model) API.\n",
+
+    "\n",
+
+    "Refer to the [Model Quantization](../../docs/guides/model_quantization.md) guide for more details.\n",
+
+    "\n",
+
+    "__NOTES:__  \n",
+
+    "\n",
+
+    "- Click here: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/examples/quantize_model.ipynb) to run this example interactively in your browser  \n",
+
+    "- Refer to the [Notebook Examples Guide](../../docs/guides/notebook_examples_guide.md) for how to run this example locally in VSCode  "
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Install MLTK Python Package"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 1,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "# Install the MLTK Python package (if necessary)\n",
+
+    "!pip install --upgrade silabs-mltk"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Import Python Packages"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 2,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "# Import the necessary MLTK APIs\n",
+
+    "from mltk.core import quantize_model"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 1: Update .tflite in model archive\n",
+
+    "\n",
+
+    "The most common use case of the [quantize_model](../../docs/python_api/operations.html#quantize-model) API is:  \n",
+
+    "1. Fully [train](../../docs/guides/model_training.md) a model  \n",
+
+    "2. Later modify the [TrainMixin.tflite_converter](../../docs/python_api/core/mltk_model.html#mltk.core.TrainMixin.tflite_converter) settings in the [model specification](../../docs/guides/model_specification.md) script  \n",
+
+    "3. Run the [quantize_model](../../docs/python_api/operations.html#quantize-model) API to update the `.tflite` model file in the [model archive](../../docs/guides/model_archive.md).\n",
+
+    "\n",
+
+    "In this example, it's assumed that the [TrainMixin.tflite_converter](../../docs/python_api/core/mltk_model.html#mltk.core.TrainMixin.tflite_converter) settings in\n",
+
+    "the [image_example1](../../docs/python_api/models/examples/image_example1.md) model specification script have been modified _after_ the model have been\n",
+
+    "trained.\n",
+
+    "\n",
+
+    "After this API completes, the `image_example1.mltk.zip` model archive is updated with a new `image_example1.tflite` model file."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 3,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "INFO:tensorflow:Assets written to: E:\\tmpguttx09w\\assets\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "tflite_path = quantize_model('image_example1')"
+
+   ]
+
+  }
+
+ ],
+
+ "metadata": {
+
+  "interpreter": {
+
+   "hash": "d2cfb25ea30f37ddda2085817c91f6bd2a4a914387b5b179eb21bf4600b69cf8"
+
+  },
+
+  "kernelspec": {
+
+   "display_name": "Python 3.9.7 64-bit ('.venv': venv)",
+
+   "name": "python3"
+
+  },
+
+  "language_info": {
+
+   "codemirror_mode": {
+
+    "name": "ipython",
+
+    "version": 3
+
+   },
+
+   "file_extension": ".py",
+
+   "mimetype": "text/x-python",
+
+   "name": "python",
+
+   "nbconvert_exporter": "python",
+
+   "pygments_lexer": "ipython3",
+
+   "version": "3.9.7"
+
+  },
+
+  "orig_nbformat": 4
+
+ },
+
+ "nbformat": 4,
+
+ "nbformat_minor": 2
+
+}
+

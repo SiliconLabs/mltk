@@ -1,0 +1,886 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tflite, embedded, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-965PJZXVMY"></script>
+<script>
+    window.gTrackingId = 'G-965PJZXVMY';
+</script>
+  
+  
+    <title>Keyword Spotting with Transfer Learning &#8212; MLTK 0.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="ONNX to TF-Lite Model Conversion" href="onnx_to_tflite.html" />
+    <link rel="prev" title="Model Optimization for MVP Hardware Accelerator" href="model_optimization.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/tutorials/keyword_spotting_with_transfer_learning" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.6.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.6.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Keyword Spotting with Transfer Learning </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_on_off.html" class="md-nav__link">Keyword Spotting - On/Off</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_optimization.html" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Keyword Spotting with Transfer Learning </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Keyword Spotting with Transfer Learning</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-keyword-spotting-with-transfer-learning--page-root" class="md-nav__link">Keyword Spotting with Transfer Learning</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#running-this-tutorial" class="md-nav__link">Running this Tutorial</a>
+        </li>
+        <li class="md-nav__item"><a href="#recommended-reading" class="md-nav__link">Recommended Reading</a>
+        </li>
+        <li class="md-nav__item"><a href="#basic-concept" class="md-nav__link">Basic Concept</a>
+        </li>
+        <li class="md-nav__item"><a href="#base-model-overview" class="md-nav__link">Base Model Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#test-model-using-pc-microphone" class="md-nav__link">Test model using PC microphone</a>
+        </li>
+        <li class="md-nav__item"><a href="#test-model-using-development-board" class="md-nav__link">Test model using development board</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#configure-model-specification-with-transfer-learning" class="md-nav__link">Configure Model Specification with Transfer Learning</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#update-description" class="md-nav__link">Update description</a>
+        </li>
+        <li class="md-nav__item"><a href="#set-epochs-to-small-value" class="md-nav__link">Set epochs to small value</a>
+        </li>
+        <li class="md-nav__item"><a href="#use-learningratescheduler-with-small-initial-value" class="md-nav__link">Use LearningRateScheduler with small initial value</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-the-keywords-to-detect" class="md-nav__link">Update the keywords to detect</a>
+        </li>
+        <li class="md-nav__item"><a href="#reduce-the-unknown-class-percentage" class="md-nav__link">Reduce the “unknown_class_percentage”</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-the-weights-from-the-base-model" class="md-nav__link">Load the weights from the base model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#train-the-model" class="md-nav__link">Train the Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#test-the-model" class="md-nav__link">Test the model</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/keyword_spotting_with_transfer_learning.ipynb.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="onnx_to_tflite.html" class="md-nav__link">ONNX to TF-Lite Model Conversion</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-keyword-spotting-with-transfer-learning--page-root" class="md-nav__link">Keyword Spotting with Transfer Learning</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#running-this-tutorial" class="md-nav__link">Running this Tutorial</a>
+        </li>
+        <li class="md-nav__item"><a href="#recommended-reading" class="md-nav__link">Recommended Reading</a>
+        </li>
+        <li class="md-nav__item"><a href="#basic-concept" class="md-nav__link">Basic Concept</a>
+        </li>
+        <li class="md-nav__item"><a href="#base-model-overview" class="md-nav__link">Base Model Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#test-model-using-pc-microphone" class="md-nav__link">Test model using PC microphone</a>
+        </li>
+        <li class="md-nav__item"><a href="#test-model-using-development-board" class="md-nav__link">Test model using development board</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#configure-model-specification-with-transfer-learning" class="md-nav__link">Configure Model Specification with Transfer Learning</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#update-description" class="md-nav__link">Update description</a>
+        </li>
+        <li class="md-nav__item"><a href="#set-epochs-to-small-value" class="md-nav__link">Set epochs to small value</a>
+        </li>
+        <li class="md-nav__item"><a href="#use-learningratescheduler-with-small-initial-value" class="md-nav__link">Use LearningRateScheduler with small initial value</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-the-keywords-to-detect" class="md-nav__link">Update the keywords to detect</a>
+        </li>
+        <li class="md-nav__item"><a href="#reduce-the-unknown-class-percentage" class="md-nav__link">Reduce the “unknown_class_percentage”</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-the-weights-from-the-base-model" class="md-nav__link">Load the weights from the base model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#train-the-model" class="md-nav__link">Train the Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#test-the-model" class="md-nav__link">Test the model</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/keyword_spotting_with_transfer_learning.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li class="active"><a href="../../docs/tutorials.html" accesskey="U">Tutorials</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="keyword-spotting-with-transfer-learning">
+<h1 id="mltk-tutorials-keyword-spotting-with-transfer-learning--page-root">Keyword Spotting with Transfer Learning<a class="headerlink" href="#mltk-tutorials-keyword-spotting-with-transfer-learning--page-root" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial describes how to use the weights from the pre-trained trained model <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_mobilenetv2.py">keyword_spotting_mobilenetv2</a>,
+as a starting point for training a new model, <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_with_transfer_learning.py">keyword_spotting_with_transfer_learning.py</a>, to detect the keywords:</p>
+<ul class="simple">
+<li><p><strong>one</strong></p></li>
+<li><p><strong>two</strong></p></li>
+<li><p><strong>three</strong></p></li>
+<li><p><strong>four</strong></p></li>
+<li><p><strong>five</strong></p></li>
+<li><p><strong>six</strong></p></li>
+<li><p><strong>seven</strong></p></li>
+<li><p><strong>eight</strong></p></li>
+<li><p><strong>nine</strong></p></li>
+</ul>
+<p>This process is known as <a class="reference external" href="https://en.wikipedia.org/wiki/Transfer_learning">Transfer Learning</a> and can greatly improve training times as
+the new model can leverage the knowledge learnt from another model.</p>
+<p>See the <a class="reference external" href="https://keras.io/guides/transfer_learning">Keras Documentation</a> for more details about how to use
+the Keras API to enable transfer learning.</p>
+<section id="running-this-tutorial">
+<h2 id="running-this-tutorial">Running this Tutorial<a class="headerlink" href="#running-this-tutorial" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>This tutorial assumes the MLTK has been <a class="reference internal" href="../../docs/installation.html"><span class="doc std std-doc">installed</span></a> and is available on the <a class="reference internal" href="../../docs/command_line.html"><span class="doc std std-doc">command-line</span></a></p></li>
+<li><p>All commands below should run from a local terminal</p></li>
+<li><p>In your local terminal, replace the <code class="docutils literal notranslate"><span class="pre">!mltk</span></code> command with <code class="docutils literal notranslate"><span class="pre">mltk</span></code> (i.e. remove the <code class="docutils literal notranslate"><span class="pre">!</span></code> character to run the command)</p></li>
+</ul>
+</section>
+<section id="recommended-reading">
+<h2 id="recommended-reading">Recommended Reading<a class="headerlink" href="#recommended-reading" title="Permalink to this headline">¶</a></h2>
+<p>Before getting started, it is recommended to review the following documentation:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/overview.html"><span class="doc std std-doc">MLTK Overview</span></a> - An overview of the core concepts used by the MLTK</p></li>
+<li><p><a class="reference internal" href="../../docs/audio/keyword_spotting_overview.html"><span class="doc std std-doc">Keyword Spotting Overview</span></a> - An overview of how keyword spotting works</p></li>
+<li><p><a class="reference internal" href="keyword_spotting_on_off.html"><span class="doc std std-doc">Keyword Spotting Tutorial</span></a> - Detailed tutorial describing how to create a Keyword Spotting model using the MLTK</p></li>
+<li><p><a class="reference internal" href="model_optimization.html"><span class="doc std std-doc">Model Optimization Tutorial</span></a> - Describes how to develop the <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_mobilenetv2.py">keyword_spotting_mobilenetv2</a> model used by this tutorial</p></li>
+</ul>
+</section>
+<section id="basic-concept">
+<h2 id="basic-concept">Basic Concept<a class="headerlink" href="#basic-concept" title="Permalink to this headline">¶</a></h2>
+<p>Before continuing, it helps to understand the basic idea of how a Convolutional Neural Network (CNN) works.</p>
+<p>The following diagram illustrates a typical CNN model:<br/>
+<img alt="CNN Diagram" src="https://upload.wikimedia.org/wikipedia/commons/6/63/Typical_cnn.png"/><br/>
+(By Aphex34 - Own work, <a class="reference external" href="https://commons.wikimedia.org/w/index.php?curid=45679374">CC BY-SA 4.0</a>)</p>
+<p>There are two basic parts:</p>
+<ul class="simple">
+<li><p><strong>Feature Extraction</strong> - Convolutional filters extract meaningful information (e.g. lines, shapes, textures, colors) from the input image. Multiple layers of filters are used to convert the raw image into a more abstract and compressed representation</p></li>
+<li><p><strong>Classifier</strong> - The final Convolutional layer is feed into a Fully Connected layer. The Fully Connected layer converts the abstract, compressed representation generated by the Convolutional layers into a probability distribution of the possible “class” or object type (e.g. dog, cat, fish) to which the input image belongs.</p></li>
+</ul>
+<p>(Of course, it can get way more complex than this, but that is basically what is going on).</p>
+<p>So how does the CNN model learn to extract the features and generate the probability distribution?<br/>
+Each “layer” of the model has “trainable” parameters such as weights and filters. Initially, these weights and filters are set to <a class="reference external" href="https://keras.io/api/layers/initializers/">random values</a>.
+During model training, the weights and filters are adjusted so that the model’s predictions are as accurate as possible for the given parameters and dataset.
+At the end of training, the weights and filters that gave the best predictions are saved to a file and ultimately programmed to the embedded device.</p>
+<p>Since the weights and filters are initially random, it can take a long time to train a model from scratch.<br/>
+The idea behind transfer learning is to train a new model starting with the best weights and filters of a previously trained model.
+If the datasets are similar then the new model does not need to relearn how to extract the features (e.g. lines, shapes, textures, colors).<br/>
+It just needs to learn how to map the abstract, compressed representation of the convolutional layers to the new “classes” or objects (e.g. car, truck, bike).</p>
+</section>
+<section id="base-model-overview">
+<h2 id="base-model-overview">Base Model Overview<a class="headerlink" href="#base-model-overview" title="Permalink to this headline">¶</a></h2>
+<p>The pre-trained, base model, whose weights are transferred to the new model, may be found on Github: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_mobilenetv2.py">keyword_spotting_mobilenetv2</a>.</p>
+<p>This model is built using <a class="reference external" href="https://ai.googleblog.com/2018/04/mobilenetv2-next-generation-of-on.html">MobileNetv2</a>, an industry-standard classification model developed by Google.
+MobileNetV2 is a useful model because it is generic enough that it can be applied to most classification tasks but still runs efficiently on embedded devices.</p>
+<p>This model is designed to detect the following keywords:</p>
+<ul class="simple">
+<li><p>left</p></li>
+<li><p>right</p></li>
+<li><p>up</p></li>
+<li><p>down</p></li>
+<li><p>stop</p></li>
+<li><p>go</p></li>
+</ul>
+<section id="test-model-using-pc-microphone">
+<h3 id="test-model-using-pc-microphone">Test model using PC microphone<a class="headerlink" href="#test-model-using-pc-microphone" title="Permalink to this headline">¶</a></h3>
+<p>If you have a microphone connected to your computer, you can optionally run the following command to see the model detect the keywords:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test the keyword_spotting_mobilenetv2 using the PC's microphone</span>
+<span class="c1"># We simulate the latency to be 130ms as that's the approximate latency</span>
+<span class="c1"># that would be seen on the development board</span>
+<span class="o">!</span>mltk classify_audio keyword_spotting_mobilenetv2 --latency <span class="m">130</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="test-model-using-development-board">
+<h3 id="test-model-using-development-board">Test model using development board<a class="headerlink" href="#test-model-using-development-board" title="Permalink to this headline">¶</a></h3>
+<p>If you have a supported development board (currently just the BRD2601), you can optionally run the following command to see the model detected keywords using the development board’s microphone:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test the keyword_spotting_mobilenetv2 using the development board's microphone</span>
+<span class="c1"># The red LED will turn on when a keyword is detected</span>
+<span class="c1"># The green LED will turn on when there's audio activity</span>
+<span class="c1"># NOTE: Your mouth should be ~2 inches from the microphone</span>
+<span class="o">!</span>mltk classify_audio keyword_spotting_mobilenetv2 --device --accelerator mvp
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="configure-model-specification-with-transfer-learning">
+<h2 id="configure-model-specification-with-transfer-learning">Configure Model Specification with Transfer Learning<a class="headerlink" href="#configure-model-specification-with-transfer-learning" title="Permalink to this headline">¶</a></h2>
+<p>The completed model specification used by this tutorial may be found on Github: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_with_transfer_learning.py">keyword_spotting_with_transfer_learning.py</a></p>
+<p>This model specification is very similar to the base model specification, <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_mobilenetv2.py">keyword_spotting_mobilenetv2</a>, with the following key differences:</p>
+<section id="update-description">
+<h3 id="update-description">Update description<a class="headerlink" href="#update-description" title="Permalink to this headline">¶</a></h3>
+<p>Update the model’s description to help keep track of it in the field.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">'Keyword spotting classifier using transfer learning to detect: "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="set-epochs-to-small-value">
+<h3 id="set-epochs-to-small-value">Set epochs to small value<a class="headerlink" href="#set-epochs-to-small-value" title="Permalink to this headline">¶</a></h3>
+<p>Since this model is leveraging the knowledge of the base model, it does not need many epochs to tune the model parameters (e.g. filters and weights)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Since we're using transfer learning, we should only need</span>
+<span class="c1"># a small number of epochs to get a well trained model</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="use-learningratescheduler-with-small-initial-value">
+<h3 id="use-learningratescheduler-with-small-initial-value">Use LearningRateScheduler with small initial value<a class="headerlink" href="#use-learningratescheduler-with-small-initial-value" title="Permalink to this headline">¶</a></h3>
+<p>To have better control of the learning rate, we use a <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/LearningRateScheduler">LearningRateScheduler</a>. We also set the initial value to a small value.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">lr_schedule</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
+    <span class="c1"># When using transfer learning, the initial learning rate should start at a fairly small value</span>
+    <span class="n">initial_learning_rate</span> <span class="o">=</span> <span class="mf">0.0005</span>
+    <span class="n">decay_per_epoch</span> <span class="o">=</span> <span class="mf">0.95</span>
+    <span class="n">lrate</span> <span class="o">=</span> <span class="n">initial_learning_rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">decay_per_epoch</span> <span class="o">**</span> <span class="n">epoch</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lrate</span>
+
+<span class="n">my_model</span><span class="o">.</span><span class="n">lr_schedule</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">schedule</span> <span class="o">=</span> <span class="n">lr_schedule</span><span class="p">,</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="update-the-keywords-to-detect">
+<h3 id="update-the-keywords-to-detect">Update the keywords to detect<a class="headerlink" href="#update-the-keywords-to-detect" title="Permalink to this headline">¶</a></h3>
+<p>Update the keywords we want this model to detect.</p>
+<p>While the keywords “one” through “nine” are supported, this can greatly increase the training time as each keyword adds ~3k samples to the training dataset.</p>
+<p><strong>If you want to quickly train a model, it is recommended to only use a few keywords.</strong></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Using all 9 keywords may take a LONG TIME to train</span>
+<span class="c1"># my_model.classes = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', '_unknown_', '_silence_']</span>
+
+<span class="c1"># Using 3 keywords should take a much SHORTER TIME to train</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'one'</span><span class="p">,</span> <span class="s1">'two'</span><span class="p">,</span> <span class="s1">'three'</span><span class="p">,</span> <span class="s1">'_unknown_'</span><span class="p">,</span> <span class="s1">'_silence_'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="reduce-the-unknown-class-percentage">
+<h3 id="reduce-the-unknown-class-percentage">Reduce the “unknown_class_percentage”<a class="headerlink" href="#reduce-the-unknown-class-percentage" title="Permalink to this headline">¶</a></h3>
+<p>To help reduce training time, we reduce the size of the dataset by decreasing the size of the “unknown” data samples dynamically generated by the <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_data_generator.html"><span class="doc std std-doc">ParallelAudioDataGenerator</span></a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">unknown_class_percentage</span><span class="o">=</span><span class="mf">1.0</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="load-the-weights-from-the-base-model">
+<h3 id="load-the-weights-from-the-base-model">Load the weights from the base model<a class="headerlink" href="#load-the-weights-from-the-base-model" title="Permalink to this headline">¶</a></h3>
+<p>The most important change is actually loading the weights from the base model into this model.</p>
+<p>To loads the weights:</p>
+<ol class="simple">
+<li><p>Instantiate a <a class="reference external" href="../../docs/python_api/models/common_models.html#mobilenet-v2">MobileNetV2()</a> instance</p></li>
+<li><p>Load the keyword_spotting_mobilenetv2 <a class="reference internal" href="../../docs/python_api/core/mltk_model.html"><span class="doc std std-doc">MtlkObject</span></a></p></li>
+<li><p>Retrieve the path to the model’s .h5 file in the model’s <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">archive</span></a>. The .h5 model file contains the trained weights</p></li>
+<li><p><a class="reference external" href="https://keras.io/api/models/model_saving_apis/#loadweights-method">Load</a> the trained weights into the MobileNetV2() instance</p></li>
+<li><p>Compile and return the model instance with the weights from the base model</p></li>
+</ol>
+<p><strong>NOTE:</strong> Keras also describes ways of “freezing” layers of the model so that the weights do not change during training. More details <a class="reference external" href="https://keras.io/guides/transfer_learning">here</a>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+    <span class="c1"># Create an instance of the MobileNetV2</span>
+    <span class="c1"># NOTE: This should have similar parameters to the keyword_spotting_mobilenetv2 model</span>
+    <span class="c1">#       since we're transferring weights from it</span>
+    <span class="n">keras_model</span> <span class="o">=</span> <span class="n">MobileNetV2</span><span class="p">(</span> 
+        <span class="n">input_shape</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
+        <span class="n">classes</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> 
+        <span class="n">last_block_filters</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span>
+        <span class="n">include_top</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">weights</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Load the "keyword_spotting_mobilenetv2" model</span>
+    <span class="c1"># We want to transfer its weights to this model</span>
+    <span class="c1"># In this way, this new model can start with the knowledge</span>
+    <span class="c1"># that the keyword_spotting_mobilenetv2 model already knows</span>
+    <span class="c1"># NOTE: This step is not needed if you already have a .h5 file</span>
+    <span class="n">base_mltk_model</span> <span class="o">=</span> <span class="n">load_mltk_model</span><span class="p">(</span><span class="s1">'keyword_spotting_mobilenetv2'</span><span class="p">)</span>
+
+    <span class="c1"># Get the file path to the .h5 file found in the keyword_spotting_mobilenetv2 model archive</span>
+    <span class="c1"># The .h5 file contains the trained weights we want to transfer to this model</span>
+    <span class="n">base_model_h5_path</span> <span class="o">=</span> <span class="n">base_mltk_model</span><span class="o">.</span><span class="n">h5_archive_path</span>
+
+    <span class="c1"># Load the keyword_spotting_mobilenetv2 weights into this model</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span>
+        <span class="n">base_model_h5_path</span><span class="p">,</span> 
+        <span class="n">by_name</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+        <span class="n">skip_mismatch</span><span class="o">=</span><span class="kc">True</span> <span class="c1"># We need to skip mismatches in case the number of classes is different</span>
+    <span class="p">)</span>
+
+    <span class="c1"># NOTE: The https://keras.io/guides/transfer_learning recommends</span>
+    <span class="c1">#       "freezing" layers of the base model during training, however, in this instance,</span>
+    <span class="c1">#       it was found that making all layers trainable gave better performance.</span>
+
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span> 
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">metrics</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">keras_model</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="train-the-model">
+<h2 id="train-the-model">Train the Model<a class="headerlink" href="#train-the-model" title="Permalink to this headline">¶</a></h2>
+<p>With the model specification complete, invoke the model training.
+Since we’re only training for 10 epochs, this should complete relatively quickly.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk train keyword_spotting_with_transfer_learning
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span>  <span class="n">Input</span> <span class="n">In</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">mltk</span> <span class="n">train</span> <span class="n">keyword_spotting_with_transfer_learning</span>
+         <span class="o">^</span>
+<span class="ne">SyntaxError</span>: invalid syntax
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="test-the-model">
+<h2 id="test-the-model">Test the model<a class="headerlink" href="#test-the-model" title="Permalink to this headline">¶</a></h2>
+<p>With the model trained, we can see how well it runs on the development board by issuing the command:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test the keyword_spotting_with_transfer_learning using the development board's microphone</span>
+<span class="c1"># The red LED will turn on when a keyword is detected</span>
+<span class="c1"># The green LED will turn on when there's audio activity</span>
+<span class="c1"># NOTE: Your mouth must be ~2 inches for the board's microphone</span>
+<span class="o">!</span>mltk classify_audio keyword_spotting_with_transfer_learning --device --accelerator mvp
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="model_optimization.html" title="Model Optimization for MVP Hardware Accelerator"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Model Optimization for MVP Hardware Accelerator </span>
+              </div>
+            </a>
+          
+          
+            <a href="onnx_to_tflite.html" title="ONNX to TF-Lite Model Conversion"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> ONNX to TF-Lite Model Conversion </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Apr 26, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

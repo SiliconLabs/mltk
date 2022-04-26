@@ -1,0 +1,1026 @@
+{
+
+ "cells": [
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "# Model Profiler API Examples\n",
+
+    "\n",
+
+    "This demonstrates how to use the [profile_model](../../docs/python_api/operations.html#profile-model) API.\n",
+
+    "\n",
+
+    "Refer to the [Model Profiler](../../docs/guides/model_profiler.md) guide for more details.\n",
+
+    "\n",
+
+    "__NOTES:__  \n",
+
+    "- Click here: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/examples/profile_model.ipynb) to run this example interactively in your browser  \n",
+
+    "- Refer to the [Notebook Examples Guide](../../docs/guides/notebook_examples_guide.md) for how to run this example locally in VSCode  "
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Install MLTK Python Package"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 1,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "# Install the MLTK Python package (if necessary)\n",
+
+    "!pip install --upgrade silabs-mltk"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Import Python Packages"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 1,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "# Import the standard Python packages used by the examples\n",
+
+    "import os\n",
+
+    "import urllib\n",
+
+    "import shutil\n",
+
+    "import tempfile\n",
+
+    "\n",
+
+    "# Import the necessary MLTK APIs\n",
+
+    "from mltk.core import profile_model\n",
+
+    "from mltk.utils.commander import query_platform"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Download .tflite model file\n",
+
+    "\n",
+
+    "A `.tflite` model file is required to run these examples.  \n",
+
+    "The following code downloads a model.\n",
+
+    "\n",
+
+    "__NOTE:__ Update `TFLITE_MODEL_URL` or `tflite_path` to point to your model if necesary"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 4,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "# Use .tflite mode found here:\n",
+
+    "# https://github.com/siliconlabs/mltk/tree/master/mltk/utils/test_helper/data/\n",
+
+    "# NOTE: Update this URL to point to your model if necessary\n",
+
+    "TFLITE_MODEL_URL = 'https://github.com/siliconlabs/mltk/raw/master/mltk/utils/test_helper/data/image_example1.tflite'\n",
+
+    "\n",
+
+    "# Download the .tflite file and save to the temp dir\n",
+
+    "tflite_path = os.path.normpath(f'{tempfile.gettempdir()}/image_example1.tflite')\n",
+
+    "with open(tflite_path, 'wb') as dst:\n",
+
+    "    with urllib.request.urlopen(TFLITE_MODEL_URL) as src:\n",
+
+    "        shutil.copyfileobj(src, dst)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 1: Profile .tflite file in basic simulator\n",
+
+    "\n",
+
+    "This example profiles the `.tflite` model file in the \"basic simulator\" of the model profiler."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 5,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Profiling Summary\n",
+
+      "Name: kws_ref_model\n",
+
+      "Accelerator: None\n",
+
+      "Input Shape: 1x96x96x1\n",
+
+      "Input Data Type: int8\n",
+
+      "Output Shape: 1x3\n",
+
+      "Output Data Type: int8\n",
+
+      "Model File Size (bytes): 15.7k\n",
+
+      "Runtime Memory Size (bytes): 71.3k\n",
+
+      "# Operations: 2.6M\n",
+
+      "# Multiply-Accumulates: 1.2M\n",
+
+      "# Layers: 8\n",
+
+      "# Unsupported Layers: 0\n",
+
+      "# CPU Cycles: 13.1M\n",
+
+      "CPU Utilization (%): 100.0\n",
+
+      "Clock Rate (hz): 80.0M\n",
+
+      "Time (s): 163.3m\n",
+
+      "Energy (J): 2.3m\n",
+
+      "J/Op: 884.5p\n",
+
+      "J/MAC: 2.0n\n",
+
+      "Ops/s: 16.2M\n",
+
+      "MACs/s: 7.3M\n",
+
+      "Inference/s: 6.1\n",
+
+      "\n",
+
+      "Model Layers\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
+
+      "| Index | OpCode          | # Ops  | # MACs | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                             |\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
+
+      "| 0     | conv_2d         | 1.2M   | 497.7k | 10.0M      | 1.9m       | 124.8m   | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
+
+      "| 1     | average_pool_2d | 69.1k  | 0      | 985.7k     | 148.0u     | 12.3m    | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 2     | conv_2d         | 842.2k | 418.2k | 1.3M       | 187.5u     | 16.7m    | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
+
+      "| 3     | conv_2d         | 565.7k | 279.9k | 718.6k     | 105.7u     | 9.0m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
+
+      "| 4     | average_pool_2d | 1.9k   | 0      | 30.8k      | 9.3u       | 385.4u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 5     | reshape         | 0      | 0      | 250.4      | 0.0p       | 3.1u     | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |\n",
+
+      "| 6     | fully_connected | 2.3k   | 1.2k   | 5.2k       | 21.5n      | 64.4u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
+
+      "| 7     | softmax         | 15.0   | 0      | 3.8k       | 16.5n      | 48.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "# Profile the tflite model using the \"basic simulator\"\n",
+
+    "# NOTE: Update tflite_path to point to your model if necessary\n",
+
+    "profiling_results = profile_model(tflite_path)\n",
+
+    "\n",
+
+    "# Print the profiling results\n",
+
+    "print(profiling_results)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 2: Profile .tflite file in MVP hardware simulator\n",
+
+    "\n",
+
+    "This example profiles the `.tflite` model file in the MVP hardware accelerator simulator of the model profiler."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 6,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Profiling Summary\n",
+
+      "Name: kws_ref_model\n",
+
+      "Accelerator: MVP\n",
+
+      "Input Shape: 1x96x96x1\n",
+
+      "Input Data Type: int8\n",
+
+      "Output Shape: 1x3\n",
+
+      "Output Data Type: int8\n",
+
+      "Model File Size (bytes): 15.7k\n",
+
+      "Runtime Memory Size (bytes): 71.3k\n",
+
+      "# Operations: 2.6M\n",
+
+      "# Multiply-Accumulates: 1.2M\n",
+
+      "# Layers: 8\n",
+
+      "# Unsupported Layers: 0\n",
+
+      "# Accelerator Cycles: 2.8M\n",
+
+      "# CPU Cycles: 80.4k\n",
+
+      "CPU Utilization (%): 2.8\n",
+
+      "Clock Rate (hz): 80.0M\n",
+
+      "Time (s): 35.5m\n",
+
+      "Energy (J): 315.5u\n",
+
+      "J/Op: 119.4p\n",
+
+      "J/MAC: 263.6p\n",
+
+      "Ops/s: 74.5M\n",
+
+      "MACs/s: 33.8M\n",
+
+      "Inference/s: 28.2\n",
+
+      "\n",
+
+      "Model Layers\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
+
+      "| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                             |\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
+
+      "| 0     | conv_2d         | 1.2M   | 497.7k | 1.7M       | 11.8k      | 209.7u     | 21.1m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
+
+      "| 1     | average_pool_2d | 69.1k  | 0      | 48.4k      | 22.7k      | 5.4u       | 604.8u   | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 2     | conv_2d         | 842.2k | 418.2k | 635.0k     | 5.2k       | 51.0u      | 7.9m     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
+
+      "| 3     | conv_2d         | 565.7k | 279.9k | 427.8k     | 7.2k       | 45.7u      | 5.3m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
+
+      "| 4     | average_pool_2d | 1.9k   | 0      | 1.3k       | 27.8k      | 3.7u       | 347.8u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 5     | reshape         | 0      | 0      | 0          | 250.4      | 0.0p       | 3.1u     | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |\n",
+
+      "| 6     | fully_connected | 2.3k   | 1.2k   | 1.7k       | 1.5k       | 49.2n      | 21.8u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
+
+      "| 7     | softmax         | 15.0   | 0      | 0          | 3.8k       | 16.5n      | 48.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "# Profile the tflite model using the MVP hardware accelerator simulator\n",
+
+    "# NOTE: Update tflite_path to point to your model if necessary\n",
+
+    "profiling_results = profile_model(tflite_path, accelerator='MVP')\n",
+
+    "\n",
+
+    "# Print the profiling results\n",
+
+    "print(profiling_results)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 3: Profile .tflite file on physical device\n",
+
+    "\n",
+
+    "This example profiles the `.tflite` model file on a physically connected embedded device.\n",
+
+    "\n",
+
+    "__NOTE:__ A supported development board must be connected and properly enumerated for this example to work."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 8,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Conencted device platform: brd2601a\n",
+
+      "Profiling Summary\n",
+
+      "Name: kws_ref_model\n",
+
+      "Accelerator: MVP\n",
+
+      "Input Shape: 1x96x96x1\n",
+
+      "Input Data Type: int8\n",
+
+      "Output Shape: 1x3\n",
+
+      "Output Data Type: int8\n",
+
+      "Model File Size (bytes): 15.7k\n",
+
+      "Runtime Memory Size (bytes): 71.2k\n",
+
+      "# Operations: 2.6M\n",
+
+      "# Multiply-Accumulates: 1.2M\n",
+
+      "# Layers: 8\n",
+
+      "# Unsupported Layers: 0\n",
+
+      "# Accelerator Cycles: 2.9M\n",
+
+      "# CPU Cycles: 652.5k\n",
+
+      "CPU Utilization (%): 18.7\n",
+
+      "Clock Rate (hz): 80.0M\n",
+
+      "Time (s): 43.6m\n",
+
+      "Ops/s: 60.6M\n",
+
+      "MACs/s: 27.5M\n",
+
+      "Inference/s: 22.9\n",
+
+      "\n",
+
+      "Model Layers\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
+
+      "| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape             | Output Shape | Options                                             |\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
+
+      "| 0     | conv_2d         | 1.2M   | 497.7k | 1.8M       | 14.3k      | 22.2m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
+
+      "| 1     | average_pool_2d | 69.1k  | 0      | 48.5k      | 570.4k     | 7.5m     | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 2     | conv_2d         | 842.2k | 418.2k | 638.9k     | 6.7k       | 7.9m     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
+
+      "| 3     | conv_2d         | 565.7k | 279.9k | 431.6k     | 8.6k       | 5.3m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
+
+      "| 4     | average_pool_2d | 1.9k   | 0      | 1.6k       | 42.5k      | 540.0u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 5     | reshape         | 0      | 0      | 0          | 3.8k       | 30.0u    | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |\n",
+
+      "| 6     | fully_connected | 2.3k   | 1.1k   | 1.8k       | 2.7k       | 60.0u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
+
+      "| 7     | softmax         | 15.0   | 0      | 0          | 3.6k       | 60.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "# Determine the currently connected device\n",
+
+    "# Just print an error and return if no device is connected\n",
+
+    "try:\n",
+
+    "    platform_name = query_platform()\n",
+
+    "except Exception as e:\n",
+
+    "    print(f'Failed to determine connected device, err:\\n{e}')\n",
+
+    "    sys.exit(0)\n",
+
+    "\n",
+
+    "print(f'Conencted device platform: {platform_name}')\n",
+
+    "\n",
+
+    "accelerator = None\n",
+
+    "if platform_name in ('brd2601a', 'brd4186b'):\n",
+
+    "    # Use the MVP hardware accelerator if the platform supports it\n",
+
+    "    accelerator = 'MVP'\n",
+
+    "\n",
+
+    "# Profile the tflite model on the physical device\n",
+
+    "profiling_results = profile_model(\n",
+
+    "    tflite_path,\n",
+
+    "    accelerator=accelerator,\n",
+
+    "    use_device=True\n",
+
+    ")\n",
+
+    "\n",
+
+    "# Print the profiling results\n",
+
+    "print(profiling_results)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 4: Profile model before training\n",
+
+    "\n",
+
+    "Training a model can be very time-consuming, and it is useful to know how efficiently a \n",
+
+    "model will execute on an embedded device before investing time and energy into training it.  \n",
+
+    "For this reason, the MLTK [profile_model](../../docs/python_api/operations.html#profile-model) API features a `build` argument to build a model and profile it _before_ the model is fully trained.\n",
+
+    "\n",
+
+    "In this example, the [image_example1](../../docs/python_api/models/examples/image_example1.md) model is built\n",
+
+    "at command-execution-time and profiled in the MVP hardware simulator.  \n",
+
+    "Note that _only_ the [model specification](../../docs/guides/model_specification.md)  script is required, \n",
+
+    "it does _not_ need to be trained first."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 9,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "patool: Extracting C:/Users/reed/.mltk/downloads/rock_paper_scissors.7z ...\n",
+
+      "patool: running \"C:\\Program Files\\7-Zip\\7z.EXE\" x -y -oE:/reed/mltk/tmp_archives/rock_paper_scissors -- C:/Users/reed/.mltk/downloads/rock_paper_scissors.7z\n",
+
+      "patool: ... C:/Users/reed/.mltk/downloads/rock_paper_scissors.7z extracted to `E:/reed/mltk/tmp_archives/rock_paper_scissors'.\n"
+
+     ]
+
+    },
+
+    {
+
+     "data": {
+
+      "application/vnd.jupyter.widget-view+json": {
+
+       "model_id": "b34aea22b4b34f8cb4fb8770fe8d425c",
+
+       "version_major": 2,
+
+       "version_minor": 0
+
+      },
+
+      "text/plain": [
+
+       "Training:   0%|           0/3 ETA: ?s,  ?epochs/s"
+
+      ]
+
+     },
+
+     "metadata": {},
+
+     "output_type": "display_data"
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Epoch 1/3\n"
+
+     ]
+
+    },
+
+    {
+
+     "data": {
+
+      "application/vnd.jupyter.widget-view+json": {
+
+       "model_id": "fb1f8d1157974c0d9ab15738f753fa81",
+
+       "version_major": 2,
+
+       "version_minor": 0
+
+      },
+
+      "text/plain": [
+
+       "0/3           ETA: ?s - "
+
+      ]
+
+     },
+
+     "metadata": {},
+
+     "output_type": "display_data"
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Epoch 2/3\n"
+
+     ]
+
+    },
+
+    {
+
+     "data": {
+
+      "application/vnd.jupyter.widget-view+json": {
+
+       "model_id": "5f80adb4e21a4db6a775e06c902bb460",
+
+       "version_major": 2,
+
+       "version_minor": 0
+
+      },
+
+      "text/plain": [
+
+       "0/3           ETA: ?s - "
+
+      ]
+
+     },
+
+     "metadata": {},
+
+     "output_type": "display_data"
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "WARNING:tensorflow:Callback method `on_train_batch_begin` is slow compared to the batch time (batch time: 0.0126s vs `on_train_batch_begin` time: 0.1070s). Check your callbacks.\n",
+
+      "WARNING:tensorflow:Callback method `on_train_batch_end` is slow compared to the batch time (batch time: 0.0126s vs `on_train_batch_end` time: 0.0687s). Check your callbacks.\n",
+
+      "Epoch 3/3\n"
+
+     ]
+
+    },
+
+    {
+
+     "data": {
+
+      "application/vnd.jupyter.widget-view+json": {
+
+       "model_id": "f5e48c4d309a4cddb22f081857fd9ba3",
+
+       "version_major": 2,
+
+       "version_minor": 0
+
+      },
+
+      "text/plain": [
+
+       "0/3           ETA: ?s - "
+
+      ]
+
+     },
+
+     "metadata": {},
+
+     "output_type": "display_data"
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "INFO:tensorflow:Assets written to: E:\\tmp76im2ckn\\assets\n"
+
+     ]
+
+    },
+
+    {
+
+     "name": "stderr",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "c:\\Users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages\\tensorflow\\lite\\python\\convert.py:746: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.\n",
+
+      "  warnings.warn(\"Statistics for quantized inputs were expected, but not \"\n"
+
+     ]
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Profiling Summary\n",
+
+      "Name: my_model\n",
+
+      "Accelerator: MVP\n",
+
+      "Input Shape: 1x96x96x1\n",
+
+      "Input Data Type: int8\n",
+
+      "Output Shape: 1x3\n",
+
+      "Output Data Type: int8\n",
+
+      "Model File Size (bytes): 14.7k\n",
+
+      "Runtime Memory Size (bytes): 71.3k\n",
+
+      "# Operations: 2.6M\n",
+
+      "# Multiply-Accumulates: 1.2M\n",
+
+      "# Layers: 8\n",
+
+      "# Unsupported Layers: 0\n",
+
+      "# Accelerator Cycles: 2.8M\n",
+
+      "# CPU Cycles: 80.4k\n",
+
+      "CPU Utilization (%): 2.8\n",
+
+      "Clock Rate (hz): 80.0M\n",
+
+      "Time (s): 35.5m\n",
+
+      "Energy (J): 315.5u\n",
+
+      "J/Op: 119.4p\n",
+
+      "J/MAC: 263.6p\n",
+
+      "Ops/s: 74.5M\n",
+
+      "MACs/s: 33.8M\n",
+
+      "Inference/s: 28.2\n",
+
+      "\n",
+
+      "Model Layers\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
+
+      "| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                             |\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
+
+      "| 0     | conv_2d         | 1.2M   | 497.7k | 1.7M       | 11.8k      | 209.7u     | 21.1m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
+
+      "| 1     | average_pool_2d | 69.1k  | 0      | 48.4k      | 22.7k      | 5.4u       | 604.8u   | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 2     | conv_2d         | 842.2k | 418.2k | 635.0k     | 5.2k       | 51.0u      | 7.9m     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
+
+      "| 3     | conv_2d         | 565.7k | 279.9k | 427.8k     | 7.2k       | 45.7u      | 5.3m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
+
+      "| 4     | average_pool_2d | 1.9k   | 0      | 1.3k       | 27.8k      | 3.7u       | 347.8u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 5     | reshape         | 0      | 0      | 0          | 250.4      | 0.0p       | 3.1u     | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |\n",
+
+      "| 6     | fully_connected | 2.3k   | 1.2k   | 1.7k       | 1.5k       | 49.2n      | 21.8u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
+
+      "| 7     | softmax         | 15.0   | 0      | 0          | 3.8k       | 16.5n      | 48.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |\n",
+
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "# Build the image_example1 model then profile it using the MVP hardware accelerator simulator\n",
+
+    "# NOTE: Since build=True, the model does NOT need to be trained first\n",
+
+    "profiling_results = profile_model('image_example1', accelerator='MVP', build=True)\n",
+
+    "\n",
+
+    "# Print the profiling results\n",
+
+    "print(profiling_results)"
+
+   ]
+
+  }
+
+ ],
+
+ "metadata": {
+
+  "interpreter": {
+
+   "hash": "d2cfb25ea30f37ddda2085817c91f6bd2a4a914387b5b179eb21bf4600b69cf8"
+
+  },
+
+  "kernelspec": {
+
+   "display_name": "Python 3.9.7 64-bit ('.venv': venv)",
+
+   "name": "python3"
+
+  },
+
+  "language_info": {
+
+   "codemirror_mode": {
+
+    "name": "ipython",
+
+    "version": 3
+
+   },
+
+   "file_extension": ".py",
+
+   "mimetype": "text/x-python",
+
+   "name": "python",
+
+   "nbconvert_exporter": "python",
+
+   "pygments_lexer": "ipython3",
+
+   "version": "3.9.7"
+
+  },
+
+  "orig_nbformat": 4
+
+ },
+
+ "nbformat": 4,
+
+ "nbformat_minor": 2
+
+}
+

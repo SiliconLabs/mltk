@@ -1,0 +1,2344 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tflite, embedded, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-965PJZXVMY"></script>
+<script>
+    window.gTrackingId = 'G-965PJZXVMY';
+</script>
+  
+  
+    <title>Keyword Spotting - On/Off &#8212; MLTK 0.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Model Optimization for MVP Hardware Accelerator" href="model_optimization.html" />
+    <link rel="prev" title="Tutorials" href="../../docs/tutorials.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/tutorials/keyword_spotting_on_off" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.6.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.6.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Keyword Spotting - On/Off </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Keyword Spotting - On/Off </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Keyword Spotting - On/Off</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-keyword-spotting-on-off--page-root" class="md-nav__link">Keyword Spotting - On/Off</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#objectives" class="md-nav__link">Objectives</a>
+        </li>
+        <li class="md-nav__item"><a href="#content" class="md-nav__link">Content</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-a-notebook" class="md-nav__link">Running this tutorial from a notebook</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-the-command-line" class="md-nav__link">Running this tutorial from the command-line</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#install-mltk-python-package" class="md-nav__link">Install MLTK Python Package</a>
+        </li>
+        <li class="md-nav__item"><a href="#machine-learning-and-keyword-spotting-overview" class="md-nav__link">Machine Learning and Keyword-Spotting Overview</a>
+        </li>
+        <li class="md-nav__item"><a href="#dataset-selection-and-preprocessing-parameters" class="md-nav__link">Dataset Selection and Preprocessing Parameters</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#tl-dr" class="md-nav__link">TL;DR</a>
+        </li>
+        <li class="md-nav__item"><a href="#acquire-a-representative-dataset" class="md-nav__link">Acquire a Representative Dataset</a>
+        </li>
+        <li class="md-nav__item"><a href="#feature-engineering" class="md-nav__link">Feature Engineering</a>
+        </li>
+        <li class="md-nav__item"><a href="#featuring-engineering-on-the-edge" class="md-nav__link">Featuring Engineering on the Edge</a>
+        </li>
+        <li class="md-nav__item"><a href="#data-augmentation" class="md-nav__link">Data Augmentation</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-specification" class="md-nav__link">Model Specification</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#create-the-specification-script" class="md-nav__link">Create the specification script</a>
+        </li>
+        <li class="md-nav__item"><a href="#add-necessary-imports" class="md-nav__link">Add necessary imports</a>
+        </li>
+        <li class="md-nav__item"><a href="#define-model-object" class="md-nav__link">Define Model Object</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-general-model-settings" class="md-nav__link">Configure the general model settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-basic-training-settings" class="md-nav__link">Configure the basic training settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-training-callbacks" class="md-nav__link">Configure the training callbacks</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-tf-lite-converter-settings" class="md-nav__link">Configure the TF-Lite Converter settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-dataset-settings" class="md-nav__link">Configure the dataset settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-keywords-to-detect" class="md-nav__link">Configure the keywords to detect</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-audiofeaturegenerator-settings" class="md-nav__link">Configure the AudioFeatureGenerator settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-data-augmentation-settings" class="md-nav__link">Configure the data augmentation settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#define-the-model-layout" class="md-nav__link">Define the model layout</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#audio-visualization" class="md-nav__link">Audio Visualization</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-parameters" class="md-nav__link">Model Parameters</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-summary" class="md-nav__link">Model Summary</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-visualization" class="md-nav__link">Model Visualization</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#visualize-keras-model" class="md-nav__link">Visualize Keras model</a>
+        </li>
+        <li class="md-nav__item"><a href="#visualize-tf-lite-model" class="md-nav__link">Visualize TF-Lite model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-profiler" class="md-nav__link">Model Profiler</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#profile-in-simulator" class="md-nav__link">Profile in simulator</a>
+        </li>
+        <li class="md-nav__item"><a href="#profile-on-physical-device" class="md-nav__link">Profile on physical device</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-cpu-utilization" class="md-nav__link">Note about CPU utilization</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-training" class="md-nav__link">Model Training</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#train-as-a-dry-run" class="md-nav__link">Train as a “dry run”</a>
+        </li>
+        <li class="md-nav__item"><a href="#training-locally" class="md-nav__link">Training locally</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-training-time" class="md-nav__link">Note about training time</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-evaluation" class="md-nav__link">Model Evaluation</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#command" class="md-nav__link">Command</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-model-accuracy" class="md-nav__link">Note about model accuracy</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-testing" class="md-nav__link">Model Testing</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#classify-audio-on-pc" class="md-nav__link">Classify audio on PC</a>
+        </li>
+        <li class="md-nav__item"><a href="#classify-audio-on-device" class="md-nav__link">Classify audio on device</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#note-about-dsp" class="md-nav__link">Note about DSP</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#record-audio-and-spectrograms-from-device" class="md-nav__link">Record audio and spectrograms from device</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#deploying-the-model" class="md-nav__link">Deploying the Model</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#using-simplicity-studio" class="md-nav__link">Using Simplicity Studio</a>
+        </li>
+        <li class="md-nav__item"><a href="#using-the-mltk" class="md-nav__link">Using the MLTK</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/keyword_spotting_on_off.ipynb.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_optimization.html" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_with_transfer_learning.html" class="md-nav__link">Keyword Spotting with Transfer Learning</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="onnx_to_tflite.html" class="md-nav__link">ONNX to TF-Lite Model Conversion</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-keyword-spotting-on-off--page-root" class="md-nav__link">Keyword Spotting - On/Off</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#objectives" class="md-nav__link">Objectives</a>
+        </li>
+        <li class="md-nav__item"><a href="#content" class="md-nav__link">Content</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-a-notebook" class="md-nav__link">Running this tutorial from a notebook</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-the-command-line" class="md-nav__link">Running this tutorial from the command-line</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#install-mltk-python-package" class="md-nav__link">Install MLTK Python Package</a>
+        </li>
+        <li class="md-nav__item"><a href="#machine-learning-and-keyword-spotting-overview" class="md-nav__link">Machine Learning and Keyword-Spotting Overview</a>
+        </li>
+        <li class="md-nav__item"><a href="#dataset-selection-and-preprocessing-parameters" class="md-nav__link">Dataset Selection and Preprocessing Parameters</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#tl-dr" class="md-nav__link">TL;DR</a>
+        </li>
+        <li class="md-nav__item"><a href="#acquire-a-representative-dataset" class="md-nav__link">Acquire a Representative Dataset</a>
+        </li>
+        <li class="md-nav__item"><a href="#feature-engineering" class="md-nav__link">Feature Engineering</a>
+        </li>
+        <li class="md-nav__item"><a href="#featuring-engineering-on-the-edge" class="md-nav__link">Featuring Engineering on the Edge</a>
+        </li>
+        <li class="md-nav__item"><a href="#data-augmentation" class="md-nav__link">Data Augmentation</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-specification" class="md-nav__link">Model Specification</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#create-the-specification-script" class="md-nav__link">Create the specification script</a>
+        </li>
+        <li class="md-nav__item"><a href="#add-necessary-imports" class="md-nav__link">Add necessary imports</a>
+        </li>
+        <li class="md-nav__item"><a href="#define-model-object" class="md-nav__link">Define Model Object</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-general-model-settings" class="md-nav__link">Configure the general model settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-basic-training-settings" class="md-nav__link">Configure the basic training settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-training-callbacks" class="md-nav__link">Configure the training callbacks</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-tf-lite-converter-settings" class="md-nav__link">Configure the TF-Lite Converter settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-dataset-settings" class="md-nav__link">Configure the dataset settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-keywords-to-detect" class="md-nav__link">Configure the keywords to detect</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-audiofeaturegenerator-settings" class="md-nav__link">Configure the AudioFeatureGenerator settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-data-augmentation-settings" class="md-nav__link">Configure the data augmentation settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#define-the-model-layout" class="md-nav__link">Define the model layout</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#audio-visualization" class="md-nav__link">Audio Visualization</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-parameters" class="md-nav__link">Model Parameters</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-summary" class="md-nav__link">Model Summary</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-visualization" class="md-nav__link">Model Visualization</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#visualize-keras-model" class="md-nav__link">Visualize Keras model</a>
+        </li>
+        <li class="md-nav__item"><a href="#visualize-tf-lite-model" class="md-nav__link">Visualize TF-Lite model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-profiler" class="md-nav__link">Model Profiler</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#profile-in-simulator" class="md-nav__link">Profile in simulator</a>
+        </li>
+        <li class="md-nav__item"><a href="#profile-on-physical-device" class="md-nav__link">Profile on physical device</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-cpu-utilization" class="md-nav__link">Note about CPU utilization</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-training" class="md-nav__link">Model Training</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#train-as-a-dry-run" class="md-nav__link">Train as a “dry run”</a>
+        </li>
+        <li class="md-nav__item"><a href="#training-locally" class="md-nav__link">Training locally</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-training-time" class="md-nav__link">Note about training time</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-evaluation" class="md-nav__link">Model Evaluation</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#command" class="md-nav__link">Command</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-model-accuracy" class="md-nav__link">Note about model accuracy</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-testing" class="md-nav__link">Model Testing</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#classify-audio-on-pc" class="md-nav__link">Classify audio on PC</a>
+        </li>
+        <li class="md-nav__item"><a href="#classify-audio-on-device" class="md-nav__link">Classify audio on device</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#note-about-dsp" class="md-nav__link">Note about DSP</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#record-audio-and-spectrograms-from-device" class="md-nav__link">Record audio and spectrograms from device</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#deploying-the-model" class="md-nav__link">Deploying the Model</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#using-simplicity-studio" class="md-nav__link">Using Simplicity Studio</a>
+        </li>
+        <li class="md-nav__item"><a href="#using-the-mltk" class="md-nav__link">Using the MLTK</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/keyword_spotting_on_off.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li class="active"><a href="../../docs/tutorials.html" accesskey="U">Tutorials</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="keyword-spotting-on-off">
+<h1 id="mltk-tutorials-keyword-spotting-on-off--page-root">Keyword Spotting - On/Off<a class="headerlink" href="#mltk-tutorials-keyword-spotting-on-off--page-root" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial describes how to use the MLTK to develop a machine learning model to detect the keywords:</p>
+<ul class="simple">
+<li><p><strong>On</strong></p></li>
+<li><p><strong>Off</strong></p></li>
+</ul>
+<p>This tutorial is designed to work with the <a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview">Gecko SDK</a> sample application: <a class="reference external" href="https://github.com/SiliconLabs/gecko_sdk/tree/gsdk_4.0/app/common/example/voice_control_light">Voice Control Light</a>.</p>
+<section id="overview">
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<section id="objectives">
+<h3 id="objectives">Objectives<a class="headerlink" href="#objectives" title="Permalink to this headline">¶</a></h3>
+<p>After completing this tutorial, you will have:</p>
+<ol class="simple">
+<li><p>A better understanding of how keyword-spotting (KWS) machine learning models work</p></li>
+<li><p>All of the tools needed to develop your own KWS machine learning model</p></li>
+<li><p>A working demo to turn an LED on/off based on the voice commands of your choice</p></li>
+</ol>
+</section>
+<section id="content">
+<h3 id="content">Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h3>
+<p>This tutorial is divided into the following sections:</p>
+<ol class="simple">
+<li><p><a class="reference external" href="#machine-learning-and-keyword-spotting-overview">Overview of machine learning and keyword-spotting</a></p></li>
+<li><p><a class="reference external" href="#dataset-selection-and-preprocessing-parameters">Dataset selection and preprocessing parameters</a></p></li>
+<li><p><a class="reference external" href="#model-specification">Creating the model specification</a></p></li>
+<li><p><a class="reference external" href="#audio-visualization">Visualizing the audio dataset</a></p></li>
+<li><p><a class="reference external" href="#model-parameters">Note about model parameters</a></p></li>
+<li><p><a class="reference external" href="#model-visualization">Summarizing the model</a></p></li>
+<li><p><a class="reference external" href="#model-visualization">Visualizing the model graph</a></p></li>
+<li><p><a class="reference external" href="#model-profiler">Profiling the model</a></p></li>
+<li><p><a class="reference external" href="#model-training">Training the model</a></p></li>
+<li><p><a class="reference external" href="#model-evaluation">Evaluating the model</a></p></li>
+<li><p><a class="reference external" href="#model-testing">Testing the model</a></p></li>
+<li><p><a class="reference external" href="#deploying-the-model">Deploying the model to an embedded device</a></p></li>
+</ol>
+</section>
+<section id="running-this-tutorial-from-a-notebook">
+<h3 id="running-this-tutorial-from-a-notebook">Running this tutorial from a notebook<a class="headerlink" href="#running-this-tutorial-from-a-notebook" title="Permalink to this headline">¶</a></h3>
+<p>For documentation purposes, this tutorial was designed to run within a <a class="reference external" href="https://jupyter.org">Jupyter Notebook</a>.
+The notebook can either run locally on your PC <em>or</em> on a remote server like <a class="reference external" href="https://colab.research.google.com/notebooks/welcome.ipynb">Google Colab</a>.</p>
+<ul class="simple">
+<li><p>Refer to the <a class="reference internal" href="../../docs/guides/notebook_examples_guide.html"><span class="doc std std-doc">Notebook Examples Guide</span></a> for more details</p></li>
+<li><p>Click here: <a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/tutorials/keyword_spotting_on_off.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"/></a> to run this tutorial interactively in your browser</p></li>
+</ul>
+<p><strong>NOTE:</strong> Some of the following sections require this tutorial to be running locally with a supported embedded platform connected.</p>
+</section>
+<section id="running-this-tutorial-from-the-command-line">
+<h3 id="running-this-tutorial-from-the-command-line">Running this tutorial from the command-line<a class="headerlink" href="#running-this-tutorial-from-the-command-line" title="Permalink to this headline">¶</a></h3>
+<p>While this tutorial uses a <a class="reference external" href="https://jupyter.org">Jupyter Notebook</a>,
+the recommended approach is to use your favorite text editor and standard command terminal, no Jupyter Notebook required.</p>
+<p>See the <a class="reference external" href="../../docs/installation.html#standard-python-package">Standard Python Package Installation</a> guide for more details on how to enable the <code class="docutils literal notranslate"><span class="pre">mltk</span></code> command in your local terminal.</p>
+<p>In this mode, when you encounter a <code class="docutils literal notranslate"><span class="pre">!mltk</span></code> command in this tutorial, the command should actually run in your local terminal (excluding the <code class="docutils literal notranslate"><span class="pre">!</span></code>)</p>
+</section>
+</section>
+<section id="install-mltk-python-package">
+<h2 id="install-mltk-python-package">Install MLTK Python Package<a class="headerlink" href="#install-mltk-python-package" title="Permalink to this headline">¶</a></h2>
+<p>Before using the MTLK, it must first be installed.<br/>
+See the <a class="reference internal" href="../../docs/installation.html"><span class="doc std std-doc">Installation Guide</span></a> for more details.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip install --upgrade silabs-mltk
+</pre></div>
+</div>
+</div>
+</div>
+<p>All MLTK modeling operations are accessible via the <code class="docutils literal notranslate"><span class="pre">mltk</span></code> command.<br/>
+Run the command <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">--help</span></code> to ensure it is working.<br/>
+<strong>NOTE:</strong> The exclamation point <code class="docutils literal notranslate"><span class="pre">!</span></code> tells the Notebook to run a shell command, it is not required in a <a class="reference external" href="../../docs/installation.html#standard-python-package">standard terminal</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk --help
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Usage: mltk [OPTIONS] COMMAND [ARGS]...
+
+  Silicon Labs Machine Learning Toolkit
+
+  This is a Python package with command-line utilities and scripts to aid the
+  development of machine learning models for Silicon Lab's embedded platforms.
+
+Options:
+  --version  Display the version of this mltk package and exit
+  --help     Show this message and exit.
+
+Commands:
+  build           MLTK build commands
+  classify_audio  Classify keywords/events detected in a microphone's...
+  commander       Silab's Commander Utility
+  custom          Custom Model Operations
+  evaluate        Evaluate a trained ML model
+  profile         Profile a model
+  quantize        Quantize a model into a .tflite file
+  summarize       Generate a summary of a model
+  train           Train an ML model
+  update_params   Update the parameters of a previously trained model
+  utest           Run the all unit tests
+  view            View an interactive graph of the given model in a...
+  view_audio      View the spectrograms generated by the...
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="machine-learning-and-keyword-spotting-overview">
+<h2 id="machine-learning-and-keyword-spotting-overview">Machine Learning and Keyword-Spotting Overview<a class="headerlink" href="#machine-learning-and-keyword-spotting-overview" title="Permalink to this headline">¶</a></h2>
+<p>Before continuing with this tutorial, it is recommended walk through the following presentations:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/overview.html"><span class="doc std std-doc">MLTK Overview</span></a> - An overview of the core concepts used by the this tutorial</p></li>
+<li><p><a class="reference internal" href="../../docs/audio/keyword_spotting_overview.html"><span class="doc std std-doc">Keyword Spotting Overview</span></a> - An overview of how keyword spotting works</p></li>
+</ul>
+</section>
+<section id="dataset-selection-and-preprocessing-parameters">
+<h2 id="dataset-selection-and-preprocessing-parameters">Dataset Selection and Preprocessing Parameters<a class="headerlink" href="#dataset-selection-and-preprocessing-parameters" title="Permalink to this headline">¶</a></h2>
+<p>Before starting the actual tutorial, let’s first discuss datasets.</p>
+<section id="tl-dr">
+<h3 id="tl-dr">TL;DR<a class="headerlink" href="#tl-dr" title="Permalink to this headline">¶</a></h3>
+<ol class="simple">
+<li><p>A <em>representative</em> dataset must be acquired for the trained model to perform well in the real-world</p></li>
+<li><p>The dataset should (typically) be transformed so that the model can efficiently learn the features of the dataset</p></li>
+<li><p>Whatever transformations are used must be identical at training-time on the PC and run-time on the embedded device</p></li>
+<li><p>The size of the dataset can be effectively increased by randomly augmenting it during training (changing the pitch, speed, adding background noise, etc.)</p></li>
+</ol>
+</section>
+<section id="acquire-a-representative-dataset">
+<h3 id="acquire-a-representative-dataset">Acquire a Representative Dataset<a class="headerlink" href="#acquire-a-representative-dataset" title="Permalink to this headline">¶</a></h3>
+<p>The most critical aspect of any machine learning model is the dataset. A <em>representative</em> dataset is necessary to train a robust model.
+A model that is trained on a dataset that is too small and/or not representative of what would be seen in the real-world will likely not perform well.</p>
+<p>In this tutorial, we want to create a keyword spotting classification machine learning model. This implies the following about the dataset:</p>
+<ul class="simple">
+<li><p>The dataset must contain audio samples of the keywords we want to detect</p></li>
+<li><p>The dataset must be labelled, i.e. each sample in the dataset must have an associated “class”, e.g. “on”, “off”</p></li>
+<li><p>The dataset must be relatively large and representative to account for the variance in spoken language (accents, background noise, etc.)</p></li>
+</ul>
+<p>For this tutorial, we’ll use the <a class="reference external" href="https://www.tensorflow.org/datasets/catalog/speech_commands">Google Speech Commands v2</a> dataset
+(<strong>NOTE:</strong> This dataset is automatically downloaded in a later step in this tutorial).<br/>
+This dataset is effectively a directory of sub-directories, and each sub-directory contains thousands of 1s audio clips.
+The name of each sub-directory corresponds to the word being spoken in the audio clip, e.g:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">/dataset</span>
+<span class="go">/dataset/on</span>
+<span class="go">/dataset/on/sample1.wav</span>
+<span class="go">/dataset/on/sample2.wav</span>
+<span class="go">...</span>
+<span class="go">/dataset/off</span>
+<span class="go">/dataset/off/sample1.wav</span>
+<span class="go">/dataset/off/sample2.wav</span>
+<span class="go">...</span>
+</pre></div>
+</div>
+<p>So this dataset meets our requirements:</p>
+<ul class="simple">
+<li><p>It contains audio samples of the keywords we want to detect (“on”, “off”)</p></li>
+<li><p>The samples are labelled (all “on” samples are in the “on” sub-directory etc.)</p></li>
+<li><p>The dataset is representative (the audio clips are taken from many different people saying the same words)</p></li>
+</ul>
+<p><strong>NOTE:</strong> For many machine learning applications acquiring a dataset will not be so easy.
+Many times the dataset will suffer from one or more of the following:</p>
+<ul class="simple">
+<li><p>The dataset does not exist - Need to manually collect samples</p></li>
+<li><p>The raw samples exist but are not “labeled” - Need to manually group the samples</p></li>
+<li><p>The dataset is “dirty” - Bad/corrupt samples, mislabeled samples</p></li>
+<li><p>The dataset is not representative - Duplicate/similar samples, not diverse enough to cover the possible range seen in the real-world</p></li>
+</ul>
+<p><strong>NOTE:</strong> A clean, representative dataset is one of the best ways to train a robust model.
+It is <em>highly</em> recommended to invest the time/energy to create a good dataset!</p>
+</section>
+<section id="feature-engineering">
+<h3 id="feature-engineering">Feature Engineering<a class="headerlink" href="#feature-engineering" title="Permalink to this headline">¶</a></h3>
+<p>Along with a representative dataset, we (usually) need to transform the individual samples of the dataset
+so that the machine learning model can efficiently learn the “features” of the dataset, and thus make accurate predictions.
+This process is frequently called “feature engineering”. One way of describing feature engineering is:
+Use human insight to amplify the signals of the dataset so that a machine can more efficiently learn the patterns in it.</p>
+<p>The transform(s) used for feature engineering are highly application-specific.</p>
+<p>For this tutorial, we use the common technique of converting the raw audio into a spectrogram (i.e. gray-scale image).
+The machine learning model then learns the patterns in the spectrogram images that correspond to the keywords in the audio samples.</p>
+</section>
+<section id="featuring-engineering-on-the-edge">
+<h3 id="featuring-engineering-on-the-edge">Featuring Engineering on the Edge<a class="headerlink" href="#featuring-engineering-on-the-edge" title="Permalink to this headline">¶</a></h3>
+<p>An important aspect to keep in mind about the transform(s) chosen for featuring engineering
+is that whatever is done to the dataset samples during training must also be
+done on the embedded device at run-time. i.e. The <em>exact</em> algorithms used to generate the
+spectrogram on the PC during training <em>must</em> be used on the embedded device at run-time.
+Any divergence will cause the embedded model to “see” different samples and likely not perform well (if at all).</p>
+<p>For this purpose, the MLTK offers an <a class="reference internal" href="../../docs/audio/audio_feature_generator.html"><span class="doc std std-doc">Audio Feature Generator</span></a> component.
+This component generates spectrograms from raw audio. The algorithms used in this component are accessible via:</p>
+<ul class="simple">
+<li><p>MLTK <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html"><span class="doc std std-doc">Python API</span></a></p></li>
+<li><p>Gecko SDK <a class="reference external" href="../../docs/audio/audio_feature_generator.html#gecko-sdk-component">firmware component</a></p></li>
+</ul>
+<p>In this way, the <em>exact</em> spectrogram generation algorithms used during training may also be used at
+run-time on the embedded device.</p>
+<p>Refer to the  <a class="reference internal" href="../../docs/audio/audio_feature_generator.html"><span class="doc std std-doc">Audio Feature Generator</span></a> documentation
+and <a class="reference external" href="#audio-visualization">Audio Visualization</a> section for more details on how the various parameters used to generate the spectrogram may be determined.</p>
+</section>
+<section id="data-augmentation">
+<h3 id="data-augmentation">Data Augmentation<a class="headerlink" href="#data-augmentation" title="Permalink to this headline">¶</a></h3>
+<p>A useful technique for expanding the size of a dataset (and hopefully making it more representative) is to apply random augmentations to the training samples.
+For instance, audio dataset augmentations might include:</p>
+<ul class="simple">
+<li><p>Increase/decrease speed</p></li>
+<li><p>Increase/decrease pitch</p></li>
+<li><p>Add random background noises</p></li>
+</ul>
+<p>In this way, the model never “sees” the same sample during training which should hopefully make it robust
+as it has learned from a larger collection of samples.</p>
+<p>For this purpose, the MLTK offers an <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html"><span class="doc std std-doc">Audio Data Generator</span></a>
+Python component. The Audio Data Generator uses the audio dataset as an input and randomly augments
+the audio samples during training (see the <a class="reference external" href="#model-specification">Model Specification</a> section below).</p>
+<p><strong>NOTE:</strong> Augmentations are only applied during training. They are not applied at run-time.</p>
+<p>Refer to the <a class="reference external" href="#audio-visualization">Audio Visualization</a> section for more details on how the various parameters used to augment the audio may be determined.</p>
+</section>
+</section>
+<section id="model-specification">
+<h2 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permalink to this headline">¶</a></h2>
+<p>The model specification is a standard Python script containing everything needed to build, train, and evaluate a machine learning model in the MLTK.</p>
+<p>Refer to the <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">Model Specification Guide</span></a> for more details about this file.</p>
+<p>The completed model specification used for this tutorial may be found on Github: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off.py">keyword_spotting_on_off.py</a>.</p>
+<p>The following sub-sections describe how to create this model specification from scratch.</p>
+<section id="create-the-specification-script">
+<h3 id="create-the-specification-script">Create the specification script<a class="headerlink" href="#create-the-specification-script" title="Permalink to this headline">¶</a></h3>
+<p>From your favorite text editor, create a model specification Python script file, e.g:
+<code class="docutils literal notranslate"><span class="pre">my_keyword_spotting_on_off.py</span></code></p>
+<p>The name of this file is the name given to the model. So all subsequent <code class="docutils literal notranslate"><span class="pre">mltk</span></code> commands will use the model name <code class="docutils literal notranslate"><span class="pre">my_keyword_spotting_on_off</span></code>, e.g:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk train my_keyword_spotting_on_off
+</pre></div>
+</div>
+<p>You may use any name as long as it contains alphanumeric or underscore characters.</p>
+<p>When executing a command, the MLTK searches for the model specification script by model name.<br/>
+The MLTK commands search the current working directory then any configured paths.<br/>
+Refer to the <a class="reference internal" href="../../docs/guides/model_search_path.html"><span class="doc std std-doc">Model Search Path Guide</span></a> for more details.</p>
+<p><strong>NOTE:</strong> The commands below use the pre-defined model name: <code class="docutils literal notranslate"><span class="pre">keyword_spotting_on_off</span></code>, however, you should replace that with your model’s name, e.g.: <code class="docutils literal notranslate"><span class="pre">my_keyword_spotting_on_off</span></code>.</p>
+</section>
+<section id="add-necessary-imports">
+<h3 id="add-necessary-imports">Add necessary imports<a class="headerlink" href="#add-necessary-imports" title="Permalink to this headline">¶</a></h3>
+<p>Next, open the newly created Python script: <code class="docutils literal notranslate"><span class="pre">my_keyword_spotting_on_off.py</span></code><br/>
+in your favorite text editor and add the following to the top of the model specification script:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the Tensorflow packages</span>
+<span class="c1"># required to build the model layout</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">regularizers</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Dense</span><span class="p">,</span> 
+    <span class="n">Activation</span><span class="p">,</span> 
+    <span class="n">Flatten</span><span class="p">,</span> 
+    <span class="n">BatchNormalization</span><span class="p">,</span>
+    <span class="n">Conv2D</span><span class="p">,</span>
+    <span class="n">MaxPooling2D</span><span class="p">,</span>
+    <span class="n">Dropout</span>
+<span class="p">)</span>
+
+<span class="c1"># Import the MLTK model object </span>
+<span class="c1"># and necessary mixins</span>
+<span class="c1"># Later in this script we configure the various properties</span>
+<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MltkModel</span><span class="p">,</span>
+    <span class="n">TrainMixin</span><span class="p">,</span>
+    <span class="n">AudioDatasetMixin</span><span class="p">,</span>
+    <span class="n">EvaluateClassifierMixin</span>
+<span class="p">)</span>
+
+<span class="c1"># Import the Google speech_commands dataset package</span>
+<span class="c1"># This manages downloading and extracting the dataset</span>
+<span class="kn">from</span> <span class="nn">mltk.datasets.audio.speech_commands</span> <span class="kn">import</span> <span class="n">speech_commands_v2</span>
+
+<span class="c1"># Import the ParallelAudioDataGenerator</span>
+<span class="c1"># This has two main jobs:</span>
+<span class="c1"># 1. Process the Google speech_commands dataset and apply random augmentations during training</span>
+<span class="c1"># 2. Generate a spectrogram using the AudioFeatureGenerator from each augmented audio sample </span>
+<span class="c1">#    and give the spectrogram to Tensorflow for model training</span>
+<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelAudioDataGenerator</span>
+<span class="c1"># Import the AudioFeatureGeneratorSettings which we'll configure </span>
+<span class="c1"># and give to the ParallelAudioDataGenerator</span>
+<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>These import various Tensorflow and MLTK packages we’ll use throughout the script.<br/>
+Refer to the comments above each import for more details.</p>
+</section>
+<section id="define-model-object">
+<h3 id="define-model-object">Define Model Object<a class="headerlink" href="#define-model-object" title="Permalink to this headline">¶</a></h3>
+<p>Next, add the following to the model specification script:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define a custom model object with the following 'mixins':</span>
+<span class="c1"># - TrainMixin        - Provides classifier model training operations and settings</span>
+<span class="c1"># - AudioDatasetMixin - Provides audio data generation operations and settings</span>
+<span class="c1"># - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings</span>
+<span class="c1"># @mltk_model # NOTE: This tag is required for this model be discoverable</span>
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+    <span class="n">MltkModel</span><span class="p">,</span> 
+    <span class="n">TrainMixin</span><span class="p">,</span> 
+    <span class="n">AudioDatasetMixin</span><span class="p">,</span> 
+    <span class="n">EvaluateClassifierMixin</span>
+<span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="c1"># Instantiate our custom model object</span>
+<span class="c1"># The rest of this script simply configures the properties</span>
+<span class="c1"># of our custom model object</span>
+<span class="n">my_model</span> <span class="o">=</span> <span class="n">MyModel</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This defines and instantiates a custom MltkModel object with several model “mixins”.</p>
+<p>The custom model object must inherit the <a class="reference internal" href="../../docs/python_api/core/mltk_model.html"><span class="doc std std-doc">MltkModel</span></a> object.<br/>
+Additionally, it inherits:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="../../docs/python_api/core/mltk_model.html#trainmixin">TrainMixin</a> so that we can train the model</p></li>
+<li><p><a class="reference external" href="../../docs/python_api/core/mltk_model.html#audiodatasetmixin">AudioDatasetMixin</a> so that we can train the model with the <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_data_generator.html"><span class="doc std std-doc">ParallelAudioDataGenerator</span></a></p></li>
+<li><p><a class="reference external" href="../../docs/python_api/core/mltk_model.html#evaluateclassifiermixin">EvaluateClassifierMixin</a> so that we can evaluate the trained model</p></li>
+</ul>
+<p>The rest of the model specification script configures the various properties of our custom model object.</p>
+</section>
+<section id="configure-the-general-model-settings">
+<h3 id="configure-the-general-model-settings">Configure the general model settings<a class="headerlink" href="#configure-the-general-model-settings" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># For better tracking, the version should be incremented any time a non-trivial change is made</span>
+<span class="c1"># NOTE: The version is optional and not used directly used by the MLTK</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="mi">1</span> 
+<span class="c1"># Provide a brief description about what this model models</span>
+<span class="c1"># This description goes in the "description" field of the .tflite model file</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">'Keyword spotting classifier to detect: "on" and "off"'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-basic-training-settings">
+<h3 id="configure-the-basic-training-settings">Configure the basic training settings<a class="headerlink" href="#configure-the-basic-training-settings" title="Permalink to this headline">¶</a></h3>
+<p>Refer to the <a class="reference external" href="../../docs/python_api/core/mltk_model.html#trainmixin">TrainMixin</a> for more details about each property.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This specifies the number of times we run the training</span>
+<span class="c1"># samples through the model to update the model weights.</span>
+<span class="c1"># Typically, a larger value leads to better accuracy at the expense of training time.</span>
+<span class="c1"># Set to -1 to use the early_stopping callback and let the scripts</span>
+<span class="c1"># determine how many epochs to train for (see below).</span>
+<span class="c1"># Otherwise set this to a specific value (typically 40-200)</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">80</span>
+<span class="c1"># Specify how many samples to pass through the model</span>
+<span class="c1"># before updating the training gradients.</span>
+<span class="c1"># Typical values are 10-64</span>
+<span class="c1"># NOTE: Larger values require more memory and may not fit on your GPU</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">10</span> 
+<span class="c1"># This specifies the algorithm used to update the model gradients</span>
+<span class="c1"># during training. Adam is very common</span>
+<span class="c1"># See https://www.tensorflow.org/api_docs/python/tf/keras/optimizers</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="s1">'adam'</span> 
+<span class="c1"># List of metrics to be evaluated by the model during training and testing</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'accuracy'</span><span class="p">]</span>
+<span class="c1"># The "loss" function used to update the weights</span>
+<span class="c1"># This is a classification problem with more than two labels so we use categorical_crossentropy</span>
+<span class="c1"># See https://www.tensorflow.org/api_docs/python/tf/keras/losses</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="s1">'categorical_crossentropy'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-training-callbacks">
+<h3 id="configure-the-training-callbacks">Configure the training callbacks<a class="headerlink" href="#configure-the-training-callbacks" title="Permalink to this headline">¶</a></h3>
+<p>Refer to the <a class="reference external" href="../../docs/python_api/core/mltk_model.html#trainmixin">TrainMixin</a> for more details about each property.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate checkpoints every time the validation accuracy improves</span>
+<span class="c1"># See https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ModelCheckpoint</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">'monitor'</span><span class="p">]</span> <span class="o">=</span>  <span class="s1">'val_accuracy'</span>
+
+<span class="c1"># If the training accuracy doesn't improve after 'patience' epochs </span>
+<span class="c1"># then decrease the learning rate by 'factor'</span>
+<span class="c1"># https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ReduceLROnPlateau</span>
+<span class="c1"># NOTE: Alternatively, we could define our own learn rate schedule</span>
+<span class="c1">#       using my_model.lr_schedule</span>
+<span class="c1"># my_model.reduce_lr_on_plateau = dict(</span>
+<span class="c1">#  monitor='accuracy',</span>
+<span class="c1">#  factor = 0.25,</span>
+<span class="c1">#  patience = 10</span>
+<span class="c1">#)</span>
+
+<span class="c1"># https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/LearningRateScheduler</span>
+<span class="c1"># Update the learning rate each epoch based on the given callback</span>
+<span class="k">def</span> <span class="nf">lr_schedule</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
+    <span class="n">initial_learning_rate</span> <span class="o">=</span> <span class="mf">0.001</span>
+    <span class="n">decay_per_epoch</span> <span class="o">=</span> <span class="mf">0.95</span>
+    <span class="n">lrate</span> <span class="o">=</span> <span class="n">initial_learning_rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">decay_per_epoch</span> <span class="o">**</span> <span class="n">epoch</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lrate</span>
+
+<span class="n">my_model</span><span class="o">.</span><span class="n">lr_schedule</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">schedule</span> <span class="o">=</span> <span class="n">lr_schedule</span><span class="p">,</span>
+    <span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-tf-lite-converter-settings">
+<h3 id="configure-the-tf-lite-converter-settings">Configure the TF-Lite Converter settings<a class="headerlink" href="#configure-the-tf-lite-converter-settings" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference external" href="https://www.tensorflow.org/lite/convert">Tensorflow-Lite Converter</a> is used to “quantize” the model.<br/>
+The quantized model is what is eventually programmed to the embedded device.</p>
+<p>Refer to the <a class="reference internal" href="../../docs/guides/model_quantization.html"><span class="doc std std-doc">Model Quantization Guide</span></a> for more details.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># These are the settings used to quantize the model</span>
+<span class="c1"># We want all the internal ops as well as</span>
+<span class="c1"># model input/output to be int8</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'optimizations'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">Optimize</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">]</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'supported_ops'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">OpsSet</span><span class="o">.</span><span class="n">TFLITE_BUILTINS_INT8</span><span class="p">]</span>
+<span class="c1"># NOTE: A float32 model input/output is also possible</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_input_type'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span> 
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_output_type'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span>
+<span class="c1"># Automatically generate a representative dataset from the validation data</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'representative_dataset'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'generate'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-dataset-settings">
+<h3 id="configure-the-dataset-settings">Configure the dataset settings<a class="headerlink" href="#configure-the-dataset-settings" title="Permalink to this headline">¶</a></h3>
+<p>Next, we specify the dataset. In this tutorial we use the <a class="reference external" href="https://www.tensorflow.org/datasets/catalog/speech_commands">Google Speech Commands v2</a> dataset which comes as an MLTK package.</p>
+<p><strong>NOTE:</strong> While the MLTK comes with pre-defined datasets, any external dataset may also be specified.<br/>
+Refer to the <a class="reference external" href="../../docs/python_api/core/mltk_model.html#mltk.core.AudioDatasetMixin">AudioDatasetMixin.dataset</a> property for more details.</p>
+<p><strong>NOTE:</strong> While a dataset path can be hard coded, it is <em>strongly</em> recommended that the script dynamically downloads the dataset from the internet. This allows for the model training and evaluating to be reproducible. It also enables remote training on cloud services like <a class="reference external" href="https://colab.research.google.com/notebooks/welcome.ipynb">Google Colab</a> which need to download the dataset any time a virtual instance is created.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify the dataset </span>
+<span class="c1"># NOTE: This can also be an absolute path to a directory</span>
+<span class="c1">#       or a Python function</span>
+<span class="c1"># See: https://siliconlabs.github.io/mltk/docs/python_api/core/mltk_model.html#mltk.core.AudioDatasetMixin.dataset</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">speech_commands_v2</span>
+<span class="c1"># We're using a 'categorical_crossentropy' loss</span>
+<span class="c1"># so must also use a `categorical` class mode for the data generation</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">class_mode</span> <span class="o">=</span> <span class="s1">'categorical'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-keywords-to-detect">
+<h3 id="configure-the-keywords-to-detect">Configure the keywords to detect<a class="headerlink" href="#configure-the-keywords-to-detect" title="Permalink to this headline">¶</a></h3>
+<p>This is likely the most interesting part of the model specification script.<br/>
+Here, we define which keywords we want our model to detect.<br/>
+For this tutorial, we want to detect <code class="docutils literal notranslate"><span class="pre">on</span></code> and <code class="docutils literal notranslate"><span class="pre">off</span></code>, however,
+you may modify this to any keyword that is found in the <a class="reference external" href="../../docs/python_api/datasets/index.html#google-speech-commands-v2">Google Speech Commands</a> dataset:</p>
+<p>Yes, No, Up, Down, Left, Right, On, Off, Stop, Go, Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine</p>
+<p><strong>NOTE:</strong> See the <a class="reference internal" href="keyword_spotting_with_transfer_learning.html"><span class="doc std std-doc">Transfer Learning Tutorial</span></a> which describes how to use the <a class="reference external" href="https://arxiv.org/abs/1801.04381">MobileNetV2</a> model. While MobileNetV2 is larger, it tends to have better performance than the model used in this tutorial which was specifically designed for the “yes/no” keywords.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify the keywords we want to detect</span>
+<span class="c1"># In this model, we detect "on" and "off",</span>
+<span class="c1"># plus two pseudo classes: _unknown_ and _silence_</span>
+<span class="c1">#</span>
+<span class="c1"># Any number of classes may be added here as long as they're</span>
+<span class="c1"># found in the dataset specified above.</span>
+<span class="c1"># NOTE: You'll likely need a larger model for more classes</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'on'</span><span class="p">,</span> <span class="s1">'off'</span><span class="p">,</span> <span class="s1">'_unknown_'</span><span class="p">,</span> <span class="s1">'_silence_'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-audiofeaturegenerator-settings">
+<h3 id="configure-the-audiofeaturegenerator-settings">Configure the AudioFeatureGenerator settings<a class="headerlink" href="#configure-the-audiofeaturegenerator-settings" title="Permalink to this headline">¶</a></h3>
+<p>Next, we specify the settings used to generate the spectrograms.<br/>
+Spectrograms are generated by the <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html"><span class="doc std std-doc">AudioFeatureGenerator</span></a> MLTK Python component.<br/>
+See the <a class="reference internal" href="../../docs/audio/audio_feature_generator.html"><span class="doc std std-doc">Audio Feature Generator</span></a> guide for more details.</p>
+<p>Refer to the <a class="reference external" href="#model-parameters">Model Parameters</a> section below for more details on how these settings eventually make it onto the embedded device.</p>
+<p>Also, refer to the section <a class="reference external" href="#audio-visualization">Audio Visualization</a> for more details on how to determine which settings to use.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># These are the settings used by the AudioFeatureGenerator </span>
+<span class="c1"># to generate spectrograms from the audio samples</span>
+<span class="c1"># These settings must be used during modeling training</span>
+<span class="c1"># AND by embedded device at runtime</span>
+<span class="c1">#</span>
+<span class="c1"># See the command: "mltk view_audio"</span>
+<span class="c1"># to get a better idea of how to specify these settings</span>
+<span class="n">frontend_settings</span> <span class="o">=</span> <span class="n">AudioFeatureGeneratorSettings</span><span class="p">()</span>
+
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="mi">8000</span>  <span class="c1"># This can also be 16k for slightly better performance at the cost of more RAM</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_size_ms</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_step_ms</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_n_channels</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_upper_band_limit</span> <span class="o">=</span> <span class="mf">4000.0</span><span class="o">-</span><span class="mi">1</span> <span class="c1"># Spoken language usually only goes up to 4k</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_lower_band_limit</span> <span class="o">=</span> <span class="mf">100.0</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_enable</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_smoothing_bits</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_even_smoothing</span> <span class="o">=</span> <span class="mf">0.004</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_odd_smoothing</span> <span class="o">=</span> <span class="mf">0.004</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_min_signal_remaining</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_enable</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_strength</span> <span class="o">=</span> <span class="mf">0.95</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_offset</span> <span class="o">=</span> <span class="mf">80.0</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_gain_bits</span> <span class="o">=</span> <span class="mi">21</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">log_scale_enable</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">log_scale_shift</span> <span class="o">=</span> <span class="mi">6</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-data-augmentation-settings">
+<h3 id="configure-the-data-augmentation-settings">Configure the data augmentation settings<a class="headerlink" href="#configure-the-data-augmentation-settings" title="Permalink to this headline">¶</a></h3>
+<p>Next, we configure how we want to augment the dataset during training.<br/>
+See the <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_data_generator.html"><span class="doc std std-doc">ParallelAudioDataGenerator</span></a> API doc for more details.</p>
+<p>Refer to the section <a class="reference external" href="#audio-visualization">Audio Visualization</a> for more details on how to determine which settings to use.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Configure the data generator settings</span>
+<span class="c1"># This specifies how to augment the training samples</span>
+<span class="c1"># See the command: "mltk visualize_audio"</span>
+<span class="c1"># to get a better idea of how these augmentations affect</span>
+<span class="c1"># the samples</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">datagen</span> <span class="o">=</span> <span class="n">ParallelAudioDataGenerator</span><span class="p">(</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_input_type'</span><span class="p">],</span>
+    <span class="n">frontend_settings</span><span class="o">=</span><span class="n">frontend_settings</span><span class="p">,</span>
+    <span class="n">cores</span><span class="o">=</span><span class="mf">0.45</span><span class="p">,</span> <span class="c1"># Adjust this as necessary for your PC setup</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="c1"># Set this to true to enable debugging of the generator</span>
+    <span class="n">max_batches_pending</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>  <span class="c1"># Adjust this as necessary for your PC setup (smaller -&gt; less RAM)</span>
+    <span class="n">validation_split</span><span class="o">=</span> <span class="mf">0.10</span><span class="p">,</span>
+    <span class="n">validation_augmentation_enabled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">samplewise_center</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">samplewise_std_normalization</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">rescale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">unknown_class_percentage</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="c1"># Increasing this may help model robustness at the expense of training time</span>
+    <span class="n">silence_class_percentage</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span>
+    <span class="n">offset_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">),</span>
+    <span class="n">trim_threshold_db</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">noise_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">loudness_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+    <span class="n">speed_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">1.1</span><span class="p">),</span>
+    <span class="n">pitch_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.9</span><span class="p">,</span><span class="mf">1.1</span><span class="p">),</span>
+    <span class="c1">#vtlp_range=(0.9,1.1),</span>
+    <span class="n">bg_noise_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.1</span><span class="p">,</span><span class="mf">0.4</span><span class="p">),</span>
+    <span class="n">bg_noise_dir</span><span class="o">=</span><span class="s1">'_background_noise_'</span> <span class="c1"># This is a directory provided by the google speech commands dataset, can also provide an absolute path</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="define-the-model-layout">
+<h3 id="define-the-model-layout">Define the model layout<a class="headerlink" href="#define-the-model-layout" title="Permalink to this headline">¶</a></h3>
+<p>This defines the actual structure of the model that runs on the embedded device using the <a class="reference external" href="https://keras.io/about">Keras API</a>.
+The details of how to create the model structure are out-of-scope for this tutorial.</p>
+<p>Please note that many times you do not need to define you own model. Instead, you can use a pre-defined model
+such as <a class="reference external" href="../../docs/python_api/models/common_models.html#mobilenet-v1">MobileNetV1</a> or <a class="reference external" href="../../docs/python_api/models/common_models.html#resnetv1-10">ResNetv1-10</a>. The MLTK provides some common models as Python packages in the <a class="reference internal" href="../../docs/python_api/models/common_models.html"><span class="doc std std-doc">Shared Models</span></a> section with example usage such as <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/image_classification.py">image_classification.py</a>.</p>
+<p><strong>Note:</strong> The model used in this tutorial was developed by Silicon Labs and is covered by a standard
+<a class="reference external" href="https://www.silabs.com/about-us/legal/master-software-license-agreement">Silicon Labs MSLA</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This defines the actual model layout using the Keras API.</span>
+<span class="c1"># This particular model is a relatively standard</span>
+<span class="c1"># sequential Convolution Neural Network (CNN).</span>
+<span class="c1">#</span>
+<span class="c1"># It is important to the note the usage of the </span>
+<span class="c1"># "model" argument.</span>
+<span class="c1"># Rather than hardcode values, the model is</span>
+<span class="c1"># used to build the model, e.g.:</span>
+<span class="c1"># Dense(model.n_classes)</span>
+<span class="c1">#</span>
+<span class="c1"># This way, the various model properties above can be modified</span>
+<span class="c1"># without having to re-write this section.</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+    <span class="n">weight_decay</span> <span class="o">=</span> <span class="mf">1e-4</span>
+    <span class="n">regularizer</span> <span class="o">=</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">l2</span><span class="p">(</span><span class="n">weight_decay</span><span class="p">)</span>
+    <span class="n">input_shape</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">input_shape</span>
+    <span class="n">filters</span> <span class="o">=</span> <span class="mi">8</span>
+ 
+    <span class="n">keras_model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">layers</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> 
+            <span class="n">padding</span><span class="o">=</span><span class="s1">'same'</span><span class="p">,</span> 
+            <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">regularizer</span><span class="p">,</span> 
+            <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span> 
+            <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">BatchNormalization</span><span class="p">(),</span>
+        <span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">),</span>
+
+        <span class="n">Conv2D</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">filters</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> 
+            <span class="n">padding</span><span class="o">=</span><span class="s1">'same'</span><span class="p">,</span> 
+            <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">regularizer</span><span class="p">,</span> 
+            <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">BatchNormalization</span><span class="p">(),</span>
+        <span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">),</span>
+        <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span>
+
+        <span class="n">Conv2D</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">filters</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> 
+            <span class="n">padding</span><span class="o">=</span><span class="s1">'same'</span><span class="p">,</span> 
+            <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">regularizer</span><span class="p">,</span> 
+            <span class="n">strides</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">BatchNormalization</span><span class="p">(),</span>
+        <span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">),</span>
+        <span class="n">Dropout</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="mf">0.3</span><span class="p">),</span>
+        
+        <span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span><span class="p">,</span><span class="mi">1</span><span class="p">]),</span>
+        
+        <span class="n">Flatten</span><span class="p">(),</span>
+        <span class="n">Dense</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">'softmax'</span><span class="p">)</span>
+    <span class="p">])</span>
+ 
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span> 
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">metrics</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">keras_model</span>
+
+<span class="n">my_model</span><span class="o">.</span><span class="n">build_model_function</span> <span class="o">=</span> <span class="n">my_model_builder</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>At this point, the model specification script should have everything needed to train, evaluate, and generate model file that can run on an embedded device.<br/>
+The following sections describe how to use the MLTK to perform these tasks.</p>
+</section>
+</section>
+<section id="audio-visualization">
+<h2 id="audio-visualization">Audio Visualization<a class="headerlink" href="#audio-visualization" title="Permalink to this headline">¶</a></h2>
+<p><strong>NOTE:</strong> This section is <strong>experimental</strong> and is optional for the rest of this tutorial.
+You may safely skip to the next section.</p>
+<p>Before training the model, it is important that the generated spectrogram has enough detail from which the ML model can learn (i.e. “feature engineering”).
+The <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html"><span class="doc std std-doc">AudioFeatureGenerator</span></a> has numerous <a class="reference external" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html#audiofeaturegenerator-settings">settings</a> to control how the spectrogram is generated.</p>
+<p>For this purpose, the MLTK features an experimental command: <code class="docutils literal notranslate"><span class="pre">view_audio</span></code> which allows for visualizing a generated spectrogram in real-time as the various parameters are adjusted via GUI.
+It also allows for adjusting the various augmentation parameters and listening to the audio playback.</p>
+<p>See the <a class="reference internal" href="../../docs/audio/audio_feature_generator.html"><span class="doc std std-doc">Audio Feature Generator</span></a> guide for more details.</p>
+<p><strong>NOTE:</strong> Internally, this command uses <a class="reference external" href="https://www.wxpython.org">wxPython</a> and <em>must</em> run locally. It will not work on a remote server (e.g. Colab).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Invoke the view_audio command from a LOCAL terminal</span>
+<span class="c1"># NOTE: Change this command to use</span>
+<span class="c1">#      "my_keyword_spotting_on_off" or whatever you called your model</span>
+<span class="o">!</span>mltk view_audio keyword_spotting_on_off
+</pre></div>
+</div>
+</div>
+</div>
+<p>After running this command and playing with the GUI, you should have a better idea of what settings to use for the AudioFeatureGenerator and data augmentation parameters.</p>
+<p><strong>NOTE:</strong> Care should be given when selecting the spectrogram size. e.g. The dimensions given in the upper-left:</p>
+<p><img alt="Visualizer Dimensions" src="../../_images/visualizer_dimensions.png"/></p>
+<p>A larger spectrogram means a larger model input which ultimately means more processing that is required by the embedded device at run-time.</p>
+<p>See the <a class="reference internal" href="model_optimization.html"><span class="doc std std-doc">Model Optimization Tutorial</span></a> for more details.</p>
+</section>
+<section id="model-parameters">
+<h2 id="model-parameters">Model Parameters<a class="headerlink" href="#model-parameters" title="Permalink to this headline">¶</a></h2>
+<p>As stated in the <a class="reference external" href="#featuring-engineering-on-the-edge">Feature Engineering on the Edge</a> section, it is extremely important that whatever transforms are done to the dataset during training are also done at run-time on the embedded device.</p>
+<p>To help with this, the MLTK allows for embedding parameters into the generated <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.</p>
+<p>Refer to the <a class="reference internal" href="../../docs/guides/model_parameters.html"><span class="doc std std-doc">Model Parameters Guide</span></a> for more details about how this works.</p>
+<p>This is useful for this tutorial as the MLTK will automatically embed all of the <a class="reference external" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html#audiofeaturegenerator-settings">AudioFeatureGeneratorSettings</a> into the generated <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.
+Later, the Gecko SDK will read the settings from the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file when generating the project.
+In this way, the <span class="xref myst">AudioFeatureGenerator Gecko SDK Component</span> that runs on the embedded device will use the <em>exact</em> same settings.</p>
+<p><strong>NOTE:</strong> The <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">summarize</span> <span class="pre">--tflite</span></code> command prints all the parameters that are embedded into the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file, including the AudioFeatureGenerator settings.</p>
+</section>
+<section id="model-summary">
+<h2 id="model-summary">Model Summary<a class="headerlink" href="#model-summary" title="Permalink to this headline">¶</a></h2>
+<p>With the model specification complete, it is sometimes useful to generate a summary of the model before we spend the time to train it.<br/>
+This can be done using the <code class="docutils literal notranslate"><span class="pre">summarize</span></code> command.</p>
+<p>If you’re using a local terminal, navigate to the same directory are your model specification script, e.g. <code class="docutils literal notranslate"><span class="pre">my_keyword_spotting_on_off.py</span></code> and modify the commands to use <code class="docutils literal notranslate"><span class="pre">my_keyword_spotting_on_off</span></code> or whatever you called your model.</p>
+<p><strong>NOTE:</strong> Since we have not trained our model yet, we must add the <code class="docutils literal notranslate"><span class="pre">--build</span></code> option to the command.<br/>
+Once the model is trained, this option is not required.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Summarize the Keras Model</span>
+<span class="c1"># This is the non-quantized model used for training</span>
+<span class="c1"># NOTE: Running this the first time may take awhile since the audio dataset needs to be downloaded</span>
+<span class="o">!</span>mltk summarize keyword_spotting_on_off --build 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1: LearningRateScheduler setting learning rate to 0.001.
+
+Epoch 2: LearningRateScheduler setting learning rate to 0.00095.
+
+Epoch 3: LearningRateScheduler setting learning rate to 0.0009025.
+Model: "keyword_spotting_on_off"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ conv2d (Conv2D)             (None, 25, 16, 8)         80        
+                                                                 
+ batch_normalization (BatchN  (None, 25, 16, 8)        32        
+ ormalization)                                                   
+                                                                 
+ activation (Activation)     (None, 25, 16, 8)         0         
+                                                                 
+ conv2d_1 (Conv2D)           (None, 13, 8, 16)         1168      
+                                                                 
+ batch_normalization_1 (Batc  (None, 13, 8, 16)        64        
+ hNormalization)                                                 
+                                                                 
+ activation_1 (Activation)   (None, 13, 8, 16)         0         
+                                                                 
+ dropout (Dropout)           (None, 13, 8, 16)         0         
+                                                                 
+ conv2d_2 (Conv2D)           (None, 7, 4, 32)          4640      
+                                                                 
+ batch_normalization_2 (Batc  (None, 7, 4, 32)         128       
+ hNormalization)                                                 
+                                                                 
+ activation_2 (Activation)   (None, 7, 4, 32)          0         
+                                                                 
+ dropout_1 (Dropout)         (None, 7, 4, 32)          0         
+                                                                 
+ max_pooling2d (MaxPooling2D  (None, 1, 4, 32)         0         
+ )                                                               
+                                                                 
+ flatten (Flatten)           (None, 128)               0         
+                                                                 
+ dense (Dense)               (None, 4)                 516       
+                                                                 
+=================================================================
+Total params: 6,628
+Trainable params: 6,516
+Non-trainable params: 112
+_________________________________________________________________
+
+Total MACs: 278.144 k
+Total OPs: 574.468 k
+Name: keyword_spotting_on_off
+Version: 1
+Description: Keyword spotting classifier to detect: "on" and "off"
+Classes: on, off, _unknown_, _silence_
+hash: 
+date: 
+runtime_memory_size: 0
+average_window_duration_ms: 1000
+detection_threshold: 160
+suppression_ms: 750
+minimum_count: 3
+volume_gain: 2
+latency_ms: 100
+verbose_model_output_logs: False
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Summarize the TF-Lite Model</span>
+<span class="c1"># This is the quantized model that eventually goes on the embedded device</span>
+<span class="o">!</span>mltk summarize keyword_spotting_on_off --tflite --build
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1: LearningRateScheduler setting learning rate to 0.001.
+
+Epoch 2: LearningRateScheduler setting learning rate to 0.00095.
+
+Epoch 3: LearningRateScheduler setting learning rate to 0.0009025.
+C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\tensorflow\lite\python\convert.py:746: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.
+  warnings.warn("Statistics for quantized inputs were expected, but not "
++-------+-----------------+----------------+----------------+-----------------------------------------------------+
+| Index | OpCode          | Input(s)       | Output(s)      | Config                                              |
++-------+-----------------+----------------+----------------+-----------------------------------------------------+
+| 0     | conv_2d         | 49x32x1 (int8) | 25x16x8 (int8) | Padding:same stride:2x2 activation:relu             |
+|       |                 | 3x3x1 (int8)   |                |                                                     |
+|       |                 | 8 (int32)      |                |                                                     |
+| 1     | conv_2d         | 25x16x8 (int8) | 13x8x16 (int8) | Padding:same stride:2x2 activation:relu             |
+|       |                 | 3x3x8 (int8)   |                |                                                     |
+|       |                 | 16 (int32)     |                |                                                     |
+| 2     | conv_2d         | 13x8x16 (int8) | 7x4x32 (int8)  | Padding:same stride:2x2 activation:relu             |
+|       |                 | 3x3x16 (int8)  |                |                                                     |
+|       |                 | 32 (int32)     |                |                                                     |
+| 3     | max_pool_2d     | 7x4x32 (int8)  | 1x4x32 (int8)  | Padding:valid stride:1x7 filter:1x7 activation:none |
+| 4     | reshape         | 1x4x32 (int8)  | 128 (int8)     | BuiltinOptionsType=0                                |
+|       |                 | 2 (int32)      |                |                                                     |
+| 5     | fully_connected | 128 (int8)     | 4 (int8)       | Activation:none                                     |
+|       |                 | 128 (int8)     |                |                                                     |
+|       |                 | 4 (int32)      |                |                                                     |
+| 6     | softmax         | 4 (int8)       | 4 (int8)       | BuiltinOptionsType=9                                |
++-------+-----------------+----------------+----------------+-----------------------------------------------------+
+Total MACs: 278.144 k
+Total OPs: 563.084 k
+Name: keyword_spotting_on_off
+Version: 1
+Description: Keyword spotting classifier to detect: "on" and "off"
+Classes: on, off, _unknown_, _silence_
+hash: a5c31da1954ca849eed61dd1007ddf58
+date: 2022-04-25T18:23:56.543Z
+runtime_memory_size: 7052
+average_window_duration_ms: 1000
+detection_threshold: 160
+suppression_ms: 750
+minimum_count: 3
+volume_gain: 2
+latency_ms: 100
+verbose_model_output_logs: False
+samplewise_norm.rescale: 0.0
+samplewise_norm.mean_and_std: False
+fe.sample_rate_hz: 8000
+fe.sample_length_ms: 1000
+fe.window_size_ms: 30
+fe.window_step_ms: 20
+fe.filterbank_n_channels: 32
+fe.filterbank_upper_band_limit: 3999.0
+fe.filterbank_lower_band_limit: 100.0
+fe.noise_reduction_enable: True
+fe.noise_reduction_smoothing_bits: 5
+fe.noise_reduction_even_smoothing: 0.004000000189989805
+fe.noise_reduction_odd_smoothing: 0.004000000189989805
+fe.noise_reduction_min_signal_remaining: 0.05000000074505806
+fe.pcan_enable: False
+fe.pcan_strength: 0.949999988079071
+fe.pcan_offset: 80.0
+fe.pcan_gain_bits: 21
+fe.log_scale_enable: True
+fe.log_scale_shift: 6
+fe.fft_length: 256
+.tflite file size: 14.4kB
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="model-visualization">
+<h2 id="model-visualization">Model Visualization<a class="headerlink" href="#model-visualization" title="Permalink to this headline">¶</a></h2>
+<p>The MLTK also allows for visualizing the model in an interactive webpage.</p>
+<p>This is done using the <code class="docutils literal notranslate"><span class="pre">view</span></code> command.
+Refer to the <a class="reference internal" href="../../docs/guides/model_visualizer.html"><span class="doc std std-doc">Model Visualization Guide</span></a> for more details on how this works.</p>
+<p><strong>NOTES:</strong></p>
+<ul class="simple">
+<li><p>This will open a new tab to your web-browser</p></li>
+<li><p>You must click the opened webpage’s ‘Accept’ button the first time it runs (and possibly re-run the command)</p></li>
+<li><p>Since we have not trained our model yet, we must add the <code class="docutils literal notranslate"><span class="pre">--build</span></code> option to the command. This is not required once the model is trained.</p></li>
+<li><p>This command must run locally, it will not work from a remote terminal/notebook</p></li>
+</ul>
+<section id="visualize-keras-model">
+<h3 id="visualize-keras-model">Visualize Keras model<a class="headerlink" href="#visualize-keras-model" title="Permalink to this headline">¶</a></h3>
+<p>By default, the <code class="docutils literal notranslate"><span class="pre">view</span></code> command will visualize the <a class="reference internal" href="../../docs/python_api/core/keras_model.html"><span class="doc std std-doc">KerasModel</span></a>, the model used for training (file extension <code class="docutils literal notranslate"><span class="pre">.h5</span></code>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This will open a new tab in your web browser</span>
+<span class="c1"># Be sure the click the 'Accept' button in the opened webpage</span>
+<span class="c1"># (you may need to re-run this command after doing so)</span>
+<span class="o">!</span>mltk view keyword_spotting_on_off --build
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Serving 'E:/reed/mltk/tmp_models/model.h5' at http://localhost:8080
+Stopping http://localhost:8080
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="visualize-tf-lite-model">
+<h3 id="visualize-tf-lite-model">Visualize TF-Lite model<a class="headerlink" href="#visualize-tf-lite-model" title="Permalink to this headline">¶</a></h3>
+<p>Alternatively, the <code class="docutils literal notranslate"><span class="pre">--tflite</span></code> flag can be used to view the <a class="reference external" href="../../docs/python_api/core/tflite_model.html#mltk.core.TfliteModel">TfliteModel</a>, the quantized model that is programmed to the embedded device (file extension <code class="docutils literal notranslate"><span class="pre">.tflite</span></code>).</p>
+<p>Note that the structure of the Keras and TfLite models are similar, but the TfLite model is a bit more simple. This is because the <a class="reference external" href="https://www.tensorflow.org/lite/convert">TF-Lite Converter</a> optimized the model by merging/fusing as many layers as possible.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This will open a new tab in your web browser</span>
+<span class="c1"># Be sure the click the 'Accept' button in the opened webpage</span>
+<span class="c1"># (you may need to re-run this command after doing so)</span>
+<span class="o">!</span>mltk view keyword_spotting_on_off --tflite --build
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 00001: LearningRateScheduler setting learning rate to 0.001.
+
+Epoch 00002: LearningRateScheduler setting learning rate to 0.00095.
+
+Epoch 00003: LearningRateScheduler setting learning rate to 0.0009025.
+Serving 'E:/reed/mltk/tmp_models/keyword_spotting_on_off.tflite' at http://localhost:8080
+Stopping http://localhost:8080
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>fully_quantize: 0, inference_type: 6, input_inference_type: 9, output_inference_type: 9
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="model-profiler">
+<h2 id="model-profiler">Model Profiler<a class="headerlink" href="#model-profiler" title="Permalink to this headline">¶</a></h2>
+<p>Before spending the time and energy to train the model, it may be useful to profile the model to determine how efficiently it may run on the embedded device.
+If it’s determined that the model does not fit within the time or memory constraints, then the model layout should be adjusted, the model input size should be reduced, and/or a different model should be selected.</p>
+<p>For this reason, th MLTK features a model profiler. Refer to the <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">Model Profiler Guide</span></a> for more details.</p>
+<p><strong>NOTE:</strong> The following examples use the <code class="docutils literal notranslate"><span class="pre">--build</span></code> flag since the model has not been trained yet. Once the model is trained this flag is no longer needed.</p>
+<section id="profile-in-simulator">
+<h3 id="profile-in-simulator">Profile in simulator<a class="headerlink" href="#profile-in-simulator" title="Permalink to this headline">¶</a></h3>
+<p>The following command will profile our model in the MVP hardware simulator and return estimates about the time and energy the model might require on the embedded device.</p>
+<p><strong>NOTES:</strong></p>
+<ul class="simple">
+<li><p>An embedded device does not needed to be locally connected to run this command.</p></li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">--accelerator</span> <span class="pre">MVP</span></code> option if you are targeting a device that does not have an MVP hardware accelerator.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk profile keyword_spotting_on_off --build --accelerator MVP
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1: LearningRateScheduler setting learning rate to 0.001.
+
+Epoch 2: LearningRateScheduler setting learning rate to 0.00095.
+
+Epoch 3: LearningRateScheduler setting learning rate to 0.0009025.
+C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\tensorflow\lite\python\convert.py:746: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.
+  warnings.warn("Statistics for quantized inputs were expected, but not "
+
+Profiling Summary
+Name: keyword_spotting_on_off
+Accelerator: MVP
+Input Shape: 1x49x32x1
+Input Data Type: int8
+Output Shape: 1x4
+Output Data Type: int8
+Flash, Model File Size (bytes): 14.4k
+RAM, Runtime Memory Size (bytes): 6.8k
+Operation Count: 574.5k
+Multiply-Accumulate Count: 278.1k
+Layer Count: 7
+Unsupported Layer Count: 0
+Accelerator Cycle Count: 427.8k
+CPU Cycle Count: 76.8k
+CPU Utilization (%): 16.7
+Clock Rate (hz): 80.0M
+Time (s): 5.7m
+Energy (J): 137.6u
+J/Op: 239.6p
+J/MAC: 494.8p
+Ops/s: 99.9M
+MACs/s: 48.4M
+Inference/s: 173.9
+
+Model Layers
++-------+-----------------+--------+--------+------------+------------+------------+----------+------------------------+--------------+-----------------------------------------------------+
+| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Time (s) | Input Shape            | Output Shape | Options                                             |
++-------+-----------------+--------+--------+------------+------------+------------+----------+------------------------+--------------+-----------------------------------------------------+
+| 0     | conv_2d         | 67.2k  | 28.8k  | 92.0k      | 11.5k      | 45.7u      | 1.1m     | 1x49x32x1,8x3x3x1,8    | 1x25x16x8    | Padding:same stride:2x2 activation:relu             |
+| 1     | conv_2d         | 244.6k | 119.8k | 170.2k     | 15.9k      | 45.7u      | 2.1m     | 1x25x16x8,16x3x3x8,16  | 1x13x8x16    | Padding:same stride:2x2 activation:relu             |
+| 2     | conv_2d         | 260.7k | 129.0k | 164.3k     | 15.9k      | 45.7u      | 2.1m     | 1x13x8x16,32x3x3x16,32 | 1x7x4x32     | Padding:same stride:2x2 activation:relu             |
+| 3     | max_pool_2d     | 896.0  | 0      | 576.0      | 27.3k      | 446.4n     | 341.3u   | 1x7x4x32               | 1x1x4x32     | Padding:valid stride:1x7 filter:1x7 activation:none |
+| 4     | reshape         | 0      | 0      | 0          | 264.9      | 0.0p       | 3.3u     | 1x1x4x32,2             | 1x128        | BuiltinOptionsType=0                                |
+| 5     | fully_connected | 1.0k   | 512.0  | 784.0      | 1.8k       | 50.5n      | 22.2u    | 1x128,4x128,4          | 1x4          | Activation:none                                     |
+| 6     | softmax         | 20.0   | 0      | 0          | 4.1k       | 16.5n      | 51.8u    | 1x4                    | 1x4          | BuiltinOptionsType=9                                |
++-------+-----------------+--------+--------+------------+------------+------------+----------+------------------------+--------------+-----------------------------------------------------+
+Generating profiling report at C:/Users/reed/.mltk/models/keyword_spotting_on_off-test/profiling
+Profiling time: 57.664001 seconds
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="profile-on-physical-device">
+<h3 id="profile-on-physical-device">Profile on physical device<a class="headerlink" href="#profile-on-physical-device" title="Permalink to this headline">¶</a></h3>
+<p>Alternatively, if we have a device locally connected, we can directly profile on that instead. This is useful as the returned profiling numbers are “real”, they are not estimated as they would be in the simulator case.</p>
+<p>To profile on a physical device, simply added the <code class="docutils literal notranslate"><span class="pre">--device</span></code> command flag.</p>
+<p><strong>NOTES:</strong></p>
+<ul class="simple">
+<li><p>An embedded device must be locally connected to run this command.</p></li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">--accelerator</span> <span class="pre">MVP</span></code> option if you are targeting a device that does not have an MVP hardware accelerator.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk profile keyword_spotting_on_off --build --device --accelerator MVP
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1: LearningRateScheduler setting learning rate to 0.001.
+
+Epoch 2: LearningRateScheduler setting learning rate to 0.00095.
+
+Epoch 3: LearningRateScheduler setting learning rate to 0.0009025.
+C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\tensorflow\lite\python\convert.py:746: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.
+  warnings.warn("Statistics for quantized inputs were expected, but not "
+Extracting: C:/Users/reed/.mltk/downloads/mltk_model_profiler-brd2601-mvp-616ee87e.zip
+to: C:/Users/reed/.mltk/firmware/mltk_model_profiler-brd2601-mvp
+(This may take awhile, please be patient ...)
+
+Profiling Summary
+Name: keyword_spotting_on_off
+Accelerator: MVP
+Input Shape: 1x49x32x1
+Input Data Type: int8
+Output Shape: 1x4
+Output Data Type: int8
+Flash, Model File Size (bytes): 14.4k
+RAM, Runtime Memory Size (bytes): 6.8k
+Operation Count: 574.5k
+Multiply-Accumulate Count: 278.1k
+Layer Count: 7
+Unsupported Layer Count: 0
+Accelerator Cycle Count: 439.8k
+CPU Cycle Count: 92.3k
+CPU Utilization (%): 18.9
+Clock Rate (hz): 80.0M
+Time (s): 6.1m
+Ops/s: 93.9M
+MACs/s: 45.4M
+Inference/s: 163.4
+
+Model Layers
++-------+-----------------+--------+--------+------------+------------+----------+------------------------+--------------+-----------------------------------------------------+
+| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape            | Output Shape | Options                                             |
++-------+-----------------+--------+--------+------------+------------+----------+------------------------+--------------+-----------------------------------------------------+
+| 0     | conv_2d         | 67.2k  | 28.8k  | 98.5k      | 19.1k      | 1.3m     | 1x49x32x1,8x3x3x1,8    | 1x25x16x8    | Padding:same stride:2x2 activation:relu             |
+| 1     | conv_2d         | 244.6k | 119.8k | 173.6k     | 18.7k      | 2.2m     | 1x25x16x8,16x3x3x8,16  | 1x13x8x16    | Padding:same stride:2x2 activation:relu             |
+| 2     | conv_2d         | 260.7k | 129.0k | 166.2k     | 18.8k      | 2.1m     | 1x13x8x16,32x3x3x16,32 | 1x7x4x32     | Padding:same stride:2x2 activation:relu             |
+| 3     | max_pool_2d     | 896.0  | 0      | 800.0      | 28.2k      | 360.0u   | 1x7x4x32               | 1x1x4x32     | Padding:valid stride:1x7 filter:1x7 activation:none |
+| 4     | reshape         | 0      | 0      | 0          | 1.1k       | 0        | 1x1x4x32,2             | 1x128        | BuiltinOptionsType=0                                |
+| 5     | fully_connected | 1.0k   | 512.0  | 809.0      | 2.1k       | 60.0u    | 1x128,4x128,4          | 1x4          | Activation:none                                     |
+| 6     | softmax         | 20.0   | 0      | 0          | 4.3k       | 30.0u    | 1x4                    | 1x4          | BuiltinOptionsType=9                                |
++-------+-----------------+--------+--------+------------+------------+----------+------------------------+--------------+-----------------------------------------------------+
+Generating profiling report at C:/Users/reed/.mltk/models/keyword_spotting_on_off-test/profiling
+Profiling time: 91.943971 seconds
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="note-about-cpu-utilization">
+<h3 id="note-about-cpu-utilization">Note about CPU utilization<a class="headerlink" href="#note-about-cpu-utilization" title="Permalink to this headline">¶</a></h3>
+<p>An important metric the model profiler provides when using the MVP hardware accelerator is <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">Utilization</span></code>.
+This gives an indication of how much CPU is required to run the machine learning model.</p>
+<p>If no hardware accelerator is used, then the CPU utilization is 100% as 100% of the machine learning model’s calculations are executed on the CPU.
+With the hardware accelerator, many of the model’s calculations can be offloaded to the accelerator freeing the CPU to do other tasks.</p>
+<p>The additional CPU cycles the hardware accelerator provides can be a major benefit, especially when other tasks such as real-time audio processing are required.</p>
+</section>
+</section>
+<section id="model-training">
+<h2 id="model-training">Model Training<a class="headerlink" href="#model-training" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have our model fully specified and it fits within the constraints of the embedded device, we can train the model.</p>
+<p>The basic flow for model training is:</p>
+<ol class="simple">
+<li><p>Invoke the <code class="docutils literal notranslate"><span class="pre">train</span></code> command</p></li>
+<li><p>Tensorflow trains the model</p></li>
+<li><p>A <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">Model Archive</span></a> containing the trained model is generated in the same directory as the model specification script</p></li>
+</ol>
+<p>Refer to the <a class="reference internal" href="../../docs/guides/model_training.html"><span class="doc std std-doc">Model Training Guide</span></a> for more details about this process.</p>
+<section id="train-as-a-dry-run">
+<h3 id="train-as-a-dry-run">Train as a “dry run”<a class="headerlink" href="#train-as-a-dry-run" title="Permalink to this headline">¶</a></h3>
+<p>Before fully training the model, sometimes it is useful to train the model as a “dry run” to ensure the end-to-end training process works. Here, the model is trained for a few epochs on a subset of the dataset.</p>
+<p>To train as a dry run, append <code class="docutils literal notranslate"><span class="pre">-test</span></code> to the model name.<br/>
+At the end of training, a <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">Model Archive</span></a> with <code class="docutils literal notranslate"><span class="pre">-test</span></code> appended to the archive name is generated in the same directory as the model specification script.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Train as a dry run by appending "-test" to the model name</span>
+<span class="o">!</span>mltk train keyword_spotting_on_off-test
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Enabling test mode
+Model: "keyword_spotting_on_off"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ conv2d (Conv2D)             (None, 25, 16, 8)         80        
+                                                                 
+ batch_normalization (BatchN  (None, 25, 16, 8)        32        
+ ormalization)                                                   
+                                                                 
+ activation (Activation)     (None, 25, 16, 8)         0         
+                                                                 
+ conv2d_1 (Conv2D)           (None, 13, 8, 16)         1168      
+                                                                 
+ batch_normalization_1 (Batc  (None, 13, 8, 16)        64        
+ hNormalization)                                                 
+                                                                 
+ activation_1 (Activation)   (None, 13, 8, 16)         0         
+                                                                 
+ dropout (Dropout)           (None, 13, 8, 16)         0         
+                                                                 
+ conv2d_2 (Conv2D)           (None, 7, 4, 32)          4640      
+                                                                 
+ batch_normalization_2 (Batc  (None, 7, 4, 32)         128       
+ hNormalization)                                                 
+                                                                 
+ activation_2 (Activation)   (None, 7, 4, 32)          0         
+                                                                 
+ dropout_1 (Dropout)         (None, 7, 4, 32)          0         
+                                                                 
+ max_pooling2d (MaxPooling2D  (None, 1, 4, 32)         0         
+ )                                                               
+                                                                 
+ flatten (Flatten)           (None, 128)               0         
+                                                                 
+ dense (Dense)               (None, 4)                 516       
+                                                                 
+=================================================================
+Total params: 6,628
+Trainable params: 6,516
+Non-trainable params: 112
+_________________________________________________________________
+
+Total MACs: 278.144 k
+Total OPs: 574.468 k
+Name: keyword_spotting_on_off
+Version: 1
+Description: Keyword spotting classifier to detect: "yes" and "no"
+Classes: on, off, _unknown_, _silence_
+hash: None
+date: None
+average_window_duration_ms: 1000
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>fully_quantize: 0, inference_type: 6, input_inference_type: 9, output_inference_type: 9
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>detection_threshold: 160
+suppression_ms: 750
+minimum_count: 3
+volume_db: 5.0
+latency_ms: 0
+log_level: info
+Test mode enabled, forcing max_samples_per_class=3, batch_size=3
+NOTE: ProcessPoolManager using ThreadPool (instead of ProcessPool)
+ProcessPoolManager using 1 of 24 CPU cores
+NOTE: You may need to adjust the "cores" parameter of the data generator if you're experiencing performance issues
+Training dataset: Found 13 samples belonging to 4 classes:
+        on = 3
+       off = 3
+ _unknown_ = 6
+ _silence_ = 1
+Validation dataset: Found 13 samples belonging to 4 classes:
+        on = 3
+       off = 3
+ _unknown_ = 6
+ _silence_ = 1
+Forcing epochs=3 since test=true
+Class weights:
+       on = 1.08
+      off = 1.08
+_unknown_ = 0.54
+_silence_ = 3.25
+Starting model training ...
+
+Epoch 00001: LearningRateScheduler setting learning rate to 0.001.
+Epoch 1/3
+
+1/5 [=====&gt;........................] - ETA: 20s - loss: 3.0739 - accuracy: 0.0000e+00
+2/5 [===========&gt;..................] - ETA: 1s - loss: 1.9445 - accuracy: 0.1667     
+4/5 [=======================&gt;......] - ETA: 0s - loss: 3.2955 - accuracy: 0.3000
+5/5 [==============================] - 7s 507ms/step - loss: 2.6482 - accuracy: 0.3846 - val_loss: 2.3505 - val_accuracy: 0.2308 - lr: 0.0010
+
+Epoch 00002: LearningRateScheduler setting learning rate to 0.00095.
+Epoch 2/3
+
+1/5 [=====&gt;........................] - ETA: 0s - loss: 5.1078 - accuracy: 0.0000e+00
+5/5 [==============================] - ETA: 0s - loss: 2.3484 - accuracy: 0.1538    
+5/5 [==============================] - 1s 120ms/step - loss: 2.3484 - accuracy: 0.1538 - val_loss: 1.6892 - val_accuracy: 0.1538 - lr: 9.5000e-04
+
+Epoch 00003: LearningRateScheduler setting learning rate to 0.0009025.
+Epoch 3/3
+
+1/5 [=====&gt;........................] - ETA: 0s - loss: 0.8508 - accuracy: 0.6667
+3/5 [=================&gt;............] - ETA: 0s - loss: 1.6849 - accuracy: 0.3333
+4/5 [=======================&gt;......] - ETA: 0s - loss: 1.5885 - accuracy: 0.3000
+5/5 [==============================] - ETA: 0s - loss: 1.5144 - accuracy: 0.3846
+5/5 [==============================] - 1s 258ms/step - loss: 1.5144 - accuracy: 0.3846 - val_loss: 1.4552 - val_accuracy: 0.2308 - lr: 9.0250e-04
+Generating C:/Users/reed/.mltk/models/keyword_spotting_on_off-test/keyword_spotting_on_off.test.h5
+
+
+*** Best training val_accuracy = 0.231
+
+
+Creating c:/users/reed/workspace/silabs/mltk/mltk/models/siliconlabs/keyword_spotting_on_off-test.mltk.zip
+Test mode enabled, forcing max_samples_per_class=3, batch_size=3
+NOTE: ProcessPoolManager using ThreadPool (instead of ProcessPool)
+ProcessPoolManager using 1 of 24 CPU cores
+NOTE: You may need to adjust the "cores" parameter of the data generator if you're experiencing performance issues
+Generating C:/Users/reed/.mltk/models/keyword_spotting_on_off-test/keyword_spotting_on_off.test.tflite
+Updating c:/users/reed/workspace/silabs/mltk/mltk/models/siliconlabs/keyword_spotting_on_off-test.mltk.zip
+Training complete
+Training logs here: C:/Users/reed/.mltk/models/keyword_spotting_on_off-test
+Trained model files here: c:/users/reed/workspace/silabs/mltk/mltk/models/siliconlabs/keyword_spotting_on_off-test.mltk.zip
+Evaluating the .h5 model ...
+Name: keyword_spotting_on_off
+Model Type: classification
+Overall accuracy: 23.077%
+Class accuracies:
+- on = 100.000%
+- off = 0.000%
+- _unknown_ = 0.000%
+- _silence_ = 0.000%
+Average ROC AUC: 47.738%
+Class ROC AUC:
+- off = 71.667%
+- _silence_ = 58.333%
+- on = 38.333%
+- _unknown_ = 22.619%
+
+Evaluating the .tflite model ...
+Name: keyword_spotting_on_off
+Model Type: classification
+Overall accuracy: 23.077%
+Class accuracies:
+- on = 100.000%
+- off = 0.000%
+- _unknown_ = 0.000%
+- _silence_ = 0.000%
+Average ROC AUC: 47.292%
+Class ROC AUC:
+- off = 71.667%
+- _silence_ = 54.167%
+- on = 38.333%
+- _unknown_ = 25.000%
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="training-locally">
+<h3 id="training-locally">Training locally<a class="headerlink" href="#training-locally" title="Permalink to this headline">¶</a></h3>
+<p>One option for training your model is to run the <code class="docutils literal notranslate"><span class="pre">train</span></code> command in your local terminal.<br/>
+Most of the models used by embedded devices are small enough that this is a feasible option.<br/>
+Never the less, this is a very CPU intensive operation. Many times it’s best to issue the <code class="docutils literal notranslate"><span class="pre">train</span></code> command and let it run over night.</p>
+<p>See the <a class="reference external" href="#note-about-training-time">Note about training time</a> section below for more details.</p>
+<p><strong>NOTE:</strong> Training a model from scratch can be very time-consuming. See the <a class="reference internal" href="keyword_spotting_with_transfer_learning.html"><span class="doc std std-doc">Transfer Learning Tutorial</span></a> for how to speed this process up.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Be sure to replace "keyword_spotting_on_off"</span>
+<span class="c1"># with the name of your model</span>
+<span class="c1"># WARNING: This command may take several hours</span>
+<span class="o">!</span>mltk train keyword_spotting_on_off
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="note-about-training-time">
+<h3 id="note-about-training-time">Note about training time<a class="headerlink" href="#note-about-training-time" title="Permalink to this headline">¶</a></h3>
+<p><strong>TL;DR:</strong> Improve training time by using a PC/cloud VM with lots of CPU cores (4-16)</p>
+<p>Models intended for embedded devices are typically “small”. Thus, while one or more powerful GPUs will certainly improve training times, there is an upper limit to their benefit. Many times, the bottleneck during training comes from the data preprocessing which is usually done on the CPU. i.e. The GPU(s) train the model faster than the CPU(s) can generate the next round of training data.</p>
+<p>For this reason, it is usually beneficial to use a PC/cloud VM with multiple cores. This way, multiple CPUs can generate training data in parallel while the GPU is always fed with more training data.</p>
+<p>The MLTK comes with two packages to leverage a multi-core system:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/python_api/data_preprocessing/image_data_generator.html"><span class="doc std std-doc">ParallelImageDataGenerator</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_data_generator.html"><span class="doc std std-doc">ParallelAudioDataGenerator</span></a></p></li>
+</ul>
+<p>These generate training data by spawning multiple <a class="reference external" href="https://docs.python.org/3.7/library/multiprocessing.html">processes</a>. This allows for multiple cores to generate training data simultaneously.</p>
+</section>
+</section>
+<section id="model-evaluation">
+<h2 id="model-evaluation">Model Evaluation<a class="headerlink" href="#model-evaluation" title="Permalink to this headline">¶</a></h2>
+<p>With our model trained, we can now evaluate it to see how accurate it is.</p>
+<p>The basic idea behind model evaluation is to send test samples (i.e. new, unknown samples the model was <em>not</em> trained with) through the model, and compare the model’s predictions versus the expected values. If all the model predictions match the expected values then the model is 100% accurate, and every wrong prediction decreases the model accuracy, e.g.:</p>
+<p><img alt="Model Accuracy" src="https://bit.ly/3w9xQXV"/></p>
+<p>Assuming the test samples are <em>representative</em> then the model accuracy should indicate how well it will perform in the real-world.</p>
+<p>Model evaluation is done using the <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> MLTK command. Along with accuracy, the <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> command generates other statistics such as <a class="reference external" href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic">ROC-AUC</a> and <a class="reference external" href="https://en.wikipedia.org/wiki/Precision_and_recall">Precision &amp; Recall</a>.<br/>
+Refer to the <a class="reference internal" href="../../docs/guides/model_evaluation.html"><span class="doc std std-doc">Model Evaluation Guide</span></a> for more details about using the MLTK for model evaluation.</p>
+<section id="command">
+<h3 id="command">Command<a class="headerlink" href="#command" title="Permalink to this headline">¶</a></h3>
+<p>To evaluate the newly trained model, issue the following command:</p>
+<p><strong>NOTE:</strong> Be sure to replace <code class="docutils literal notranslate"><span class="pre">keyword_spotting_on_off</span></code> with the name of your model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the model evaluation command</span>
+<span class="o">!</span>mltk evaluate keyword_spotting_on_off --tflite --show
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># For documentation purposes, we use the evaluate_model Python API so</span>
+<span class="c1"># the evaluation plots are generated inline with the docs</span>
+<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">evaluate_model</span> 
+<span class="n">evaluation_results</span> <span class="o">=</span> <span class="n">evaluate_model</span><span class="p">(</span><span class="s1">'keyword_spotting_on_off'</span><span class="p">,</span> <span class="n">tflite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">evaluation_results</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/keyword_spotting_on_off_61_0.png" src="../../_images/keyword_spotting_on_off_61_0.png"/>
+<img alt="../../_images/keyword_spotting_on_off_61_1.png" src="../../_images/keyword_spotting_on_off_61_1.png"/>
+<img alt="../../_images/keyword_spotting_on_off_61_2.png" src="../../_images/keyword_spotting_on_off_61_2.png"/>
+<img alt="../../_images/keyword_spotting_on_off_61_3.png" src="../../_images/keyword_spotting_on_off_61_3.png"/>
+<img alt="../../_images/keyword_spotting_on_off_61_4.png" src="../../_images/keyword_spotting_on_off_61_4.png"/>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Name: keyword_spotting_on_off
+Model Type: classification
+Overall accuracy: 89.174%
+Class accuracies:
+- _silence_ = 100.000%
+- _unknown_ = 88.981%
+- on = 88.281%
+- off = 87.200%
+Average ROC AUC: 98.475%
+Class ROC AUC:
+- _silence_ = 100.000%
+- off = 98.254%
+- on = 98.116%
+- _unknown_ = 97.528%
+</pre></div>
+</div>
+</div>
+</div>
+<p>So in this case, our model has a 88.7% overall accuracy.</p>
+<p>Once again, please refer to the <a class="reference internal" href="../../docs/guides/model_evaluation.html"><span class="doc std std-doc">Model Evaluation Guide</span></a> for more details about the various metrics generated by this command.</p>
+</section>
+<section id="note-about-model-accuracy">
+<h3 id="note-about-model-accuracy">Note about model accuracy<a class="headerlink" href="#note-about-model-accuracy" title="Permalink to this headline">¶</a></h3>
+<p>While model accuracy is highly application-specific, an 89% accuracy of a two-keyword classification model is considered good, not great.
+Typically, model accuracy should be in the 92%-97+% range for it to perform well in the field.</p>
+<p>The following are things to keep in mind to improve the model accuracy:</p>
+<ul class="simple">
+<li><p><strong>Verify the dataset</strong> - Ensure all the samples are properly labeled and in a consistent format</p></li>
+<li><p><strong>Improve the feature engineering</strong> - Give the model the best chance to learn the patterns within the data by “amplifying” the signal (e.g. Improve the spectrogram quality)</p></li>
+<li><p><strong>Increase the model size</strong> - Increase the model size by adding more or wider layers (e.g. add more Conv2D filers)</p></li>
+</ul>
+</section>
+</section>
+<section id="model-testing">
+<h2 id="model-testing">Model Testing<a class="headerlink" href="#model-testing" title="Permalink to this headline">¶</a></h2>
+<p><strong>NOTE:</strong> This section is <strong>experimental</strong> and is optional for the rest of this tutorial.
+You may safely skip to the next section.</p>
+<p>During model evaluation, static audio samples are sent through the model to make predictions and determine its accuracy. While this is useful to obtain a consistent, baseline metric of model performance, this setup does not reflect the real-world application of the model.<br/>
+In most real world applications, real-time audio is constantly streaming into the model. In this case, the same audio sample will pass multiple times through the model shifted in time each pass (see the <a class="reference external" href="#keyword-spotting-overview">Keyword Spotting Overview</a> section above for more details.)</p>
+<p>To help evaluate this scenario, the MLTK offers the command: <code class="docutils literal notranslate"><span class="pre">classify_audio</span></code>. With this command, the trained model can be used to classify keywords detected in streaming audio from a microphone. The <code class="docutils literal notranslate"><span class="pre">classify_audio</span></code> command features:</p>
+<ul class="simple">
+<li><p>Support for executing a model on PC or embedded device</p></li>
+<li><p>Support for dumping the spectrograms generated by the <a class="reference external" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html#audiofeaturegenerator">AudioFeatureGenerator</a></p></li>
+<li><p>Support for recording audio</p></li>
+<li><p>Support for adjusting the detection threshold</p></li>
+<li><p>Support for viewing the model prediction results in real-time</p></li>
+</ul>
+<p><strong>NOTE:</strong> The <code class="docutils literal notranslate"><span class="pre">classify_audio</span></code> command must run locally. It will not work remotely (e.g. on Colab or remote SSH)</p>
+<p>See the output of the command help for more details:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk classify_audio --help
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Usage: mltk classify_audio [OPTIONS] &lt;model&gt;
+
+  Classify keywords/events detected in a microphone's streaming audio
+
+  NOTE: This command is experimental. Use at your own risk!
+
+  This command runs an audio classification application on either the local PC OR
+  on an embedded target. The audio classification application loads the given 
+  audio classification ML model (e.g. Keyword Spotting) and streams real-time audio
+  from the local PC's/embedded target's microphone into the ML model.
+
+  System Dataflow:
+  Microphone -&gt; AudioFeatureGenerator -&gt; ML Model -&gt; Command Recognizer -&gt; Local Terminal  
+ 
+  The audio classification application was adapted from TF-Lite Micro's "Micro Speech" 
+  example:  
+  https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/micro_speech
+ 
+  The TFLM app was modified so that settings can be dynamically loaded from the command-line or
+  given ML model.
+ 
+  Refer to the mltk.models.tflite_micro.tflite_micro_speech model for a reference on how to train
+  an ML model that works the audio classification application.
+ 
+  ----------
+   Examples
+  ----------
+ 
+  # Classify audio on local PC using tflite_micro_speech model   
+  # Simulate the audio loop latency to be 200ms  
+  # i.e. If the app was running on an embedded target, it would take 200ms per audio loop  
+  # Also enable verbose logs  
+  mltk classify_audio tflite_micro_speech --latency 200 --verbose 
+
+  # Classify audio on an embedded target using model: ~/workspace/my_model.tflite   
+  # and the following classifier settings:  
+  # - Set the averaging window to 1200ms (i.e. drop samples older than &lt;now&gt; minus window)  
+  # - Set the minimum sample count to 3 (i.e. must have at last 3 samples before classifying)  
+  # - Set the threshold to 175 (i.e. the average of the inference results within the averaging window must be at least 175 of 255)  
+  # - Set the suppression to 750ms (i.e. Once a keyword is detected, wait 750ms before detecting more keywords)  
+  # i.e. If the app was running on an embedded target, it would take 200ms per audio loop  
+  mltk classify_audio /home/john/my_model.tflite --device --window 1200ms --count 3 --threshold 175 --suppression 750  
+
+  # Classify audio and also dump the captured raw audio and spectrograms  
+  mltk classify_audio tflite_micro_speech --dump-audio --dump-spectrograms
+
+Arguments:
+  &lt;model&gt;  On of the following:
+           - MLTK model name 
+           - Path to .tflite file
+           - Path to model archive file (.mltk.zip)
+           NOTE: The model must have been previously trained for keyword spotting  [required]
+
+Options:
+  -a, --accelerator &lt;name&gt;        Name of accelerator to use while executing the audio classification ML model.
+                                  If omitted, then use the reference kernels
+                                  NOTE: It is recommended to NOT use an accelerator if running on the PC since the HW simulator can be slow.
+  -d, --device                    If provided, then run the keyword spotting model on an embedded device, otherwise use the PC's local microphone.
+                                  If this option is provided, then the device must be locally connected
+  --port &lt;port&gt;                   Serial COM port of a locally connected embedded device.
+                                  This is only used with the --device option.
+                                  'If omitted, then attempt to automatically determine the serial COM port
+  -v, --verbose                   Enable verbose console logs
+  -w, --window_duration &lt;duration ms&gt;
+                                  Controls the smoothing. Drop all inference results that are older than &lt;now&gt; minus window_duration.
+                                  Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some commands
+  -c, --count &lt;count&gt;             The *minimum* number of inference results to
+                                  average when calculating the detection value
+  -t, --threshold &lt;threshold&gt;     Minimum averaged model output threshold for
+                                  a class to be considered detected, 0-255.
+                                  Higher values increase precision at the cost
+                                  of recall
+  -s, --suppression &lt;suppression ms&gt;
+                                  Amount of milliseconds to wait after a
+                                  keyword is detected before detecting new
+                                  keywords
+  -l, --latency &lt;latency ms&gt;      This the amount of time in milliseconds
+                                  between processing loops
+  -m, --microphone &lt;name&gt;         For non-embedded, this specifies the name of
+                                  the PC microphone to use
+  -u, --volume &lt;volume gain&gt;      Set the volume gain scaler (i.e. amplitude)
+                                  to apply to the microphone data. If 0 or
+                                  omitted, no scaler is applied
+  -x, --dump-audio                Dump the raw microphone and generate a
+                                  corresponding .wav file
+  -w, --dump-raw-spectrograms     Dump the raw (i.e. unquantized) generated
+                                  spectrograms to .jpg images and .mp4 video
+  -z, --dump-spectrograms         Dump the quantized generated spectrograms to
+                                  .jpg images and .mp4 video
+  -i, --sensitivity FLOAT         Sensitivity of the activity indicator LED.
+                                  Much less than 1.0 has higher sensitivity
+  --app &lt;path&gt;                    By default, the audio_classifier app is automatically downloaded. 
+                                  This option allows for overriding with a custom built app.
+                                  Alternatively, if using the --device option, set this option to "none" to NOT program the audio_classifier app to the device.
+                                  In this case, ONLY the .tflite will be programmed and the existing audio_classifier app will be re-used.
+  --test                          Run as a unit test
+  --help                          Show this message and exit.
+</pre></div>
+</div>
+</div>
+</div>
+<section id="classify-audio-on-pc">
+<h3 id="classify-audio-on-pc">Classify audio on PC<a class="headerlink" href="#classify-audio-on-pc" title="Permalink to this headline">¶</a></h3>
+<p>Issue the following command to use your local PC’s microphone to stream real-time audio in our trained model:</p>
+<p><strong>NOTE:</strong> Be sure to replace <code class="docutils literal notranslate"><span class="pre">keyword_spotting_on_off</span></code> with your <strong>trained</strong> model’s name.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the audio classification application</span>
+<span class="c1"># Saying the keywords "on" or "off" into your PC's microphone should cause the model to detect them.</span>
+<span class="c1"># HINT: Add the --verbose flag to view more info from the classification app</span>
+<span class="c1"># NOTE: This command must be run from a local terminal</span>
+<span class="o">!</span>mltk classify_audio keyword_spotting_on_off
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="classify-audio-on-device">
+<h3 id="classify-audio-on-device">Classify audio on device<a class="headerlink" href="#classify-audio-on-device" title="Permalink to this headline">¶</a></h3>
+<p>Alternatively, we can run the audio classification application + model on a supported embedded device.<br/>
+In this case, we use the embedded device’s microphone and the trained model executes on the embedded device.</p>
+<p>To run on an embedded device, add the <code class="docutils literal notranslate"><span class="pre">--device</span></code> flag.
+When a keyword is detected an LED will turn on and a log will be printed to the console.</p>
+<p><strong>NOTE:</strong> A supported embedded device must be locally connected to run the command.</p>
+<section id="note-about-dsp">
+<h4 id="note-about-dsp">Note about DSP<a class="headerlink" href="#note-about-dsp" title="Permalink to this headline">¶</a></h4>
+<p>Currently, <strong>your mouth must be ~2 inches from the board’s microphone</strong> for it to reliably detect keywords.<br/>
+This is because the board microphone’s lack advanced Digital Signal Processing (DSP) features like <a class="reference external" href="https://en.wikipedia.org/wiki/Beamforming">Beamforming</a>.
+A future release of the Gecko SDK will offer this feature to improve audio quality from longer distances.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the audio classification application with MVP acceleration</span>
+<span class="c1"># Remove the "--accelerator MVP" if your device does not support the MVP.</span>
+<span class="c1"># Saying the keywords "on" or "off" into device's microphone should cause the model to detect them</span>
+<span class="c1"># which will cause the LED to turn on and a message to be printed to the console.</span>
+<span class="c1"># HINT: Add the --verbose flag to view more info from the classification app</span>
+<span class="c1"># NOTE: This command must run from a local terminal</span>
+<span class="c1"># NOTE: Your mouth must be ~2 inches from the board's microphone</span>
+<span class="o">!</span>mltk classify_audio keyword_spotting_on_off --device --accelerator MVP
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="record-audio-and-spectrograms-from-device">
+<h3 id="record-audio-and-spectrograms-from-device">Record audio and spectrograms from device<a class="headerlink" href="#record-audio-and-spectrograms-from-device" title="Permalink to this headline">¶</a></h3>
+<p>Another useful feature of the <code class="docutils literal notranslate"><span class="pre">classify_audio</span></code> command is the ability to record audio and spectrograms from the embedded device.<br/>
+This is done by adding the <code class="docutils literal notranslate"><span class="pre">--dump-audio</span></code> or <code class="docutils literal notranslate"><span class="pre">--dump-spectrograms</span></code> flags to the command.<br/>
+When the command completes, a log directory will contain the dumped audio sound file (.wav) or dumped spectrogram images (.jpg)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dump audio from an embedded device's microphone</span>
+<span class="c1"># The dumped audio will be found in the log directory:</span>
+<span class="c1"># ~/.mltk/audio_classify_recordings/&lt;platform&gt;/audio</span>
+<span class="c1"># NOTE: This command must run from a local terminal</span>
+<span class="o">!</span>mltk classify_audio keyword_spotting_on_off --device --dump-audio
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Dump audio from an embedded device's microphone</span>
+<span class="c1"># The dumped audio will be found in the log directory:</span>
+<span class="c1"># ~/.mltk/audio_classify_recordings/&lt;platform&gt;/spectrograms</span>
+<span class="c1"># NOTE: This command must run from a local terminal</span>
+<span class="o">!</span>mltk classify_audio keyword_spotting_on_off --device --dump-spectrograms
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="deploying-the-model">
+<h2 id="deploying-the-model">Deploying the Model<a class="headerlink" href="#deploying-the-model" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have a trained model, it is time to run it in on an embedded device.</p>
+<p>There are several different ways this can be done:</p>
+<section id="using-simplicity-studio">
+<h3 id="using-simplicity-studio">Using Simplicity Studio<a class="headerlink" href="#using-simplicity-studio" title="Permalink to this headline">¶</a></h3>
+<p>The standard Gecko SDK also features an <a class="reference external" href="https://github.com/SiliconLabs/gecko_sdk/tree/gsdk_4.0/app/common/example/audio_classifier">audio_classifier</a> application.</p>
+<p>The basic sequence for updating the app with a new model is:</p>
+<ol class="simple">
+<li><p>Using <a class="reference external" href="https://www.silabs.com/developers/simplicity-studio">Simplicity Studio</a> create a new “Audio Classifier” project</p></li>
+<li><p>Extract the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file from the MLTK <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">Model Archive</span></a></p></li>
+<li><p>Copy the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file to a Gecko SDK project in Simplicity Studio, more details <a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/getting-started">here</a></p></li>
+<li><p>Build the Gecko SDK project via Simplicity Studio</p></li>
+<li><p>Program the built firmware image to the embedded device</p></li>
+<li><p>Run the firmware image with trained model on the embedded device</p></li>
+</ol>
+<p>When Simplicity Studio builds the project, it finds the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file and generates a C header file which contains a C <code class="docutils literal notranslate"><span class="pre">uint8_t</span></code> array of the binary data in the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code>. The firmware then references the C array and loads it into the <a class="reference external" href="https://github.com/tensorflow/tflite-micro">Tensorflow-Lite Micro Interpreter</a>.</p>
+<p>See the <a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/getting-started">Getting Started with Machine Learning</a> Gecko SDK guide for more details.</p>
+</section>
+<section id="using-the-mltk">
+<h3 id="using-the-mltk">Using the MLTK<a class="headerlink" href="#using-the-mltk" title="Permalink to this headline">¶</a></h3>
+<p>The MLTK supports building <a class="reference internal" href="../../docs/cpp_development/index.html"><span class="doc std std-doc">C++ Applications</span></a>.</p>
+<p>It also features an <a class="reference internal" href="../../docs/cpp_development/examples/audio_classifier.html"><span class="doc std std-doc">audio_classifier</span></a> C++ application
+which can be built using:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/cpp_development/vscode.html"><span class="doc std std-doc">Visual Studio Code</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/cpp_development/simplicity_studio.html"><span class="doc std std-doc">Simplicity Studio</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/cpp_development/command_line.html"><span class="doc std std-doc">Command Line</span></a></p></li>
+</ul>
+<p>Refer to the <a class="reference internal" href="../../docs/cpp_development/examples/audio_classifier.html"><span class="doc std std-doc">audio_classifier</span></a> application’s documentation
+for how include your model into the built application.</p>
+</section>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="../../docs/tutorials.html" title="Tutorials"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Tutorials </span>
+              </div>
+            </a>
+          
+          
+            <a href="model_optimization.html" title="Model Optimization for MVP Hardware Accelerator"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> Model Optimization for MVP Hardware Accelerator </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Apr 26, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

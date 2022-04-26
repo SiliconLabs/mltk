@@ -1,0 +1,69 @@
+# Silicon Labs Project Configuration Tools: slcp, v0, Component selection file.
+project_name: mltk_fingerprint_authenticator
+label: MLTK - Fingerprint Authenticator
+description: >
+  This application uses TensorFlow Lite for Microcontrollers to 
+  authentication fingerprints retrieved from a fingerprint reader.
+category: Example|Machine Learning Toolkit
+package: mltk
+quality: development
+sdk_extension:
+  - id: mltk
+    version: "1.0.0"
+include:
+  - path: .
+    file_list:
+      - path: app_config.hpp
+      - path: app_controller.hpp
+      - path: data_preprocessor.hpp
+      - path: fingerprint_authenticator.hpp
+      - path: fingerprint_vault.h
+source:
+  - path: app_controller.cc
+  - path: data_preprocessor.cc
+  - path: fingerprint_authenticator.cc
+  - path: fingerprint_vault.c
+  - path: main.cc
+component:
+- id: iostream_recommended_stream
+- id: printf
+- id: iostream_retarget_stdio
+- id: sl_system
+- id: device_init
+- id: device_init_hfrco
+- id: silabs_core_sl_malloc
+- id: power_manager
+- id: sleeptimer
+- id: nvm3_default
+- id: simple_button
+  instance: [btn0, btn1]
+- id: spidrv
+  instance: [exp]
+- id: mltk_tflite_micro_model
+  from: mltk
+- id: mltk_fingerprint_reader
+  from: mltk
+- id: mltk_jlink_stream
+  from: mltk
+requires:
+- name: cpp_support
+toolchain_settings:
+  - option: gcc_linker_option
+    value: "-u _printf_float"
+configuration:
+- name: SL_BOARD_ENABLE_VCOM
+  value: '1'
+- name: SL_MVP_POWER_MODE
+  value: '1'
+config_file: 
+  - path: "config/tflite/fingerprint_reader.tflite"
+    directory: "tflite"
+
+readme:
+  - path: README.md
+tag:
+  - hardware:device:ram:128
+  - hardware:device:flash:130
+  - hardware:component:button:2+
+other_file:
+  - path: dump_fingerprints.py

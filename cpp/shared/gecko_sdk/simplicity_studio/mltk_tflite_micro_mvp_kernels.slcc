@@ -1,0 +1,71 @@
+id: mltk_tflite_micro_mvp_kernels
+package: mltk
+label: MVP Accelerated Kernels
+description: >
+  This component includes kernel implementations that are accelerated 
+  using the MVP accelerator on compatible devices. By including this
+  component, the MVP kernel implementations will be used instead of the
+  optimized kernels.
+  
+  The kernels which have MVP accelerated implementations are:
+  pooling, fully_connected, add, conv, depthwise_conv and transpose_conv.
+  Remaining kernels fall back to using optimized or reference kernel
+  implementations.
+category: TensorFlow Lite Micro|Kernels
+quality: development
+provides:
+  - name: mltk_tflite_micro_mvp_kernels
+  - name: mltk_tflite_micro_kernel_implementation
+    allow_multiple: true
+  - name: mltk_tflite_micro_mvp_kernel_add
+  - name: mltk_tflite_micro_mvp_kernel_conv
+  - name: mltk_tflite_micro_mvp_kernel_depthwise_conv
+  - name: mltk_tflite_micro_mvp_kernel_fully_connected
+  - name: mltk_tflite_micro_mvp_kernel_pooling
+  - name: mltk_tflite_micro_mvp_kernel_transpose_conv
+requires:
+  - name: mltk_tflite_micro_cmsis_kernels
+  - name: emlib_common
+  - name: status
+  - name: dmadrv
+  - name: device_has_mvp
+config_file:
+  - path: mvp_driver/config/sl_mvp_config.h
+toolchain_settings:
+  - option: fp16
+    value: enabled
+root_path: shared/gecko_sdk/tflite_micro_mvp_kernels
+include:
+  - path: mvp_driver/inc
+    file_list:
+      - path: sl_mvp.h
+      - path: sl_mvp_math.h
+      - path: sl_mvp_ml_add.h
+      - path: sl_mvp_ml_conv2d.h
+      - path: sl_mvp_ml_depthwise_conv2d.h
+      - path: sl_mvp_ml_fully_connected.h
+      - path: sl_mvp_ml_pooling.h
+      - path: sl_mvp_ml_transpose_conv2d.h
+      - path: sl_mvp_power.h
+      - path: sl_mvp_types.h
+      - path: sl_mvp_util.h
+source:
+  - path: kernels/add.cc
+  - path: kernels/conv.cc
+  - path: kernels/depthwise_conv.cc
+  - path: kernels/fully_connected.cc
+  - path: kernels/pooling.cc
+  - path: kernels/transpose_conv.cc
+  - path: mvp_driver/src/sl_mvp.cc
+  - path: mvp_driver/src/sl_mvp_math.cc
+  - path: mvp_driver/src/sl_mvp_ml_add.cc
+  - path: mvp_driver/src/sl_mvp_ml_conv2d.cc
+  - path: mvp_driver/src/sl_mvp_ml_depthwise_conv2d.cc
+  - path: mvp_driver/src/sl_mvp_ml_fully_connected.cc
+  - path: mvp_driver/src/sl_mvp_ml_pooling.cc
+  - path: mvp_driver/src/sl_mvp_ml_transpose_conv2d.cc
+  - path: mvp_driver/src/sl_mvp_power.cc
+  - path: mvp_driver/src/sl_mvp_util.cc
+  - path: mvp_driver/src/sli_mvp_ml_depthwise_conv2d.cc
+  - path: mvp_driver/src/sli_mvp_ml_depthwise_conv2d_opt.cc
+  - path: tflite_micro_mvp_accelerator.cc

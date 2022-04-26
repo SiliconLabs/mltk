@@ -1,0 +1,881 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tflite, embedded, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-965PJZXVMY"></script>
+<script>
+    window.gTrackingId = 'G-965PJZXVMY';
+</script>
+  
+  
+    <title>Image Data Generator &#8212; MLTK 0.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Audio Data Generator" href="audio_data_generator.html" />
+    <link rel="prev" title="Data Preprocessing" href="index.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#docs/python_api/data_preprocessing/image_data_generator" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../../index.html" title="MLTK 0.6.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../../_static/logo.png"
+                   alt="MLTK 0.6.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Image Data Generator </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">API Reference</a></li>
+          <li class="md-tabs__item"><a href="index.html" class="md-tabs__link">Data Preprocessing</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../../index.html"
+       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../tutorials.html" class="md-nav__link">Tutorials</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../index.html" class="md-nav__link">API Reference</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="../operations.html" class="md-nav__link">Model Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../core/types.html" class="md-nav__link">Model Object Types</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../core/utilities.html" class="md-nav__link">Model Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="index.html" class="md-nav__link">Data Preprocessing</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#docs-python-api-data-preprocessing-image-data-generator--page-root" class="md-nav__link">Image Data Generator</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#parallelprocessparams" class="md-nav__link">ParallelProcessParams</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../../_sources/docs/python_api/data_preprocessing/image_data_generator.md.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../../index.html"><i class="md-icon">home</i></a></li>
+                <li class="active"><a href="../index.html" >API Reference</a></li>
+                <li class="active"><a href="index.html" accesskey="U">Data Preprocessing</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="image-data-generator">
+<h1 id="docs-python-api-data-preprocessing-image-data-generator--page-root">Image Data Generator<a class="headerlink" href="#docs-python-api-data-preprocessing-image-data-generator--page-root" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mltk.core.preprocess.image.parallel_generator.</span></span><span class="sig-name descname"><span class="pre">ParallelImageDataGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.25</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">debug</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_batches_pending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_batch_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocessing_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noaug_preprocessing_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_augmentation_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noise</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_transforms_enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples_per_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_gpu_in_subprocesses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_to_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/preprocess/image/parallel_generator/parallel_generator.html#ParallelImageDataGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate batches of tensor image data with real-time data augmentation.</p>
+<p>The data will be looped over (in batches).</p>
+<p>This class works the exact same as the <a class="reference external" href="https://keras.io/preprocessing/image">Keras ImageDataGenerator</a>
+except images are processed in the background using the standard Python
+<a class="reference external" href="https://docs.python.org/3.7/library/multiprocessing.html">multiprocessing</a> module.</p>
+<p>The can greatly improve training times as multiple CPU cores can process batch images in the background while
+training is done in the foreground on the GPU(s).
+(The standard Keras ImageDataGenerator module processes batch images then trains serially)</p>
+<p>From the outside, this module works the exact same as <a class="reference external" href="https://keras.io/preprocessing/image">Keras ImageDataGenerator</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Since this uses the standard Python <a class="reference external" href="https://docs.python.org/3.7/library/multiprocessing.html">multiprocessing</a> module,
+the ‘main’ part of your Python script needs a:</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>to function correctly.</p>
+<p>It is also recommended to add something like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="n">current_process</span><span class="p">()</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">'MainProcess'</span><span class="p">:</span>
+    <span class="c1"># Disable the GPU and logging if this is a subprocess</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'CUDA_VISIBLE_DEVICES'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'-1'</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'TF_CPP_MIN_LOG_LEVEL'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'3'</span>
+</pre></div>
+</div>
+<p>to the top of the script to ensure that the GPU is not used in any subprocesses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cores</strong> – The number of CPU cores to use for spawned image batch processes.
+This number can be either an integer, which specifies the exact number
+of CPU cores, or it can be a float &lt; 1.0. The float is the percentage
+of CPU cores to use for processing.
+A large number of CPU cores will consume more system memory.</p></li>
+<li><p><strong>debug</strong> – Use a ThreadPool rather than a Multiprocessing Pool,
+this allows for single-step debugging the processing function</p></li>
+<li><p><strong>max_batches_pending</strong> – This is the number of processed batches to queue.
+A larger number can improving training times at the expense of
+increased system memory usage.</p></li>
+<li><p><strong>validation_augmentation_enabled</strong> – If True, then augmentations will be applied to
+validation data. If False, then no augmentations will be applied to validation data.</p></li>
+<li><p><strong>featurewise_center</strong> – Boolean.
+Set input mean to 0 over the dataset, feature-wise.</p></li>
+<li><p><strong>samplewise_center</strong> – Boolean. Set each sample mean to 0.</p></li>
+<li><p><strong>featurewise_std_normalization</strong> – Boolean.
+Divide inputs by std of the dataset, feature-wise.</p></li>
+<li><p><strong>samplewise_std_normalization</strong> – Boolean. Divide each input by its std.</p></li>
+<li><p><strong>zca_epsilon</strong> – epsilon for ZCA whitening. Default is 1e-6.</p></li>
+<li><p><strong>zca_whitening</strong> – Boolean. Apply ZCA whitening.</p></li>
+<li><p><strong>rotation_range</strong> – Int. Degree range for random rotations.</p></li>
+<li><p><strong>width_shift_range</strong> – <p>Float, 1-D array-like or int</p>
+<ul>
+<li><p>float: fraction of total width, if &lt; 1, or pixels if &gt;= 1.</p></li>
+<li><p>1-D array-like: random elements from the array.</p></li>
+<li><p>int: integer number of pixels from interval
+<code class="docutils literal notranslate"><span class="pre">(-width_shift_range,</span> <span class="pre">+width_shift_range)</span></code></p></li>
+<li><p>With <code class="docutils literal notranslate"><span class="pre">width_shift_range=2</span></code> possible values
+are integers <code class="docutils literal notranslate"><span class="pre">[-1,</span> <span class="pre">0,</span> <span class="pre">+1]</span></code>,
+same as with <code class="docutils literal notranslate"><span class="pre">width_shift_range=[-1,</span> <span class="pre">0,</span> <span class="pre">+1]</span></code>,
+while with <code class="docutils literal notranslate"><span class="pre">width_shift_range=1.0</span></code> possible values are floats
+in the interval [-1.0, +1.0).</p></li>
+</ul>
+</p></li>
+<li><p><strong>height_shift_range</strong> – <p>Float, 1-D array-like or int</p>
+<ul>
+<li><p>float: fraction of total height, if &lt; 1, or pixels if &gt;= 1.</p></li>
+<li><p>1-D array-like: random elements from the array.</p></li>
+<li><p>int: integer number of pixels from interval
+<code class="docutils literal notranslate"><span class="pre">(-height_shift_range,</span> <span class="pre">+height_shift_range)</span></code></p></li>
+<li><p>With <code class="docutils literal notranslate"><span class="pre">height_shift_range=2</span></code> possible values
+are integers <code class="docutils literal notranslate"><span class="pre">[-1,</span> <span class="pre">0,</span> <span class="pre">+1]</span></code>,
+same as with <code class="docutils literal notranslate"><span class="pre">height_shift_range=[-1,</span> <span class="pre">0,</span> <span class="pre">+1]</span></code>,
+while with <code class="docutils literal notranslate"><span class="pre">height_shift_range=1.0</span></code> possible values are floats
+in the interval <code class="docutils literal notranslate"><span class="pre">[-1.0,</span> <span class="pre">+1.0)</span></code>.</p></li>
+</ul>
+</p></li>
+<li><p><strong>brightness_range</strong> – Tuple or list of two floats. Range for picking
+a brightness shift value from.</p></li>
+<li><p><strong>shear_range</strong> – Float. Shear Intensity
+(Shear angle in counter-clockwise direction in degrees)</p></li>
+<li><p><strong>zoom_range</strong> – Float or [lower, upper]. Range for random zoom.
+If a float, <code class="docutils literal notranslate"><span class="pre">[lower,</span> <span class="pre">upper]</span> <span class="pre">=</span> <span class="pre">[1-zoom_range,</span> <span class="pre">1+zoom_range]</span></code>.</p></li>
+<li><p><strong>channel_shift_range</strong> – Float. Range for random channel shifts.</p></li>
+<li><p><strong>fill_mode</strong> – <p>One of {“constant”, “nearest”, “reflect” or “wrap”}.
+Default is ‘nearest’.
+Points outside the boundaries of the input are filled
+according to thegiven mode:</p>
+<ul>
+<li><p><strong>constant</strong> <code class="docutils literal notranslate"><span class="pre">kkkkkkkk|abcd|kkkkkkkk</span> <span class="pre">(cval=k)</span></code></p></li>
+<li><p><strong>nearest</strong> <code class="docutils literal notranslate"><span class="pre">aaaaaaaa|abcd|dddddddd</span></code></p></li>
+<li><p><strong>reflect</strong> <code class="docutils literal notranslate"><span class="pre">abcddcba|abcd|dcbaabcd</span></code></p></li>
+<li><p><strong>wrap</strong> <code class="docutils literal notranslate"><span class="pre">abcdabcd|abcd|abcdabcd</span></code></p></li>
+</ul>
+</p></li>
+<li><p><strong>cval</strong> – Float or Int.
+Value used for points outside the boundaries
+when <code class="docutils literal notranslate"><span class="pre">fill_mode</span> <span class="pre">=</span> <span class="pre">"constant"</span></code>.</p></li>
+<li><p><strong>horizontal_flip</strong> – Boolean. Randomly flip inputs horizontally.</p></li>
+<li><p><strong>vertical_flip</strong> – Boolean. Randomly flip inputs vertically.</p></li>
+<li><p><strong>rescale</strong> – rescaling factor. Defaults to None.
+If None or 0, no rescaling is applied,
+otherwise we multiply the data by the value provided
+(after applying all other transformations).</p></li>
+<li><p><strong>get_batch_function</strong> – <p>function that should return the transformed batch.
+If this is omitted, then iterator.get_batches_of_transformed_samples() is used.
+NOTE: If this is supplied, then none of the other callbacks are used.
+This function should have the following signature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_batches_of_transformed_samples</span><span class="p">(</span>
+   <span class="n">batch_index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
+   <span class="n">filenames</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+   <span class="n">classes</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+   <span class="n">params</span><span class="p">:</span><span class="n">ParallelProcessParams</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">batch_index</span><span class="p">,</span> <span class="p">(</span><span class="n">batch_x</span><span class="p">,</span> <span class="n">batch_y</span><span class="p">)</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>noaug_preprocessing_function</strong> – <p>function that will be applied on each input.
+The function will run after the image is resized but before it is augmented or standardized.
+The function should take at least two arguments and return the processed image:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_processing_func</span><span class="p">(</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">ParallelProcessParams</span><span class="p">,</span>
+    <span class="n">x</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">class_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">batch_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">batch_class_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+    <span class="n">batch_filenames</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+ <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">processed_x</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>preprocessing_function</strong> – <p>function that will be applied on each input.
+The function will run after the image is resized (if <code class="docutils literal notranslate"><span class="pre">interpolation</span> <span class="pre">!=</span> <span class="pre">None</span></code>) and augmented but before it is standardized.
+The function should take at least two arguments and return the processed image:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_processing_func</span><span class="p">(</span>
+    <span class="n">params</span><span class="p">:</span> <span class="n">ParallelProcessParams</span><span class="p">,</span>
+    <span class="n">x</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">class_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">batch_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+    <span class="n">batch_class_ids</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+    <span class="n">batch_filenames</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+ <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+   <span class="o">...</span>
+   <span class="k">return</span> <span class="n">processed_x</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>validation_split</strong> – Float. Fraction of images reserved for validation
+(strictly between 0 and 1).</p></li>
+<li><p><strong>dtype</strong> – Dtype to use for the generated arrays.</p></li>
+<li><p><strong>brightness_range</strong> – Tuple of two floats. Control the brightness of an image.
+An enhancement factor of 0.0 gives a black image.
+A factor of 1.0 gives the original image.</p></li>
+<li><p><strong>contrast_range</strong> – Tuple of two floats. Control the contrast of an image,
+similar to the contrast control on a TV set.
+An enhancement factor of 0.0 gives a solid grey image. A factor of 1.0 gives the original image.</p></li>
+<li><p><strong>noise</strong> – <p>List one one or more of the following:</p>
+<ul>
+<li><p><strong>gauss</strong> - Gaussian-distributed additive noise.</p></li>
+<li><p><strong>poisson</strong> - Poisson-distributed noise generated from the data.</p></li>
+<li><p><strong>s&amp;p</strong> - Replaces random pixels with 0 or 1.</p></li>
+<li><dl class="simple">
+<dt><strong>speckle</strong> - Multiplicative noise using out = image + n*image,where</dt><dd><p>n is uniform noise with specified mean &amp; variance.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>The noise type used will be randomly selected from the provided list per image</p>
+</p></li>
+<li><p><strong>random_transforms_enabled</strong> – Enable random data augmentations. Default True</p></li>
+<li><p><strong>max_samples_per_class</strong> – The maximum number of samples to use for a given class.
+If <code class="docutils literal notranslate"><span class="pre">-1</span></code> then use all available samples. Default -1.</p></li>
+<li><p><strong>disable_gpu_in_subprocesses</strong> – Disable GPU usage in spawned subprocesses, default: true</p></li>
+<li><p><strong>batch_size</strong> – Generated batch size. This overrides the value given to flow_from_directory()
+Set to <code class="docutils literal notranslate"><span class="pre">-1</span></code> to set the batch size to be the number of samples</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator.flow_from_directory">
+<span class="sig-name descname"><span class="pre">flow_from_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(256,</span> <span class="pre">256)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rgb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'categorical'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle_index_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_to_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">follow_links</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bilinear'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list_valid_filenames_in_directory_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/preprocess/image/parallel_generator/parallel_generator.html#ParallelImageDataGenerator.flow_from_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator.flow_from_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the ParallelImageDataGenerator with the given dataset directory</p>
+<p>Takes the path to a directory &amp; generates batches of augmented data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> – string, path to the target directory. It should contain one subdirectory per class.
+Any PNG, JPG, BMP, PPM or TIF images inside each of the subdirectories directory tree will be included in the generator.</p></li>
+<li><p><strong>target_size</strong> – Tuple of integers (height, width), defaults to (256, 256).
+The dimensions to which all images found will be resized.</p></li>
+<li><p><strong>color_mode</strong> – One of “grayscale”, “rgb”, “rgba”. Default: “rgb”.
+Whether the images will be converted to have 1, 3, or 4 channels.</p></li>
+<li><p><strong>classes</strong> – Required, list of class subdirectories (e.g. [‘dogs’, ‘cats’]).</p></li>
+<li><p><strong>class_mode</strong> – <p>One of “categorical”, “binary”, “sparse”, “input”, or None.
+Default: “categorical”. Determines the type of label arrays that are returned:</p>
+<ul>
+<li><p><strong>categorical</strong> will be 2D one-hot encoded labels,</p></li>
+<li><p><strong>binary</strong> will be 1D binary labels, “sparse” will be 1D integer labels,</p></li>
+<li><p><strong>input</strong> will be images identical to input images (mainly used to work with autoencoders).</p></li>
+<li><p><strong>None</strong> no labels are returned (the generator will only yield batches of image data, which is useful to use with model.predict()).</p></li>
+</ul>
+<p>Please note that in case of class_mode None, the data still needs to reside in a subdirectory of directory for it to work correctly.</p>
+</p></li>
+<li><p><strong>batch_size</strong> – Size of the batches of data (default: 32).</p></li>
+<li><p><strong>batch_shape</strong> – Shape of the batches of data. If omitted, this defaults to (batch_size, target_size)</p></li>
+<li><p><strong>shuffle</strong> – Whether to shuffle the data (default: True) If set to False, sorts the data in alphanumeric order.</p></li>
+<li><p><strong>shuffle_index_dir</strong> – If given, the dataset directory will be shuffled the first time it is processed and
+and an index file containing the shuffled file names is generated at the directory specified
+by <code class="docutils literal notranslate"><span class="pre">shuffle_index_dir</span></code>. The index file is reused to maintain the shuffled order for subsequent processing.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, then the dataset samples are sorted alphabetically and saved to an index file in the dataset directory.
+The alphabetical index file is used for subsequent processing.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>seed</strong> – Optional random seed for shuffling and transformations.</p></li>
+<li><p><strong>follow_links</strong> – Whether to follow symlinks inside class subdirectories (default: False).</p></li>
+<li><p><strong>subset</strong> – Subset of data (“training” or “validation”) if validation_split is set in ParallelAudioDataGenerator.</p></li>
+<li><p><strong>interpolation</strong> – Interpolation method used to resample the image if the target size is different from that of the loaded image.
+Supported methods are <code class="docutils literal notranslate"><span class="pre">none</span></code>, <code class="docutils literal notranslate"><span class="pre">nearest</span></code>, <code class="docutils literal notranslate"><span class="pre">bilinear</span></code>, <code class="docutils literal notranslate"><span class="pre">bicubic</span></code>, <code class="docutils literal notranslate"><span class="pre">lanczos</span></code>, <code class="docutils literal notranslate"><span class="pre">box</span></code>, and <code class="docutils literal notranslate"><span class="pre">hamming</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">none</span></code> is used, then the image is <strong>not automatically resized</strong>.
+By default, <code class="docutils literal notranslate"><span class="pre">bilinear</span></code> is used.</p></li>
+<li><p><strong>list_valid_filenames_in_directory_function</strong> – <p>This is a custom function called for each class,
+that should return a list of valid file names for the given class.
+It has the following function signature:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">list_valid_filenames_in_directory</span><span class="p">(</span>
+    <span class="n">base_directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
+    <span class="n">search_class</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
+    <span class="n">white_list_formats</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">split</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span>
+    <span class="n">follow_links</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span>
+    <span class="n">shuffle_index_directory</span><span class="p">:</span><span class="nb">str</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">search_class</span><span class="p">,</span> <span class="n">filenames</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>Returns</strong> – A DirectoryIterator yielding tuples of (x, y) where x is a numpy array containing a batch of images with
+shape (batch_size, <a href="#id3"><span class="problematic" id="id4">*</span></a>target_size, channels) and y is a numpy array of corresponding labels.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator.flow">
+<span class="sig-name descname"><span class="pre">flow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_to_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_format</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'png'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/preprocess/image/parallel_generator/parallel_generator.html#ParallelImageDataGenerator.flow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator.flow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes data &amp; label arrays, generates batches of augmented data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – Input data. Numpy array of rank 4 or a tuple. If tuple, the first
+element should contain the images and the second element another numpy
+array or a list of numpy arrays that gets passed to the output without
+any modifications. Can be used to feed the model miscellaneous data
+along with the images. In case of grayscale data, the channels axis of
+the image array should have value 1, in case of RGB data, it should
+have value 3, and in case of RGBA data, it should have value 4.</p></li>
+<li><p><strong>y</strong> – Labels.</p></li>
+<li><p><strong>batch_size</strong> – Int (default: 32).</p></li>
+<li><p><strong>shuffle</strong> – Boolean (default: True).</p></li>
+<li><p><strong>sample_weight</strong> – Sample weights.</p></li>
+<li><p><strong>seed</strong> – Int (default: None).</p></li>
+<li><p><strong>save_to_dir</strong> – None or str (default: None). This allows you to optionally
+specify a directory to which to save the augmented pictures being
+generated (useful for visualizing what you are doing).</p></li>
+<li><p><strong>save_prefix</strong> – Str (default: <code class="docutils literal notranslate"><span class="pre">''</span></code>). Prefix to use for filenames of saved
+pictures (only relevant if <cite>save_to_dir</cite> is set).</p></li>
+<li><p><strong>save_format</strong> – one of “png”, “jpeg”, “bmp”, “pdf”, “ppm”, “gif”,
+“tif”, “jpg”
+(only relevant if <code class="docutils literal notranslate"><span class="pre">save_to_dir</span></code> is set). Default: “png”.</p></li>
+<li><p><strong>subset</strong> – Subset of data (<code class="docutils literal notranslate"><span class="pre">"training"</span></code> or <code class="docutils literal notranslate"><span class="pre">"validation"</span></code>) if
+<code class="docutils literal notranslate"><span class="pre">validation_split</span></code> is set in <code class="docutils literal notranslate"><span class="pre">ImageDataGenerator</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>An <code class="docutils literal notranslate"><span class="pre">Iterator</span></code> yielding tuples of <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y)</span></code></dt><dd><p>where <code class="docutils literal notranslate"><span class="pre">x</span></code> is a numpy array of image data
+(in the case of a single image input) or a list
+of numpy arrays (in the case with
+additional inputs) and <code class="docutils literal notranslate"><span class="pre">y</span></code> is a numpy array
+of corresponding labels. If ‘sample_weight’ is not None,
+the yielded tuples are of the form <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">sample_weight)</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">y</span></code> is None, only the numpy array <code class="docutils literal notranslate"><span class="pre">x</span></code> is returned.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If the Value of the argument, <code class="docutils literal notranslate"><span class="pre">subset</span></code> is other than
+    “training” or “validation”.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator.default_transform">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">default_transform</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">dict</span></em><a class="headerlink" href="#mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator.default_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return default transformation parameters</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator.get_random_transform">
+<span class="sig-name descname"><span class="pre">get_random_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/preprocess/image/parallel_generator/parallel_generator.html#ParallelImageDataGenerator.get_random_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator.get_random_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a random transformation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator.apply_transform">
+<span class="sig-name descname"><span class="pre">apply_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transform_parameters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/preprocess/image/parallel_generator/parallel_generator.html#ParallelImageDataGenerator.apply_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator.apply_transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the given transformation to the given image</p>
+</dd></dl>
+</dd></dl>
+<section id="parallelprocessparams">
+<h2 id="parallelprocessparams">ParallelProcessParams<a class="headerlink" href="#parallelprocessparams" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="mltk.core.preprocess.image.parallel_generator.ParallelProcessParams">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mltk.core.preprocess.image.parallel_generator.</span></span><span class="sig-name descname"><span class="pre">ParallelProcessParams</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image_data_generator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_to_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_prefix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_indices</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_batch_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">preprocessing_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noaug_preprocessing_function</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/preprocess/image/parallel_generator/iterator.html#ParallelProcessParams"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.preprocess.image.parallel_generator.ParallelProcessParams" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds methods related to getting batches from filenames</p>
+<p>It includes the logic to transform image files to batches.</p>
+</dd></dl>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="index.html" title="Data Preprocessing"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Data Preprocessing </span>
+              </div>
+            </a>
+          
+          
+            <a href="audio_data_generator.html" title="Audio Data Generator"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> Audio Data Generator </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Apr 26, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

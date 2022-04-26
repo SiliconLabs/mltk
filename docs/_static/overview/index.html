@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+	<html class="sl-root decks export offline loaded">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<title>MLTK Overview</title>
+
+		<meta name="description" content="Describes the typical ML model development flow using the Silicon Labs Machine Learning Development Kit">
+
+		<link rel="stylesheet" type="text/css" href="lib/offline-v2.css">
+
+
+
+	</head>
+	<body class="reveal-viewport theme-font-opensans theme-color-silver-blue">
+		<div class="reveal">
+			<div class="slides">
+				<section data-id="612d385e0def8f8605640df13be4fd1b"><div class="sl-block" data-block-type="text" style="width: 806px; left: 88px; top: 252px; height: auto;" data-block-id="52345c38ba99d2103b8fc2d5888df4f7"><div class="sl-block-content" data-placeholder-tag="h1" data-placeholder-text="Title Text" style="color: rgb(204, 0, 0); z-index: 10;">
+<h1>MLTK Overview</h1>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 779px; left: 115px; top: 368.5px;" data-name="text-b67d52" data-block-id="d76c16211e7383b2b57af2c80e2bf21a"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<p>An overview of how to use the Machine Learning Toolkit (MLTK) to develop models for embedded devices</p>
+</div></div></section><section data-id="dbc2f8c16c76c9749ba9a30c8e4cd9ac"><div class="sl-block" data-block-type="text" style="width: 806px; left: 0px; top: 0px; height: auto;" data-block-id="d33751916dc9f05d4c7e491c0d5e80e4"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h2 style="text-align: left;">Contents</h2>
+</div></div>
+<div class="sl-block" data-block-type="text" style="width: 782px; left: 12px; top: 93px; height: auto;" data-block-id="45d8af1affd86f0c546d06079a3ad75a"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11; color: rgb(0, 0, 0); font-size: 120%;">
+<ul>
+	<li>Typical machine learning development flow</li>
+	<li>Model development and execution</li>
+	<li>Acquiring a dataset</li>
+	<li>Analyzing and preprocessing a dataset</li>
+	<li>Designing a model</li>
+	<li>Evaluating a model</li>
+	<li>Profiling a model</li>
+	<li>Deploying a model</li>
+	<li>Next steps</li>
+</ul>
+</div></div>
+<div class="sl-block" data-block-type="text" data-name="text-95eecf" data-block-id="39b5cb7e6004d2cb0189cd92a0c1a4f0" style="height: auto; width: 232px; left: 728px; top: 605px;"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12; font-size: 58%; transition-duration: 0.6s; transition-delay: 0.6s;" data-animation-type="slide-left">
+<p>Use the arrows to navigate,</p>
+
+<p><strong>left</strong>/<strong>right </strong><em>and </em><strong>up</strong>/<strong>down</strong></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 220px; left: 740px; top: 655px;" data-name="text-cceba0" data-block-id="88bea90d6b0137bac36ab452904ef8e4"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 13; line-height: 0.52; transition-duration: 0.6s; transition-delay: 1.1s;" data-has-line-height="" data-animation-type="slide-left">
+<p><span style="font-size:0.5em">Hint: You can also use your keyboard's arrows</span></p>
+</div></div></section><section data-id="1c723f3bf79e3e1935de3ad0ba8c3620" data-auto-animate="" id="typical_model_development"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-block-id="df6be5bbd8ca359aae1bec9639cf333d" data-name="text-cfdec9"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align: left;">Typical Model Development</h3>
+</div></div>
+
+
+<div class="sl-block" data-block-type="text" style="height: auto; width: 401px; left: 18px; top: 95px;" data-name="text-bdf7ea" data-block-id="fa2c85576c0045903dcdda964a190932"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<p><strong>Model Design - PC/Cloud</strong></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 549px; left: 18px; top: 342.5px;" data-block-id="8271d572c1a8ff0fac14a8db9f98964f" data-name="text-95d2ac"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12;">
+<p><strong>Model Execution - Embedded Device</strong></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 178px; height: 110px; left: 19.124px; top: 170px;" data-name="shape-29ea27" data-block-id="b2ada8e3d2c170b019e76c02865bfa92"><a class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 13;" data-shape-corner-radius="15px" href="#/acquire_dataset"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 178 110"><rect width="178" height="110" rx="15" ry="15" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></a></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 178px; left: 19.124px; top: 194.5px;" data-name="text-01b960" data-block-id="177432a64a7cd733933969ac44106ff3"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 14; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:0.5em">Acquire, Analyze &amp; Preprocess Dataset</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 178px; height: 110px; left: 268px; top: 170.5px;" data-block-id="3b6583cfe37413fa200ce42c131415e2" data-name="shape-42853a"><a class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 15;" data-shape-corner-radius="15px" href="#/design_model"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 178 110"><rect width="178" height="110" rx="15" ry="15" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></a></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 178px; left: 268px; top: 195px;" data-block-id="1d63a0158fc223b7e690a3c3ad712c5f" data-name="text-dc5536"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 16; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:0.5em">Design &amp; Train </span></p>
+
+<p><span style="font-size:0.5em">Model</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 178px; height: 110px; left: 501.374px; top: 170px;" data-block-id="40ea246521397d8d1a40a912a96ab5b2" data-name="shape-6002b8"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 17;" data-shape-corner-radius="15px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 178 110"><rect width="178" height="110" rx="15" ry="15" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 178px; left: 501.374px; top: 194.5px;" data-block-id="bbc54adba266a051fedc8d01e969c172" data-name="text-3b5383"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 18; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:15px">Evaluate &amp; Profile</span></p>
+
+<p><span style="font-size:0.5em">Model</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 178px; height: 110px; left: 740.5px; top: 170px;" data-block-id="7754dd5741a1b7a04dc5a51832f67dd3" data-name="shape-655307"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 19;" data-shape-corner-radius="15px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 178 110"><rect width="178" height="110" rx="15" ry="15" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 178px; left: 740.5px; top: 194.5px;" data-block-id="9f35f98add97c78a93257942a33fd669" data-name="text-06ab47"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 20; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:15px">Quantize &amp; Compile</span></p>
+
+<p><span style="font-size:0.5em">Model</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 246px; height: 77px; left: 704.874px; top: 334px;" data-name="shape-c701b9" data-block-id="e31d9e9f3295a82842189efaf20b170f"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(238, 238, 238)" data-shape-stretch="true" style="z-index: 21;" data-shape-stroke-color="#000000" data-shape-stroke-width="2px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 246 77"><defs><clippath id="shape-mask-1-1638211050855"><rect width="246" height="77" rx="0" ry="0" fill="rgb(238, 238, 238)" stroke="#000000" stroke-width="4"></rect></clippath></defs><rect width="246" height="77" rx="0" ry="0" class="shape-element" fill="rgb(238, 238, 238)" stroke="#000000" stroke-width="4" clip-path="url(#shape-mask-1-1638211050855)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="shape" style="width: 31.5px; height: 25.5px; left: 213.812px; top: 213.25px;" data-name="shape-83b2f4" data-block-id="9f3458c19f8f4362a5bd4f489f3406ed"><div class="sl-block-content" data-shape-type="symbol-thin-arrow-right" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 22;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><g class="shape-element" fill="#000000" data-viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><path d="M19.414 27.414l10-10c0.781-0.781 0.781-2.047 0-2.828l-10-10c-0.781-0.781-2.047-0.781-2.828 0s-0.781 2.047 0 2.828l6.586 6.586h-19.172c-1.105 0-2 0.895-2 2s0.895 2 2 2h19.172l-6.586 6.586c-0.39 0.39-0.586 0.902-0.586 1.414s0.195 1.024 0.586 1.414c0.781 0.781 2.047 0.781 2.828 0z"></path></g></svg></div></div>
+<div class="sl-block" data-block-type="shape" style="width: 31.5px; height: 25.5px; left: 456.75px; top: 208.75px;" data-block-id="6c0427440e10cd71c3afdc68ca4a2c7a" data-name="shape-d57b1a"><div class="sl-block-content" data-shape-type="symbol-thin-arrow-right" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 23;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><g class="shape-element" fill="#000000" data-viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><path d="M19.414 27.414l10-10c0.781-0.781 0.781-2.047 0-2.828l-10-10c-0.781-0.781-2.047-0.781-2.828 0s-0.781 2.047 0 2.828l6.586 6.586h-19.172c-1.105 0-2 0.895-2 2s0.895 2 2 2h19.172l-6.586 6.586c-0.39 0.39-0.586 0.902-0.586 1.414s0.195 1.024 0.586 1.414c0.781 0.781 2.047 0.781 2.828 0z"></path></g></svg></div></div>
+<div class="sl-block" data-block-type="shape" style="width: 31.5px; height: 25.5px; left: 691.124px; top: 212.75px;" data-block-id="90eb845bf1ab5b4370ae425ed7f99b5a" data-name="shape-8969d9"><div class="sl-block-content" data-shape-type="symbol-thin-arrow-right" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 24;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><g class="shape-element" fill="#000000" data-viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><path d="M19.414 27.414l10-10c0.781-0.781 0.781-2.047 0-2.828l-10-10c-0.781-0.781-2.047-0.781-2.828 0s-0.781 2.047 0 2.828l6.586 6.586h-19.172c-1.105 0-2 0.895-2 2s0.895 2 2 2h19.172l-6.586 6.586c-0.39 0.39-0.586 0.902-0.586 1.414s0.195 1.024 0.586 1.414c0.781 0.781 2.047 0.781 2.828 0z"></path></g></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 158px; left: 748.874px; top: 350px;" data-name="text-8f6b99" data-block-id="5c38a6d93c6df1c85108586085e5f563"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 25;">
+<p><span style="font-size:0.7em">Model Binary</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 178px; height: 110px; left: 18px; top: 520px;" data-block-id="9b42e0aed383a6ee192bbd821a5dfd05" data-name="shape-5f0c97"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 26;" data-shape-corner-radius="15px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 178 110"><rect width="178" height="110" rx="15" ry="15" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 178px; left: 19.124px; top: 561.25px;" data-block-id="54306163b5580c6d483ff8536bf15573" data-name="text-ef9c65"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 27; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:0.5em">Preprocess Data</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 31.5px; height: 25.5px; left: 213.812px; top: 562.75px;" data-block-id="49de9050ca356e9533192c8e508ca6e1" data-name="shape-c7e6eb"><div class="sl-block-content" data-shape-type="symbol-thin-arrow-right" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 28;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><g class="shape-element" fill="#000000" data-viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><path d="M19.414 27.414l10-10c0.781-0.781 0.781-2.047 0-2.828l-10-10c-0.781-0.781-2.047-0.781-2.828 0s-0.781 2.047 0 2.828l6.586 6.586h-19.172c-1.105 0-2 0.895-2 2s0.895 2 2 2h19.172l-6.586 6.586c-0.39 0.39-0.586 0.902-0.586 1.414s0.195 1.024 0.586 1.414c0.781 0.781 2.047 0.781 2.828 0z"></path></g></svg></div></div>
+<div class="sl-block" data-block-type="shape" style="width: 178px; height: 110px; left: 268px; top: 520px;" data-block-id="84e1a72867eaa7b89b005ed5b72179d0" data-name="shape-e839e7"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 29;" data-shape-corner-radius="15px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 178 110"><rect width="178" height="110" rx="15" ry="15" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 178px; left: 268px; top: 543.75px;" data-block-id="b20eb49178a681785977095fe809993c" data-name="text-9b4263"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 30; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:15px">Model</span></p>
+
+<p><span style="font-size:15px">Interpreter</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 31.5px; height: 25.5px; left: 456.75px; top: 562.75px;" data-block-id="bc485b62bbe6f4bea206849c975b50ef" data-name="shape-015e18"><div class="sl-block-content" data-shape-type="symbol-thin-arrow-right" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 31;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><g class="shape-element" fill="#000000" data-viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><path d="M19.414 27.414l10-10c0.781-0.781 0.781-2.047 0-2.828l-10-10c-0.781-0.781-2.047-0.781-2.828 0s-0.781 2.047 0 2.828l6.586 6.586h-19.172c-1.105 0-2 0.895-2 2s0.895 2 2 2h19.172l-6.586 6.586c-0.39 0.39-0.586 0.902-0.586 1.414s0.195 1.024 0.586 1.414c0.781 0.781 2.047 0.781 2.828 0z"></path></g></svg></div></div>
+<div class="sl-block" data-block-type="shape" style="width: 178px; height: 110px; left: 501.374px; top: 519.75px;" data-block-id="93f33297a0f4f57c874cf3c124e956de" data-name="shape-a8f76b"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 32;" data-shape-corner-radius="15px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 178 110"><rect width="178" height="110" rx="15" ry="15" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 178px; left: 501.374px; top: 543.5px;" data-block-id="d35a8d9be06d6ad21bf5269ab8f95f84" data-name="text-f35a31"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 33; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:15px">Post-process </span></p>
+
+<p><span style="font-size:15px">Interpreter Results</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 31.5px; height: 25.5px; left: 697.25px; top: 563.75px;" data-block-id="22394ba013e3e071d6a7212139c7a328" data-name="shape-9c9cc1"><div class="sl-block-content" data-shape-type="symbol-thin-arrow-right" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 34;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><g class="shape-element" fill="#000000" data-viewbox="1.9999980926513672 4.00024938583374 27.999752044677734 23.999500274658203"><path d="M19.414 27.414l10-10c0.781-0.781 0.781-2.047 0-2.828l-10-10c-0.781-0.781-2.047-0.781-2.828 0s-0.781 2.047 0 2.828l6.586 6.586h-19.172c-1.105 0-2 0.895-2 2s0.895 2 2 2h19.172l-6.586 6.586c-0.39 0.39-0.586 0.902-0.586 1.414s0.195 1.024 0.586 1.414c0.781 0.781 2.047 0.781 2.828 0z"></path></g></svg></div></div>
+<div class="sl-block" data-block-type="shape" style="width: 178px; height: 110px; left: 742.062px; top: 519.5px;" data-block-id="4281687d26af478bad57ecca314fc067" data-name="shape-90259f"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 35;" data-shape-corner-radius="15px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 178 110"><rect width="178" height="110" rx="15" ry="15" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 178px; left: 742.062px; top: 543.25px;" data-block-id="cbbf592d0078ab62ce61402db0bffe09" data-name="text-f256fd"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 36; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:15px">Firmware Application</span></p>
+
+<p><span style="font-size:15px">Handles Results</span></p>
+</div></div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 357px; top: 467px;" data-name="line-26ad78" data-block-id="dc1a754ab8b2ad7a05ab99a6f4aa9a69"><div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="470.874" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 37;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="470.874" height="1" viewbox="0 0 470.874 1"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="0" x2="470.874" y2="0"></line><line class="line-element" stroke="#000000" stroke-width="2" x1="0" y1="0" x2="470.874" y2="0"></line></svg></div></div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 827.874px; top: 411px;" data-name="line-fe1fc3" data-block-id="4a2f65c33696456b71cd203d373cf288"><div class="sl-block-content" data-line-x1="0" data-line-y1="56" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 38;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="1" height="56" viewbox="0 0 1 56"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="56" x2="0" y2="0"></line><line class="line-element" stroke="#000000" stroke-width="2" x1="0" y1="56" x2="0" y2="0"></line></svg></div></div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 827.874px; top: 280px;" data-block-id="bf0ce89476ee6b1f9efb8ca75981002c" data-name="line-0c9380"><div class="sl-block-content" data-line-x1="0" data-line-y1="54.5" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 39;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="1" height="54.5" viewbox="0 0 1 54.5"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="52.5" x2="0" y2="0"></line><line class="line-element" stroke="#000000" stroke-width="2" x1="0" y1="52.5" x2="0" y2="0"></line><path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="2" transform="translate(0,52.5) rotate(0)" d="M -6 -6 L 0 0 L 6 -6"></path></svg></div></div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 357px; top: 467px;" data-block-id="6d4ef495f57be0ca197987a4222ccd94" data-name="line-237569"><div class="sl-block-content" data-line-x1="0" data-line-y1="56" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 40;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="1" height="56" viewbox="0 0 1 56"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0" y1="54" x2="0" y2="0"></line><line class="line-element" stroke="#000000" stroke-width="2" x1="0" y1="54" x2="0" y2="0"></line><path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="2" transform="translate(0,54) rotate(0)" d="M -6 -6 L 0 0 L 6 -6"></path></svg></div></div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 108.124px; top: 482px;" data-name="line-d34af2" data-block-id="95cbcbe9e52a513e603150cd7a6f2b2f"><div class="sl-block-content" data-line-x1="0" data-line-y1="37.5" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="none" style="z-index: 41;" data-line-width="3px" data-line-style="solid"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="1" height="37.5" viewbox="0 0 1 37.5"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0.5" y1="35.75" x2="0.5" y2="0.5"></line><line class="line-element" stroke="#000000" stroke-width="3" x1="0.5" y1="35.75" x2="0.5" y2="0.5"></line><path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(0,35.25) rotate(0)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 155.5px; left: 29.25px; top: 439px;" data-block-id="d69cb46aecdbaa53cfc8d25cf765d9d4" data-name="text-b0ca75"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 42; color: rgb(17, 17, 17);">
+<p><span style="font-size:0.5em"><strong>Raw Sensor </strong></span><span style="font-size:0.5em"><strong>Data</strong></span></p>
+</div></div></section><section data-id="6267f93ea55ee8e99bdeb6f7bc6e0284" id="model_development_and_execution"><div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 116.5px;" data-name="text-55ddfc" data-block-id="35c503c43c809004626823b020f81b16"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 10;">
+<ul>
+	<li style="color:rgb(0, 0, 0); text-align:left">Machine learning model design and development is typically done on a desktop computer or in the Cloud
+	<ul>
+		<li style="color:rgb(0, 0, 0); text-align:left">The <a href="https://github.com/siliconlabs/mltk" target="_blank">MLTK </a>is used in this phase</li>
+	</ul>
+	</li>
+	<li style="color:rgb(0, 0, 0); text-align:left">
+<span style="color:rgb(0, 0, 0); text-align:left">Once the machine learning model is trained and quantized, the model binary file is loaded on the embedded device for execution</span>
+	<ul>
+		<li style="color:rgb(0, 0, 0); text-align:left"><span style="color:rgb(0, 0, 0); text-align:left">​The <a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/getting-started" target="_blank">Gecko SDK</a> is used in this phase</span></li>
+		<li style="color:rgb(0, 0, 0); text-align:left"><span style="color:rgb(0, 0, 0); text-align:left">The <a href="https://siliconlabs.github.io/mltk/docs/cpp_development/index.html" target="_blank">MLTK </a>may also be used in this phase</span></li>
+	</ul>
+	</li>
+	<li style="color:rgb(0, 0, 0); text-align:left">The MLTK offers tools to aid all aspects of model design and development</li>
+</ul>
+</div></div>
+<div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="7b10285b04df97e90ca7221a8b5e81a5"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 11; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Model Development &amp; Execution</h3>
+</div></div></section><section class="stack" data-id="acef248646faa107c6e841c4121f629f"><section data-id="33a4d0dd86b5ff0fd37ded1c42b8c8de" id="acquire_dataset"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="0d8d21450576616b3f6781539f6bed11"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Dataset Acquisition</h3>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 961px; left: -1px; top: 70px;" data-name="text-55ddfc" data-block-id="2939b905e506a2610116ce4b83281c8e"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<ul>
+	<li style="color:rgb(0, 0, 0); text-align:left">
+	<p>The first and most important step of model development is acquiring a <strong>representative </strong>dataset</p>
+	</li>
+	<li style="color:rgb(0, 0, 0); text-align:left">
+	<p>To create a robust model, the data used to train the model must be similar to the data the embedded device will see in the field</p>
+	</li>
+	<li style="color:rgb(0, 0, 0); text-align:left">
+	<p>The dataset is typically application-specific</p>
+	</li>
+	<li style="color:rgb(0, 0, 0); text-align:left">
+	<p>The MLTK comes with <a href="https://siliconlabs.github.io/mltk/docs/python_api/datasets/index.html" target="_blank">reference datasets</a></p>
+	</li>
+</ul>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 344px; left: 320px; top: 661px;" data-name="text-80bb43" data-block-id="049a0b1bac8999f1a2b459170e0253fc"><a class="sl-block-style" style="z-index: 12;" href="#/common_dataset_issues"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12;">
+<p><span style="font-size:0.7em"><em>Common Dataset Issues</em></span></p>
+</div></a></div></section><section data-id="9a9ec2420c0765a7048cc1f51d3f4037" id="common_dataset_issues"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="56f1ab3997267f5e58d159af1012dfab"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Common Dataset Issues</h3>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 922px; left: 18px; top: 63.5px;" data-name="text-e7cdb1" data-block-id="b0edd6ca9aebd5e0de51f710839490b1"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<p style="text-align:left"><span style="font-size:0.9em">For many machine learning applications, acquiring a representative dataset may be challenging.</span></p>
+
+<p style="text-align:left"><span style="font-size:0.9em">Many times the dataset will suffer from one or more of the following:</span></p>
+
+<ul>
+	<li style="text-align:left"><span style="font-size:0.9em">The dataset does not exist - Need to manually collect samples</span></li>
+	<li style="text-align:left"><span style="font-size:0.9em">The raw samples exist but are not “labeled” - Need to manually group the samples</span></li>
+	<li style="text-align:left"><span style="font-size:0.9em">The dataset is “dirty” - Bad/corrupt samples, mislabeled samples</span></li>
+	<li style="text-align:left"><span style="font-size:0.9em">The dataset is not representative - Duplicate/similar samples, not diverse enough to cover the possible range seen in the real-world</span></li>
+</ul>
+
+<p style="text-align:left"> </p>
+
+<p style="text-align:left"><span style="font-size:0.9em">A clean, representative dataset is one of the best ways to train a robust model. It is <em>highly</em> recommended to invest the time/energy to create a good dataset!</span></p>
+</div></div></section></section><section class="stack" data-id="994933ed374fc4b175d582f0ed3677d6"><section data-id="fc5f62c0044d5babf6c21f99bfa543d3" id="analyze_and_preprocess_dataset"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="1e6a40f651ddbed5c2f03da1d7b29494"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Dataset Analysis and Preprocessing</h3>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 61px;" data-name="text-55ddfc" data-block-id="9322405fb2d4fb89d293b42314b50cb0">
+<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui">
+<ul>
+	<li style="color:rgb(0, 0, 0); text-align:left"><span style="font-size:0.9em">Once a dataset is acquired, it typically needs to be analyzed and preprocessed </span></li>
+	<li style="color:rgb(0, 0, 0); text-align:left"><span style="font-size:0.9em">Preprocessing can be thought of as a way of amplifying the signals in the dataset so that the machine learning model can more easily learn its patterns and make accurate predictions</span></li>
+	<li style="color:rgb(0, 0, 0); text-align:left"><span style="font-size:0.9em">Whatever preprocessing is done to the dataset during model training must also be done on the embedded device at run-time</span></li>
+	<li style="color:rgb(0, 0, 0); text-align:left">
+<span style="font-size:0.9em">The MLTK features:</span>
+	<ul>
+		<li style="color:rgb(0, 0, 0); text-align:left"><span style="font-size:0.9em"><a href="https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html" target="_blank">Embedded model parameters</a> so the preprocessing settings used during training may also be used on the embedded device at runtime   </span></li>
+		<li style="text-align:left"><span style="font-size:0.9em">Support for custom C++ Python wrappers - these allow for sharing code between Python during model training and the embedded device at runtime<span style="font-size:0.9em">                               </span></span></li>
+		<li style="color:rgb(0, 0, 0); text-align:left"><span style="font-size:0.9em"><a href="https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html" target="_blank">Audio Utilities</a> to preprocess and visualize audio data</span></li>
+	</ul>
+	</li>
+</ul>
+</div>
+<grammarly-extension data-grammarly-shadow-root="true" style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 11;" class="cGcvT"></grammarly-extension><grammarly-extension data-grammarly-shadow-root="true" style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 11;" class="cGcvT"></grammarly-extension>
+</div>
+
+
+<div class="sl-block" data-block-type="text" style="height: auto; width: 261px; left: 373.5px; top: 661px;" data-name="text-ed30e7" data-block-id="087fba83ccb545b2fbd405239b2b8709"><a class="sl-block-style" style="z-index: 14;" href="#/audio_utilities" target="_blank"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 14;">
+<p><em><span style="font-size:0.7em">Audio Utilities</span></em></p>
+</div></a></div></section><section data-id="4eb786dc63edb02306db15513ce952c7" id="audio_utilities"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="ab3dd59c625b47dac1c0626258edabc5"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Audio Utilities</h3>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 61px;" data-name="text-55ddfc" data-block-id="6dea47b58327b778554c59b07ac0227e">
+<div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;" dir="ui">
+<ul>
+	<li style="color:rgb(0, 0, 0); text-align:left"><span style="font-size:0.9em">The MLTK features several <a href="https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html" target="_blank">tools</a> to aid the development of audio-based ML models (e.g. Keyword Spotting)</span></li>
+	<li style="color:rgb(0, 0, 0); text-align:left">
+	<p><span style="font-size:27px"><a href="https://siliconlabs.github.io/mltk/docs/audio/audio_feature_generator.html" target="_blank">AudioFeatureGenerator</a> - a library to convert streaming audio into spectrograms for classification by a Convolutional Neural Network (CNN)</span></p>
+	</li>
+	<li style="color:rgb(0, 0, 0); text-align:left">
+	<p><span style="font-size:27px"><a href="https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-visualization-utility" target="_blank">view_audio </a>- command to visualize real-time audio samples as a spectrogram</span></p>
+	</li>
+	<li style="color:rgb(0, 0, 0); text-align:left">
+	<p><span style="font-size:27px"><a href="https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility" target="_blank">classify_audio </a>- command to classify real-time microphone audio</span></p>
+	</li>
+</ul>
+</div>
+<grammarly-extension data-grammarly-shadow-root="true" style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 11;" class="cGcvT"></grammarly-extension><grammarly-extension data-grammarly-shadow-root="true" style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 11;" class="cGcvT"></grammarly-extension>
+</div>
+
+
+<div class="sl-block" data-block-type="text" style="height: auto; width: 261px; left: 379px; top: 661px;" data-name="text-ed30e7" data-block-id="1f9fb858fd46ad36769f259312a28237"><a class="sl-block-style" style="z-index: 14;" href="#/audio_feature_generator"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 14;">
+<p><em><span style="font-size:0.7em">Audio Feature Generator</span></em></p>
+</div></a></div>
+</section><section data-id="aca56c1f71570806fdb7968180381011" id="audio_feature_generator"><div class="sl-block" data-block-type="text" style="width: 972px; left: 18px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="7f5345772234067f0b44d0842fe69147"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Audio Feature Generator</h3>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 62px;" data-name="text-55ddfc" data-block-id="c5df544f3bd86a1312f70ca6de289db8"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<ul>
+	<li style="color:rgb(0, 0, 0); text-align:left">A common audio preprocessing technique is converting audio signals to spectrograms
+	<ul>
+		<li style="color:rgb(0, 0, 0); text-align:left">A spectrogram is a 2D, greyscale image of an audio sample</li>
+	</ul>
+	</li>
+	<li style="color:rgb(0, 0, 0); text-align:left">The MLTK features the <a href="https://siliconlabs.github.io/mltk/docs/audio/audio_feature_generator.html" target="_blank">AudioFeatureGeneator </a>Python component which converts a raw audio sample into a spectrogram. It features:
+	<ul>
+		<li style="color:rgb(0, 0, 0); text-align:left">A <a href="https://github.com/siliconlabs/mltk/tree/master/cpp/audio_feature_generator_wrapper" target="_blank">C++ Python wrapper</a> that enables the model training scripts to use the <em>exact </em>same source code as the embedded device at runtime</li>
+		<li style="color:rgb(0, 0, 0); text-align:left">A Gecko SDK <a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/api/group-ml-audio-feature-generation" target="_blank">component </a>so the firmware application can easily convert the microphone audio into spectrograms</li>
+		<li style="color:rgb(0, 0, 0); text-align:left">
+<a href="https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html#audiodatasetmixin" target="_blank">Embedded model parameters</a> so the settings used to generate the spectrograms during training are also used by the embedded device</li>
+	</ul>
+	</li>
+</ul>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 344px; left: 288px; top: 661px;" data-name="text-80bb43" data-block-id="888d7355ab7c2cf12938a85b1f61ef7d"><a class="sl-block-style" style="z-index: 12;" href="#/view_audio_command"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12;">
+<p><span style="font-size:0.7em"><em>view_audio command</em></span></p>
+</div></a></div></section><section data-id="2482c8c5f042522bf518d7901d9da6c8" id="view_audio_command"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="8ab4f4d7673d15ee19c399ed18e79196"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">View Audio Command</h3>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 70px;" data-name="text-55ddfc" data-block-id="c03db9657e1245db58b230251d65097c"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<ul>
+	<li style="color:rgb(0, 0, 0); text-align:left">The MLTK features a <a href="https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-visualization-utility" target="_blank">utility </a>to view the spectrograms generated by <a href="https://siliconlabs.github.io/mltk/docs/audio/audio_feature_generator.html" target="_blank">AudioFeatureGenerator </a>in real-time</li>
+	<li style="color:rgb(0, 0, 0); text-align:left">This allows for adjusting the AudioFeatureGenerator settings and immediately seeing how the spectrogram changes</li>
+</ul>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 640.919px; left: 40px; top: 242px;" data-name="text-196a77" data-block-id="c56bfc927673edda6178919e1a166e51"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12; border-width: 1px;">
+<pre>&gt; mltk view_audio</pre>
+</div></div>
+<div class="sl-block" data-block-type="image" data-name="image-4893a3" data-block-id="bd585a194a465317132a7fcb567266e1" style="width: 610.445px; height: 381px; left: 40px; top: 280px; min-width: 1px; min-height: 1px;"><div class="sl-block-content" style="z-index: 13;"><img style="" data-natural-width="1301" data-natural-height="812" data-lazy-loaded="" data-src="mltk-overview/76cc171c29695bfdb1a8a87745c1ada5.gif"></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 344px; left: 288px; top: 661px;" data-name="text-80bb43" data-block-id="c0ad6d91dedde15a11543d6652a060cf"><a class="sl-block-style" style="z-index: 14;" href="#/classify_audio_command" target="_blank"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 14;">
+<p><span style="font-size:0.7em"><em>classify_audio command</em></span></p>
+</div></a></div></section><section data-id="440506c766dc0bfa389166390ba041fd" id="classify_audio_command"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="8dc606c5dfc73a914e6b95a8900517fd"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Classify Audio Command</h3>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 70px;" data-name="text-55ddfc" data-block-id="646ceb681c638a67ae83ba3d5e4f001c"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<ul>
+	<li style="color:rgb(0, 0, 0); text-align:left">The MLTK features a <a href="https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility" target="_blank">utility </a>to use a trained keyword spotting model to classify real-time microphone audio</li>
+	<li style="color:rgb(0, 0, 0); text-align:left">The <a href="https://siliconlabs.github.io/mltk/docs/cpp_development/examples/audio_classifier.html" target="_blank">audio_classifier </a>application can run on Windows/Linux or on an embedded target</li>
+</ul>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 640.919px; left: 40px; top: 242px;" data-name="text-196a77" data-block-id="352109c2c8d4bc9ed3ccd7dbf55d9b60"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12; border-width: 1px;">
+<pre>&gt; mltk classify_audio</pre>
+</div></div>
+</section></section><section class="stack" data-id="04a3600eaed87e8d63eb9130692333e1"><section data-id="e55235a2e4eab7fad97aab91d11664be" id="design_model"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="53864dc54a0221a7fe8c88764d5991e7"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Model Design</h3>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 50px;" data-name="text-55ddfc" data-block-id="2b14570acc550261c10905202a0e7dde"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<ul>
+	<li>The standard <a href="https://www.tensorflow.org/api_docs/python/tf/keras" target="_blank">Tensorflow/Keras API</a> is used to design the machine learning model</li>
+	<li>The model can be designed from scratch or <a href="https://www.tensorflow.org/api_docs/python/tf/keras/applications" target="_blank">existing</a> model architectures may be used</li>
+	<li>The MTLK comes with <a href="https://siliconlabs.github.io/mltk/docs/python_api/models/index.html" target="_blank">reference models</a>
+</li>
+	<li>The entire model and all configuration parameters are defined in a single Python script called the <a href="https://siliconlabs.github.io/mltk/docs/guides/model_specification.html" target="_blank">Model Specification</a>
+</li>
+	<li>With the model specification the:
+	<ul>
+		<li>
+<a href="https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html" target="_blank">profile </a>command may be used to profile the model to determine latency, energy, and CPU usage</li>
+		<li>
+<a href="https://siliconlabs.github.io/mltk/docs/guides/model_summary.html" target="_blank">summarize </a>command may be used to generate a text summary of the model</li>
+		<li>
+<a href="https://siliconlabs.github.io/mltk/docs/guides/model_visualizer.html" target="_blank">view </a>command may be used to view the model in an interactive diagram</li>
+		<li>
+<a href="https://siliconlabs.github.io/mltk/docs/guides/model_training.html" target="_blank">train </a>command may be used to train the model</li>
+	</ul>
+	</li>
+</ul>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 199px; left: 380.5px; top: 661px;" data-name="text-8d5013" data-block-id="d4018f9118b24cd99d88fee86b52d189"><a class="sl-block-style" style="z-index: 12;" href="#/model_design_flow"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12;">
+<p><em><span style="font-size:0.7em">Model Design Flow</span></em></p>
+</div></a></div></section><section data-id="59c37e2d53aef898b610321db87152f4" id="model_design_flow"><div class="sl-block" data-block-type="text" style="width: 408px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="0e1131c17e7bc6cf3dc6313293913ed0"><div class="sl-block-style" style="z-index: 10; transform: rotate(0deg);"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Model Design Flow</h3>
+</div></div></div>
+<div class="sl-block" data-block-type="shape" style="width: 241px; height: 131px; left: 357.375px; top: 124px;" data-name="shape-63871e" data-block-id="4ed727b9e7b55d6cb0bfc35952dbd2c4"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 11;" data-shape-corner-radius="10px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 241 131"><rect width="241" height="131" rx="10" ry="10" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 226px; left: 366.875px; top: 146px;" data-name="text-beab35" data-block-id="9ea5d6d2495fe7113e72ae7df44891d4"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12; color: rgb(255, 255, 255);">
+<p><span style="font-size:0.7em">Create </span></p>
+
+<p><span style="font-size:0.7em">Model Specification</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 237.5px; height: 131px; left: 653.875px; top: 123px;" data-block-id="e76a5ef8e1c087623cb7e217e0f12be2" data-name="shape-3bbf31"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 13;" data-shape-corner-radius="10px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 238 131"><rect width="237.5" height="131" rx="10" ry="10" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 205px; left: 670.125px; top: 169px;" data-block-id="69dd4d18bd16e987b40bba4156990fde" data-name="text-a16fde"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 14; color: rgb(255, 255, 255);">
+<p><span style="font-size:21px">Profile Model</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 241px; height: 131px; left: 357.375px; top: 323.5px;" data-block-id="e016d4006f7bf58fcd093b27081b657d" data-name="shape-681f5f"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 15;" data-shape-corner-radius="10px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 241 131"><rect width="241" height="131" rx="10" ry="10" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 176px; left: 389.875px; top: 369.5px;" data-block-id="790a26107c1beab0da710d92e5ca0317" data-name="text-55240a"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 16; color: rgb(255, 255, 255);">
+<p><span style="font-size:0.7em">Train Model</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 241px; height: 131px; left: 51.875px; top: 327.25px;" data-block-id="5f1ea2dcd68a9abf7979cf39d9d8f80b" data-name="shape-136ca6"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 17;" data-shape-corner-radius="10px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 241 131"><rect width="241" height="131" rx="10" ry="10" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 176px; left: 84.375px; top: 373.25px;" data-block-id="534c2876ab5c5409e84956fa1014ce3e" data-name="text-18b605"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 18; color: rgb(255, 255, 255);">
+<p><span style="font-size:0.7em">Evaluate Model</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 241px; height: 131px; left: 357.375px; top: 515.25px;" data-block-id="42c81dc49a96f1b485843ce089506fd7" data-name="shape-62c662"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 19;" data-shape-corner-radius="10px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 241 131"><rect width="241" height="131" rx="10" ry="10" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 260px; left: 349.875px; top: 538.25px;" data-block-id="78935d4a09904cc83f24198076f9aab7" data-name="text-9a40c9"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 20; color: rgb(255, 255, 255);">
+<p><span style="font-size:0.7em">Copy .tflite model file </span></p>
+
+<p><span style="font-size:0.7em">into Gecko SDK Project</span></p>
+</div></div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 165.875px; top: 188.5px;" data-name="line-320faf" data-block-id="91d33b00912a0d6c96d0f9e78b47625e"><div class="sl-block-content" data-line-x1="0" data-line-y1="138.75" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 21;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="1" height="138.75" viewbox="0 0 1 138.75"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0.5" y1="139.25" x2="0.5" y2="0.5"></line><line class="line-element" stroke="#000000" stroke-width="3" x1="0.5" y1="139.25" x2="0.5" y2="0.5"></line></svg></div></div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 292.875px; top: 389px;" data-block-id="a6112ee3f28411dd1d0f240591a8e219" data-name="line-d8a14c"><div class="sl-block-content" data-line-x1="64.5" data-line-y1="0" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="line-arrow" style="z-index: 22;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="64.5" height="1" viewbox="0 0 64.5 1"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="65" y1="0.5" x2="2.75" y2="0.5"></line><line class="line-element" stroke="#000000" stroke-width="3" x1="65" y1="0.5" x2="2.75" y2="0.5"></line><path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(2.25,0) rotate(270)" d="M 6.75 6.75 L 0 0 L -6.75 6.75"></path></svg></div></div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 165.875px; top: 188.5px;" data-block-id="11fae8034664613cd41565306752b48a" data-name="line-e7e7e6"><div class="sl-block-content" data-line-x1="0" data-line-y1="0.5" data-line-x2="191.5" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="line-arrow" style="z-index: 23;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="191.5" height="1" viewbox="0 0 191.5 1"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="0.5" y1="1" x2="189.7500076692475" y2="0.5058746536050979"></line><line class="line-element" stroke="#000000" stroke-width="3" x1="0.5" y1="1" x2="189.7500076692475" y2="0.5058746536050979"></line><path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(189.2500076692475,0.005874653605097884) rotate(89.85)" d="M 6.75 6.75 L 0 0 L -6.75 6.75"></path></svg></div></div>
+<div class="sl-block" data-block-type="shape" style="width: 37px; height: 48.5px; left: 461.5px; top: 265.25px;" data-name="shape-f5c49a" data-block-id="90b6fa630193a857678bb516569278e5"><div class="sl-block-content" data-shape-type="symbol-thin-arrow-down" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 24;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="4.000251770019531 1.9999980926513672 23.999500274658203 27.999752044677734"><g class="shape-element" fill="#000000" data-viewbox="4.000251770019531 1.9999980926513672 23.999500274658203 27.999752044677734"><path d="M4.586 19.414l10 10c0.781 0.781 2.047 0.781 2.828 0l10-10c0.781-0.781 0.781-2.047 0-2.828s-2.047-0.781-2.828 0l-6.586 6.586v-19.172c0-1.105-0.895-2-2-2s-2 0.895-2 2v19.172l-6.586-6.586c-0.391-0.39-0.902-0.586-1.414-0.586s-1.024 0.195-1.414 0.586c-0.781 0.781-0.781 2.047 0 2.828z"></path></g></svg></div></div>
+<div class="sl-block" data-block-type="shape" style="width: 37px; height: 48.5px; left: 459.375px; top: 458.25px;" data-block-id="207406ef3248b54fb430d9673fddfda3" data-name="shape-b23263"><div class="sl-block-content" data-shape-type="symbol-thin-arrow-down" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 25;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="4.000251770019531 1.9999980926513672 23.999500274658203 27.999752044677734"><g class="shape-element" fill="#000000" data-viewbox="4.000251770019531 1.9999980926513672 23.999500274658203 27.999752044677734"><path d="M4.586 19.414l10 10c0.781 0.781 2.047 0.781 2.828 0l10-10c0.781-0.781 0.781-2.047 0-2.828s-2.047-0.781-2.828 0l-6.586 6.586v-19.172c0-1.105-0.895-2-2-2s-2 0.895-2 2v19.172l-6.586-6.586c-0.391-0.39-0.902-0.586-1.414-0.586s-1.024 0.195-1.414 0.586c-0.781 0.781-0.781 2.047 0 2.828z"></path></g></svg></div></div>
+
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 598.375px; top: 188.5px;" data-block-id="6021ea15917c9bd10d21d39cf0ce2183" data-name="line-fc5c34"><div class="sl-block-content" data-line-x1="0" data-line-y1="0" data-line-x2="55.5" data-line-y2="0" data-line-color="#000000" data-line-start-type="line-arrow" data-line-end-type="line-arrow" style="z-index: 27;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="55.5" height="1" viewbox="0 0 55.5 1"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="2.75" y1="0.5" x2="53.84121621621622" y2="0.5"></line><line class="line-element" stroke="#000000" stroke-width="3" x1="2.75" y1="0.5" x2="53.84121621621622" y2="0.5"></line><path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(2.25,0) rotate(90)" d="M -6.75 -6.75 L 0 0 L 6.75 -6.75"></path><path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(53.34121621621622,0) rotate(90)" d="M 6.75 6.75 L 0 0 L -6.75 6.75"></path></svg></div></div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 771.625px; top: 254px;" data-block-id="673d1b2ba2310d5e21df150d36e0529e" data-name="line-82232a"><div class="sl-block-content" data-line-x1="1" data-line-y1="138.75" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="none" style="z-index: 28;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="1" height="138.75" viewbox="0 0 1 138.75"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="1.5" y1="139.25" x2="0.5" y2="0.5"></line><line class="line-element" stroke="#000000" stroke-width="3" x1="1.5" y1="139.25" x2="0.5" y2="0.5"></line></svg></div></div>
+<div class="sl-block" data-block-type="line" style="width: auto; height: auto; min-width: 0px; min-height: 0px; left: 598.375px; top: 391.75px;" data-block-id="12336ec6d9386d7759400344af116873" data-name="line-5bffd3"><div class="sl-block-content" data-line-x1="174.25" data-line-y1="1" data-line-x2="0" data-line-y2="0" data-line-color="#000000" data-line-start-type="none" data-line-end-type="line-arrow" style="z-index: 29;" data-line-width="3px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" preserveaspectratio="xMidYMid" width="174.25" height="1" viewbox="0 0 174.25 1"><line stroke="rgba(0,0,0,0)" stroke-width="15" x1="174.75" y1="1.5" x2="2.7499629493167213" y2="0.5129122694365379"></line><line class="line-element" stroke="#000000" stroke-width="3" x1="174.75" y1="1.5" x2="2.7499629493167213" y2="0.5129122694365379"></line><path style="fill: rgba(0,0,0,0);" stroke="#000000" stroke-width="3" transform="translate(2.2499629493167213,0.012912269436537855) rotate(-89.671)" d="M 6.75 6.75 L 0 0 L -6.75 6.75"></path></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 313px; left: 626.125px; top: 53px;" data-name="text-9222b4" data-block-id="1674795629ce11fbd8459e5e208f2aa6"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 30; line-height: 0.819; border-width: 1px;" data-has-line-height="">
+<p><span style="font-size:0.5em"><a href="https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html" target="_blank">Profile </a>the model before training to ensure it fits within the hardware constraints</span></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 318px; left: 20.875px; top: 470px;" data-block-id="7878ab2f490f73ca9b48e595a5ba950e" data-name="text-f85b31"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 31; line-height: 0.819; border-width: 1px;" data-has-line-height="">
+<p><span style="font-size:0.5em"><a href="https://siliconlabs.github.io/mltk/docs/guides/model_evaluation.html" target="_blank">Evaluate </a>trained model to see how well it can make predictions on unseen data samples</span></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 312px; left: 579.375px; top: 457.75px;" data-block-id="ae5416445d616baa5a092758d9fbbdde" data-name="text-fe6e0c"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 32; line-height: 0.819; border-width: 1px;" data-has-line-height="">
+<p><span style="font-size:0.5em">The output of model training is an <a href="https://siliconlabs.github.io/mltk/docs/guides/model_archive.html" target="_blank">archive file</a> containing the trained model files</span></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 314px; left: 51.875px; top: 65px;" data-block-id="52d00bc7269b9eaea371b3dcae452734" data-name="text-fff2aa"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 33; line-height: 0.819; border-width: 1px;" data-has-line-height="">
+<p><span style="font-size:0.5em">The <a href="https://siliconlabs.github.io/mltk/docs/guides/model_specification.html" target="_blank">model specification</a> is a single Python script containing everything needed to design, train and evaluate the model</span></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 312px; left: 598.375px; top: 588.5px;" data-block-id="01d41e5cefc0da966e46047fcc5e4cef" data-name="text-14a89f"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 34; line-height: 0.819; border-width: 1px;" data-has-line-height="">
+<p><span style="font-size:15px">The .tflite model file is loaded into the Tensorflow-Lite Micro Interpreter which executes on the embedded device</span></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 188px; left: 386px; top: 661px;" data-name="text-bc84f2" data-block-id="080e49870a299186cca5b8a91977d1ba"><a class="sl-block-style" style="z-index: 35;" href="#/model_files_types"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 35;">
+<p><em><span style="font-size:0.7em">Model File Types</span></em></p>
+</div></a></div></section><section data-id="c00c878e386f6181a8b810ce6e558d0b" id="model_files_types"><div class="sl-block" data-block-type="text" style="width: 408px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="06a195c644460d4fed87a952b445c74d"><div class="sl-block-style" style="z-index: 10; transform: rotate(0deg);"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Model File Types</h3>
+</div></div></div>
+<div class="sl-block" data-block-type="shape" style="width: 237.5px; height: 97.5px; left: 37.25px; top: 98px;" data-name="shape-3bbf31" data-block-id="be90ccc7a953a826b46e6a2c2eed1f15"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 11;" data-shape-corner-radius="10px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 238 98"><rect width="237.5" height="97.5" rx="10" ry="10" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 205px; left: 53.5px; top: 120.5px;" data-name="text-a16fde" data-block-id="a6f577ca6ece1d22708bdede9055f1e8"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 12; color: rgb(255, 255, 255); line-height: 0.871;" data-has-line-height="">
+<p><span style="font-size:21px">Model Specification</span></p>
+
+<pre style="text-align: center;"><span style="font-size:21px">.py</span></pre>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 237.5px; height: 93px; left: 37.25px; top: 260.5px;" data-block-id="5594e5a779e0b8f6778117497d8d00be" data-name="shape-fed334"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 13;" data-shape-corner-radius="10px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 238 93"><rect width="237.5" height="93" rx="10" ry="10" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 205px; left: 53.5px; top: 283px;" data-block-id="fbaa9847ddadd214069bae99c42aafad" data-name="text-6ada68"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 14; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:21px">Keras Model File</span></p>
+
+<pre style="text-align: center;"><span style="font-size:21px">.h5</span></pre>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 237.5px; height: 96px; left: 38.4685px; top: 425.5px;" data-block-id="fef641b8da5cc7580be51d51abd1270f" data-name="shape-eb52f6"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 15;" data-shape-corner-radius="10px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 238 96"><rect width="237.5" height="96" rx="10" ry="10" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 205px; left: 54.7185px; top: 448px;" data-block-id="ea94efb3ff7ae1e8b47b5761703a022d" data-name="text-42b6da"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 16; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:21px">TF-Lite Model File</span></p>
+
+<pre style="text-align: center;"><span style="font-size:21px">.tflite</span></pre>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 238.5px; height: 99px; left: 663.095px; top: 262px;" data-block-id="b3b15d4abfe27a0293dd3474062317ef" data-name="shape-cde352"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 17;" data-shape-corner-radius="10px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 239 99"><rect width="238.5" height="99" rx="10" ry="10" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 205px; left: 675.502px; top: 272.5px;" data-block-id="687b3fa8de7135ba14336509170b8346" data-name="text-553039"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 18; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:21px">Model Archive</span></p>
+
+<pre style="text-align: center;"><span style="font-size:21px">.mltk.zip</span></pre>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 39px; height: 40px; left: 180px; top: 214.5px;" data-name="shape-2d9215" data-block-id="1529dae68e551167a4a4a58a1c237cb9"><div class="sl-block-style" style="z-index: 19; transform: rotate(90deg);"><div class="sl-block-content" data-shape-type="arrow-right" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 19;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 39 40"><polygon points="0,12 19.5,12 19.5,0 39,20 19.5,40 19.5,28 0,28" class="shape-element" fill="#000000"></polygon></svg></div></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 120.5px; left: 39.5px; top: 210px;" data-name="text-b33b46" data-block-id="6b926b5ebfce45f239d8d5c2efa74238"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 20; line-height: 0.897;" data-has-line-height="">
+<p><a href="http://siliconlabs.github.io/mltk/docs/guides/model_training.html" target="_blank"><span style="font-size:0.5em">Train Model</span></a></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 39px; height: 40px; left: 181.219px; top: 370px;" data-block-id="4bef76da1b43107c47837583b3219e65" data-name="shape-60a8d1"><div class="sl-block-style" style="z-index: 21; transform: rotate(90deg);"><div class="sl-block-content" data-shape-type="arrow-right" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 21;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 39 40"><polygon points="0,12 19.5,12 19.5,0 39,20 19.5,40 19.5,28 0,28" class="shape-element" fill="#000000"></polygon></svg></div></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 120.5px; left: 54.7185px; top: 361px;" data-block-id="eaeda0110135576084e8a01aafbde285" data-name="text-056600"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 22;">
+<p><a href="https://siliconlabs.github.io/mltk/docs/guides/model_quantization.html" target="_blank"><span style="font-size:0.5em">Quantize Model</span></a></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 268.125px; left: 291.875px; top: 107px;" data-name="text-b0b2d5" data-block-id="354df2b645e2c2ceb5d30f26c069a5f1"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 23; line-height: 0.741;" data-has-line-height="">
+<p><span style="font-size:0.5em">The configuration defined in the <a href="https://siliconlabs.github.io/mltk/docs/guides/model_specification.html" target="_blank">model specification</a> file is given to <a href="https://www.tensorflow.org/guide" target="_blank">Tensorflow</a> to train the model</span></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 278.375px; left: 284.312px; top: 210px;" data-block-id="5d377ea12fd3c6be83fcdfd173dd66d4" data-name="text-70faa5"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 24; line-height: 0.741;" data-has-line-height="">
+<p><span style="font-size:0.5em">The output of Tensorflow, the trained model, is a Keras .h5 model file</span></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 278.375px; left: 286.75px; top: 280.5px;" data-block-id="92e51881cc4ea194941909f0173b7ecd" data-name="text-686d56"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 25; line-height: 0.741;" data-has-line-height="">
+<p><span style="font-size:0.5em">The Keras .h5 file is given to the <a href="https://www.tensorflow.org/lite/convert" target="_blank">Tensorflow-Lite Converter</a> to generate a quantized, .tflite model file</span></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 294px; left: 278.938px; top: 448px;" data-block-id="f0a2a4f3bef236ad3ae8d1a4c9c94a02" data-name="text-be181f"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 26; line-height: 0.741;" data-has-line-height="">
+<p><span style="font-size:15px">The quantized, .tflite model file is programmed into the embedded device</span></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 278.375px; left: 643.158px; top: 370.5px;" data-block-id="02e89a39de6c4df459d97c69c22243a4" data-name="text-b0fab5"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 27; line-height: 0.741;" data-has-line-height="">
+<p><span style="font-size:0.5em">The output of MLTK <a href="https://siliconlabs.github.io/mltk/docs/guides/model_training.html" target="_blank">train command</a> also generates a model <a href="https://siliconlabs.github.io/mltk/docs/guides/model_archive.html" target="_blank">archive file</a> which contains all of the model files and training logs</span></p>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 237.5px; height: 96px; left: 38.4685px; top: 586px;" data-block-id="8fb3e8fea959c6ba06c33d28a71bec4d" data-name="shape-a6de68"><div class="sl-block-content" data-shape-type="rect" data-shape-fill-color="rgb(68, 68, 68)" data-shape-stretch="true" style="z-index: 28;" data-shape-corner-radius="10px"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 238 96"><rect width="237.5" height="96" rx="10" ry="10" class="shape-element" fill="rgb(68, 68, 68)"></rect></svg></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 205px; left: 54.7185px; top: 608.5px;" data-block-id="754cc9eaf0d2412e80331f705655f052" data-name="text-05f84d"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 29; color: rgb(255, 255, 255); line-height: 0.91;" data-has-line-height="">
+<p><span style="font-size:21px">TF-Lite Model File</span></p>
+
+<pre style="text-align: center;"><span style="font-size:21px">.tflite</span></pre>
+</div></div>
+<div class="sl-block" data-block-type="shape" style="width: 39px; height: 40px; left: 181.219px; top: 530.5px;" data-block-id="c6d7a60e39a7aeb687ce2f7e91dc8f4c" data-name="shape-27c8bc"><div class="sl-block-style" style="z-index: 30; transform: rotate(90deg);"><div class="sl-block-content" data-shape-type="arrow-right" data-shape-fill-color="#000000" data-shape-stretch="true" style="z-index: 30;"><svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" preserveaspectratio="none" viewbox="0 0 39 40"><polygon points="0,12 19.5,12 19.5,0 39,20 19.5,40 19.5,28 0,28" class="shape-element" fill="#000000"></polygon></svg></div></div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 120.5px; left: 54.7185px; top: 531px;" data-block-id="98c391b4824b8261466ada86e4f36729" data-name="text-8330c1"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 31;">
+<p><a href="https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html" target="_blank"><span style="font-size:0.5em">Add parameters</span></a></p>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 294px; left: 284.312px; top: 604.5px;" data-block-id="83588fdd4ee76f50b0732c128cf0105a" data-name="text-764304"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 32; line-height: 0.741;" data-has-line-height="">
+<p><span style="font-size:15px">The MLTK adds <a href="https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html" target="_blank">additional parameters</a> to the .tflite model file which the <a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/getting-started" target="_blank">Gecko SDK</a> parses during project generation</span></p>
+</div></div></section></section><section data-id="a358e596d88ef97c73816631a96da0de"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="c1cc00670ddc1c304eca4da3d6e7190d"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Model Evaluation</h3>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 59.5px;" data-name="text-55ddfc" data-block-id="1b8ba41ee20027f9fc7dc06b3bd11c9a"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<ul>
+	<li>Once a model is trained, it is important to evaluate it to determine how well it works against new, never-before-seen data</li>
+	<li>Model evaluation indicates how accurate a model's predictions may be on an embedded device in the field
+	<ul>
+		<li>
+<strong>NOTE:</strong> Model evaluation is directly dependent on how representative the given dataset is</li>
+	</ul>
+	</li>
+	<li>The MLTK features the <a href="https://siliconlabs.github.io/mltk/docs/guides/model_evaluation.html" target="_blank">evaluate command</a>
+</li>
+</ul>
+</div></div></section><section data-id="7c72a87c2e715d439cdb540e5d7c725d"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="f955fdcd804fe82afec872d3e76503c5"><div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);">
+<h3 style="text-align:left">Model Profiling</h3>
+</div></div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 59.5px;" data-name="text-55ddfc" data-block-id="33e00c599c1e2278a5038e45bc02829d"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<ul>
+	<li>Model profiling provides information about the hardware resources consumed by the model at runtime. This information includes:
+	<ul>
+		<li>Flash memory required by model file (.tflite)</li>
+		<li>Runtime RAM required by the loaded model</li>
+		<li>Latency per inference, i.e. the amount of time the model takes to execute one time</li>
+		<li>Energy per inference, i.e. the additional energy, not including the base-line or idle energy, the model takes to execute one time</li>
+		<li>CPU cycles per inference</li>
+	</ul>
+	</li>
+	<li>These values can be either estimated in a simulator or directly measured by running the model on a physical device</li>
+	<li>The MLTK features the <a href="https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html" target="_blank">profile command</a>
+</li>
+	<li>The MLTK also features a <a href="https://siliconlabs.github.io/mltk/docs/guides/model_profiler_utility.html" target="_blank">stand-alone executable</a>, <strong>no installation required</strong>
+</li>
+</ul>
+</div></div></section><section data-id="3c5cbb545ff1beba6b112e47a8b82b46"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="6678e216a02c72433e56a05da00365d3">
+<div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);" dir="ui">
+<h3 style="text-align:left">Model Deploying</h3>
+</div>
+<grammarly-extension data-grammarly-shadow-root="true" style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 10;" class="cGcvT"></grammarly-extension><grammarly-extension data-grammarly-shadow-root="true" style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 10;" class="cGcvT"></grammarly-extension>
+</div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 942px; left: 18px; top: 59.5px;" data-name="text-55ddfc" data-block-id="500aeeb6cedf392b67cc756c79e92999"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<ul>
+	<li>Once the trained model has acceptable accuracy and fits within the hardware constraints, it's time to deploy to an embedded device</li>
+	<li>Deploying the trained model is done by copying the .tflite model file in the generated <a href="https://siliconlabs.github.io/mltk/docs/guides/model_archive.html" target="_blank">model archive</a> to your <a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/guide-training-a-model" target="_blank">Gecko SDK</a> project</li>
+	<li>When the Gecko SDK project is built, the .tflite model file is parsed by the Gecko SDK, and the corresponding header files are generated and built into the firmware application</li>
+	<li>
+<strong>NOTE:</strong> The MLTK also supports directly building <a href="https://siliconlabs.github.io/mltk/docs/cpp_development/index.html" target="_blank">C++ applications </a>
+</li>
+</ul>
+</div></div></section><section data-id="1646bf03bed589bb00716a5f8c5e9bfd"><div class="sl-block" data-block-type="text" style="width: 972px; left: 0px; top: 0px; height: auto;" data-name="text-cfdec9" data-block-id="1635c318346c5135fef9d6fd9088193e">
+<div class="sl-block-content" data-placeholder-tag="h2" data-placeholder-text="Title Text" style="z-index: 10; color: rgb(204, 0, 0);" dir="ui">
+<h3 style="text-align:left">Additional Reading</h3>
+</div>
+<grammarly-extension data-grammarly-shadow-root="true" style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 10;" class="cGcvT"></grammarly-extension><grammarly-extension data-grammarly-shadow-root="true" style="position: absolute; top: 0px; left: 0px; pointer-events: none; z-index: 10;" class="cGcvT"></grammarly-extension>
+</div>
+<div class="sl-block" data-block-type="text" style="height: auto; width: 960px; left: 0px; top: 89px;" data-name="text-55ddfc" data-block-id="880e6881a0e8bfad41af19f9f9689259"><div class="sl-block-content" data-placeholder-tag="p" data-placeholder-text="Text" style="z-index: 11;">
+<ul>
+	<li>
+<a href="https://siliconlabs.github.io/mltk/docs/guides/index.html" target="_blank">Modeling Guides</a> - Detailed guides describing how to develop machine learning models using the MLTK</li>
+	<li>
+<a href="http://siliconlabs.github.io/mltk/docs/tutorials.html" target="_blank">Tutorials</a> - Step-by-step tutorials showing how to use the MLTK</li>
+	<li>
+<a href="http://siliconlabs.github.io/mltk/docs/examples.html" target="_blank">API Examples</a> - Example demonstrating how to use the MLTK Python API</li>
+	<li>
+<a href="https://siliconlabs.github.io/mltk/docs/cpp_development/index.html" target="_blank">C++ Development</a> - Documentation describing how to build C++ applications for Windows/Linux or embedded targets</li>
+</ul>
+</div></div></section>
+			</div>
+		</div>
+
+		<script>
+			var SLConfig = {"deck": {"id":2294177,"slug":"mltk-overview","title":"MLTK Overview","description":"Describes the typical ML model development flow using the Silicon Labs Machine Learning Development Kit","width":960,"height":700,"margin":0.05,"visibility":"self","published_at":"2021-12-01T00:43:49.590Z","sanitize_messages":null,"thumbnail_url":"https://s3.amazonaws.com/media-p.slid.es/thumbnails/b71d8efccb1f62f02795f50845112e85/thumb.jpg?1650385930","view_count":0,"user":{"id":2033618,"username":"danriedler","name":"Dan Riedler","description":null,"thumbnail_url":"https://lh3.googleusercontent.com/a/AATXAJx99pOnw21KOfAHAk4hb-pywH8e52C0cDNbVWMlxQ=s96-c","account_type":"lite","team_id":null,"settings":{"id":23845475,"present_controls":true,"present_upsizing":true,"present_pointer":false,"present_notes":true,"default_deck_tag_id":null}},"background_transition":"slide","transition":"slide","theme_id":null,"theme_font":"opensans","theme_color":"silver-blue","auto_slide_interval":0,"comments_enabled":true,"forking_enabled":true,"rolling_links":false,"center":false,"shuffle":false,"should_loop":false,"share_notes":false,"slide_number":true,"slide_count":21,"rtl":false,"version":2,"collaborative":false,"deck_user_editor_limit":1,"data_updated_at":1650388077718,"font_typekit":null,"font_google":null,"time_limit":null,"navigation_mode":"default","upsizing_enabled":true,"notes":{}}};
+
+
+			// Use local fonts
+			SLConfig.fonts_url = 'lib/fonts/';
+		</script>
+
+		<script src="lib/reveal.js"></script>
+		<script src="lib/reveal-plugins.js"></script>
+		<script src="lib/offline.js"></script>
+
+		<!-- Initialize the presentation -->
+		<script>
+			Reveal.initialize({
+				width: 960,
+				height: 700,
+				margin: 0.05,
+				
+
+				hash: true,
+				controls: true,
+				progress: true,
+				mouseWheel: false,
+				showNotes: false,
+				slideNumber: true,
+				fragmentInURL: true,
+
+				autoSlide: 0,
+				autoSlideStoppable: true,
+
+				autoAnimateMatcher: SL.deck.AutoAnimate.matcher,
+
+				center: false,
+				shuffle: false,
+				loop: false,
+				rtl: false,
+				navigationMode: "default",
+
+				transition: "slide",
+				backgroundTransition: "slide",
+
+				highlight: {
+					escapeHTML: false
+				},
+
+				plugins: [ RevealZoom, RevealNotes, RevealMarkdown, RevealHighlight ]
+			});
+		</script>
+
+		
+
+	</body>
+</html>

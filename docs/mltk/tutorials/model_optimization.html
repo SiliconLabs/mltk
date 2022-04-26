@@ -1,0 +1,1632 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tflite, embedded, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-965PJZXVMY"></script>
+<script>
+    window.gTrackingId = 'G-965PJZXVMY';
+</script>
+  
+  
+    <title>Model Optimization for MVP Hardware Accelerator &#8212; MLTK 0.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Keyword Spotting with Transfer Learning" href="keyword_spotting_with_transfer_learning.html" />
+    <link rel="prev" title="Keyword Spotting - On/Off" href="keyword_spotting_on_off.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/tutorials/model_optimization" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.6.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.6.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Model Optimization for MVP Hardware Accelerator </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_on_off.html" class="md-nav__link">Keyword Spotting - On/Off</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Model Optimization for MVP Hardware Accelerator </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Model Optimization for MVP Hardware Accelerator</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-model-optimization--page-root" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#running-this-tutorial" class="md-nav__link">Running this Tutorial</a>
+        </li>
+        <li class="md-nav__item"><a href="#recommended-reading" class="md-nav__link">Recommended Reading</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-specification" class="md-nav__link">Model Specification</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#create-the-model-specification-file" class="md-nav__link">Create the model specification file</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-the-model-description" class="md-nav__link">Update the model description</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-the-keywords" class="md-nav__link">Update the Keywords</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-the-audiofeaturegenerator-settings" class="md-nav__link">Update the AudioFeatureGenerator Settings</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#select-an-audio-file" class="md-nav__link">Select an audio file</a>
+        </li>
+        <li class="md-nav__item"><a href="#adjust-the-audiofeaturegenerator-settings" class="md-nav__link">Adjust the AudioFeatureGenerator settings</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#update-model-layout" class="md-nav__link">Update Model Layout</a>
+        </li>
+        <li class="md-nav__item"><a href="#summarize-the-model" class="md-nav__link">Summarize the model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#profile-model" class="md-nav__link">Profile Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#train-the-model" class="md-nav__link">Train the Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#test-the-model" class="md-nav__link">Test the Model</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/model_optimization.ipynb.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_with_transfer_learning.html" class="md-nav__link">Keyword Spotting with Transfer Learning</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="onnx_to_tflite.html" class="md-nav__link">ONNX to TF-Lite Model Conversion</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-model-optimization--page-root" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#running-this-tutorial" class="md-nav__link">Running this Tutorial</a>
+        </li>
+        <li class="md-nav__item"><a href="#recommended-reading" class="md-nav__link">Recommended Reading</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-specification" class="md-nav__link">Model Specification</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#create-the-model-specification-file" class="md-nav__link">Create the model specification file</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-the-model-description" class="md-nav__link">Update the model description</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-the-keywords" class="md-nav__link">Update the Keywords</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-the-audiofeaturegenerator-settings" class="md-nav__link">Update the AudioFeatureGenerator Settings</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#select-an-audio-file" class="md-nav__link">Select an audio file</a>
+        </li>
+        <li class="md-nav__item"><a href="#adjust-the-audiofeaturegenerator-settings" class="md-nav__link">Adjust the AudioFeatureGenerator settings</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#update-model-layout" class="md-nav__link">Update Model Layout</a>
+        </li>
+        <li class="md-nav__item"><a href="#summarize-the-model" class="md-nav__link">Summarize the model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#profile-model" class="md-nav__link">Profile Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#train-the-model" class="md-nav__link">Train the Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#test-the-model" class="md-nav__link">Test the Model</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/model_optimization.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li class="active"><a href="../../docs/tutorials.html" accesskey="U">Tutorials</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="model-optimization-for-mvp-hardware-accelerator">
+<h1 id="mltk-tutorials-model-optimization--page-root">Model Optimization for MVP Hardware Accelerator<a class="headerlink" href="#mltk-tutorials-model-optimization--page-root" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial describes how to optimize a keyword spotting model for the Silicon Lab’s development board featuring the MVP hardware accelerator.
+It uses the various tools offered by the MLTK to optimize a machine learning model so that it can efficiently run on the embedded hardware.</p>
+<p>In this tutorial, we use the industry-standard classification model <a class="reference external" href="https://ai.googleblog.com/2018/04/mobilenetv2-next-generation-of-on.html">MobileNetV2</a> to detect the keywords:</p>
+<ul class="simple">
+<li><p><strong>left</strong></p></li>
+<li><p><strong>right</strong></p></li>
+<li><p><strong>up</strong></p></li>
+<li><p><strong>down</strong></p></li>
+<li><p><strong>stop</strong></p></li>
+<li><p><strong>go</strong></p></li>
+</ul>
+<p>MobileNetV2 is a common and useful model because it is generic enough that it can be applied to most classification tasks but still runs efficiently on embedded devices.</p>
+<p>In this tutorial, you will learn the following:</p>
+<ul class="simple">
+<li><p>How to create a <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> using <a class="reference external" href="https://arxiv.org/abs/1801.04381">MobileNetV2</a></p></li>
+<li><p>How to use the <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">Model Profiler</span></a> to profile the model on the development board</p></li>
+<li><p>How to use the <code class="docutils literal notranslate"><span class="pre">view_audio</span></code> command to view the spectrogram generated by the <a class="reference internal" href="../../docs/audio/audio_feature_generator.html"><span class="doc std std-doc">AudioFeatureGenerator</span></a></p></li>
+<li><p>How to adjust model parameters to fit within the resource constraints of the development board</p></li>
+<li><p>How to train the model</p></li>
+</ul>
+<section id="running-this-tutorial">
+<h2 id="running-this-tutorial">Running this Tutorial<a class="headerlink" href="#running-this-tutorial" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>This tutorial assumes the MLTK has been <a class="reference internal" href="../../docs/installation.html"><span class="doc std std-doc">installed</span></a> and is available on the <a class="reference internal" href="../../docs/command_line.html"><span class="doc std std-doc">command-line</span></a></p></li>
+<li><p>All commands below should run from a local terminal</p></li>
+<li><p>In your local terminal, replace the <code class="docutils literal notranslate"><span class="pre">!mltk</span></code> command with <code class="docutils literal notranslate"><span class="pre">mltk</span></code> (i.e. remove the <code class="docutils literal notranslate"><span class="pre">!</span></code> character to run the command)</p></li>
+</ul>
+</section>
+<section id="recommended-reading">
+<h2 id="recommended-reading">Recommended Reading<a class="headerlink" href="#recommended-reading" title="Permalink to this headline">¶</a></h2>
+<p>Before doing this tutorial, it is recommended to review the following documentation:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/overview.html"><span class="doc std std-doc">MLTK Overview</span></a> - An overview of the core concepts used by the MLTK</p></li>
+<li><p><a class="reference internal" href="../../docs/audio/keyword_spotting_overview.html"><span class="doc std std-doc">Keyword Spotting Overview</span></a> - An overview of how keyword spotting works</p></li>
+<li><p><a class="reference internal" href="keyword_spotting_on_off.html"><span class="doc std std-doc">Keyword Spotting Tutorial</span></a> - Detailed tutorial describing how to create a Keyword Spotting model using the MLTK</p></li>
+</ul>
+</section>
+<section id="model-specification">
+<h2 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permalink to this headline">¶</a></h2>
+<p>The completed <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> for this tutorial may be found on Github: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_mobilenetv2.py">keyword_spotting_mobilenetv2.py</a>.</p>
+<p>This model is very similar to <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off.py">keyword_spotting_on_off.py</a> with the following changes:</p>
+<ul class="simple">
+<li><p>Uses <a class="reference external" href="https://ai.googleblog.com/2018/04/mobilenetv2-next-generation-of-on.html">MobileNetV2</a> instead of custom designed model</p></li>
+<li><p>Keyword “classes” changed</p></li>
+<li><p>AudioDataGeneratorSettings modified</p></li>
+</ul>
+<p>This tutorial describes how to start with the <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off.py">keyword_spotting_on_off.py</a> model specification and end up with the <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_mobilenetv2.py">keyword_spotting_mobilenetv2.py</a>.</p>
+<section id="create-the-model-specification-file">
+<h3 id="create-the-model-specification-file">Create the model specification file<a class="headerlink" href="#create-the-model-specification-file" title="Permalink to this headline">¶</a></h3>
+<p>First, copy the file <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off.py">keyword_spotting_on_off.py</a> to your working directory and rename it to <code class="docutils literal notranslate"><span class="pre">my_keyword_spotting_mobilenetv2.py</span></code> (or any name you like, just be sure to update the commands below accordingly).</p>
+<p><code class="docutils literal notranslate"><span class="pre">my_keyword_spotting_mobilenetv2.py</span></code> is your <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> file. It contains everything needed to train, evaluate, and quantize your model so that it can run on an embedded device.</p>
+<p>The rest of this tutorial describes how to modify this file to meet our project’s requirements.</p>
+</section>
+<section id="update-the-model-description">
+<h3 id="update-the-model-description">Update the model description<a class="headerlink" href="#update-the-model-description" title="Permalink to this headline">¶</a></h3>
+<p>Open the <code class="docutils literal notranslate"><span class="pre">my_keyword_spotting_mobilenetv2.py</span></code> model specification file in your favorite text editor and edit the model description:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">'Keyword spotting classifier using MobileNetV2'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="update-the-keywords">
+<h3 id="update-the-keywords">Update the Keywords<a class="headerlink" href="#update-the-keywords" title="Permalink to this headline">¶</a></h3>
+<p>Next, update the keywords we want this model to detect:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'left'</span><span class="p">,</span> <span class="s1">'right'</span><span class="p">,</span> <span class="s1">'up'</span><span class="p">,</span> <span class="s1">'down'</span><span class="p">,</span> <span class="s1">'stop'</span><span class="p">,</span> <span class="s1">'go'</span><span class="p">,</span> <span class="s1">'_unknown_'</span><span class="p">,</span> <span class="s1">'_silence_'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="update-the-audiofeaturegenerator-settings">
+<h3 id="update-the-audiofeaturegenerator-settings">Update the AudioFeatureGenerator Settings<a class="headerlink" href="#update-the-audiofeaturegenerator-settings" title="Permalink to this headline">¶</a></h3>
+<p>Next, let’s update the <a class="reference external" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html#audiofeaturegenerator-settings">AudioFeatureGeneratorSettings</a>.
+We want to do this because we are detecting more keywords and need to increase the quality of the generated spectrograms which will help the ML model better distinguish between the different keywords.</p>
+<p>To help us adjust the <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html"><span class="doc std std-doc">AudioFeatureGenerator</span></a> settings, the MLTK features the command: <code class="docutils literal notranslate"><span class="pre">view_audio</span></code>.
+This command provides a GUI to view the generated spectrograms in real-time as the settings are adjusted.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Launch the AudioFeatureGenerator GUI</span>
+<span class="o">!</span>mltk view_audio my_keyword_spotting_mobilenetv2
+</pre></div>
+</div>
+</div>
+</div>
+<section id="select-an-audio-file">
+<h4 id="select-an-audio-file">Select an audio file<a class="headerlink" href="#select-an-audio-file" title="Permalink to this headline">¶</a></h4>
+<p>First, select an audio file to analyze. By default, our model’s audio samples may be found in:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">User</span> <span class="n">Home</span> <span class="n">Directory</span><span class="o">&gt;/.</span><span class="n">mltk</span><span class="o">/</span><span class="n">datasets</span><span class="o">/</span><span class="n">speech_commands</span><span class="o">/</span><span class="n">v2</span>
+</pre></div>
+</div>
+<p><img alt="select_audio_file.gif" src="../../_images/select_audio_file.gif"/></p>
+</section>
+<section id="adjust-the-audiofeaturegenerator-settings">
+<h4 id="adjust-the-audiofeaturegenerator-settings">Adjust the AudioFeatureGenerator settings<a class="headerlink" href="#adjust-the-audiofeaturegenerator-settings" title="Permalink to this headline">¶</a></h4>
+<p>Adjust the <code class="docutils literal notranslate"><span class="pre">Sample</span> <span class="pre">Length</span></code> to <code class="docutils literal notranslate"><span class="pre">1200</span></code> milliseconds. This effectively increases the audio buffer size to 1.2s. This is useful as it allows for longer words to fully fit within the buffer. It also increases the number of times the ML model can “see” the spectrogram generated from the keyword as it streams through the audio buffer. See the <a class="reference internal" href="../../docs/audio/keyword_spotting_overview.html"><span class="doc std std-doc">Keyword Spotting Overview</span></a> for more details.<br/>
+Note that increasing the sample length effectively increases the spectrogram’s height. You can also adjust the <code class="docutils literal notranslate"><span class="pre">Window</span> <span class="pre">Size</span></code> and <code class="docutils literal notranslate"><span class="pre">Window</span> <span class="pre">Step</span></code> to change the spectrogram’s effective height.</p>
+<p>Additionally, increase the <code class="docutils literal notranslate"><span class="pre">Num</span> <span class="pre">Channels</span></code> to <code class="docutils literal notranslate"><span class="pre">49</span></code>. This increases the number of frequency “bins” to include in the generated spectrogram which increases the spectrogram width.</p>
+<p>Increasing the generated spectrogram’s dimensions increases its resolution and should (hopefully) help the ML model better distinguish between the different keywords. This comes at a cost, though, as it increases the ML model’s input size. Increasing the ML model’s input size increases the number of required ML model operations which reduces the inference time (i.e. the amount of time to execute the ML model).</p>
+<p>Through experimentation, additional settings were also modified including:</p>
+<ul class="simple">
+<li><p>The sample rate was set to 16kHz, this helps to reduce aliasing at the cost of double the RAM requirements</p></li>
+<li><p>Noise reduction values modified to help with execution on the embedded device</p></li>
+</ul>
+<p>In the model specification file, update the <a class="reference external" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html#audiofeaturegenerator-settings">AudioFeatureGeneratorSettings</a> to:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">frontend_settings</span> <span class="o">=</span> <span class="n">AudioFeatureGeneratorSettings</span><span class="p">()</span>
+
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="mi">16000</span>  <span class="c1"># We use 16k for slightly better performance at the cost of more RAM</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="mi">1200</span> <span class="c1"># We use a 1.2s buffer to ensure we can process a sample multiple times</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_size_ms</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_step_ms</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_n_channels</span> <span class="o">=</span> <span class="mi">49</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_upper_band_limit</span> <span class="o">=</span> <span class="mf">4000.0</span><span class="o">-</span><span class="mi">1</span> <span class="c1"># Spoken language usually only goes up to 4k</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_lower_band_limit</span> <span class="o">=</span> <span class="mf">125.0</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_enable</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_smoothing_bits</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_even_smoothing</span> <span class="o">=</span>  <span class="mf">0.025</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_odd_smoothing</span> <span class="o">=</span> <span class="mf">0.06</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_min_signal_remaining</span> <span class="o">=</span> <span class="mf">0.03</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_enable</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_strength</span> <span class="o">=</span> <span class="mf">0.95</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_offset</span> <span class="o">=</span> <span class="mf">80.0</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_gain_bits</span> <span class="o">=</span> <span class="mi">21</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">log_scale_enable</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">log_scale_shift</span> <span class="o">=</span> <span class="mi">6</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="update-model-layout">
+<h3 id="update-model-layout">Update Model Layout<a class="headerlink" href="#update-model-layout" title="Permalink to this headline">¶</a></h3>
+<p>Next, update the model layout to use the <a class="reference external" href="../../docs/python_api/models/common_models.html#mobilenet-v2">MobileNetV2</a> architecture.</p>
+<p>To do this, first <code class="docutils literal notranslate"><span class="pre">import</span></code> the model into your model specification Python script.<br/>
+Near the top of the Python script, add the following:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the MobileNetV2 model</span>
+<span class="kn">from</span> <span class="nn">mltk.models.shared</span> <span class="kn">import</span> <span class="n">MobileNetV2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next, near the bottom of your model specification script, update <code class="docutils literal notranslate"><span class="pre">def</span> <span class="pre">my_model_builder(model:</span> <span class="pre">MyModel):</span></code> with the following:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+    <span class="n">keras_model</span> <span class="o">=</span> <span class="n">MobileNetV2</span><span class="p">(</span> 
+        <span class="n">input_shape</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
+        <span class="n">classes</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> 
+        <span class="n">weights</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span> 
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">metrics</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">keras_model</span>
+
+<span class="n">my_model</span><span class="o">.</span><span class="n">build_model_function</span> <span class="o">=</span> <span class="n">my_model_builder</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This creates a <code class="docutils literal notranslate"><span class="pre">MobileNetV2</span></code> model with an <code class="docutils literal notranslate"><span class="pre">alpha</span></code> of <code class="docutils literal notranslate"><span class="pre">1.0</span></code>. The <code class="docutils literal notranslate"><span class="pre">alpha</span></code> parameter may be used to tune the width multiplier or how many convolutional filters are used by a given layer of the model. Typically, the more convolutional filters the larger the model and thus the better its accuracy. The increased convolutional filters also increases the computational complexity and thus execution time of the model.</p>
+</section>
+<section id="summarize-the-model">
+<h3 id="summarize-the-model">Summarize the model<a class="headerlink" href="#summarize-the-model" title="Permalink to this headline">¶</a></h3>
+<p>As a quick sanity check, view a summary of the model. We should see the updated model description, classes (i.e. keywords), and MobileNetV2 architecture printed to the terminal.</p>
+<p><strong>NOTE:</strong> This may take awhile the first time this runs as the model’s dataset needs to be downloaded and extracted.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate model summary</span>
+<span class="c1"># Since the model hasn't been trained yet, we need to add the --build option</span>
+<span class="c1"># Be sure to change the terminal's current directory to the model spec's directory</span>
+<span class="c1"># e.g.: cd &lt;same directory as my_keyword_spotting_mobilenetv2.py&gt;</span>
+<span class="o">!</span>mltk summarize my_keyword_spotting_mobilenetv2 --tflite --build
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\keras\engine\functional.py:1410: CustomMaskWarning: Custom mask layers require a config and must override get_config. When loading, the custom mask layer must be passed to the custom_objects argument.
+  layer_config = serialize_layer_fn(layer)
+fully_quantize: 0, inference_type: 6, input_inference_type: 9, output_inference_type: 9
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 00001: LearningRateScheduler setting learning rate to 0.001.
+
+Epoch 00002: LearningRateScheduler setting learning rate to 0.00095.
+
+Epoch 00003: LearningRateScheduler setting learning rate to 0.0009025.
++-------+-------------------+------------------+------------------+-------------------------------------------------------+
+| Index | OpCode            | Input(s)         | Output(s)        | Config                                                |
++-------+-------------------+------------------+------------------+-------------------------------------------------------+
+| 0     | conv_2d           | 59x49x1 (int8)   | 30x25x32 (int8)  | Padding:same stride:2x2 activation:relu6              |
+|       |                   | 3x3x1 (int8)     |                  |                                                       |
+|       |                   | 32 (int32)       |                  |                                                       |
+| 1     | depthwise_conv_2d | 30x25x32 (int8)  | 30x25x32 (int8)  | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x32 (int8)    |                  |                                                       |
+|       |                   | 32 (int32)       |                  |                                                       |
+| 2     | conv_2d           | 30x25x32 (int8)  | 30x25x16 (int8)  | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x32 (int8)    |                  |                                                       |
+|       |                   | 16 (int32)       |                  |                                                       |
+| 3     | conv_2d           | 30x25x16 (int8)  | 30x25x96 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x16 (int8)    |                  |                                                       |
+|       |                   | 96 (int32)       |                  |                                                       |
+| 4     | pad               | 30x25x96 (int8)  | 31x27x96 (int8)  | BuiltinOptionsType=22                                 |
+|       |                   | 2 (int32)        |                  |                                                       |
+| 5     | depthwise_conv_2d | 31x27x96 (int8)  | 15x13x96 (int8)  | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+|       |                   | 3x3x96 (int8)    |                  |                                                       |
+|       |                   | 96 (int32)       |                  |                                                       |
+| 6     | conv_2d           | 15x13x96 (int8)  | 15x13x24 (int8)  | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x96 (int8)    |                  |                                                       |
+|       |                   | 24 (int32)       |                  |                                                       |
+| 7     | conv_2d           | 15x13x24 (int8)  | 15x13x144 (int8) | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x24 (int8)    |                  |                                                       |
+|       |                   | 144 (int32)      |                  |                                                       |
+| 8     | depthwise_conv_2d | 15x13x144 (int8) | 15x13x144 (int8) | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x144 (int8)   |                  |                                                       |
+|       |                   | 144 (int32)      |                  |                                                       |
+| 9     | conv_2d           | 15x13x144 (int8) | 15x13x24 (int8)  | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x144 (int8)   |                  |                                                       |
+|       |                   | 24 (int32)       |                  |                                                       |
+| 10    | add               | 15x13x24 (int8)  | 15x13x24 (int8)  | Activation:none                                       |
+|       |                   | 15x13x24 (int8)  |                  |                                                       |
+| 11    | conv_2d           | 15x13x24 (int8)  | 15x13x144 (int8) | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x24 (int8)    |                  |                                                       |
+|       |                   | 144 (int32)      |                  |                                                       |
+| 12    | pad               | 15x13x144 (int8) | 17x15x144 (int8) | BuiltinOptionsType=22                                 |
+|       |                   | 2 (int32)        |                  |                                                       |
+| 13    | depthwise_conv_2d | 17x15x144 (int8) | 8x7x144 (int8)   | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+|       |                   | 3x3x144 (int8)   |                  |                                                       |
+|       |                   | 144 (int32)      |                  |                                                       |
+| 14    | conv_2d           | 8x7x144 (int8)   | 8x7x32 (int8)    | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x144 (int8)   |                  |                                                       |
+|       |                   | 32 (int32)       |                  |                                                       |
+| 15    | conv_2d           | 8x7x32 (int8)    | 8x7x192 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x32 (int8)    |                  |                                                       |
+|       |                   | 192 (int32)      |                  |                                                       |
+| 16    | depthwise_conv_2d | 8x7x192 (int8)   | 8x7x192 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x192 (int8)   |                  |                                                       |
+|       |                   | 192 (int32)      |                  |                                                       |
+| 17    | conv_2d           | 8x7x192 (int8)   | 8x7x32 (int8)    | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x192 (int8)   |                  |                                                       |
+|       |                   | 32 (int32)       |                  |                                                       |
+| 18    | add               | 8x7x32 (int8)    | 8x7x32 (int8)    | Activation:none                                       |
+|       |                   | 8x7x32 (int8)    |                  |                                                       |
+| 19    | conv_2d           | 8x7x32 (int8)    | 8x7x192 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x32 (int8)    |                  |                                                       |
+|       |                   | 192 (int32)      |                  |                                                       |
+| 20    | depthwise_conv_2d | 8x7x192 (int8)   | 8x7x192 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x192 (int8)   |                  |                                                       |
+|       |                   | 192 (int32)      |                  |                                                       |
+| 21    | conv_2d           | 8x7x192 (int8)   | 8x7x32 (int8)    | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x192 (int8)   |                  |                                                       |
+|       |                   | 32 (int32)       |                  |                                                       |
+| 22    | add               | 8x7x32 (int8)    | 8x7x32 (int8)    | Activation:none                                       |
+|       |                   | 8x7x32 (int8)    |                  |                                                       |
+| 23    | conv_2d           | 8x7x32 (int8)    | 8x7x192 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x32 (int8)    |                  |                                                       |
+|       |                   | 192 (int32)      |                  |                                                       |
+| 24    | pad               | 8x7x192 (int8)   | 9x9x192 (int8)   | BuiltinOptionsType=22                                 |
+|       |                   | 2 (int32)        |                  |                                                       |
+| 25    | depthwise_conv_2d | 9x9x192 (int8)   | 4x4x192 (int8)   | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+|       |                   | 3x3x192 (int8)   |                  |                                                       |
+|       |                   | 192 (int32)      |                  |                                                       |
+| 26    | conv_2d           | 4x4x192 (int8)   | 4x4x64 (int8)    | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x192 (int8)   |                  |                                                       |
+|       |                   | 64 (int32)       |                  |                                                       |
+| 27    | conv_2d           | 4x4x64 (int8)    | 4x4x384 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x64 (int8)    |                  |                                                       |
+|       |                   | 384 (int32)      |                  |                                                       |
+| 28    | depthwise_conv_2d | 4x4x384 (int8)   | 4x4x384 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x384 (int8)   |                  |                                                       |
+|       |                   | 384 (int32)      |                  |                                                       |
+| 29    | conv_2d           | 4x4x384 (int8)   | 4x4x64 (int8)    | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x384 (int8)   |                  |                                                       |
+|       |                   | 64 (int32)       |                  |                                                       |
+| 30    | add               | 4x4x64 (int8)    | 4x4x64 (int8)    | Activation:none                                       |
+|       |                   | 4x4x64 (int8)    |                  |                                                       |
+| 31    | conv_2d           | 4x4x64 (int8)    | 4x4x384 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x64 (int8)    |                  |                                                       |
+|       |                   | 384 (int32)      |                  |                                                       |
+| 32    | depthwise_conv_2d | 4x4x384 (int8)   | 4x4x384 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x384 (int8)   |                  |                                                       |
+|       |                   | 384 (int32)      |                  |                                                       |
+| 33    | conv_2d           | 4x4x384 (int8)   | 4x4x64 (int8)    | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x384 (int8)   |                  |                                                       |
+|       |                   | 64 (int32)       |                  |                                                       |
+| 34    | add               | 4x4x64 (int8)    | 4x4x64 (int8)    | Activation:none                                       |
+|       |                   | 4x4x64 (int8)    |                  |                                                       |
+| 35    | conv_2d           | 4x4x64 (int8)    | 4x4x384 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x64 (int8)    |                  |                                                       |
+|       |                   | 384 (int32)      |                  |                                                       |
+| 36    | depthwise_conv_2d | 4x4x384 (int8)   | 4x4x384 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x384 (int8)   |                  |                                                       |
+|       |                   | 384 (int32)      |                  |                                                       |
+| 37    | conv_2d           | 4x4x384 (int8)   | 4x4x64 (int8)    | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x384 (int8)   |                  |                                                       |
+|       |                   | 64 (int32)       |                  |                                                       |
+| 38    | add               | 4x4x64 (int8)    | 4x4x64 (int8)    | Activation:none                                       |
+|       |                   | 4x4x64 (int8)    |                  |                                                       |
+| 39    | conv_2d           | 4x4x64 (int8)    | 4x4x384 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x64 (int8)    |                  |                                                       |
+|       |                   | 384 (int32)      |                  |                                                       |
+| 40    | depthwise_conv_2d | 4x4x384 (int8)   | 4x4x384 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x384 (int8)   |                  |                                                       |
+|       |                   | 384 (int32)      |                  |                                                       |
+| 41    | conv_2d           | 4x4x384 (int8)   | 4x4x96 (int8)    | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x384 (int8)   |                  |                                                       |
+|       |                   | 96 (int32)       |                  |                                                       |
+| 42    | conv_2d           | 4x4x96 (int8)    | 4x4x576 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x96 (int8)    |                  |                                                       |
+|       |                   | 576 (int32)      |                  |                                                       |
+| 43    | depthwise_conv_2d | 4x4x576 (int8)   | 4x4x576 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x576 (int8)   |                  |                                                       |
+|       |                   | 576 (int32)      |                  |                                                       |
+| 44    | conv_2d           | 4x4x576 (int8)   | 4x4x96 (int8)    | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x576 (int8)   |                  |                                                       |
+|       |                   | 96 (int32)       |                  |                                                       |
+| 45    | add               | 4x4x96 (int8)    | 4x4x96 (int8)    | Activation:none                                       |
+|       |                   | 4x4x96 (int8)    |                  |                                                       |
+| 46    | conv_2d           | 4x4x96 (int8)    | 4x4x576 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x96 (int8)    |                  |                                                       |
+|       |                   | 576 (int32)      |                  |                                                       |
+| 47    | depthwise_conv_2d | 4x4x576 (int8)   | 4x4x576 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x576 (int8)   |                  |                                                       |
+|       |                   | 576 (int32)      |                  |                                                       |
+| 48    | conv_2d           | 4x4x576 (int8)   | 4x4x96 (int8)    | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x576 (int8)   |                  |                                                       |
+|       |                   | 96 (int32)       |                  |                                                       |
+| 49    | add               | 4x4x96 (int8)    | 4x4x96 (int8)    | Activation:none                                       |
+|       |                   | 4x4x96 (int8)    |                  |                                                       |
+| 50    | conv_2d           | 4x4x96 (int8)    | 4x4x576 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x96 (int8)    |                  |                                                       |
+|       |                   | 576 (int32)      |                  |                                                       |
+| 51    | pad               | 4x4x576 (int8)   | 5x5x576 (int8)   | BuiltinOptionsType=22                                 |
+|       |                   | 2 (int32)        |                  |                                                       |
+| 52    | depthwise_conv_2d | 5x5x576 (int8)   | 2x2x576 (int8)   | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+|       |                   | 3x3x576 (int8)   |                  |                                                       |
+|       |                   | 576 (int32)      |                  |                                                       |
+| 53    | conv_2d           | 2x2x576 (int8)   | 2x2x160 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x576 (int8)   |                  |                                                       |
+|       |                   | 160 (int32)      |                  |                                                       |
+| 54    | conv_2d           | 2x2x160 (int8)   | 2x2x960 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x160 (int8)   |                  |                                                       |
+|       |                   | 960 (int32)      |                  |                                                       |
+| 55    | depthwise_conv_2d | 2x2x960 (int8)   | 2x2x960 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x960 (int8)   |                  |                                                       |
+|       |                   | 960 (int32)      |                  |                                                       |
+| 56    | conv_2d           | 2x2x960 (int8)   | 2x2x160 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x960 (int8)   |                  |                                                       |
+|       |                   | 160 (int32)      |                  |                                                       |
+| 57    | add               | 2x2x160 (int8)   | 2x2x160 (int8)   | Activation:none                                       |
+|       |                   | 2x2x160 (int8)   |                  |                                                       |
+| 58    | conv_2d           | 2x2x160 (int8)   | 2x2x960 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x160 (int8)   |                  |                                                       |
+|       |                   | 960 (int32)      |                  |                                                       |
+| 59    | depthwise_conv_2d | 2x2x960 (int8)   | 2x2x960 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x960 (int8)   |                  |                                                       |
+|       |                   | 960 (int32)      |                  |                                                       |
+| 60    | conv_2d           | 2x2x960 (int8)   | 2x2x160 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x960 (int8)   |                  |                                                       |
+|       |                   | 160 (int32)      |                  |                                                       |
+| 61    | add               | 2x2x160 (int8)   | 2x2x160 (int8)   | Activation:none                                       |
+|       |                   | 2x2x160 (int8)   |                  |                                                       |
+| 62    | conv_2d           | 2x2x160 (int8)   | 2x2x960 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x160 (int8)   |                  |                                                       |
+|       |                   | 960 (int32)      |                  |                                                       |
+| 63    | depthwise_conv_2d | 2x2x960 (int8)   | 2x2x960 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x960 (int8)   |                  |                                                       |
+|       |                   | 960 (int32)      |                  |                                                       |
+| 64    | conv_2d           | 2x2x960 (int8)   | 2x2x320 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x960 (int8)   |                  |                                                       |
+|       |                   | 320 (int32)      |                  |                                                       |
+| 65    | conv_2d           | 2x2x320 (int8)   | 2x2x1280 (int8)  | Padding:valid stride:1x1 activation:relu6             |
+|       |                   | 1x1x320 (int8)   |                  |                                                       |
+|       |                   | 1280 (int32)     |                  |                                                       |
+| 66    | mean              | 2x2x1280 (int8)  | 1280 (int8)      | BuiltinOptionsType=27                                 |
+|       |                   | 2 (int32)        |                  |                                                       |
+| 67    | fully_connected   | 1280 (int8)      | 8 (int8)         | Activation:none                                       |
+|       |                   | 1280 (int8)      |                  |                                                       |
+|       |                   | 8 (int32)        |                  |                                                       |
+| 68    | softmax           | 8 (int8)         | 8 (int8)         | BuiltinOptionsType=9                                  |
++-------+-------------------+------------------+------------------+-------------------------------------------------------+
+Total MACs: 21.925 M
+Total OPs: 45.199 M
+Name: my_keyword_spotting_mobilenetv2
+Version: 1
+Description: Keyword spotting classifier using MobileNetV2
+Classes: left, right, up, down, stop, go, _unknown_, _silence_
+hash: 120e1504bcad5f01e644acf9d21b66ff
+date: 2021-12-14T21:49:56.975Z
+average_window_duration_ms: 1000
+detection_threshold: 150
+suppression_ms: 750
+minimum_count: 3
+volume_db: 20
+latency_ms: 0
+log_level: info
+samplewise_norm.rescale: 0
+samplewise_norm.mean_and_std: False
+fe.sample_rate_hz: 16000
+fe.sample_length_ms: 1200
+fe.window_size_ms: 30
+fe.window_step_ms: 20
+fe.filterbank_n_channels: 49
+fe.filterbank_upper_band_limit: 3999.0
+fe.filterbank_lower_band_limit: 125.0
+fe.noise_reduction_enable: True
+fe.noise_reduction_smoothing_bits: 10
+fe.noise_reduction_even_smoothing: 0.02500000037252903
+fe.noise_reduction_odd_smoothing: 0.05999999865889549
+fe.noise_reduction_min_signal_remaining: 0.029999999329447746
+fe.pcan_enable: False
+fe.pcan_strength: 0.949999988079071
+fe.pcan_offset: 80.0
+fe.pcan_gain_bits: 21
+fe.log_scale_enable: True
+fe.log_scale_shift: 6
+fe.fft_length: 512
+.tflite file size: 2.7MB
+</pre></div>
+</div>
+</div>
+</div>
+<p>From the summary, we can see that the model file size, 2.7MB, is too large to fit on our target hardware which has 1.5MB of flash.</p>
+<p>Let’s reduce MobileNetV2’s <code class="docutils literal notranslate"><span class="pre">alpha</span></code> parameter which will reduce the number of convolutional filters used by the model.</p>
+<p>Update your model specification with:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">keras_model</span> <span class="o">=</span> <span class="n">MobileNetV2</span><span class="p">(</span> 
+    <span class="n">input_shape</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
+    <span class="n">classes</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="c1"># Change the alpha parameter to 0.5, which reduces the number of layers in the model </span>
+    <span class="n">weights</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Then re-run the model summary command:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Re-generate model summary</span>
+<span class="c1"># Since the model hasn't been trained yet, we need to add the --build option</span>
+<span class="c1"># Be sure to change the terminal's current directory to the model spec's directory</span>
+<span class="c1"># e.g.: cd &lt;same directory as my_keyword_spotting_mobilenetv2.py&gt;</span>
+<span class="o">!</span>mltk summarize my_keyword_spotting_mobilenetv2 --tflite --build
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 00001: LearningRateScheduler setting learning rate to 0.001.
+
+Epoch 00002: LearningRateScheduler setting learning rate to 0.00095.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\keras\engine\functional.py:1410: CustomMaskWarning: Custom mask layers require a config and must override get_config. When loading, the custom mask layer must be passed to the custom_objects argument.
+  layer_config = serialize_layer_fn(layer)
+fully_quantize: 0, inference_type: 6, input_inference_type: 9, output_inference_type: 9
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 00003: LearningRateScheduler setting learning rate to 0.0009025.
++-------+-------------------+-----------------+-----------------+-------------------------------------------------------+
+| Index | OpCode            | Input(s)        | Output(s)       | Config                                                |
++-------+-------------------+-----------------+-----------------+-------------------------------------------------------+
+| 0     | conv_2d           | 59x49x1 (int8)  | 30x25x16 (int8) | Padding:same stride:2x2 activation:relu6              |
+|       |                   | 3x3x1 (int8)    |                 |                                                       |
+|       |                   | 16 (int32)      |                 |                                                       |
+| 1     | depthwise_conv_2d | 30x25x16 (int8) | 30x25x16 (int8) | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x16 (int8)   |                 |                                                       |
+|       |                   | 16 (int32)      |                 |                                                       |
+| 2     | conv_2d           | 30x25x16 (int8) | 30x25x8 (int8)  | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x16 (int8)   |                 |                                                       |
+|       |                   | 8 (int32)       |                 |                                                       |
+| 3     | conv_2d           | 30x25x8 (int8)  | 30x25x48 (int8) | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x8 (int8)    |                 |                                                       |
+|       |                   | 48 (int32)      |                 |                                                       |
+| 4     | pad               | 30x25x48 (int8) | 31x27x48 (int8) | BuiltinOptionsType=22                                 |
+|       |                   | 2 (int32)       |                 |                                                       |
+| 5     | depthwise_conv_2d | 31x27x48 (int8) | 15x13x48 (int8) | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+|       |                   | 3x3x48 (int8)   |                 |                                                       |
+|       |                   | 48 (int32)      |                 |                                                       |
+| 6     | conv_2d           | 15x13x48 (int8) | 15x13x16 (int8) | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x48 (int8)   |                 |                                                       |
+|       |                   | 16 (int32)      |                 |                                                       |
+| 7     | conv_2d           | 15x13x16 (int8) | 15x13x96 (int8) | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x16 (int8)   |                 |                                                       |
+|       |                   | 96 (int32)      |                 |                                                       |
+| 8     | depthwise_conv_2d | 15x13x96 (int8) | 15x13x96 (int8) | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x96 (int8)   |                 |                                                       |
+|       |                   | 96 (int32)      |                 |                                                       |
+| 9     | conv_2d           | 15x13x96 (int8) | 15x13x16 (int8) | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x96 (int8)   |                 |                                                       |
+|       |                   | 16 (int32)      |                 |                                                       |
+| 10    | add               | 15x13x16 (int8) | 15x13x16 (int8) | Activation:none                                       |
+|       |                   | 15x13x16 (int8) |                 |                                                       |
+| 11    | conv_2d           | 15x13x16 (int8) | 15x13x96 (int8) | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x16 (int8)   |                 |                                                       |
+|       |                   | 96 (int32)      |                 |                                                       |
+| 12    | pad               | 15x13x96 (int8) | 17x15x96 (int8) | BuiltinOptionsType=22                                 |
+|       |                   | 2 (int32)       |                 |                                                       |
+| 13    | depthwise_conv_2d | 17x15x96 (int8) | 8x7x96 (int8)   | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+|       |                   | 3x3x96 (int8)   |                 |                                                       |
+|       |                   | 96 (int32)      |                 |                                                       |
+| 14    | conv_2d           | 8x7x96 (int8)   | 8x7x16 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x96 (int8)   |                 |                                                       |
+|       |                   | 16 (int32)      |                 |                                                       |
+| 15    | conv_2d           | 8x7x16 (int8)   | 8x7x96 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x16 (int8)   |                 |                                                       |
+|       |                   | 96 (int32)      |                 |                                                       |
+| 16    | depthwise_conv_2d | 8x7x96 (int8)   | 8x7x96 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x96 (int8)   |                 |                                                       |
+|       |                   | 96 (int32)      |                 |                                                       |
+| 17    | conv_2d           | 8x7x96 (int8)   | 8x7x16 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x96 (int8)   |                 |                                                       |
+|       |                   | 16 (int32)      |                 |                                                       |
+| 18    | add               | 8x7x16 (int8)   | 8x7x16 (int8)   | Activation:none                                       |
+|       |                   | 8x7x16 (int8)   |                 |                                                       |
+| 19    | conv_2d           | 8x7x16 (int8)   | 8x7x96 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x16 (int8)   |                 |                                                       |
+|       |                   | 96 (int32)      |                 |                                                       |
+| 20    | depthwise_conv_2d | 8x7x96 (int8)   | 8x7x96 (int8)   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x96 (int8)   |                 |                                                       |
+|       |                   | 96 (int32)      |                 |                                                       |
+| 21    | conv_2d           | 8x7x96 (int8)   | 8x7x16 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x96 (int8)   |                 |                                                       |
+|       |                   | 16 (int32)      |                 |                                                       |
+| 22    | add               | 8x7x16 (int8)   | 8x7x16 (int8)   | Activation:none                                       |
+|       |                   | 8x7x16 (int8)   |                 |                                                       |
+| 23    | conv_2d           | 8x7x16 (int8)   | 8x7x96 (int8)   | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x16 (int8)   |                 |                                                       |
+|       |                   | 96 (int32)      |                 |                                                       |
+| 24    | pad               | 8x7x96 (int8)   | 9x9x96 (int8)   | BuiltinOptionsType=22                                 |
+|       |                   | 2 (int32)       |                 |                                                       |
+| 25    | depthwise_conv_2d | 9x9x96 (int8)   | 4x4x96 (int8)   | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+|       |                   | 3x3x96 (int8)   |                 |                                                       |
+|       |                   | 96 (int32)      |                 |                                                       |
+| 26    | conv_2d           | 4x4x96 (int8)   | 4x4x32 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x96 (int8)   |                 |                                                       |
+|       |                   | 32 (int32)      |                 |                                                       |
+| 27    | conv_2d           | 4x4x32 (int8)   | 4x4x192 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x32 (int8)   |                 |                                                       |
+|       |                   | 192 (int32)     |                 |                                                       |
+| 28    | depthwise_conv_2d | 4x4x192 (int8)  | 4x4x192 (int8)  | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x192 (int8)  |                 |                                                       |
+|       |                   | 192 (int32)     |                 |                                                       |
+| 29    | conv_2d           | 4x4x192 (int8)  | 4x4x32 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x192 (int8)  |                 |                                                       |
+|       |                   | 32 (int32)      |                 |                                                       |
+| 30    | add               | 4x4x32 (int8)   | 4x4x32 (int8)   | Activation:none                                       |
+|       |                   | 4x4x32 (int8)   |                 |                                                       |
+| 31    | conv_2d           | 4x4x32 (int8)   | 4x4x192 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x32 (int8)   |                 |                                                       |
+|       |                   | 192 (int32)     |                 |                                                       |
+| 32    | depthwise_conv_2d | 4x4x192 (int8)  | 4x4x192 (int8)  | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x192 (int8)  |                 |                                                       |
+|       |                   | 192 (int32)     |                 |                                                       |
+| 33    | conv_2d           | 4x4x192 (int8)  | 4x4x32 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x192 (int8)  |                 |                                                       |
+|       |                   | 32 (int32)      |                 |                                                       |
+| 34    | add               | 4x4x32 (int8)   | 4x4x32 (int8)   | Activation:none                                       |
+|       |                   | 4x4x32 (int8)   |                 |                                                       |
+| 35    | conv_2d           | 4x4x32 (int8)   | 4x4x192 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x32 (int8)   |                 |                                                       |
+|       |                   | 192 (int32)     |                 |                                                       |
+| 36    | depthwise_conv_2d | 4x4x192 (int8)  | 4x4x192 (int8)  | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x192 (int8)  |                 |                                                       |
+|       |                   | 192 (int32)     |                 |                                                       |
+| 37    | conv_2d           | 4x4x192 (int8)  | 4x4x32 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x192 (int8)  |                 |                                                       |
+|       |                   | 32 (int32)      |                 |                                                       |
+| 38    | add               | 4x4x32 (int8)   | 4x4x32 (int8)   | Activation:none                                       |
+|       |                   | 4x4x32 (int8)   |                 |                                                       |
+| 39    | conv_2d           | 4x4x32 (int8)   | 4x4x192 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x32 (int8)   |                 |                                                       |
+|       |                   | 192 (int32)     |                 |                                                       |
+| 40    | depthwise_conv_2d | 4x4x192 (int8)  | 4x4x192 (int8)  | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x192 (int8)  |                 |                                                       |
+|       |                   | 192 (int32)     |                 |                                                       |
+| 41    | conv_2d           | 4x4x192 (int8)  | 4x4x48 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x192 (int8)  |                 |                                                       |
+|       |                   | 48 (int32)      |                 |                                                       |
+| 42    | conv_2d           | 4x4x48 (int8)   | 4x4x288 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x48 (int8)   |                 |                                                       |
+|       |                   | 288 (int32)     |                 |                                                       |
+| 43    | depthwise_conv_2d | 4x4x288 (int8)  | 4x4x288 (int8)  | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x288 (int8)  |                 |                                                       |
+|       |                   | 288 (int32)     |                 |                                                       |
+| 44    | conv_2d           | 4x4x288 (int8)  | 4x4x48 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x288 (int8)  |                 |                                                       |
+|       |                   | 48 (int32)      |                 |                                                       |
+| 45    | add               | 4x4x48 (int8)   | 4x4x48 (int8)   | Activation:none                                       |
+|       |                   | 4x4x48 (int8)   |                 |                                                       |
+| 46    | conv_2d           | 4x4x48 (int8)   | 4x4x288 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x48 (int8)   |                 |                                                       |
+|       |                   | 288 (int32)     |                 |                                                       |
+| 47    | depthwise_conv_2d | 4x4x288 (int8)  | 4x4x288 (int8)  | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x288 (int8)  |                 |                                                       |
+|       |                   | 288 (int32)     |                 |                                                       |
+| 48    | conv_2d           | 4x4x288 (int8)  | 4x4x48 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x288 (int8)  |                 |                                                       |
+|       |                   | 48 (int32)      |                 |                                                       |
+| 49    | add               | 4x4x48 (int8)   | 4x4x48 (int8)   | Activation:none                                       |
+|       |                   | 4x4x48 (int8)   |                 |                                                       |
+| 50    | conv_2d           | 4x4x48 (int8)   | 4x4x288 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x48 (int8)   |                 |                                                       |
+|       |                   | 288 (int32)     |                 |                                                       |
+| 51    | pad               | 4x4x288 (int8)  | 5x5x288 (int8)  | BuiltinOptionsType=22                                 |
+|       |                   | 2 (int32)       |                 |                                                       |
+| 52    | depthwise_conv_2d | 5x5x288 (int8)  | 2x2x288 (int8)  | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+|       |                   | 3x3x288 (int8)  |                 |                                                       |
+|       |                   | 288 (int32)     |                 |                                                       |
+| 53    | conv_2d           | 2x2x288 (int8)  | 2x2x80 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x288 (int8)  |                 |                                                       |
+|       |                   | 80 (int32)      |                 |                                                       |
+| 54    | conv_2d           | 2x2x80 (int8)   | 2x2x480 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x80 (int8)   |                 |                                                       |
+|       |                   | 480 (int32)     |                 |                                                       |
+| 55    | depthwise_conv_2d | 2x2x480 (int8)  | 2x2x480 (int8)  | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x480 (int8)  |                 |                                                       |
+|       |                   | 480 (int32)     |                 |                                                       |
+| 56    | conv_2d           | 2x2x480 (int8)  | 2x2x80 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x480 (int8)  |                 |                                                       |
+|       |                   | 80 (int32)      |                 |                                                       |
+| 57    | add               | 2x2x80 (int8)   | 2x2x80 (int8)   | Activation:none                                       |
+|       |                   | 2x2x80 (int8)   |                 |                                                       |
+| 58    | conv_2d           | 2x2x80 (int8)   | 2x2x480 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x80 (int8)   |                 |                                                       |
+|       |                   | 480 (int32)     |                 |                                                       |
+| 59    | depthwise_conv_2d | 2x2x480 (int8)  | 2x2x480 (int8)  | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x480 (int8)  |                 |                                                       |
+|       |                   | 480 (int32)     |                 |                                                       |
+| 60    | conv_2d           | 2x2x480 (int8)  | 2x2x80 (int8)   | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x480 (int8)  |                 |                                                       |
+|       |                   | 80 (int32)      |                 |                                                       |
+| 61    | add               | 2x2x80 (int8)   | 2x2x80 (int8)   | Activation:none                                       |
+|       |                   | 2x2x80 (int8)   |                 |                                                       |
+| 62    | conv_2d           | 2x2x80 (int8)   | 2x2x480 (int8)  | Padding:same stride:1x1 activation:relu6              |
+|       |                   | 1x1x80 (int8)   |                 |                                                       |
+|       |                   | 480 (int32)     |                 |                                                       |
+| 63    | depthwise_conv_2d | 2x2x480 (int8)  | 2x2x480 (int8)  | Multipler:1 padding:same stride:1x1 activation:relu6  |
+|       |                   | 3x3x480 (int8)  |                 |                                                       |
+|       |                   | 480 (int32)     |                 |                                                       |
+| 64    | conv_2d           | 2x2x480 (int8)  | 2x2x160 (int8)  | Padding:same stride:1x1 activation:none               |
+|       |                   | 1x1x480 (int8)  |                 |                                                       |
+|       |                   | 160 (int32)     |                 |                                                       |
+| 65    | conv_2d           | 2x2x160 (int8)  | 2x2x1280 (int8) | Padding:valid stride:1x1 activation:relu6             |
+|       |                   | 1x1x160 (int8)  |                 |                                                       |
+|       |                   | 1280 (int32)    |                 |                                                       |
+| 66    | mean              | 2x2x1280 (int8) | 1280 (int8)     | BuiltinOptionsType=27                                 |
+|       |                   | 2 (int32)       |                 |                                                       |
+| 67    | fully_connected   | 1280 (int8)     | 8 (int8)        | Activation:none                                       |
+|       |                   | 1280 (int8)     |                 |                                                       |
+|       |                   | 8 (int32)       |                 |                                                       |
+| 68    | softmax           | 8 (int8)        | 8 (int8)        | BuiltinOptionsType=9                                  |
++-------+-------------------+-----------------+-----------------+-------------------------------------------------------+
+Total MACs: 6.819 M
+Total OPs: 14.371 M
+Name: my_keyword_spotting_mobilenetv2
+Version: 1
+Description: Keyword spotting classifier using MobileNetV2
+Classes: left, right, up, down, stop, go, _unknown_, _silence_
+hash: d226b3204bbaf021713d425e9bdf623c
+date: 2021-12-14T21:45:49.895Z
+average_window_duration_ms: 1000
+detection_threshold: 150
+suppression_ms: 750
+minimum_count: 3
+volume_db: 20
+latency_ms: 0
+log_level: info
+samplewise_norm.rescale: 0
+samplewise_norm.mean_and_std: False
+fe.sample_rate_hz: 16000
+fe.sample_length_ms: 1200
+fe.window_size_ms: 30
+fe.window_step_ms: 20
+fe.filterbank_n_channels: 49
+fe.filterbank_upper_band_limit: 3999.0
+fe.filterbank_lower_band_limit: 125.0
+fe.noise_reduction_enable: True
+fe.noise_reduction_smoothing_bits: 10
+fe.noise_reduction_even_smoothing: 0.02500000037252903
+fe.noise_reduction_odd_smoothing: 0.05999999865889549
+fe.noise_reduction_min_signal_remaining: 0.029999999329447746
+fe.pcan_enable: False
+fe.pcan_strength: 0.949999988079071
+fe.pcan_offset: 80.0
+fe.pcan_gain_bits: 21
+fe.log_scale_enable: True
+fe.log_scale_shift: 6
+fe.fft_length: 512
+.tflite file size: 983.2kB
+</pre></div>
+</div>
+</div>
+</div>
+<p>With the updated model, the model size is now 983kB which is small enough to fit within the embedded target’s flash.</p>
+<p>We now have the basics of our model specification complete. The next step is to profile the model to see how efficiently it runs on our embedded target.</p>
+</section>
+</section>
+<section id="profile-model">
+<h2 id="profile-model">Profile Model<a class="headerlink" href="#profile-model" title="Permalink to this headline">¶</a></h2>
+<p>Before we spend the time and energy training our model, let’s ensure that it can efficiently run on the embedded target.</p>
+<p>We can do this using the <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">profile</span></a> MLTK command.</p>
+<p>The following command assumes you have a development board connected to your computer.<br/>
+If you do not have the development board, remove the <code class="docutils literal notranslate"><span class="pre">--device</span></code> argument which will use the simulator instead of physical hardware.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Profile the model on a development board using the MVP hardware accelerator</span>
+<span class="c1"># Since the model hasn't been trained yet, we need to add the --build option</span>
+<span class="c1"># Be sure to change the terminal's current directory to the model spec's directory</span>
+<span class="c1"># e.g.: cd &lt;same directory as my_keyword_spotting_mobilenetv2.py&gt;</span>
+<span class="o">!</span>mltk profile my_keyword_spotting_mobilenetv2 --build --accelerator MVP --device
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 00001: LearningRateScheduler setting learning rate to 0.001.
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\keras\engine\functional.py:1410: CustomMaskWarning: Custom mask layers require a config and must override get_config. When loading, the custom mask layer must be passed to the custom_objects argument.
+  layer_config = serialize_layer_fn(layer)
+fully_quantize: 0, inference_type: 6, input_inference_type: 9, output_inference_type: 9
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 00002: LearningRateScheduler setting learning rate to 0.00095.
+
+Epoch 00003: LearningRateScheduler setting learning rate to 0.0009025.
+
+Profiling Summary
+Name: my_keyword_spotting_mobilenetv2
+Accelerator: MVP
+Input Shape: 1x59x49x1
+Input Data Type: int8
+Output Shape: 1x8
+Output Data Type: int8
+Model File Size (bytes): 983.2k
+Runtime Memory Size (bytes): 132.5k
+# Operations: 14.8M
+# Multiply-Accumulates: 6.8M
+# Layers: 69
+# Unsupported Layers: 1
+# Accelerator Cycles: 10.4M
+# CPU Cycles: 7.6M
+CPU Utilization (%): 39.6
+Clock Rate (hz): 80.0M
+Time (s): 239.2m
+Ops/s: 62.0M
+MACs/s: 28.5M
+Inference/s: 4.2
+
+Model Layers
++-------+-------------------+--------+--------+------------+------------+----------+-----------------------------+--------------+-------------------------------------------------------+------------+-------------------------------------------------+
+| Index | OpCode            | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape                 | Output Shape | Options                                               | Supported? | Error Msg                                       |
++-------+-------------------+--------+--------+------------+------------+----------+-----------------------------+--------------+-------------------------------------------------------+------------+-------------------------------------------------+
+| 0     | conv_2d           | 252.0k | 108.0k | 368.4k     | 22.3k      | 4.7m     | 1x59x49x1,16x3x3x1,16       | 1x30x25x16   | Padding:same stride:2x2 activation:relu6              | True       |                                                 |
+| 1     | depthwise_conv_2d | 252.0k | 108.0k | 378.1k     | 318.0k     | 7.5m     | 1x30x25x16,1x3x3x16,16      | 1x30x25x16   | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 2     | conv_2d           | 198.0k | 96.0k  | 180.0k     | 3.4k       | 2.2m     | 1x30x25x16,8x1x1x16,8       | 1x30x25x8    | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 3     | conv_2d           | 684.0k | 288.0k | 648.0k     | 3.0k       | 8.0m     | 1x30x25x8,48x1x1x8,48       | 1x30x25x48   | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 4     | pad               | 241.1k | 0      | 0          | 967.8k     | 11.8m    | 1x30x25x48,4x2              | 1x31x27x48   | BuiltinOptionsType=22                                 | True       |                                                 |
+| 5     | depthwise_conv_2d | 196.6k | 84.2k  | 160.8k     | 233.5k     | 11.7m    | 1x31x27x48,1x3x3x48,48      | 1x15x13x48   | Multipler:1 padding:valid stride:2x2 activation:relu6 | True       |                                                 |
+| 6     | conv_2d           | 302.6k | 149.8k | 243.4k     | 3.1k       | 3.0m     | 1x15x13x48,16x1x1x48,16     | 1x15x13x16   | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 7     | conv_2d           | 655.2k | 299.5k | 561.5k     | 3.0k       | 6.9m     | 1x15x13x16,96x1x1x16,96     | 1x15x13x96   | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 8     | depthwise_conv_2d | 393.1k | 168.5k | 286.6k     | 233.1k     | 11.7m    | 1x15x13x96,1x3x3x96,96      | 1x15x13x96   | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 9     | conv_2d           | 602.2k | 299.5k | 468.0k     | 3.0k       | 5.8m     | 1x15x13x96,16x1x1x96,16     | 1x15x13x16   | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 10    | add               | 3.1k   | 0      | 14.1k      | 6.5k       | 330.0u   | 1x15x13x16,1x15x13x16       | 1x15x13x16   | Activation:none                                       | True       |                                                 |
+| 11    | conv_2d           | 655.2k | 299.5k | 561.5k     | 3.2k       | 6.9m     | 1x15x13x16,96x1x1x16,96     | 1x15x13x96   | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 12    | pad               | 146.9k | 0      | 0          | 544.1k     | 6.7m     | 1x15x13x96,4x2              | 1x17x15x96   | BuiltinOptionsType=22                                 | True       |                                                 |
+| 13    | depthwise_conv_2d | 112.9k | 48.4k  | 89.2k      | 67.8k      | 3.4m     | 1x17x15x96,1x3x3x96,96      | 1x8x7x96     | Multipler:1 padding:valid stride:2x2 activation:relu6 | True       |                                                 |
+| 14    | conv_2d           | 172.9k | 86.0k  | 134.4k     | 3.1k       | 1.7m     | 1x8x7x96,16x1x1x96,16       | 1x8x7x16     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 15    | conv_2d           | 188.2k | 86.0k  | 161.2k     | 3.0k       | 2.0m     | 1x8x7x16,96x1x1x16,96       | 1x8x7x96     | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 16    | depthwise_conv_2d | 112.9k | 48.4k  | 76.7k      | 67.7k      | 3.4m     | 1x8x7x96,1x3x3x96,96        | 1x8x7x96     | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 17    | conv_2d           | 172.9k | 86.0k  | 134.4k     | 3.0k       | 1.7m     | 1x8x7x96,16x1x1x96,16       | 1x8x7x16     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 18    | add               | 896.0  | 0      | 4.0k       | 5.7k       | 180.0u   | 1x8x7x16,1x8x7x16           | 1x8x7x16     | Activation:none                                       | True       |                                                 |
+| 19    | conv_2d           | 188.2k | 86.0k  | 161.2k     | 3.2k       | 2.0m     | 1x8x7x16,96x1x1x16,96       | 1x8x7x96     | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 20    | depthwise_conv_2d | 112.9k | 48.4k  | 76.7k      | 67.7k      | 3.4m     | 1x8x7x96,1x3x3x96,96        | 1x8x7x96     | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 21    | conv_2d           | 172.9k | 86.0k  | 134.4k     | 3.0k       | 1.7m     | 1x8x7x96,16x1x1x96,16       | 1x8x7x16     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 22    | add               | 896.0  | 0      | 4.0k       | 5.6k       | 180.0u   | 1x8x7x16,1x8x7x16           | 1x8x7x16     | Activation:none                                       | True       |                                                 |
+| 23    | conv_2d           | 188.2k | 86.0k  | 161.2k     | 3.2k       | 2.0m     | 1x8x7x16,96x1x1x16,96       | 1x8x7x96     | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 24    | pad               | 46.6k  | 0      | 0          | 158.7k     | 1.9m     | 1x8x7x96,4x2                | 1x9x9x96     | BuiltinOptionsType=22                                 | True       |                                                 |
+| 25    | depthwise_conv_2d | 32.2k  | 13.8k  | 25.5k      | 20.1k      | 1.0m     | 1x9x9x96,1x3x3x96,96        | 1x4x4x96     | Multipler:1 padding:valid stride:2x2 activation:relu6 | True       |                                                 |
+| 26    | conv_2d           | 98.8k  | 49.1k  | 76.8k      | 3.1k       | 990.0u   | 1x4x4x96,32x1x1x96,32       | 1x4x4x32     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 27    | conv_2d           | 205.8k | 98.3k  | 165.7k     | 3.0k       | 2.1m     | 1x4x4x32,192x1x1x32,192     | 1x4x4x192    | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 28    | depthwise_conv_2d | 64.5k  | 27.6k  | 37.3k      | 19.9k      | 960.0u   | 1x4x4x192,1x3x3x192,192     | 1x4x4x192    | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 29    | conv_2d           | 197.1k | 98.3k  | 150.5k     | 3.0k       | 1.9m     | 1x4x4x192,32x1x1x192,32     | 1x4x4x32     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 30    | add               | 512.0  | 0      | 2.3k       | 5.7k       | 150.0u   | 1x4x4x32,1x4x4x32           | 1x4x4x32     | Activation:none                                       | True       |                                                 |
+| 31    | conv_2d           | 205.8k | 98.3k  | 165.7k     | 3.2k       | 2.1m     | 1x4x4x32,192x1x1x32,192     | 1x4x4x192    | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 32    | depthwise_conv_2d | 64.5k  | 27.6k  | 37.3k      | 20.0k      | 1.0m     | 1x4x4x192,1x3x3x192,192     | 1x4x4x192    | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 33    | conv_2d           | 197.1k | 98.3k  | 150.5k     | 3.0k       | 1.9m     | 1x4x4x192,32x1x1x192,32     | 1x4x4x32     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 34    | add               | 512.0  | 0      | 2.3k       | 5.6k       | 150.0u   | 1x4x4x32,1x4x4x32           | 1x4x4x32     | Activation:none                                       | True       |                                                 |
+| 35    | conv_2d           | 205.8k | 98.3k  | 165.7k     | 3.2k       | 2.1m     | 1x4x4x32,192x1x1x32,192     | 1x4x4x192    | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 36    | depthwise_conv_2d | 64.5k  | 27.6k  | 37.3k      | 20.0k      | 1.0m     | 1x4x4x192,1x3x3x192,192     | 1x4x4x192    | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 37    | conv_2d           | 197.1k | 98.3k  | 150.5k     | 3.0k       | 1.9m     | 1x4x4x192,32x1x1x192,32     | 1x4x4x32     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 38    | add               | 512.0  | 0      | 2.3k       | 5.6k       | 150.0u   | 1x4x4x32,1x4x4x32           | 1x4x4x32     | Activation:none                                       | True       |                                                 |
+| 39    | conv_2d           | 205.8k | 98.3k  | 165.7k     | 3.2k       | 2.1m     | 1x4x4x32,192x1x1x32,192     | 1x4x4x192    | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 40    | depthwise_conv_2d | 64.5k  | 27.6k  | 37.3k      | 20.0k      | 1.0m     | 1x4x4x192,1x3x3x192,192     | 1x4x4x192    | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 41    | conv_2d           | 295.7k | 147.4k | 225.8k     | 3.0k       | 2.8m     | 1x4x4x192,48x1x1x192,48     | 1x4x4x48     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 42    | conv_2d           | 456.2k | 221.2k | 359.2k     | 3.0k       | 4.5m     | 1x4x4x48,288x1x1x48,288     | 1x4x4x288    | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 43    | depthwise_conv_2d | 96.8k  | 41.5k  | 55.6k      | 20.0k      | 1.3m     | 1x4x4x288,1x3x3x288,288     | 1x4x4x288    | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 44    | conv_2d           | 443.1k | 221.2k | 336.4k     | 3.0k       | 4.1m     | 1x4x4x288,48x1x1x288,48     | 1x4x4x48     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 45    | add               | 768.0  | 0      | 3.5k       | 5.6k       | 150.0u   | 1x4x4x48,1x4x4x48           | 1x4x4x48     | Activation:none                                       | True       |                                                 |
+| 46    | conv_2d           | 456.2k | 221.2k | 359.2k     | 3.2k       | 4.4m     | 1x4x4x48,288x1x1x48,288     | 1x4x4x288    | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 47    | depthwise_conv_2d | 96.8k  | 41.5k  | 55.6k      | 20.1k      | 1.3m     | 1x4x4x288,1x3x3x288,288     | 1x4x4x288    | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 48    | conv_2d           | 443.1k | 221.2k | 336.4k     | 3.0k       | 4.1m     | 1x4x4x288,48x1x1x288,48     | 1x4x4x48     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 49    | add               | 768.0  | 0      | 3.5k       | 5.6k       | 150.0u   | 1x4x4x48,1x4x4x48           | 1x4x4x48     | Activation:none                                       | True       |                                                 |
+| 50    | conv_2d           | 456.2k | 221.2k | 359.2k     | 3.2k       | 4.4m     | 1x4x4x48,288x1x1x48,288     | 1x4x4x288    | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 51    | pad               | 43.2k  | 0      | 0          | 120.2k     | 1.5m     | 1x4x4x288,4x2               | 1x5x5x288    | BuiltinOptionsType=22                                 | True       |                                                 |
+| 52    | depthwise_conv_2d | 24.2k  | 10.4k  | 18.7k      | 5.7k       | 480.0u   | 1x5x5x288,1x3x3x288,288     | 1x2x2x288    | Multipler:1 padding:valid stride:2x2 activation:relu6 | True       |                                                 |
+| 53    | conv_2d           | 184.6k | 92.2k  | 140.1k     | 3.1k       | 1.7m     | 1x2x2x288,80x1x1x288,80     | 1x2x2x80     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 54    | conv_2d           | 313.0k | 153.6k | 241.5k     | 3.0k       | 3.0m     | 1x2x2x80,480x1x1x80,480     | 1x2x2x480    | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 55    | depthwise_conv_2d | 40.3k  | 17.3k  | 16.5k      | 5.6k       | 480.0u   | 1x2x2x480,1x3x3x480,480     | 1x2x2x480    | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 56    | conv_2d           | 307.5k | 153.6k | 232.3k     | 3.0k       | 2.9m     | 1x2x2x480,80x1x1x480,80     | 1x2x2x80     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 57    | add               | 320.0  | 0      | 1.4k       | 5.7k       | 120.0u   | 1x2x2x80,1x2x2x80           | 1x2x2x80     | Activation:none                                       | True       |                                                 |
+| 58    | conv_2d           | 313.0k | 153.6k | 241.5k     | 3.2k       | 3.0m     | 1x2x2x80,480x1x1x80,480     | 1x2x2x480    | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 59    | depthwise_conv_2d | 40.3k  | 17.3k  | 16.5k      | 5.7k       | 480.0u   | 1x2x2x480,1x3x3x480,480     | 1x2x2x480    | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 60    | conv_2d           | 307.5k | 153.6k | 232.3k     | 3.0k       | 2.9m     | 1x2x2x480,80x1x1x480,80     | 1x2x2x80     | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 61    | add               | 320.0  | 0      | 1.4k       | 5.6k       | 120.0u   | 1x2x2x80,1x2x2x80           | 1x2x2x80     | Activation:none                                       | True       |                                                 |
+| 62    | conv_2d           | 313.0k | 153.6k | 241.5k     | 3.2k       | 3.0m     | 1x2x2x80,480x1x1x80,480     | 1x2x2x480    | Padding:same stride:1x1 activation:relu6              | True       |                                                 |
+| 63    | depthwise_conv_2d | 40.3k  | 17.3k  | 16.5k      | 5.7k       | 480.0u   | 1x2x2x480,1x3x3x480,480     | 1x2x2x480    | Multipler:1 padding:same stride:1x1 activation:relu6  | True       |                                                 |
+| 64    | conv_2d           | 615.0k | 307.2k | 464.5k     | 3.0k       | 5.7m     | 1x2x2x480,160x1x1x480,160   | 1x2x2x160    | Padding:same stride:1x1 activation:none               | True       |                                                 |
+| 65    | conv_2d           | 1.6M   | 819.2k | 0          | 3.4M       | 41.7m    | 1x2x2x160,1280x1x1x160,1280 | 1x2x2x1280   | Padding:valid stride:1x1 activation:relu6             | False      | Output vector stride (2560) exceeded (max=2047) |
+| 66    | mean              | 0      | 0      | 0          | 1.0M       | 12.7m    | 1x2x2x1280,2                | 1x1280       | BuiltinOptionsType=27                                 | True       |                                                 |
+| 67    | fully_connected   | 20.5k  | 10.2k  | 20.5k      | 1.9k       | 270.0u   | 1x1280,8x1280,8             | 1x8          | Activation:none                                       | True       |                                                 |
+| 68    | softmax           | 40.0   | 0      | 0          | 6.9k       | 90.0u    | 1x8                         | 1x8          | BuiltinOptionsType=9                                  | True       |                                                 |
++-------+-------------------+--------+--------+------------+------------+----------+-----------------------------+--------------+-------------------------------------------------------+------------+-------------------------------------------------+
+Generating profiling report at C:/Users/reed/.mltk/models/my_keyword_spotting_mobilenetv2/profiling
+Profiling time: 156.375422 seconds
+</pre></div>
+</div>
+</div>
+</div>
+<p>The profiler reports that it takes 239 milliseconds to execute the model one time. Unfortunately, this is likely too slow to fit within our hardware constraints. For this model to work, it should really execute in less than 120ms. This is necessary because we also need to account for the time required to generate a spectrogram (which is <em>not</em> included in the profiler’s reported number). We need to process the generated spectrogram in the ML model multiple times so that we can average enough model predictions to have confidence that a keyword is actually detected. See the <a class="reference internal" href="../../docs/audio/keyword_spotting_overview.html"><span class="doc std std-doc">Keyword Spotting Overview</span></a> for more details.</p>
+<p>Thus, let’s adjust the MobileNetV2 model parameters to reduce its size further.</p>
+<p>Change:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">alpha=0.15</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">last_block_filters=384</span></code></p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">alpha</span></code> parameter has already been discussed.<br/>
+The <code class="docutils literal notranslate"><span class="pre">last_block_filters</span></code> is an additional parameter enabled by the MLTK. This controls the number of filters in the last Conv2D block of the MobileNetV2. By default, this value is 1280 which is likely overkill for our purposes (the default MobileNetV2 is designed to classify 1000 different classes). Let’s reduce this value to 384.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">keras_model</span> <span class="o">=</span> <span class="n">MobileNetV2</span><span class="p">(</span> 
+    <span class="n">input_shape</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
+    <span class="n">classes</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span>
+    <span class="n">alpha</span><span class="o">=</span><span class="mf">0.15</span><span class="p">,</span> <span class="c1"># Change the alpha parameter to 0.15, which reduces the number of layers in the model </span>
+    <span class="n">last_block_filters</span><span class="o">=</span><span class="mi">384</span><span class="p">,</span>
+    <span class="n">weights</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Then profile the model again:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Profile the model on a development board using the MVP hardware accelerator</span>
+<span class="c1"># Since the model hasn't been trained yet, we need to add the --build option</span>
+<span class="c1"># Be sure to change the terminal's current directory to the model spec's directory</span>
+<span class="c1"># e.g.: cd &lt;same directory as my_keyword_spotting_mobilenetv2.py&gt;</span>
+<span class="o">!</span>mltk profile my_keyword_spotting_mobilenetv2 --build --accelerator MVP --device
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 00001: LearningRateScheduler setting learning rate to 0.001.
+
+Epoch 00002: LearningRateScheduler setting learning rate to 0.00095.
+
+Epoch 00003: LearningRateScheduler setting learning rate to 0.0009025.
+
+Profiling Summary
+Name: my_keyword_spotting_mobilenetv2
+Accelerator: MVP
+Input Shape: 1x59x49x1
+Input Data Type: int8
+Output Shape: 1x8
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\keras\engine\functional.py:1410: CustomMaskWarning: Custom mask layers require a config and must override get_config. When loading, the custom mask layer must be passed to the custom_objects argument.
+  layer_config = serialize_layer_fn(layer)
+fully_quantize: 0, inference_type: 6, input_inference_type: 9, output_inference_type: 9
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Output Data Type: int8
+Model File Size (bytes): 228.6k
+Runtime Memory Size (bytes): 104.4k
+# Operations: 4.2M
+# Multiply-Accumulates: 1.7M
+# Layers: 71
+# Unsupported Layers: 0
+# Accelerator Cycles: 3.5M
+# CPU Cycles: 2.9M
+CPU Utilization (%): 35.7
+Clock Rate (hz): 80.0M
+Time (s): 102.2m
+Ops/s: 41.4M
+MACs/s: 17.0M
+Inference/s: 9.8
+
+Model Layers
++-------+-------------------+--------+--------+------------+------------+----------+-------------------------+--------------+-------------------------------------------------------+
+| Index | OpCode            | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape             | Output Shape | Options                                               |
++-------+-------------------+--------+--------+------------+------------+----------+-------------------------+--------------+-------------------------------------------------------+
+| 0     | conv_2d           | 126.0k | 54.0k  | 184.3k     | 22.2k      | 2.5m     | 1x59x49x1,8x3x3x1,8     | 1x30x25x8    | Padding:same stride:2x2 activation:relu6              |
+| 1     | depthwise_conv_2d | 126.0k | 54.0k  | 189.5k     | 201.2k     | 4.2m     | 1x30x25x8,1x3x3x8,8     | 1x30x25x8    | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 2     | conv_2d           | 102.0k | 48.0k  | 108.0k     | 3.4k       | 1.4m     | 1x30x25x8,8x1x1x8,8     | 1x30x25x8    | Padding:same stride:1x1 activation:none               |
+| 3     | add               | 6.0k   | 0      | 27.0k      | 7.1k       | 420.0u   | 1x30x25x8,1x30x25x8     | 1x30x25x8    | Activation:none                                       |
+| 4     | conv_2d           | 684.0k | 288.0k | 648.0k     | 3.2k       | 8.0m     | 1x30x25x8,48x1x1x8,48   | 1x30x25x48   | Padding:same stride:1x1 activation:relu6              |
+| 5     | pad               | 241.1k | 0      | 0          | 967.8k     | 11.8m    | 1x30x25x48,4x2          | 1x31x27x48   | BuiltinOptionsType=22                                 |
+| 6     | depthwise_conv_2d | 196.6k | 84.2k  | 160.8k     | 233.5k     | 11.7m    | 1x31x27x48,1x3x3x48,48  | 1x15x13x48   | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+| 7     | conv_2d           | 151.3k | 74.9k  | 121.7k     | 3.1k       | 1.5m     | 1x15x13x48,8x1x1x48,8   | 1x15x13x8    | Padding:same stride:1x1 activation:none               |
+| 8     | conv_2d           | 177.8k | 74.9k  | 168.4k     | 3.0k       | 2.1m     | 1x15x13x8,48x1x1x8,48   | 1x15x13x48   | Padding:same stride:1x1 activation:relu6              |
+| 9     | depthwise_conv_2d | 196.6k | 84.2k  | 148.7k     | 233.1k     | 11.7m    | 1x15x13x48,1x3x3x48,48  | 1x15x13x48   | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 10    | conv_2d           | 151.3k | 74.9k  | 121.7k     | 3.0k       | 1.5m     | 1x15x13x48,8x1x1x48,8   | 1x15x13x8    | Padding:same stride:1x1 activation:none               |
+| 11    | add               | 1.6k   | 0      | 7.0k       | 5.7k       | 180.0u   | 1x15x13x8,1x15x13x8     | 1x15x13x8    | Activation:none                                       |
+| 12    | conv_2d           | 177.8k | 74.9k  | 168.4k     | 3.2k       | 2.1m     | 1x15x13x8,48x1x1x8,48   | 1x15x13x48   | Padding:same stride:1x1 activation:relu6              |
+| 13    | pad               | 73.4k  | 0      | 0          | 277.1k     | 3.4m     | 1x15x13x48,4x2          | 1x17x15x48   | BuiltinOptionsType=22                                 |
+| 14    | depthwise_conv_2d | 56.4k  | 24.2k  | 46.2k      | 67.9k      | 3.4m     | 1x17x15x48,1x3x3x48,48  | 1x8x7x48     | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+| 15    | conv_2d           | 43.5k  | 21.5k  | 35.0k      | 3.1k       | 450.0u   | 1x8x7x48,8x1x1x48,8     | 1x8x7x8      | Padding:same stride:1x1 activation:none               |
+| 16    | conv_2d           | 51.1k  | 21.5k  | 48.4k      | 3.0k       | 630.0u   | 1x8x7x8,48x1x1x8,48     | 1x8x7x48     | Padding:same stride:1x1 activation:relu6              |
+| 17    | depthwise_conv_2d | 56.4k  | 24.2k  | 39.9k      | 67.7k      | 3.4m     | 1x8x7x48,1x3x3x48,48    | 1x8x7x48     | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 18    | conv_2d           | 43.5k  | 21.5k  | 35.0k      | 3.0k       | 450.0u   | 1x8x7x48,8x1x1x48,8     | 1x8x7x8      | Padding:same stride:1x1 activation:none               |
+| 19    | add               | 448.0  | 0      | 2.0k       | 5.7k       | 150.0u   | 1x8x7x8,1x8x7x8         | 1x8x7x8      | Activation:none                                       |
+| 20    | conv_2d           | 51.1k  | 21.5k  | 48.4k      | 3.2k       | 630.0u   | 1x8x7x8,48x1x1x8,48     | 1x8x7x48     | Padding:same stride:1x1 activation:relu6              |
+| 21    | depthwise_conv_2d | 56.4k  | 24.2k  | 39.9k      | 67.7k      | 3.4m     | 1x8x7x48,1x3x3x48,48    | 1x8x7x48     | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 22    | conv_2d           | 43.5k  | 21.5k  | 35.0k      | 3.0k       | 450.0u   | 1x8x7x48,8x1x1x48,8     | 1x8x7x8      | Padding:same stride:1x1 activation:none               |
+| 23    | add               | 448.0  | 0      | 2.0k       | 5.6k       | 150.0u   | 1x8x7x8,1x8x7x8         | 1x8x7x8      | Activation:none                                       |
+| 24    | conv_2d           | 51.1k  | 21.5k  | 48.4k      | 3.2k       | 630.0u   | 1x8x7x8,48x1x1x8,48     | 1x8x7x48     | Padding:same stride:1x1 activation:relu6              |
+| 25    | pad               | 23.3k  | 0      | 0          | 81.4k      | 990.0u   | 1x8x7x48,4x2            | 1x9x9x48     | BuiltinOptionsType=22                                 |
+| 26    | depthwise_conv_2d | 16.1k  | 6.9k   | 13.2k      | 20.1k      | 1.0m     | 1x9x9x48,1x3x3x48,48    | 1x4x4x48     | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+| 27    | conv_2d           | 24.8k  | 12.3k  | 20.0k      | 3.1k       | 270.0u   | 1x4x4x48,16x1x1x48,16   | 1x4x4x16     | Padding:same stride:1x1 activation:none               |
+| 28    | conv_2d           | 53.8k  | 24.6k  | 46.0k      | 3.0k       | 630.0u   | 1x4x4x16,96x1x1x16,96   | 1x4x4x96     | Padding:same stride:1x1 activation:relu6              |
+| 29    | depthwise_conv_2d | 32.2k  | 13.8k  | 19.1k      | 19.9k      | 960.0u   | 1x4x4x96,1x3x3x96,96    | 1x4x4x96     | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 30    | conv_2d           | 49.4k  | 24.6k  | 38.4k      | 3.0k       | 510.0u   | 1x4x4x96,16x1x1x96,16   | 1x4x4x16     | Padding:same stride:1x1 activation:none               |
+| 31    | add               | 256.0  | 0      | 1.2k       | 5.7k       | 120.0u   | 1x4x4x16,1x4x4x16       | 1x4x4x16     | Activation:none                                       |
+| 32    | conv_2d           | 53.8k  | 24.6k  | 46.0k      | 3.2k       | 600.0u   | 1x4x4x16,96x1x1x16,96   | 1x4x4x96     | Padding:same stride:1x1 activation:relu6              |
+| 33    | depthwise_conv_2d | 32.2k  | 13.8k  | 19.1k      | 20.0k      | 960.0u   | 1x4x4x96,1x3x3x96,96    | 1x4x4x96     | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 34    | conv_2d           | 49.4k  | 24.6k  | 38.4k      | 3.0k       | 510.0u   | 1x4x4x96,16x1x1x96,16   | 1x4x4x16     | Padding:same stride:1x1 activation:none               |
+| 35    | add               | 256.0  | 0      | 1.2k       | 5.6k       | 120.0u   | 1x4x4x16,1x4x4x16       | 1x4x4x16     | Activation:none                                       |
+| 36    | conv_2d           | 53.8k  | 24.6k  | 46.0k      | 3.2k       | 600.0u   | 1x4x4x16,96x1x1x16,96   | 1x4x4x96     | Padding:same stride:1x1 activation:relu6              |
+| 37    | depthwise_conv_2d | 32.2k  | 13.8k  | 19.1k      | 20.0k      | 960.0u   | 1x4x4x96,1x3x3x96,96    | 1x4x4x96     | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 38    | conv_2d           | 49.4k  | 24.6k  | 38.4k      | 3.0k       | 510.0u   | 1x4x4x96,16x1x1x96,16   | 1x4x4x16     | Padding:same stride:1x1 activation:none               |
+| 39    | add               | 256.0  | 0      | 1.2k       | 5.6k       | 120.0u   | 1x4x4x16,1x4x4x16       | 1x4x4x16     | Activation:none                                       |
+| 40    | conv_2d           | 53.8k  | 24.6k  | 46.0k      | 3.2k       | 600.0u   | 1x4x4x16,96x1x1x16,96   | 1x4x4x96     | Padding:same stride:1x1 activation:relu6              |
+| 41    | depthwise_conv_2d | 32.2k  | 13.8k  | 19.1k      | 20.0k      | 960.0u   | 1x4x4x96,1x3x3x96,96    | 1x4x4x96     | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 42    | conv_2d           | 49.4k  | 24.6k  | 38.4k      | 3.0k       | 510.0u   | 1x4x4x96,16x1x1x96,16   | 1x4x4x16     | Padding:same stride:1x1 activation:none               |
+| 43    | add               | 256.0  | 0      | 1.2k       | 5.6k       | 120.0u   | 1x4x4x16,1x4x4x16       | 1x4x4x16     | Activation:none                                       |
+| 44    | conv_2d           | 53.8k  | 24.6k  | 46.0k      | 3.2k       | 600.0u   | 1x4x4x16,96x1x1x16,96   | 1x4x4x96     | Padding:same stride:1x1 activation:relu6              |
+| 45    | depthwise_conv_2d | 32.2k  | 13.8k  | 19.1k      | 20.0k      | 960.0u   | 1x4x4x96,1x3x3x96,96    | 1x4x4x96     | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 46    | conv_2d           | 49.4k  | 24.6k  | 38.4k      | 3.0k       | 510.0u   | 1x4x4x96,16x1x1x96,16   | 1x4x4x16     | Padding:same stride:1x1 activation:none               |
+| 47    | add               | 256.0  | 0      | 1.2k       | 5.6k       | 120.0u   | 1x4x4x16,1x4x4x16       | 1x4x4x16     | Activation:none                                       |
+| 48    | conv_2d           | 53.8k  | 24.6k  | 46.0k      | 3.2k       | 600.0u   | 1x4x4x16,96x1x1x16,96   | 1x4x4x96     | Padding:same stride:1x1 activation:relu6              |
+| 49    | depthwise_conv_2d | 32.2k  | 13.8k  | 19.1k      | 20.0k      | 960.0u   | 1x4x4x96,1x3x3x96,96    | 1x4x4x96     | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 50    | conv_2d           | 49.4k  | 24.6k  | 38.4k      | 3.0k       | 510.0u   | 1x4x4x96,16x1x1x96,16   | 1x4x4x16     | Padding:same stride:1x1 activation:none               |
+| 51    | add               | 256.0  | 0      | 1.2k       | 5.6k       | 120.0u   | 1x4x4x16,1x4x4x16       | 1x4x4x16     | Activation:none                                       |
+| 52    | conv_2d           | 53.8k  | 24.6k  | 46.0k      | 3.2k       | 600.0u   | 1x4x4x16,96x1x1x16,96   | 1x4x4x96     | Padding:same stride:1x1 activation:relu6              |
+| 53    | pad               | 14.4k  | 0      | 0          | 41.5k      | 510.0u   | 1x4x4x96,4x2            | 1x5x5x96     | BuiltinOptionsType=22                                 |
+| 54    | depthwise_conv_2d | 8.1k   | 3.5k   | 6.4k       | 5.7k       | 300.0u   | 1x5x5x96,1x3x3x96,96    | 1x2x2x96     | Multipler:1 padding:valid stride:2x2 activation:relu6 |
+| 55    | conv_2d           | 18.5k  | 9.2k   | 14.4k      | 3.1k       | 210.0u   | 1x2x2x96,24x1x1x96,24   | 1x2x2x24     | Padding:same stride:1x1 activation:none               |
+| 56    | conv_2d           | 29.4k  | 13.8k  | 24.1k      | 3.0k       | 330.0u   | 1x2x2x24,144x1x1x24,144 | 1x2x2x144    | Padding:same stride:1x1 activation:relu6              |
+| 57    | depthwise_conv_2d | 12.1k  | 5.2k   | 5.1k       | 5.5k       | 240.0u   | 1x2x2x144,1x3x3x144,144 | 1x2x2x144    | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 58    | conv_2d           | 27.7k  | 13.8k  | 21.3k      | 3.0k       | 300.0u   | 1x2x2x144,24x1x1x144,24 | 1x2x2x24     | Padding:same stride:1x1 activation:none               |
+| 59    | add               | 96.0   | 0      | 446.0      | 5.7k       | 120.0u   | 1x2x2x24,1x2x2x24       | 1x2x2x24     | Activation:none                                       |
+| 60    | conv_2d           | 29.4k  | 13.8k  | 24.1k      | 3.2k       | 330.0u   | 1x2x2x24,144x1x1x24,144 | 1x2x2x144    | Padding:same stride:1x1 activation:relu6              |
+| 61    | depthwise_conv_2d | 12.1k  | 5.2k   | 5.1k       | 5.6k       | 300.0u   | 1x2x2x144,1x3x3x144,144 | 1x2x2x144    | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 62    | conv_2d           | 27.7k  | 13.8k  | 21.3k      | 3.0k       | 300.0u   | 1x2x2x144,24x1x1x144,24 | 1x2x2x24     | Padding:same stride:1x1 activation:none               |
+| 63    | add               | 96.0   | 0      | 446.0      | 5.6k       | 120.0u   | 1x2x2x24,1x2x2x24       | 1x2x2x24     | Activation:none                                       |
+| 64    | conv_2d           | 29.4k  | 13.8k  | 24.1k      | 3.2k       | 330.0u   | 1x2x2x24,144x1x1x24,144 | 1x2x2x144    | Padding:same stride:1x1 activation:relu6              |
+| 65    | depthwise_conv_2d | 12.1k  | 5.2k   | 5.1k       | 5.6k       | 300.0u   | 1x2x2x144,1x3x3x144,144 | 1x2x2x144    | Multipler:1 padding:same stride:1x1 activation:relu6  |
+| 66    | conv_2d           | 55.5k  | 27.6k  | 42.6k      | 3.0k       | 570.0u   | 1x2x2x144,48x1x1x144,48 | 1x2x2x48     | Padding:same stride:1x1 activation:none               |
+| 67    | conv_2d           | 152.1k | 73.7k  | 119.5k     | 3.0k       | 1.5m     | 1x2x2x48,384x1x1x48,384 | 1x2x2x384    | Padding:valid stride:1x1 activation:relu6             |
+| 68    | mean              | 0      | 0      | 0          | 312.9k     | 3.8m     | 1x2x2x384,2             | 1x384        | BuiltinOptionsType=27                                 |
+| 69    | fully_connected   | 6.2k   | 3.1k   | 6.2k       | 1.9k       | 120.0u   | 1x384,8x384,8           | 1x8          | Activation:none                                       |
+| 70    | softmax           | 40.0   | 0      | 0          | 6.9k       | 90.0u    | 1x8                     | 1x8          | BuiltinOptionsType=9                                  |
++-------+-------------------+--------+--------+------------+------------+----------+-------------------------+--------------+-------------------------------------------------------+
+Generating profiling report at C:/Users/reed/.mltk/models/my_keyword_spotting_mobilenetv2/profiling
+Profiling time: 125.606283 seconds
+</pre></div>
+</div>
+</div>
+</div>
+<p>With these parameters, the model now requires 102 milliseconds to execute which is within our target range.</p>
+<p><strong>NOTE:</strong> Another way to reduce model execution time is to decrease the size of the spectrogram (which then decreases the model input size). Reducing the <code class="docutils literal notranslate"><span class="pre">frontend_settings.filterbank_n_channels</span></code> value is an effective way of doing this.</p>
+</section>
+<section id="train-the-model">
+<h2 id="train-the-model">Train the Model<a class="headerlink" href="#train-the-model" title="Permalink to this headline">¶</a></h2>
+<p>With the model specification complete, it is time to fully train the model:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># NOTE: Be patient, this command will take awhile!</span>
+<span class="o">!</span>mltk train my_keyword_spotting_mobilenetv2 --clean
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="test-the-model">
+<h2 id="test-the-model">Test the Model<a class="headerlink" href="#test-the-model" title="Permalink to this headline">¶</a></h2>
+<p>With the model fully trained, it’s time to test it on the development board. This can be done by issuing the following command:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Test the keyword_spotting_mobilenetv2 using the development board's microphone</span>
+<span class="c1"># The red LED will turn on when a keyword is detected</span>
+<span class="c1"># The green LED will turn on when there's audio activity</span>
+<span class="c1"># NOTE: Your mouth should be ~2 inches from the board's microphone</span>
+<span class="o">!</span>mltk classify_audio my_keyword_spotting_mobilenetv2 --device --accelerator MVP
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="keyword_spotting_on_off.html" title="Keyword Spotting - On/Off"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Keyword Spotting - On/Off </span>
+              </div>
+            </a>
+          
+          
+            <a href="keyword_spotting_with_transfer_learning.html" title="Keyword Spotting with Transfer Learning"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> Keyword Spotting with Transfer Learning </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Apr 26, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

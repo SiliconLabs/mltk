@@ -1,0 +1,53 @@
+# Silicon Labs Project Configuration Tools: slcp, v0, Component selection file.
+project_name: mltk_image_classifier
+label: MLTK - Image Classifier
+description: >
+  This application uses TensorFlow Lite for Microcontrollers to 
+  classify images retrieved from a camera.
+category: Example|Machine Learning Toolkit
+package: mltk
+quality: development
+sdk_extension:
+  - id: mltk
+    version: "1.0.0"
+source:
+- path: main.cc
+component:
+- id: iostream_recommended_stream
+- id: printf
+- id: iostream_retarget_stdio
+- id: sl_system
+- id: device_init
+- id: device_init_hfrco
+- id: silabs_core_sl_malloc
+- id: power_manager
+- id: sleeptimer
+- id: spidrv
+  instance: [exp]
+- id: mltk_tflite_micro_model
+  from: mltk
+- id: mltk_arducam
+  from: mltk
+- id: mltk_jlink_stream
+  from: mltk
+requires:
+- name: cpp_support
+toolchain_settings:
+  - option: gcc_linker_option
+    value: "-u _printf_float"
+configuration:
+- name: SL_BOARD_ENABLE_VCOM
+  value: '1'
+- name: SL_MVP_POWER_MODE
+  value: '1'
+config_file: 
+  - path: "config/tflite/rock_paper_scissors.tflite"
+    directory: "tflite"
+
+readme:
+  - path: README.md
+tag:
+  - hardware:device:ram:128
+  - hardware:device:flash:130
+other_file:
+  - path: image_dump_viewer.py

@@ -1,0 +1,765 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tflite, embedded, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-965PJZXVMY"></script>
+<script>
+    window.gTrackingId = 'G-965PJZXVMY';
+</script>
+  
+  
+    <title>Audio Feature Generator &#8212; MLTK 0.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Audio Utilities" href="audio_utilities.html" />
+    <link rel="prev" title="Keyword Spotting Overview" href="keyword_spotting_overview.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#docs/audio/audio_feature_generator" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.6.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.6.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Audio Feature Generator </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tutorials.html" class="md-nav__link">Tutorials</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Audio Feature Generator </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Audio Feature Generator</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#docs-audio-audio-feature-generator--page-root" class="md-nav__link">Audio Feature Generator</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a>
+        </li>
+        <li class="md-nav__item"><a href="#benefits" class="md-nav__link">Benefits</a>
+        </li>
+        <li class="md-nav__item"><a href="#gecko-sdk-component" class="md-nav__link">Gecko SDK Component</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#source-code" class="md-nav__link">Source Code</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#mltk-c-python-wrapper" class="md-nav__link">MLTK C++ Python Wrapper</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#id1" class="md-nav__link">Source Code</a>
+        </li>
+        <li class="md-nav__item"><a href="#usage" class="md-nav__link">Usage</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#audio-visualizer-utility" class="md-nav__link">Audio Visualizer Utility</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/docs/audio/audio_feature_generator.md.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="#overview" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#benefits" class="md-nav__link">Benefits</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#gecko-sdk-component" class="md-nav__link">Gecko SDK Component</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#mltk-c-python-wrapper" class="md-nav__link">MLTK C++ Python Wrapper</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="#audio-visualizer-utility" class="md-nav__link">Audio Visualizer Utility</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#docs-audio-audio-feature-generator--page-root" class="md-nav__link">Audio Feature Generator</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a>
+        </li>
+        <li class="md-nav__item"><a href="#benefits" class="md-nav__link">Benefits</a>
+        </li>
+        <li class="md-nav__item"><a href="#gecko-sdk-component" class="md-nav__link">Gecko SDK Component</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#source-code" class="md-nav__link">Source Code</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#mltk-c-python-wrapper" class="md-nav__link">MLTK C++ Python Wrapper</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#id1" class="md-nav__link">Source Code</a>
+        </li>
+        <li class="md-nav__item"><a href="#usage" class="md-nav__link">Usage</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#audio-visualizer-utility" class="md-nav__link">Audio Visualizer Utility</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/docs/audio/audio_feature_generator.md.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="audio-feature-generator">
+<h1 id="docs-audio-audio-feature-generator--page-root">Audio Feature Generator<a class="headerlink" href="#docs-audio-audio-feature-generator--page-root" title="Permalink to this headline">¶</a></h1>
+<p>The AudioFeatureGenerator is a software library to convert streaming audio into spectrograms.
+The spectrograms are then used by a classification machine learning model to make predictions on the
+contents of the streaming audio.</p>
+<p>A common use case of this library is “keyword spotting”.<br/>
+Refer to the <a class="reference internal" href="keyword_spotting_overview.html"><span class="doc std std-doc">Keyword Spotting Overview</span></a> for more
+details on how spectrograms are used to detect keywords in streaming audio.</p>
+<p>Refer to the <a class="reference internal" href="../../mltk/tutorials/keyword_spotting_on_off.html"><span class="doc std std-doc">Keyword Spotting Tutorial</span></a> for a complete
+guide on how to use the MLTK to create an audio classification ML model.</p>
+<section id="overview">
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>There are three main parts to the AudioFeatureGenerator:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="#gecko-sdk-component">Gecko SDK Component</a> - Software library provided by the Gecko SDK and runs on the an embedded target</p></li>
+<li><p><a class="reference external" href="#mltk-c-python-wrapper">MLTK C++ Python Wrapper</a> - Python package that wraps the Gecko SDK software library; this runs on the host PC</p></li>
+<li><p><a class="reference external" href="#audio-visualizer-utility">Audio Visualizer Utility</a> - Graphical utility to view the spectrograms generated by the AudioFeatureGenerator in real-time</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See the <a class="reference internal" href="audio_utilities.html"><span class="doc std std-doc">Audio Utilities</span></a> documentation for more details about the audio tools offered by the MLTK</p>
+</div>
+<p>These parts work together as follows:</p>
+<ol class="simple">
+<li><p>The AudioFeatureGenerator visualizer tool is used to select spectrogram settings</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">view_audio</span></code> command is used to invoke visualizer tool</p></li>
+</ul>
+</li>
+<li><p>The spectrogram settings are saved to a <a class="reference internal" href="../guides/model_specification.html"><span class="doc std std-doc">Model Specification</span></a> file</p></li>
+<li><p>The <a class="reference internal" href="../guides/model_specification.html"><span class="doc std std-doc">Model Specification</span></a> file is used to train the model</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">train</span></code> command  is used to train the model</p></li>
+<li><p>Internally, the <a class="reference internal" href="../cpp_development/wrappers/audio_feature_generator_wrapper.html"><span class="doc std std-doc">AudioFeatureGenerator</span></a> C++ Python wrapper is used to dynamically generate spectrograms from the audio dataset</p></li>
+</ul>
+</li>
+<li><p>At the end of training, the MLTK embeds the <a class="reference external" href="../guides/model_parameters.html#audiodatasetmixin">spectrogram settings</a> into the generated <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file</p></li>
+<li><p>The generated <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file is copied to a Gecko SDK project</p></li>
+<li><p>The Gecko SDK project generator parses the spectrogram settings embedded in the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> and generates the corresponding C header files with the settings</p></li>
+<li><p>The Gecko SDK project is built and the firmware image is loaded onto the embedded target. The firmware image contains:</p>
+<ul class="simple">
+<li><p>Trained <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file</p></li>
+<li><p><a class="reference external" href="https://github.com/tensorflow/tflite-micro">Tensorflow-Lite Micro</a> interpreter</p></li>
+<li><p><a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/api/group-ml-audio-feature-generation">AudioFeatureGenerator</a> software library</p></li>
+<li><p>AudioFeatureGenerator <a class="reference external" href="../guides/model_parameters.html#audiodatasetmixin">settings</a> used to train the model</p></li>
+</ul>
+</li>
+<li><p>On the embedded target at runtime:<br/>
+a. Read streaming audio from the microphone<br/>
+b. The microphone audio is sent to the AudioFeatureGenerator where spectrograms are generated using the <em>exact</em> same settings and algorithms that were used during model training<br/>
+c. The generated spectrogram images are sent to Tensorflow-Lite Micro and are classified using the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model<br/>
+d. The model predictions are used to notify the application of keyword detections</p></li>
+</ol>
+</section>
+<section id="benefits">
+<h2 id="benefits">Benefits<a class="headerlink" href="#benefits" title="Permalink to this headline">¶</a></h2>
+<p>The benefits of using the AudioFeatureGenerator are:</p>
+<ul class="simple">
+<li><p>The <em>exact</em> same algorithms and settings used to generate the spectrograms during model training are also used by the embedded target</p>
+<ul>
+<li><p>This ensures the ML model “sees” the same type of spectrograms at runtime that it was trained to see which should allow for better performance</p></li>
+</ul>
+</li>
+<li><p>The <a class="reference external" href="../guides/model_parameters.html#audiodatasetmixin">spectrogram settings</a> are automatically embedded into the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file</p>
+<ul>
+<li><p>This ensures the settings are in lock-step with the trained model</p></li>
+<li><p>The ML model designer only needs to distribute a single file</p></li>
+</ul>
+</li>
+<li><p>The Gecko SDK will automatically generate the necessary source code</p>
+<ul>
+<li><p>The Gecko SDK will parse the spectrogram settings from the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> and generate the corresponding C headers</p></li>
+<li><p>The Gecko SDK comes with the full <a class="reference external" href="https://github.com/SiliconLabs/gecko_sdk/blob/gsdk_4.0/util/third_party/tensorflow_extra/src/sl_ml_audio_feature_generation.c">source code</a> to the AudioFeatureGenerator software library</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="gecko-sdk-component">
+<h2 id="gecko-sdk-component">Gecko SDK Component<a class="headerlink" href="#gecko-sdk-component" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/api/group-ml-audio-feature-generation">Gecko SDK AudioFeatureGenerator</a> component is largely based on the <a class="reference external" href="https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/experimental/microfrontend/lib">Google Microfrontend</a> library.</p>
+<blockquote>
+<div><p>A feature generation library (also called frontend) that receives raw audio input, and produces filter banks (a vector of values).</p>
+<p>The raw audio input is expected to be 16-bit PCM features, with a configurable sample rate. More specifically the audio signal goes through a pre-emphasis filter (optionally); then gets sliced into (potentially overlapping) frames and a window function is applied to each frame; afterwards, we do a Fourier transform on each frame (or more specifically a Short-Time Fourier Transform) and calculate the power spectrum; and subsequently compute the filter banks.</p>
+</div></blockquote>
+<section id="source-code">
+<h3 id="source-code">Source Code<a class="headerlink" href="#source-code" title="Permalink to this headline">¶</a></h3>
+<p>The Gecko SDK features an AudioFeatureGeneration component.<br/>
+The MLTK also features the same component with slight modifications so that it can be built for Windows/Linux.</p>
+<ul class="simple">
+<li><p>Gecko SDK source code: <a class="reference external" href="https://github.com/SiliconLabs/gecko_sdk/blob/gsdk_4.0/util/third_party/tensorflow_extra/src/sl_ml_audio_feature_generation.c">sl_ml_audio_feature_generation.c</a></p></li>
+<li><p>MLTK source code: <a class="reference external" href="https://github.com/siliconlabs/mltk/tree/master/cpp//shared/gecko_sdk/audio_feature_generation"><strong>mltk</strong>/cpp/shared/gecko_sdk/audio_feature_generation</a></p></li>
+</ul>
+</section>
+</section>
+<section id="mltk-c-python-wrapper">
+<h2 id="mltk-c-python-wrapper">MLTK C++ Python Wrapper<a class="headerlink" href="#mltk-c-python-wrapper" title="Permalink to this headline">¶</a></h2>
+<p>The C++ Python <a class="reference internal" href="../cpp_development/wrappers/audio_feature_generator_wrapper.html"><span class="doc std std-doc">wrapper</span></a> allows for executing the AudioFeatureGenerator component from a Python script.
+This allows for executing the <a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/api/group-ml-audio-feature-generation">AudioFeatureGenerator</a> software library during model training. This is useful because the <em>exact</em> spectrogram generation algorithms used by the embedded device at runtime may also be used during model training which should (hopefully) lead to more accurate model predictions.</p>
+<p>The MLTK uses <a class="reference external" href="https://pybind11.readthedocs.io/en/latest/">pybind11</a> to wrap the <a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/api/group-ml-audio-feature-generation">AudioFeatureGenerator</a> software library and generate a Windows/Linux binary that can be loaded into the Python runtime environment.</p>
+<p>The AudioFeatureGenerator Python API docs may be found here: <a class="reference internal" href="../python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator" title="mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator"><span class="xref myst py py-class">mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator</span></a>.</p>
+<section id="id1">
+<h3 id="id1">Source Code<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>C++ Python Wrapper</strong> - <a class="reference external" href="https://github.com/siliconlabs/mltk/tree/master/cpp/audio_feature_generator_wrapper">cpp/audio_feature_generator_wrapper</a></p></li>
+<li><p><strong>Python API</strong> - <a class="reference external" href="https://github.com/siliconlabs/mltk/tree/master/mltk/core/preprocess/audio/audio_feature_generator">mltk/core/preprocess/audio/audio_feature_generator</a></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When <a class="reference internal" href="../installation.html"><span class="doc std std-doc">installing</span></a> the MLTK for local development, the C++ wrapper is automatically built into a Windows/Linux shared library (<code class="docutils literal notranslate"><span class="pre">.dll</span></code> / <code class="docutils literal notranslate"><span class="pre">.so</span></code>) and copied to the Python <a class="reference external" href="https://github.com/siliconlabs/mltk/tree/master/mltk/core/preprocess/audio/audio_feature_generator">directory</a>.
+When the <a class="reference internal" href="../python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator" title="mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator"><span class="xref myst py py-class">AudioFeatureGenerator</span></a> Python library is invoked by your Python scripts, the C++ wrapper shared library is loaded into the Python runtime environment.</p>
+</div>
+</section>
+<section id="usage">
+<h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<p>The recommended way of using the AudioFeatureGenerator <a class="reference internal" href="../cpp_development/wrappers/audio_feature_generator_wrapper.html"><span class="doc std std-doc">C++ wrapper</span></a>
+is via the <a class="reference internal" href="../python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator" title="mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator"><span class="xref myst py py-class">ParallelAudioDataGenerator</span></a> which is required by the
+<a class="reference internal" href="../python_api/core/mltk_model.html#mltk.core.AudioDatasetMixin" title="mltk.core.AudioDatasetMixin"><span class="xref myst py py-class">AudioDatasetMixin</span></a>.</p>
+<p>Refer to the <a class="reference external" href="https://github.com/siliconlabs/mltk/tree/master/mltk/models/siliconlabs/keyword_spotting_on_off.py">keyword_spotting_on_off.py</a> <a class="reference internal" href="../guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> for an example of how this is used.</p>
+<p>Basically,</p>
+<p>1 ) In your <a class="reference internal" href="../guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> file, define a model object to inherit the <a class="reference internal" href="../python_api/core/mltk_model.html#mltk.core.AudioDatasetMixin" title="mltk.core.AudioDatasetMixin"><span class="xref myst py py-class">AudioDatasetMixin</span></a>, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+    <span class="n">MltkModel</span><span class="p">,</span> 
+    <span class="n">TrainMixin</span><span class="p">,</span> 
+    <span class="n">AudioDatasetMixin</span><span class="p">,</span> 
+    <span class="n">EvaluateClassifierMixin</span>
+<span class="p">):</span>
+    <span class="k">pass</span>
+
+</pre></div>
+</div>
+<p>2 ) In your <a class="reference internal" href="../guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> file, configure the spectrogram settings, e.g:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
+<span class="n">frontend_settings</span> <span class="o">=</span> <span class="n">AudioFeatureGeneratorSettings</span><span class="p">()</span>
+
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="mi">8000</span>  <span class="c1"># This can also be 16k for slightly better performance at the cost of more RAM</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_size_ms</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_step_ms</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_n_channels</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_upper_band_limit</span> <span class="o">=</span> <span class="mf">4000.0</span><span class="o">-</span><span class="mi">1</span> <span class="c1"># Spoken language usually only goes up to 4k</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_lower_band_limit</span> <span class="o">=</span> <span class="mf">100.0</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_enable</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_smoothing_bits</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_even_smoothing</span> <span class="o">=</span> <span class="mf">0.004</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_odd_smoothing</span> <span class="o">=</span> <span class="mf">0.004</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_min_signal_remaining</span> <span class="o">=</span> <span class="mf">0.05</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_enable</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_strength</span> <span class="o">=</span> <span class="mf">0.95</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_offset</span> <span class="o">=</span> <span class="mf">80.0</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_gain_bits</span> <span class="o">=</span> <span class="mi">21</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">log_scale_enable</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">log_scale_shift</span> <span class="o">=</span> <span class="mi">6</span>
+</pre></div>
+</div>
+<p>3 ) Configure the <a class="reference internal" href="../python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator" title="mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator"><span class="xref myst py py-class">ParallelAudioDataGenerator</span></a> to use the settings, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">datagen</span> <span class="o">=</span> <span class="n">ParallelAudioDataGenerator</span><span class="p">(</span>
+    <span class="n">frontend_settings</span><span class="o">=</span><span class="n">frontend_settings</span><span class="p">,</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>During model <a class="reference internal" href="../guides/model_training.html"><span class="doc std std-doc">training</span></a>, spectrograms will be dynamically generated from the dataset’s audio samples using the
+<a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/api/group-ml-audio-feature-generation">AudioFeatureGenerator</a> via <a class="reference internal" href="../cpp_development/wrappers/audio_feature_generator_wrapper.html"><span class="doc std std-doc">C++ Python wrapper</span></a>.</p>
+<p>At the end of training, the <a class="reference external" href="../guides/model_parameters.html#audiodatasetmixin">spectrogram settings</a> are automatically embedded into the generated <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.</p>
+</section>
+</section>
+<section id="audio-visualizer-utility">
+<h2 id="audio-visualizer-utility">Audio Visualizer Utility<a class="headerlink" href="#audio-visualizer-utility" title="Permalink to this headline">¶</a></h2>
+<p>The Audio Visualizer Utility provides a graphical interface to the <a class="reference internal" href="../python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator" title="mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator"><span class="xref myst py py-class">C++ Python wrapper</span></a> and thus
+<a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/api/group-ml-audio-feature-generation">Gecko SDK AudioFeatureGenerator</a> software library.
+It allows for adjusting the various spectrogram settings and seeing how the resulting spectrogram is affected in real-time.</p>
+<p>To use the Audio Visualizer utility, issue the command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk view_audio
+</pre></div>
+</div>
+<p><strong>NOTE:</strong> Internally, this will install the <a class="reference external" href="https://www.wxpython.org/">wxPython</a> Python package.</p>
+<p><img alt="audio_visualizer" src="../../_images/audio_visualizer.gif"/></p>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="keyword_spotting_overview.html" title="Keyword Spotting Overview"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Keyword Spotting Overview </span>
+              </div>
+            </a>
+          
+          
+            <a href="audio_utilities.html" title="Audio Utilities"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> Audio Utilities </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Apr 26, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

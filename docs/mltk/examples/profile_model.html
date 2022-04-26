@@ -1,0 +1,937 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tflite, embedded, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-965PJZXVMY"></script>
+<script>
+    window.gTrackingId = 'G-965PJZXVMY';
+</script>
+  
+  
+    <title>Model Profiler API Examples &#8212; MLTK 0.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Model Training API Examples" href="train_model.html" />
+    <link rel="prev" title="API Examples" href="../../docs/examples.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/examples/profile_model" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.6.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.6.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Model Profiler API Examples </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/examples.html" class="md-tabs__link">API Examples</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Model Profiler API Examples </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Model Profiler API Examples</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-examples-profile-model--page-root" class="md-nav__link">Model Profiler API Examples</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#install-mltk-python-package" class="md-nav__link">Install MLTK Python Package</a>
+        </li>
+        <li class="md-nav__item"><a href="#import-python-packages" class="md-nav__link">Import Python Packages</a>
+        </li>
+        <li class="md-nav__item"><a href="#download-tflite-model-file" class="md-nav__link">Download .tflite model file</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-1-profile-tflite-file-in-basic-simulator" class="md-nav__link">Example 1: Profile .tflite file in basic simulator</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-2-profile-tflite-file-in-mvp-hardware-simulator" class="md-nav__link">Example 2: Profile .tflite file in MVP hardware simulator</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-3-profile-tflite-file-on-physical-device" class="md-nav__link">Example 3: Profile .tflite file on physical device</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-4-profile-model-before-training" class="md-nav__link">Example 4: Profile model before training</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/examples/profile_model.ipynb.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="train_model.html" class="md-nav__link">Model Training API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="evaluate_model.html" class="md-nav__link">Model Evaluation API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="summarize_model.html" class="md-nav__link">Model Summary API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="view_model.html" class="md-nav__link">Model Visualizer API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="update_params.html" class="md-nav__link">Update Model Parameters API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="quantize_model.html" class="md-nav__link">Model Quantization API Examples</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-examples-profile-model--page-root" class="md-nav__link">Model Profiler API Examples</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#install-mltk-python-package" class="md-nav__link">Install MLTK Python Package</a>
+        </li>
+        <li class="md-nav__item"><a href="#import-python-packages" class="md-nav__link">Import Python Packages</a>
+        </li>
+        <li class="md-nav__item"><a href="#download-tflite-model-file" class="md-nav__link">Download .tflite model file</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-1-profile-tflite-file-in-basic-simulator" class="md-nav__link">Example 1: Profile .tflite file in basic simulator</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-2-profile-tflite-file-in-mvp-hardware-simulator" class="md-nav__link">Example 2: Profile .tflite file in MVP hardware simulator</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-3-profile-tflite-file-on-physical-device" class="md-nav__link">Example 3: Profile .tflite file on physical device</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-4-profile-model-before-training" class="md-nav__link">Example 4: Profile model before training</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/examples/profile_model.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li class="active"><a href="../../docs/examples.html" accesskey="U">API Examples</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="model-profiler-api-examples">
+<h1 id="mltk-examples-profile-model--page-root">Model Profiler API Examples<a class="headerlink" href="#mltk-examples-profile-model--page-root" title="Permalink to this headline">¶</a></h1>
+<p>This demonstrates how to use the <a class="reference external" href="../../docs/python_api/operations.html#profile-model">profile_model</a> API.</p>
+<p>Refer to the <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">Model Profiler</span></a> guide for more details.</p>
+<p><strong>NOTES:</strong></p>
+<ul class="simple">
+<li><p>Click here: <a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/examples/profile_model.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"/></a> to run this example interactively in your browser</p></li>
+<li><p>Refer to the <a class="reference internal" href="../../docs/guides/notebook_examples_guide.html"><span class="doc std std-doc">Notebook Examples Guide</span></a> for how to run this example locally in VSCode</p></li>
+</ul>
+<section id="install-mltk-python-package">
+<h2 id="install-mltk-python-package">Install MLTK Python Package<a class="headerlink" href="#install-mltk-python-package" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the MLTK Python package (if necessary)</span>
+<span class="o">!</span>pip install --upgrade silabs-mltk
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="import-python-packages">
+<h2 id="import-python-packages">Import Python Packages<a class="headerlink" href="#import-python-packages" title="Permalink to this headline">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the standard Python packages used by the examples</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">urllib</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+
+<span class="c1"># Import the necessary MLTK APIs</span>
+<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">profile_model</span>
+<span class="kn">from</span> <span class="nn">mltk.utils.commander</span> <span class="kn">import</span> <span class="n">query_platform</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="download-tflite-model-file">
+<h2 id="download-tflite-model-file">Download .tflite model file<a class="headerlink" href="#download-tflite-model-file" title="Permalink to this headline">¶</a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file is required to run these examples.<br/>
+The following code downloads a model.</p>
+<p><strong>NOTE:</strong> Update <code class="docutils literal notranslate"><span class="pre">TFLITE_MODEL_URL</span></code> or <code class="docutils literal notranslate"><span class="pre">tflite_path</span></code> to point to your model if necesary</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use .tflite mode found here:</span>
+<span class="c1"># https://github.com/siliconlabs/mltk/tree/master/mltk/utils/test_helper/data/</span>
+<span class="c1"># NOTE: Update this URL to point to your model if necessary</span>
+<span class="n">TFLITE_MODEL_URL</span> <span class="o">=</span> <span class="s1">'https://github.com/siliconlabs/mltk/raw/master/mltk/utils/test_helper/data/image_example1.tflite'</span>
+
+<span class="c1"># Download the .tflite file and save to the temp dir</span>
+<span class="n">tflite_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">()</span><span class="si">}</span><span class="s1">/image_example1.tflite'</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tflite_path</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">dst</span><span class="p">:</span>
+    <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">TFLITE_MODEL_URL</span><span class="p">)</span> <span class="k">as</span> <span class="n">src</span><span class="p">:</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfileobj</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-1-profile-tflite-file-in-basic-simulator">
+<h2 id="example-1-profile-tflite-file-in-basic-simulator">Example 1: Profile .tflite file in basic simulator<a class="headerlink" href="#example-1-profile-tflite-file-in-basic-simulator" title="Permalink to this headline">¶</a></h2>
+<p>This example profiles the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file in the “basic simulator” of the model profiler.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Profile the tflite model using the "basic simulator"</span>
+<span class="c1"># NOTE: Update tflite_path to point to your model if necessary</span>
+<span class="n">profiling_results</span> <span class="o">=</span> <span class="n">profile_model</span><span class="p">(</span><span class="n">tflite_path</span><span class="p">)</span>
+
+<span class="c1"># Print the profiling results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">profiling_results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Profiling Summary
+Name: kws_ref_model
+Accelerator: None
+Input Shape: 1x96x96x1
+Input Data Type: int8
+Output Shape: 1x3
+Output Data Type: int8
+Model File Size (bytes): 15.7k
+Runtime Memory Size (bytes): 71.3k
+# Operations: 2.6M
+# Multiply-Accumulates: 1.2M
+# Layers: 8
+# Unsupported Layers: 0
+# CPU Cycles: 13.1M
+CPU Utilization (%): 100.0
+Clock Rate (hz): 80.0M
+Time (s): 163.3m
+Energy (J): 2.3m
+J/Op: 884.5p
+J/MAC: 2.0n
+Ops/s: 16.2M
+MACs/s: 7.3M
+Inference/s: 6.1
+
+Model Layers
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| Index | OpCode          | # Ops  | # MACs | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                             |
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| 0     | conv_2d         | 1.2M   | 497.7k | 10.0M      | 1.9m       | 124.8m   | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |
+| 1     | average_pool_2d | 69.1k  | 0      | 985.7k     | 148.0u     | 12.3m    | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 2     | conv_2d         | 842.2k | 418.2k | 1.3M       | 187.5u     | 16.7m    | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |
+| 3     | conv_2d         | 565.7k | 279.9k | 718.6k     | 105.7u     | 9.0m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |
+| 4     | average_pool_2d | 1.9k   | 0      | 30.8k      | 9.3u       | 385.4u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 5     | reshape         | 0      | 0      | 250.4      | 0.0p       | 3.1u     | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |
+| 6     | fully_connected | 2.3k   | 1.2k   | 5.2k       | 21.5n      | 64.4u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |
+| 7     | softmax         | 15.0   | 0      | 3.8k       | 16.5n      | 48.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-2-profile-tflite-file-in-mvp-hardware-simulator">
+<h2 id="example-2-profile-tflite-file-in-mvp-hardware-simulator">Example 2: Profile .tflite file in MVP hardware simulator<a class="headerlink" href="#example-2-profile-tflite-file-in-mvp-hardware-simulator" title="Permalink to this headline">¶</a></h2>
+<p>This example profiles the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file in the MVP hardware accelerator simulator of the model profiler.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Profile the tflite model using the MVP hardware accelerator simulator</span>
+<span class="c1"># NOTE: Update tflite_path to point to your model if necessary</span>
+<span class="n">profiling_results</span> <span class="o">=</span> <span class="n">profile_model</span><span class="p">(</span><span class="n">tflite_path</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="s1">'MVP'</span><span class="p">)</span>
+
+<span class="c1"># Print the profiling results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">profiling_results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Profiling Summary
+Name: kws_ref_model
+Accelerator: MVP
+Input Shape: 1x96x96x1
+Input Data Type: int8
+Output Shape: 1x3
+Output Data Type: int8
+Model File Size (bytes): 15.7k
+Runtime Memory Size (bytes): 71.3k
+# Operations: 2.6M
+# Multiply-Accumulates: 1.2M
+# Layers: 8
+# Unsupported Layers: 0
+# Accelerator Cycles: 2.8M
+# CPU Cycles: 80.4k
+CPU Utilization (%): 2.8
+Clock Rate (hz): 80.0M
+Time (s): 35.5m
+Energy (J): 315.5u
+J/Op: 119.4p
+J/MAC: 263.6p
+Ops/s: 74.5M
+MACs/s: 33.8M
+Inference/s: 28.2
+
+Model Layers
++-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                             |
++-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| 0     | conv_2d         | 1.2M   | 497.7k | 1.7M       | 11.8k      | 209.7u     | 21.1m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |
+| 1     | average_pool_2d | 69.1k  | 0      | 48.4k      | 22.7k      | 5.4u       | 604.8u   | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 2     | conv_2d         | 842.2k | 418.2k | 635.0k     | 5.2k       | 51.0u      | 7.9m     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |
+| 3     | conv_2d         | 565.7k | 279.9k | 427.8k     | 7.2k       | 45.7u      | 5.3m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |
+| 4     | average_pool_2d | 1.9k   | 0      | 1.3k       | 27.8k      | 3.7u       | 347.8u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 5     | reshape         | 0      | 0      | 0          | 250.4      | 0.0p       | 3.1u     | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |
+| 6     | fully_connected | 2.3k   | 1.2k   | 1.7k       | 1.5k       | 49.2n      | 21.8u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |
+| 7     | softmax         | 15.0   | 0      | 0          | 3.8k       | 16.5n      | 48.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |
++-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-3-profile-tflite-file-on-physical-device">
+<h2 id="example-3-profile-tflite-file-on-physical-device">Example 3: Profile .tflite file on physical device<a class="headerlink" href="#example-3-profile-tflite-file-on-physical-device" title="Permalink to this headline">¶</a></h2>
+<p>This example profiles the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file on a physically connected embedded device.</p>
+<p><strong>NOTE:</strong> A supported development board must be connected and properly enumerated for this example to work.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Determine the currently connected device</span>
+<span class="c1"># Just print an error and return if no device is connected</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">platform_name</span> <span class="o">=</span> <span class="n">query_platform</span><span class="p">()</span>
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to determine connected device, err:</span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Conencted device platform: </span><span class="si">{</span><span class="n">platform_name</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="n">accelerator</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">if</span> <span class="n">platform_name</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'brd2601a'</span><span class="p">,</span> <span class="s1">'brd4186b'</span><span class="p">):</span>
+    <span class="c1"># Use the MVP hardware accelerator if the platform supports it</span>
+    <span class="n">accelerator</span> <span class="o">=</span> <span class="s1">'MVP'</span>
+
+<span class="c1"># Profile the tflite model on the physical device</span>
+<span class="n">profiling_results</span> <span class="o">=</span> <span class="n">profile_model</span><span class="p">(</span>
+    <span class="n">tflite_path</span><span class="p">,</span>
+    <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">,</span>
+    <span class="n">use_device</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># Print the profiling results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">profiling_results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Conencted device platform: brd2601a
+Profiling Summary
+Name: kws_ref_model
+Accelerator: MVP
+Input Shape: 1x96x96x1
+Input Data Type: int8
+Output Shape: 1x3
+Output Data Type: int8
+Model File Size (bytes): 15.7k
+Runtime Memory Size (bytes): 71.2k
+# Operations: 2.6M
+# Multiply-Accumulates: 1.2M
+# Layers: 8
+# Unsupported Layers: 0
+# Accelerator Cycles: 2.9M
+# CPU Cycles: 652.5k
+CPU Utilization (%): 18.7
+Clock Rate (hz): 80.0M
+Time (s): 43.6m
+Ops/s: 60.6M
+MACs/s: 27.5M
+Inference/s: 22.9
+
+Model Layers
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape             | Output Shape | Options                                             |
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| 0     | conv_2d         | 1.2M   | 497.7k | 1.8M       | 14.3k      | 22.2m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |
+| 1     | average_pool_2d | 69.1k  | 0      | 48.5k      | 570.4k     | 7.5m     | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 2     | conv_2d         | 842.2k | 418.2k | 638.9k     | 6.7k       | 7.9m     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |
+| 3     | conv_2d         | 565.7k | 279.9k | 431.6k     | 8.6k       | 5.3m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |
+| 4     | average_pool_2d | 1.9k   | 0      | 1.6k       | 42.5k      | 540.0u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 5     | reshape         | 0      | 0      | 0          | 3.8k       | 30.0u    | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |
+| 6     | fully_connected | 2.3k   | 1.1k   | 1.8k       | 2.7k       | 60.0u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |
+| 7     | softmax         | 15.0   | 0      | 0          | 3.6k       | 60.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="example-4-profile-model-before-training">
+<h2 id="example-4-profile-model-before-training">Example 4: Profile model before training<a class="headerlink" href="#example-4-profile-model-before-training" title="Permalink to this headline">¶</a></h2>
+<p>Training a model can be very time-consuming, and it is useful to know how efficiently a
+model will execute on an embedded device before investing time and energy into training it.<br/>
+For this reason, the MLTK <a class="reference external" href="../../docs/python_api/operations.html#profile-model">profile_model</a> API features a <code class="docutils literal notranslate"><span class="pre">build</span></code> argument to build a model and profile it <em>before</em> the model is fully trained.</p>
+<p>In this example, the <a class="reference internal" href="../../docs/python_api/models/examples/image_example1.html"><span class="doc std std-doc">image_example1</span></a> model is built
+at command-execution-time and profiled in the MVP hardware simulator.<br/>
+Note that <em>only</em> the <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">model specification</span></a>  script is required,
+it does <em>not</em> need to be trained first.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build the image_example1 model then profile it using the MVP hardware accelerator simulator</span>
+<span class="c1"># NOTE: Since build=True, the model does NOT need to be trained first</span>
+<span class="n">profiling_results</span> <span class="o">=</span> <span class="n">profile_model</span><span class="p">(</span><span class="s1">'image_example1'</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="s1">'MVP'</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Print the profiling results</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">profiling_results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>patool: Extracting C:/Users/reed/.mltk/downloads/rock_paper_scissors.7z ...
+patool: running "C:\Program Files\7-Zip\7z.EXE" x -y -oE:/reed/mltk/tmp_archives/rock_paper_scissors -- C:/Users/reed/.mltk/downloads/rock_paper_scissors.7z
+patool: ... C:/Users/reed/.mltk/downloads/rock_paper_scissors.7z extracted to `E:/reed/mltk/tmp_archives/rock_paper_scissors'.
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "b34aea22b4b34f8cb4fb8770fe8d425c", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 1/3
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "fb1f8d1157974c0d9ab15738f753fa81", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Epoch 2/3
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "5f80adb4e21a4db6a775e06c902bb460", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING:tensorflow:Callback method `on_train_batch_begin` is slow compared to the batch time (batch time: 0.0126s vs `on_train_batch_begin` time: 0.1070s). Check your callbacks.
+WARNING:tensorflow:Callback method `on_train_batch_end` is slow compared to the batch time (batch time: 0.0126s vs `on_train_batch_end` time: 0.0687s). Check your callbacks.
+Epoch 3/3
+</pre></div>
+</div>
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id": "f5e48c4d309a4cddb22f081857fd9ba3", "version_major": 2, "version_minor": 0}
+</script><div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>INFO:tensorflow:Assets written to: E:\tmp76im2ckn\assets
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\tensorflow\lite\python\convert.py:746: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.
+  warnings.warn("Statistics for quantized inputs were expected, but not "
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Profiling Summary
+Name: my_model
+Accelerator: MVP
+Input Shape: 1x96x96x1
+Input Data Type: int8
+Output Shape: 1x3
+Output Data Type: int8
+Model File Size (bytes): 14.7k
+Runtime Memory Size (bytes): 71.3k
+# Operations: 2.6M
+# Multiply-Accumulates: 1.2M
+# Layers: 8
+# Unsupported Layers: 0
+# Accelerator Cycles: 2.8M
+# CPU Cycles: 80.4k
+CPU Utilization (%): 2.8
+Clock Rate (hz): 80.0M
+Time (s): 35.5m
+Energy (J): 315.5u
+J/Op: 119.4p
+J/MAC: 263.6p
+Ops/s: 74.5M
+MACs/s: 33.8M
+Inference/s: 28.2
+
+Model Layers
++-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                             |
++-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| 0     | conv_2d         | 1.2M   | 497.7k | 1.7M       | 11.8k      | 209.7u     | 21.1m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |
+| 1     | average_pool_2d | 69.1k  | 0      | 48.4k      | 22.7k      | 5.4u       | 604.8u   | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 2     | conv_2d         | 842.2k | 418.2k | 635.0k     | 5.2k       | 51.0u      | 7.9m     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |
+| 3     | conv_2d         | 565.7k | 279.9k | 427.8k     | 7.2k       | 45.7u      | 5.3m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |
+| 4     | average_pool_2d | 1.9k   | 0      | 1.3k       | 27.8k      | 3.7u       | 347.8u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 5     | reshape         | 0      | 0      | 0          | 250.4      | 0.0p       | 3.1u     | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |
+| 6     | fully_connected | 2.3k   | 1.2k   | 1.7k       | 1.5k       | 49.2n      | 21.8u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |
+| 7     | softmax         | 15.0   | 0      | 0          | 3.8k       | 16.5n      | 48.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |
++-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="../../docs/examples.html" title="API Examples"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> API Examples </span>
+              </div>
+            </a>
+          
+          
+            <a href="train_model.html" title="Model Training API Examples"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> Model Training API Examples </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Apr 26, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

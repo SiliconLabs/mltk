@@ -1,0 +1,77 @@
+# Tensorflow-Lite Micro Python Wrapper
+
+This allows for accessing the [Tensorflow-Lite Micro](https://github.com/tensorflow/tflite-micro) (TFLM) C++ interpreter from a Python script.
+
+This is useful as it allows for executing [.tflite](https://www.tensorflow.org/lite/convert) model files from a Python script running on Windows/Linux (i.e. without requiring an embedded device).
+
+This provides useful information about the `.tflite` model such as:   
+- Required working memory (i.e. RAM)
+- If any of the layers of the model are not supported by TFLM
+
+This wrapper is made accessible to a Python script via the [TfliteMicro](mltk.core.tflite_micro.TfliteMicro) Python API.
+This Python API loads the C++ Python wrapper shared library into the Python runtime.
+
+
+## Source Code
+
+- [Python wrapper](../../cpp/tflite_micro_wrapper) - This makes the Tensorflow-Lite Micro C++ library accessible to Python
+- [Tensorflow-Lite Micro](../../cpp/shared/tflite_micro) - This is the Tensorflow-Lite Micro C++ library plus some additional helpers to aid development (__NOTE:__ The actual TFLM [library](https://github.com/tensorflow/tflite-micro) is downloaded by the build scripts)
+- [TfliteMicroModel](../../cpp/shared/tflite_micro_model) - This is a helper C++ library to make interfacing to the TFLM library easier for applications
+- [Python API](../../mltk/core/tflite_micro) - Python package that loads this C++ wrapper
+
+
+## Additional Links
+
+- [Python API documentation](mltk.core.tflite_micro.TfliteMicro)
+- [C++ Development documentation](../../../../docs/cpp_development/index.md)
+
+
+
+## Building the Wrapper
+
+### Pre-built
+
+This wrapper comes pre-built when installing the MLTK Python package, e.g.:
+
+```shell 
+pip install silabs-mltk
+```
+
+
+### Automatic Build
+
+This wrapper is automatically built when installing from source, e.g.:
+
+```shell
+git clone https://github.com/siliconlabs/mltk.git
+cd mltk
+pip install -e .
+```
+
+### Manual build via MLTK command
+
+To manually build this wrapper, issue the MLTK command:
+
+```shell
+mltk build tflite_micro_wrapper
+```
+
+
+### Manual build via CMake
+
+This wrapper can also be built via CMake using [Visual Studio Code](../../../../docs/cpp_development/vscode.md) or the [Command Line](../../../../docs/cpp_development/command_line.md).
+
+To build the wrapper, the [build_options.cmake](../../../../docs/cpp_development/build_options.md) file needs to be modified.
+
+Create the file `<mltk repo root>/user_options.cmake` and add:
+
+```
+mltk_set(MLTK_TARGET mltk_tflite_micro_wrapper)
+```
+
+```{note}
+You must remove this option and clean the build directory before building the example applications
+```
+
+Then configure the CMake project using the Window/Linux GCC toolchain and build the target: `mltk_tflite_micro_wrapper`.
+

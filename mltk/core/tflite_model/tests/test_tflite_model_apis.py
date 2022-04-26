@@ -1,0 +1,469 @@
+
+import os
+import tempfile
+import pytest
+import numpy as np
+
+
+
+from mltk.core import (
+    TfliteModel, 
+    TfliteTensor, 
+    TfliteOpCode,
+    TfliteConv2dLayer,
+)
+from mltk.core.tflite_model.tflite_layer import TfliteLayerOptionsConv2D
+from mltk.utils.test_helper.data import IMAGE_CLASSIFICATION_TFLITE_PATH
+
+
+def test_load_flatbuffer_file():
+    TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+def test_load_flatbuffer_bytes():
+    with open(IMAGE_CLASSIFICATION_TFLITE_PATH, 'rb') as fp:
+        tflite_bytes = fp.read()
+    TfliteModel(tflite_bytes, path=IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+
+def test_path_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    assert tflite_model.path == IMAGE_CLASSIFICATION_TFLITE_PATH
+    tflite_model.path = 'new_path.tflite'
+    assert tflite_model.path == 'new_path.tflite'
+
+def test_filename_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    assert tflite_model.filename == os.path.basename(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+def test_description_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    tflite_model.description = 'test description'
+    assert tflite_model.description == 'test description'
+
+
+def test_description_with_save_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    tflite_model.description = 'test description'
+    assert tflite_model.description == 'test description'
+
+    tmp_tflite_path = f'{tempfile.gettempdir()}/cifar10_resnet_v1.tflite'
+    tflite_model.save(tmp_tflite_path)
+
+    try:
+        tflite_model = TfliteModel.load_flatbuffer_file(tmp_tflite_path)
+        assert tflite_model.description == 'test description'
+    finally:
+        os.remove(tmp_tflite_path)
+
+
+def test_flatbuffer_data_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    with open(IMAGE_CLASSIFICATION_TFLITE_PATH, 'rb') as fp:
+        tflite_bytes = fp.read()
+
+    assert tflite_model.flatbuffer_data == tflite_bytes
+
+def test_flatbuffer_size_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    assert tflite_model.flatbuffer_size == os.path.getsize(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+def test_n_inputs_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    assert tflite_model.n_inputs == 1
+
+def test_n_outputs_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    assert tflite_model.n_outputs == 1 
+
+def test_inputs_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    inputs = tflite_model.inputs
+
+    assert len(inputs) == 1
+
+    input_0 = inputs[0]
+    assert f'{input_0}' == 'input_1_int8, dtype:int8, shape:1x32x32x3'
+    assert input_0.index == 0
+    assert input_0.name == 'input_1_int8'
+    assert input_0.dtype == np.int8
+    assert input_0.dtype_str == 'int8'
+    assert input_0.shape == (1, 32, 32, 3)
+    assert f'{input_0.shape}' == '1x32x32x3'
+    assert input_0.shape.flat_size == 1*32*32*3
+    assert input_0.shape_dtype_str() == '32x32x3 (int8)'
+    assert input_0.shape_dtype_str(include_batch=True) == '1x32x32x3 (int8)'
+    assert isinstance(input_0.data, np.ndarray)
+    assert input_0.data.dtype == np.int8
+    assert input_0.data.shape == (1, 32, 32, 3)
+    assert input_0.quantization.n_channels == 1
+    assert input_0.quantization.quantization_dimension == 0
+    assert len(input_0.quantization.scale) == 1
+    assert input_0.quantization.scale[0] == 1.0
+    assert len(input_0.quantization.zeropoint) == 1
+    assert input_0.quantization.zeropoint[0] == -128
+
+def test_outputs_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    outputs = tflite_model.outputs
+
+    assert len(outputs) == 1
+
+    output_0 = outputs[0]
+    assert f'{output_0}' == 'Identity_int8, dtype:int8, shape:1x10'
+    assert output_0.index == 37
+    assert output_0.name == 'Identity_int8'
+    assert output_0.dtype == np.int8
+    assert output_0.dtype_str == 'int8'
+    assert output_0.shape == (1, 10)
+    assert f'{output_0.shape}' == '1x10'
+    assert output_0.shape.flat_size == 1*10
+    assert output_0.shape_dtype_str() == '10 (int8)'
+    assert output_0.shape_dtype_str(include_batch=True) == '1x10 (int8)'
+    assert isinstance(output_0.data, np.ndarray)
+    assert output_0.data.dtype == np.int8
+    assert output_0.data.shape == (1, 10)
+    assert output_0.quantization.n_channels == 1
+    assert output_0.quantization.quantization_dimension == 0
+    assert len(output_0.quantization.scale) == 1
+    assert output_0.quantization.scale[0] == 0.00390625
+    assert len(output_0.quantization.zeropoint) == 1
+    assert output_0.quantization.zeropoint[0] == -128
+
+
+def test_layers_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    layers = tflite_model.layers
+    assert len(layers) == 16
+
+def test_layer_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    layer_0 = tflite_model.layers[0]
+    assert isinstance(layer_0, TfliteConv2dLayer)
+    assert layer_0.index == 0
+    assert layer_0.name == 'op0-conv_2d'
+    assert layer_0.opcode == TfliteOpCode.CONV_2D
+    assert layer_0.opcode_str == 'conv_2d'
+    options = layer_0.options 
+    assert isinstance(options, TfliteLayerOptionsConv2D)
+    assert len(layer_0.inputs) == 3
+    assert layer_0.n_inputs == 3
+    assert len(layer_0.outputs) == 1
+    assert layer_0.n_outputs == 1
+    input_0_tensor = layer_0.get_input_tensor(0)
+    assert input_0_tensor.shape == (1,32,32,3)
+    input_0 = layer_0.get_input(0)
+    assert input_0.shape == (1,32,32,3)
+    output_0_tensor = layer_0.get_output_tensor(0)
+    assert output_0_tensor.shape == (1,32,32,16)
+    output_0 = layer_0.get_output(0)
+    assert output_0.shape == (1,32,32,16)
+
+def test_summary_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    summary = tflite_model.summary()
+    assert summary is not None
+
+
+def test_get_tensor_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    t = tflite_model.get_tensor(0)
+    assert isinstance(t, TfliteTensor)
+    assert t.name == 'input_1_int8'
+
+def test_get_tensor_bad_index_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    with pytest.raises(IndexError):
+        tflite_model.get_tensor(99)
+
+def test_get_tensor_data_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    t = tflite_model.get_tensor_data(0)
+    assert isinstance(t, np.ndarray)
+
+def test_get_input_tensor_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    t = tflite_model.get_input_tensor(0)
+    assert isinstance(t, TfliteTensor)
+
+def test_get_input_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    t = tflite_model.get_input(0)
+    assert isinstance(t, np.ndarray)
+
+def test_get_output_tensor_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    t = tflite_model.get_output_tensor(0)
+    assert isinstance(t, TfliteTensor)
+
+def test_get_output_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    t = tflite_model.get_output(0)
+    assert isinstance(t, np.ndarray)
+
+def test_all_metadata_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    metadata = tflite_model.get_all_metadata()
+    assert len(metadata['min_runtime_version']) == 16
+
+def test_get_metadata_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    metadata = tflite_model.get_metadata('min_runtime_version')
+    assert len(metadata) == 16
+
+def test_add_metadata_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    test_data = 'test data'.encode('utf-8')
+    tflite_model.add_metadata('test', test_data)
+    metadata = tflite_model.get_metadata('test')
+    assert metadata == test_data
+
+def test_add_metadata_with_save_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    test_data = 'test data'.encode('utf-8')
+    tflite_model.add_metadata('test', test_data)
+    metadata = tflite_model.get_metadata('test')
+    assert metadata == test_data
+
+    tmp_tflite_path = f'{tempfile.gettempdir()}/cifar10_resnet_v1.tflite'
+    tflite_model.save(tmp_tflite_path)
+
+    try:
+        tflite_model = TfliteModel.load_flatbuffer_file(tmp_tflite_path)
+        metadata = tflite_model.get_metadata('test')
+        assert metadata == test_data
+    finally:
+        os.remove(tmp_tflite_path)
+
+
+def test_replace_metadata_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    test_data = 'test data'.encode('utf-8')
+    tflite_model.add_metadata('test', test_data)
+    metadata = tflite_model.get_metadata('test')
+    assert metadata == test_data
+
+    replaced_data = 'replaced data'.encode('utf-8')
+    tflite_model.add_metadata('test', replaced_data)
+    metadata = tflite_model.get_metadata('test')
+    assert metadata == replaced_data
+
+
+def test_replace_metadata_with_save_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    test_data = 'test data'.encode('utf-8')
+    tflite_model.add_metadata('test', test_data)
+    metadata = tflite_model.get_metadata('test')
+    assert metadata == test_data
+
+    replaced_data = 'replaced data'.encode('utf-8')
+    tflite_model.add_metadata('test', replaced_data)
+    metadata = tflite_model.get_metadata('test')
+    assert metadata == replaced_data
+
+    tmp_tflite_path = f'{tempfile.gettempdir()}/cifar10_resnet_v1.tflite'
+    tflite_model.save(tmp_tflite_path)
+
+    try:
+        tflite_model = TfliteModel.load_flatbuffer_file(tmp_tflite_path)
+        metadata = tflite_model.get_metadata('test')
+        assert metadata == replaced_data
+    finally:
+        os.remove(tmp_tflite_path)
+
+
+def test_predict_single_sample():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    x = np.zeros((32,32,3), dtype=np.int8)
+    try:
+        y = tflite_model.predict(x)
+    except ModuleNotFoundError as e:
+        print(f'WARN: Failed to import tensorflow, err: {e}')
+        return 
+
+    assert y.dtype == np.int8
+    assert len(y) == 10
+
+def test_predict_multi_sample():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    x = np.zeros((5, 32,32,3), dtype=np.int8)
+    try:
+        y = tflite_model.predict(x)
+    except ModuleNotFoundError as e:
+        print(f'WARN: Failed to import tensorflow, err: {e}')
+        return 
+
+    assert y.dtype == np.int8
+    assert len(y.shape) == 2
+    assert y.shape[0] == 5
+    assert y.shape[1] == 10
+
+
+def test_predict_generator():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    class _Iterator:
+        def __init__(self):
+            self.i = -1
+        
+        def __iter__(self):
+            self.i = 0
+            return self 
+
+        def __next__(self):
+            if self.i >= 3:
+                raise StopIteration
+            self.i += 1
+            x = np.zeros((3, 32,32,3), dtype=np.int8)
+            y = np.zeros((3,3), dtype=np.int8)
+            return x, y
+
+    try:
+        y = tflite_model.predict(_Iterator())
+    except ModuleNotFoundError as e:
+        print(f'WARN: Failed to import tensorflow, err: {e}')
+        return 
+
+    assert y.dtype == np.int8
+    assert len(y.shape) == 2
+    assert y.shape[0] == 9
+    assert y.shape[1] == 10 
+
+
+def test_predict_generator_float32_input():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    class _Iterator:
+        def __init__(self):
+            self.i = -1
+        
+        def __iter__(self):
+            self.i = 0
+            return self 
+
+        def __next__(self):
+            if self.i >= 3:
+                raise StopIteration
+            self.i += 1
+            x = np.zeros((3, 32,32,3), dtype=np.float32)
+            y = np.zeros((3,3), dtype=np.int8)
+            return x, y
+
+    try:
+        y = tflite_model.predict(_Iterator())
+    except ModuleNotFoundError as e:
+        print(f'WARN: Failed to import tensorflow, err: {e}')
+        return 
+
+    assert y.dtype == np.int8
+    assert len(y.shape) == 2
+    assert y.shape[0] == 9
+    assert y.shape[1] == 10 
+
+
+def test_predict_generator_float32_output():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    class _Iterator:
+        def __init__(self):
+            self.i = -1
+        
+        def __iter__(self):
+            self.i = 0
+            return self 
+
+        def __next__(self):
+            if self.i >= 3:
+                raise StopIteration
+            self.i += 1
+            x = np.zeros((3, 32,32,3), dtype=np.int8)
+            y = np.zeros((3,3), dtype=np.float32)
+            return x, y
+
+    try:
+        y = tflite_model.predict(_Iterator(), y_dtype=np.float32)
+    except ModuleNotFoundError as e:
+        print(f'WARN: Failed to import tensorflow, err: {e}')
+        return 
+
+    assert y.dtype == np.float32
+    assert len(y.shape) == 2
+    assert y.shape[0] == 9
+    assert y.shape[1] == 10 
+
+
+def test_predict_float32_input():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    x = np.zeros((32,32,3), dtype=np.float32)
+    try:
+        y = tflite_model.predict(x)
+    except ModuleNotFoundError as e:
+        print(f'WARN: Failed to import tensorflow, err: {e}')
+        return 
+
+    assert y.dtype == np.int8
+    assert len(y) == 10
+
+def test_predict_float32_output():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    x = np.zeros((32,32,3), dtype=np.int8)
+    try:
+        y = tflite_model.predict(x, y_dtype=np.float32)
+    except ModuleNotFoundError as e:
+        print(f'WARN: Failed to import tensorflow, err: {e}')
+        return 
+
+    assert y.dtype == np.float32
+    assert len(y) == 10
+
+def test_predict_float32_input_and_output():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    x = np.zeros((32,32,3), dtype=np.float32)
+    try:
+        y = tflite_model.predict(x, y_dtype=np.float32)
+    except ModuleNotFoundError as e:
+        print(f'WARN: Failed to import tensorflow, err: {e}')
+        return 
+
+    assert y.dtype == np.float32
+    assert len(y) == 10
+
+
+def test_predict_different_batch_sizes():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    x1 = np.zeros((32,32,3), dtype=np.int8)
+    x2 = np.zeros((5,32,32,3), dtype=np.int8)
+    try:
+        y1 = tflite_model.predict(x1)
+        y2 = tflite_model.predict(x2)
+    except ModuleNotFoundError as e:
+        print(f'WARN: Failed to import tensorflow, err: {e}')
+        return 
+
+    assert y1.dtype == np.int8
+    assert len(y1) == 10
+    assert len(y2.shape) == 2
+    assert y2.shape[0] == 5
+    assert y2.shape[1] == 10
+
+
+def test_load_corrupt_tflite():
+    bogus_tflite = b'\x12\x34\x56\x78'
+
+    try:
+        TfliteModel(bogus_tflite)
+    except Exception as e:
+        assert isinstance(e, RuntimeError)
+        return 
+
+    assert False, 'Failed to detect corrupt tflite file'

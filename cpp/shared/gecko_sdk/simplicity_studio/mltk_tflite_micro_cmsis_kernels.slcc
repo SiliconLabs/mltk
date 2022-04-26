@@ -1,0 +1,45 @@
+id: mltk_tflite_micro_cmsis_kernels
+package: mltk
+label: CMSIS-NN Optimized Kernels
+description: >
+  This component includes kernel implementations that are optimized for certain CPU
+  architectures using CMSIS-NN. By including this component, the optimized kernel implementations
+  will be used instead of the reference kernels.
+
+  The kernels which have optimized implementations are: add, conv, depthwise_conv,
+  fully_connected, mul, pooling and softmax. Remaining kernels fall back to using the
+  reference kernel implementations.
+category: TensorFlow Lite Micro|Kernels
+quality: development
+provides:
+  - name: mltk_tflite_micro_cmsis_kernels
+  - name: mltk_tflite_micro_kernel_implementation
+    allow_multiple: true
+  - name: mltk_tflite_micro_cmsis_kernel_add
+  - name: mltk_tflite_micro_cmsis_kernel_conv
+  - name: mltk_tflite_micro_cmsis_kernel_depthwise_conv
+  - name: mltk_tflite_micro_cmsis_kernel_fully_connected
+  - name: mltk_tflite_micro_cmsis_kernel_mul
+  - name: mltk_tflite_micro_cmsis_kernel_pooling
+  - name: mltk_tflite_micro_cmsis_kernel_softmax
+requires:
+  - name: mltk_cmsis_nn
+  - name: mltk_tflite_micro_reference_kernels
+root_path: shared/tflite_micro/tensorflow/mar18_2022/tensorflow/lite/micro/kernels/cmsis_nn
+source:
+  - path: add.cc
+    unless: [mltk_tflite_micro_mvp_kernel_add]
+  - path: conv.cc
+    unless: [mltk_tflite_micro_mvp_kernel_conv]
+  - path: depthwise_conv.cc
+    unless: [mltk_tflite_micro_mvp_kernel_depthwise_conv]
+  - path: fully_connected.cc
+    unless: [mltk_tflite_micro_mvp_kernel_fully_connected]
+  - path: mul.cc
+    unless: [mltk_tflite_micro_mvp_kernel_mul]
+  - path: pooling.cc
+    unless: [mltk_tflite_micro_mvp_kernel_pooling]
+  - path: softmax.cc
+    unless: [mltk_tflite_micro_mvp_kernel_softmax]
+define:
+  - name: "CMSIS_NN"

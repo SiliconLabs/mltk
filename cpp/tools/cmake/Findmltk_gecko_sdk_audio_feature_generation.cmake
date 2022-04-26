@@ -1,0 +1,3 @@
+include(${CMAKE_CURRENT_LIST_DIR}/utilities.cmake)
+mltk_add_package_directory(mltk_gecko_sdk_audio_feature_generation shared/gecko_sdk/audio_feature_generation)
+

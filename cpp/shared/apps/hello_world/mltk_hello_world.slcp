@@ -1,0 +1,31 @@
+# Silicon Labs Project Configuration Tools: slcp, v0, Component selection file.
+project_name: mltk_hello_world
+label: MLTK - Hello World
+description: "Simple application to print 'Hello World!!' to console using printf()"
+category: Example|Machine Learning Toolkit
+package: mltk
+quality: development
+sdk_extension:
+  - id: mltk
+    version: "1.0.0"
+source:
+- path: main.cc
+component:
+- id: iostream_recommended_stream
+- id: printf
+- id: iostream_retarget_stdio
+- id: sl_system
+- id: device_init
+- id: device_init_hfrco
+requires:
+- name: cpp_support
+toolchain_settings:
+  - option: gcc_linker_option
+    value: "-u _printf_float"
+configuration:
+- name: SL_BOARD_ENABLE_VCOM
+  value: '1'
+- name: SL_MVP_POWER_MODE
+  value: '1'
+readme:
+  - path: README.md

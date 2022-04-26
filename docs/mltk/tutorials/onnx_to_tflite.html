@@ -1,0 +1,1443 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tflite, embedded, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-965PJZXVMY"></script>
+<script>
+    window.gTrackingId = 'G-965PJZXVMY';
+</script>
+  
+  
+    <title>ONNX to TF-Lite Model Conversion &#8212; MLTK 0.6.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API Examples" href="../../docs/examples.html" />
+    <link rel="prev" title="Keyword Spotting with Transfer Learning" href="keyword_spotting_with_transfer_learning.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/tutorials/onnx_to_tflite" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.6.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.6.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> ONNX to TF-Lite Model Conversion </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_on_off.html" class="md-nav__link">Keyword Spotting - On/Off</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_optimization.html" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_with_transfer_learning.html" class="md-nav__link">Keyword Spotting with Transfer Learning</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> ONNX to TF-Lite Model Conversion </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">ONNX to TF-Lite Model Conversion</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-onnx-to-tflite--page-root" class="md-nav__link">ONNX to TF-Lite Model Conversion</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#considerations" class="md-nav__link">Considerations</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#input-data-format" class="md-nav__link">Input Data Format</a>
+        </li>
+        <li class="md-nav__item"><a href="#output-class-id-mapping" class="md-nav__link">Output Class ID Mapping</a>
+        </li>
+        <li class="md-nav__item"><a href="#supported-ml-kernel-operations" class="md-nav__link">Supported ML Kernel Operations</a>
+        </li>
+        <li class="md-nav__item"><a href="#channels-first-vs-channels-last" class="md-nav__link">“Channels-First” vs “Channels-Last”</a>
+        </li>
+        <li class="md-nav__item"><a href="#dataset-required-for-quantization" class="md-nav__link">Dataset Required for Quantization</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-a-notebook" class="md-nav__link">Running this tutorial from a notebook</a>
+        </li>
+        <li class="md-nav__item"><a href="#environment-setup" class="md-nav__link">Environment Setup</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#install-python-dependencies" class="md-nav__link">Install Python Dependencies</a>
+        </li>
+        <li class="md-nav__item"><a href="#download-onnx-model" class="md-nav__link">Download ONNX Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-paths" class="md-nav__link">Configure Paths</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-the-dataset" class="md-nav__link">Load the dataset</a>
+        </li>
+        <li class="md-nav__item"><a href="#sanity-check-evaluate-the-onnx-model" class="md-nav__link">Sanity check: Evaluate the ONNX model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#convert-onnx-to-quantized-tf-lite-model-file" class="md-nav__link">Convert ONNX to Quantized TF-Lite Model File</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#simplify-the-onnx-model" class="md-nav__link">Simplify the ONNX model</a>
+        </li>
+        <li class="md-nav__item"><a href="#convert-to-openvino-intermediate-format" class="md-nav__link">Convert to OpenVino Intermediate Format</a>
+        </li>
+        <li class="md-nav__item"><a href="#convert-from-openvino-to-tf-lite-float32" class="md-nav__link">Convert from OpenVino to TF-Lite-Float32</a>
+        </li>
+        <li class="md-nav__item"><a href="#quantize-the-tf-lite-model" class="md-nav__link">Quantize the TF-Lite Model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#profile-the-quantized-model" class="md-nav__link">Profile the Quantized Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#evaluate-the-quantized-model" class="md-nav__link">Evaluate the Quantized Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#next-steps" class="md-nav__link">Next Steps</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/onnx_to_tflite.ipynb.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-onnx-to-tflite--page-root" class="md-nav__link">ONNX to TF-Lite Model Conversion</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#considerations" class="md-nav__link">Considerations</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#input-data-format" class="md-nav__link">Input Data Format</a>
+        </li>
+        <li class="md-nav__item"><a href="#output-class-id-mapping" class="md-nav__link">Output Class ID Mapping</a>
+        </li>
+        <li class="md-nav__item"><a href="#supported-ml-kernel-operations" class="md-nav__link">Supported ML Kernel Operations</a>
+        </li>
+        <li class="md-nav__item"><a href="#channels-first-vs-channels-last" class="md-nav__link">“Channels-First” vs “Channels-Last”</a>
+        </li>
+        <li class="md-nav__item"><a href="#dataset-required-for-quantization" class="md-nav__link">Dataset Required for Quantization</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-a-notebook" class="md-nav__link">Running this tutorial from a notebook</a>
+        </li>
+        <li class="md-nav__item"><a href="#environment-setup" class="md-nav__link">Environment Setup</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#install-python-dependencies" class="md-nav__link">Install Python Dependencies</a>
+        </li>
+        <li class="md-nav__item"><a href="#download-onnx-model" class="md-nav__link">Download ONNX Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-paths" class="md-nav__link">Configure Paths</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-the-dataset" class="md-nav__link">Load the dataset</a>
+        </li>
+        <li class="md-nav__item"><a href="#sanity-check-evaluate-the-onnx-model" class="md-nav__link">Sanity check: Evaluate the ONNX model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#convert-onnx-to-quantized-tf-lite-model-file" class="md-nav__link">Convert ONNX to Quantized TF-Lite Model File</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#simplify-the-onnx-model" class="md-nav__link">Simplify the ONNX model</a>
+        </li>
+        <li class="md-nav__item"><a href="#convert-to-openvino-intermediate-format" class="md-nav__link">Convert to OpenVino Intermediate Format</a>
+        </li>
+        <li class="md-nav__item"><a href="#convert-from-openvino-to-tf-lite-float32" class="md-nav__link">Convert from OpenVino to TF-Lite-Float32</a>
+        </li>
+        <li class="md-nav__item"><a href="#quantize-the-tf-lite-model" class="md-nav__link">Quantize the TF-Lite Model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#profile-the-quantized-model" class="md-nav__link">Profile the Quantized Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#evaluate-the-quantized-model" class="md-nav__link">Evaluate the Quantized Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#next-steps" class="md-nav__link">Next Steps</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/onnx_to_tflite.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li class="active"><a href="../../docs/tutorials.html" accesskey="U">Tutorials</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section class="tex2jax_ignore mathjax_ignore" id="onnx-to-tf-lite-model-conversion">
+<h1 id="mltk-tutorials-onnx-to-tflite--page-root">ONNX to TF-Lite Model Conversion<a class="headerlink" href="#mltk-tutorials-onnx-to-tflite--page-root" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial describes how to convert an <a class="reference external" href="https://onnx.ai/">ONNX</a> formatted model file into a format that can execute on an embedded device using <a class="reference external" href="https://github.com/tensorflow/tflite-micro">Tensorflow-Lite Micro</a>.</p>
+<p><a class="reference external" href="https://onnx.ai/">ONNX</a> is an open data format built to represent machine learning models. Many machine learning frameworks allow for exporting their trained models to this format.<br/>
+Using the process defined in this tutorial, a machine learning model in the <a class="reference external" href="https://onnx.ai/">ONNX</a> can be converted to a int8 quantized <a class="reference external" href="https://www.tensorflow.org/lite/convert">Tensorflow-Lite</a> format which can be executed on an embedded device.</p>
+<p>The basic sequence for this is shown in the following diagram:<br/>
+<img alt="onnx_to_tflite" src="https://www.dropbox.com/s/hqmwppnypeyfmmp/onnx_to_tflite.png?dl=1"/></p>
+<p>Once the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model is generated, the MLTK’s <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">Model Profiler</span></a> is used to profile the model to ensure it can efficiently run on an embedded target.</p>
+<section id="considerations">
+<h2 id="considerations">Considerations<a class="headerlink" href="#considerations" title="Permalink to this headline">¶</a></h2>
+<p>Unfortunately, converting from another framework into the <a class="reference external" href="https://www.tensorflow.org/lite/convert">Tensorflow-Lite</a> format is not straight-forward. You must be mindful of several aspects when doing the conversion:</p>
+<section id="input-data-format">
+<h3 id="input-data-format">Input Data Format<a class="headerlink" href="#input-data-format" title="Permalink to this headline">¶</a></h3>
+<p>Any preprocessing that is done to the input samples during training <em>must</em> also be done at runtime on the embedded device.<br/>
+So, for instance, if your training scripts scale the input image by 255 then the images must also be scaled on the embedded device.<br/>
+Any divergence will cause the ML model to “see” different data and likely reduce accuracy.</p>
+</section>
+<section id="output-class-id-mapping">
+<h3 id="output-class-id-mapping">Output Class ID Mapping<a class="headerlink" href="#output-class-id-mapping" title="Permalink to this headline">¶</a></h3>
+<p>If the ML model is a classifier, then each class label has a corresponding ID associated with it.<br/>
+For instance:</p>
+<table>
+<thead>
+<tr class="row-odd"><th class="head"><p>Class Label</p></th>
+<th class="head"><p>ID</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Left</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Right</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Up</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Down</p></td>
+<td><p>3</p></td>
+</tr>
+</tbody>
+</table>
+<p>When the model makes a prediction, it returns a probability vector with the index of the largest vector entry mapping to the corresponding predicted class ID.<br/>
+The mapping used by training <em>must</em> match the mapping used at runtime by the embedded device.</p>
+<p>Do not make assumptions about the ID mapping used during training. Frameworks like Matlab use categorical arrays where the entries are not necessarily ordered.</p>
+</section>
+<section id="supported-ml-kernel-operations">
+<h3 id="supported-ml-kernel-operations">Supported ML Kernel Operations<a class="headerlink" href="#supported-ml-kernel-operations" title="Permalink to this headline">¶</a></h3>
+<p>The operations used by your ML model <em>must</em> also be supported by <a class="reference external" href="https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/all_ops_resolver.cc">Tensorflow-Lite Micro</a>.</p>
+</section>
+<section id="channels-first-vs-channels-last">
+<h3 id="channels-first-vs-channels-last">“Channels-First” vs “Channels-Last”<a class="headerlink" href="#channels-first-vs-channels-last" title="Permalink to this headline">¶</a></h3>
+<p>Most frameworks define their kernel tensors to have the following dimensions:</p>
+<ul class="simple">
+<li><p><strong>N</strong> - Number of mini-batch samples in the tensor</p></li>
+<li><p><strong>H</strong> - The height of the tensor</p></li>
+<li><p><strong>W</strong> - The width of the tensor</p></li>
+<li><p><strong>C</strong> - The number of channels (aka depth) of the tensor</p></li>
+</ul>
+<p>The most common dimension ordering is:</p>
+<ul class="simple">
+<li><p><strong>Channels-First</strong>: <strong>NCHW</strong> - The channels come before the height and width dimensions</p></li>
+<li><p><strong>Channels-Last</strong>: <strong>NHWC</strong> - The channels come after the height and width dimensions</p></li>
+</ul>
+<p>Tensorflow-Lite Micro only supports Channels-Last while the ONNX format requires Channels-First.<br/>
+Converting from one format to the other is non-trivial. This tutorial describes how to do the conversion.</p>
+</section>
+<section id="dataset-required-for-quantization">
+<h3 id="dataset-required-for-quantization">Dataset Required for Quantization<a class="headerlink" href="#dataset-required-for-quantization" title="Permalink to this headline">¶</a></h3>
+<p>The dataset used to train the model is also required to generate a quantized model.
+Recall that the quantized model is what is loaded onto the embedded device.</p>
+<p>Refer to the <a class="reference external" href="https://www.tensorflow.org/lite/performance/post_training_quantization">Post Training Quantization</a> guide for more details.</p>
+</section>
+</section>
+<section id="overview">
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial describes how to take a model trained by <a class="reference external" href="https://www.mathworks.com/products/matlab.html">Matlab</a> and run it on an embedded device with <a class="reference external" href="https://github.com/tensorflow/tflite-micro">Tensorflow-Lite Micro</a>.</p>
+<p>The model is a simple CNN and uses the <a class="reference external" href="https://www.cs.toronto.edu/~kriz/cifar.html">CIFAR10 dataset</a>.</p>
+<p>The Matlab model training scripts and trained model may be downloaded from here: <a class="reference external" href="https://www.dropbox.com/s/8m72rmxtznvaki6/cifar10_matlab_model.zip?dl=1">cifar10_matlab_model.zip</a>.</p>
+<p><strong>NOTE:</strong> While the Matlab scripts are provided as a reference, they are out-of-scope for this tutorial.<br/>
+The key part of the script is the line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">exportONNXNetwork</span><span class="p">(</span><span class="n">trainedNet</span><span class="p">,</span><span class="s1">'cifar10_matlab_model.onnx'</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Which converts the trained Matlab model to the <a class="reference external" href="https://onnx.ai/">ONNX</a> data format. The rest of this tutorial describes how to generate a quantized <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file from it.<br/>
+Other ML frameworks should follow a similar process.</p>
+</section>
+<section id="running-this-tutorial-from-a-notebook">
+<h2 id="running-this-tutorial-from-a-notebook">Running this tutorial from a notebook<a class="headerlink" href="#running-this-tutorial-from-a-notebook" title="Permalink to this headline">¶</a></h2>
+<p>For documentation purposes, this tutorial was designed to run within a <a class="reference external" href="https://jupyter.org">Jupyter Notebook</a>.
+The notebook can either run locally on your PC <em>or</em> on a remote server like <a class="reference external" href="https://colab.research.google.com/notebooks/welcome.ipynb">Google Colab</a>.</p>
+<ul class="simple">
+<li><p>Refer to the <a class="reference internal" href="../../docs/guides/notebook_examples_guide.html"><span class="doc std std-doc">Notebook Examples Guide</span></a> for more details</p></li>
+<li><p>Click here: <a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/tutorials/onnx_to_tflite.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"/></a> to run this tutorial interactively in your browser</p></li>
+</ul>
+</section>
+<section id="environment-setup">
+<h2 id="environment-setup">Environment Setup<a class="headerlink" href="#environment-setup" title="Permalink to this headline">¶</a></h2>
+<p>Before converting the <code class="docutils literal notranslate"><span class="pre">.onnx</span></code> formatted model to a <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> formatted model file, we need to setup our Python environment:</p>
+<section id="install-python-dependencies">
+<h3 id="install-python-dependencies">Install Python Dependencies<a class="headerlink" href="#install-python-dependencies" title="Permalink to this headline">¶</a></h3>
+<p>Before running the various code snippets in this tutorial, several Python dependencies must first be installed:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the MLTK (if necessary)</span>
+<span class="o">!</span>pip install --upgrade silabs-mltk
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the standard ONNX Python package</span>
+<span class="c1"># so that we can read the .onnx formatted model file</span>
+<span class="o">!</span>pip install onnx onnx_tf
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the onnsim Python package</span>
+<span class="c1"># This can help reduce the complexity of the generated ONNX model file</span>
+<span class="c1"># https://github.com/daquexian/onnx-simplifier</span>
+<span class="o">!</span>pip install onnx-simplifier onnxruntime
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the openvino_dev Python package</span>
+<span class="c1"># This allows for converting the ONNX model to an intermediate </span>
+<span class="c1"># format so we can then convert it to a TF-Lite model format</span>
+<span class="c1"># https://docs.openvino.ai/</span>
+<span class="o">!</span>pip install openvino_dev
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the openvino2tensorflow Python package</span>
+<span class="c1"># This allows for converting from the openvino format to the .tflite model format</span>
+<span class="c1"># We primarily need this so we can convert from the NCHW used by .onnx </span>
+<span class="c1"># to the NHWC used by .tflite</span>
+<span class="c1"># https://github.com/PINTO0309/openvino2tensorflow</span>
+<span class="o">!</span>pip install openvino2tensorflow  tensorflow_datasets
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="download-onnx-model">
+<h3 id="download-onnx-model">Download ONNX Model<a class="headerlink" href="#download-onnx-model" title="Permalink to this headline">¶</a></h3>
+<p>First we need to download the trained ML model in <a class="reference external" href="https://onnx.ai/">ONNX</a> format.<br/>
+For this tutorial we use the <code class="docutils literal notranslate"><span class="pre">cifar10_matlab_model.onnx</span></code> example.<br/>
+If you already have a model then you can skip this step.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mltk.utils.archive_downloader</span> <span class="kn">import</span> <span class="n">download_verify_extract</span>
+
+<span class="n">ONNX_MODEL_ARCHIVE_URL</span> <span class="o">=</span> <span class="s1">'https://www.dropbox.com/s/8m72rmxtznvaki6/cifar10_matlab_model.zip?dl=1'</span>
+<span class="n">ONNX_MODEL_ARCHIVE_SHA1</span> <span class="o">=</span> <span class="s1">'C53827FC8B765183381CDC338AFB88F735479D97'</span>
+
+<span class="n">cifar10_matlab_model_example_dir</span> <span class="o">=</span> <span class="n">download_verify_extract</span><span class="p">(</span> 
+    <span class="n">url</span><span class="o">=</span><span class="n">ONNX_MODEL_ARCHIVE_URL</span><span class="p">,</span>
+        <span class="n">dest_subdir</span><span class="o">=</span><span class="s1">'datasets/cifar10_matlab_model'</span><span class="p">,</span>
+        <span class="n">file_hash</span><span class="o">=</span><span class="n">ONNX_MODEL_ARCHIVE_SHA1</span><span class="p">,</span>
+        <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'CIFAR10 Matlab model example download directory: </span><span class="si">{</span><span class="n">cifar10_matlab_model_example_dir</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>CIFAR10 Matlab model example download directory: C:/Users/reed/.mltk/datasets/cifar10_matlab_model
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-paths">
+<h3 id="configure-paths">Configure Paths<a class="headerlink" href="#configure-paths" title="Permalink to this headline">¶</a></h3>
+<p>First, let’s configure the paths used throughout this tutorial.<br/>
+You can update these paths as necessary for your particular <code class="docutils literal notranslate"><span class="pre">.onnx</span></code> model.</p>
+<p><strong>NOTE:</strong> You can view the contents of the <code class="docutils literal notranslate"><span class="pre">.onnx</span></code> model file by dragging and dropping onto the webapge: <a class="reference external" href="https://netron.app/">netron.app</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="n">create_tempdir</span>
+
+<span class="c1"># This contains the path to the pre-trained model in ONNX model format</span>
+<span class="c1"># For this tutorial, we use the one downloaded from above</span>
+<span class="c1"># Update this path to point to your specific model if necessary</span>
+<span class="n">ONNX_MODEL_PATH</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">cifar10_matlab_model_example_dir</span><span class="si">}</span><span class="s1">/cifar10_matlab_model.onnx'</span>
+
+<span class="c1"># This contains the path to our working directory where all</span>
+<span class="c1"># generated, intermediate files will be stored.</span>
+<span class="c1"># For this tutorial, we use a temp directory.</span>
+<span class="c1"># Update as necessary for your setup</span>
+<span class="n">WORKING_DIR</span> <span class="o">=</span> <span class="n">create_tempdir</span><span class="p">(</span><span class="s1">'cifar10_matlab_model_onnx_to_tflite'</span><span class="p">)</span>
+
+
+
+<span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">ONNX_MODEL_PATH</span><span class="p">),</span> <span class="sa">f</span><span class="s1">'The provided ONNX_MODEL_PATH does not exist at: </span><span class="si">{</span><span class="n">ONNX_MODEL_PATH</span><span class="si">}</span><span class="s1">'</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">WORKING_DIR</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="c1"># Use the filename for the model's name</span>
+<span class="n">MODEL_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">ONNX_MODEL_PATH</span><span class="p">)[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.onnx'</span><span class="p">)]</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ONNX_MODEL_PATH = </span><span class="si">{</span><span class="n">ONNX_MODEL_PATH</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'MODEL_NAME = </span><span class="si">{</span><span class="n">MODEL_NAME</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'WORKING_DIR = </span><span class="si">{</span><span class="n">WORKING_DIR</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>ONNX_MODEL_PATH = C:/Users/reed/.mltk/datasets/cifar10_matlab_model/cifar10_matlab_model.onnx
+MODEL_NAME = cifar10_matlab_model
+WORKING_DIR = E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="load-the-dataset">
+<h3 id="load-the-dataset">Load the dataset<a class="headerlink" href="#load-the-dataset" title="Permalink to this headline">¶</a></h3>
+<p>We need to load the exact dataset used to train the model.<br/>
+Additionally, we need to preprocess the input samples the same
+as what was used to train the model.</p>
+<p>In this tutorial, the <a class="reference external" href="https://www.dropbox.com/s/8m72rmxtznvaki6/cifar10_matlab_model.zip?dl=1">cifar10_matlab_model.zip</a>
+model was trained by scaling the samples by 1/255.</p>
+<p>Additionally, we need to adjust the class ID mapping so that our local
+dataset matches what was used to train the model.
+(Matlab orders the class IDs differently than what is specified by the dataset).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">tensorflow.keras.datasets</span> <span class="kn">import</span> <span class="n">cifar10</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1"># This is the class label order specified by the dataset</span>
+<span class="c1"># y_test contains a list of integers that correspond to the indices in this class_labels list</span>
+<span class="c1">#                   0            1           2      3       4      5      6        7       8       9</span>
+<span class="n">class_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'airplane'</span><span class="p">,</span> <span class="s1">'automobile'</span><span class="p">,</span> <span class="s1">'bird'</span><span class="p">,</span> <span class="s1">'cat'</span><span class="p">,</span> <span class="s1">'deer'</span><span class="p">,</span> <span class="s1">'dog'</span><span class="p">,</span> <span class="s1">'frog'</span><span class="p">,</span> <span class="s1">'horse'</span><span class="p">,</span> <span class="s1">'ship'</span><span class="p">,</span> <span class="s1">'truck'</span><span class="p">]</span>
+
+<span class="c1"># Load the testing subset of the dataset</span>
+<span class="c1"># We do not need the training subset for this tutorial</span>
+<span class="c1"># NOTE: The subset is not particularly important, any subset will work</span>
+<span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span> <span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">cifar10</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+
+<span class="c1"># Convert the samples to float32 as that's what</span>
+<span class="c1"># the trained model expects</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">x_test</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">'float32'</span><span class="p">)</span>
+<span class="c1"># Scale the samples by 255 since that's the preprocessing</span>
+<span class="c1"># used during model training</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">x_test</span><span class="o">/</span><span class="mf">255.</span>
+
+
+<span class="c1"># Matlab uses a different order of class labels compared to the dataset</span>
+<span class="c1"># Update the mapping to match what the trained model expects</span>
+<span class="c1">#                         0       1       2          3          4        5       6       7      8       9</span>
+<span class="n">mapped_class_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'frog'</span><span class="p">,</span> <span class="s1">'truck'</span><span class="p">,</span> <span class="s1">'deer'</span><span class="p">,</span> <span class="s1">'automobile'</span><span class="p">,</span> <span class="s1">'bird'</span><span class="p">,</span> <span class="s1">'horse'</span><span class="p">,</span> <span class="s1">'ship'</span><span class="p">,</span> <span class="s1">'cat'</span><span class="p">,</span> <span class="s1">'dog'</span><span class="p">,</span> <span class="s1">'airplane'</span><span class="p">]</span>
+<span class="n">CLASS_ID_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="mi">0</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+	<span class="mi">1</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+	<span class="mi">2</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+	<span class="mi">3</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+	<span class="mi">4</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+	<span class="mi">5</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span>
+	<span class="mi">6</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+	<span class="mi">7</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+	<span class="mi">8</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+	<span class="mi">9</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)):</span>
+    <span class="n">y_test</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">CLASS_ID_MAPPING</span><span class="p">[</span><span class="n">y</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'x_test.shape = </span><span class="si">{</span><span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'y_test.shape = </span><span class="si">{</span><span class="n">y_test</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>x_test.shape = (10000, 32, 32, 3)
+y_test.shape = (10000, 1)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="sanity-check-evaluate-the-onnx-model">
+<h3 id="sanity-check-evaluate-the-onnx-model">Sanity check: Evaluate the ONNX model<a class="headerlink" href="#sanity-check-evaluate-the-onnx-model" title="Permalink to this headline">¶</a></h3>
+<p>As a sanity check, load the ONNX model and run each the the <code class="docutils literal notranslate"><span class="pre">x_test</span></code> samples
+through it and record the model predictions.</p>
+<p>Then evaluate the model predictions verus the expected values, <code class="docutils literal notranslate"><span class="pre">y_test</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">onnx</span>
+<span class="kn">from</span> <span class="nn">onnx_tf.backend</span> <span class="kn">import</span> <span class="n">prepare</span>
+
+<span class="c1"># Load the ONNX model</span>
+<span class="n">onnx_model</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ONNX_MODEL_PATH</span><span class="p">)</span>
+<span class="n">tf_rep</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="n">onnx_model</span><span class="p">)</span>
+
+<span class="n">n_samples</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_test</span><span class="p">),</span> <span class="mi">1000</span><span class="p">)</span> <span class="c1"># Let's evaluate up to 1000 samples</span>
+<span class="n">n_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">mapped_class_labels</span><span class="p">)</span>
+
+<span class="c1"># Allocate an array to hold the model predictions</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'y_pred.shape = </span><span class="si">{</span><span class="n">y_pred</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="c1"># The dataset uses the format: NHWC (i.e. channels last)</span>
+<span class="c1"># However, the ONNX model expects NCHW (i.e. channels first)</span>
+<span class="c1"># So transpose the x_test data to be in NCHW format</span>
+<span class="n">x_test_channels_first</span> <span class="o">=</span> <span class="n">x_test</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># Iterate through each test sample</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating model predictions for each test sample using </span><span class="si">{</span><span class="n">ONNX_MODEL_PATH</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Be patient, this may take awhile ...'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_test_channels_first</span><span class="p">[:</span><span class="n">n_samples</span><span class="p">]):</span>
+    <span class="c1"># Add the N dimension to the individual sample</span>
+    <span class="c1"># e.g. CHW -&gt; NCHW</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># Run inference on the sample</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="n">tf_rep</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="c1"># Save the model prediction</span>
+    <span class="n">y_pred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'done'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>y_pred.shape = (1000, 10)
+Generating model predictions for each test sample using C:/Users/reed/.mltk/datasets/cifar10_matlab_model/cifar10_matlab_model.onnx
+Be patient, this may take awhile ...
+done
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">ClassifierEvaluationResults</span>
+
+<span class="c1"># Use the MLTK to evaluate the ONNX model predictions</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">ClassifierEvaluationResults</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="n">MODEL_NAME</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'classification'</span><span class="p">,</span> 
+    <span class="n">classes</span> <span class="o">=</span> <span class="n">mapped_class_labels</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Evaluating the ONNX model predictions ...'</span><span class="p">)</span>
+<span class="n">results</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">y_test</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)],</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">generate_summary</span><span class="p">())</span>
+
+<span class="n">results</span><span class="o">.</span><span class="n">generate_plots</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Evaluating the ONNX model predictions ...
+Name: cifar10_matlab_model
+Model Type: classification
+Overall accuracy: 83.300%
+Class accuracies:
+- truck = 93.578%
+- automobile = 93.258%
+- horse = 93.137%
+- frog = 91.964%
+- ship = 88.679%
+- airplane = 81.553%
+- bird = 76.000%
+- dog = 75.581%
+- deer = 75.556%
+- cat = 61.165%
+Average ROC AUC: 98.287%
+Class ROC AUC:
+- automobile = 99.648%
+- ship = 99.436%
+- truck = 99.085%
+- horse = 99.073%
+- frog = 98.865%
+- airplane = 98.176%
+- bird = 97.770%
+- dog = 97.640%
+- deer = 97.507%
+- cat = 95.673%
+</pre></div>
+</div>
+<img alt="../../_images/onnx_to_tflite_19_1.png" src="../../_images/onnx_to_tflite_19_1.png"/>
+<img alt="../../_images/onnx_to_tflite_19_2.png" src="../../_images/onnx_to_tflite_19_2.png"/>
+<img alt="../../_images/onnx_to_tflite_19_3.png" src="../../_images/onnx_to_tflite_19_3.png"/>
+<img alt="../../_images/onnx_to_tflite_19_4.png" src="../../_images/onnx_to_tflite_19_4.png"/>
+<img alt="../../_images/onnx_to_tflite_19_5.png" src="../../_images/onnx_to_tflite_19_5.png"/>
+</div>
+</div>
+</section>
+</section>
+<section id="convert-onnx-to-quantized-tf-lite-model-file">
+<h2 id="convert-onnx-to-quantized-tf-lite-model-file">Convert ONNX to Quantized TF-Lite Model File<a class="headerlink" href="#convert-onnx-to-quantized-tf-lite-model-file" title="Permalink to this headline">¶</a></h2>
+<p>Now that our Python environment is setup and we’re able to get accurate results from our <code class="docutils literal notranslate"><span class="pre">.onnx</span></code> model, we are ready to convert it to a <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.</p>
+<section id="simplify-the-onnx-model">
+<h3 id="simplify-the-onnx-model">Simplify the ONNX model<a class="headerlink" href="#simplify-the-onnx-model" title="Permalink to this headline">¶</a></h3>
+<p>While optional, this step can help reduce the complexity of the ONNX
+by using the <a class="reference external" href="https://github.com/daquexian/onnx-simplifier">ONNX Simplifier</a> Python package.</p>
+<p>This can help reduce the execution overhead on the embedded device.</p>
+<p><strong>NOTE:</strong> You can view the contents of the generated <code class="docutils literal notranslate"><span class="pre">.onnx</span></code> model file by dragging and dropping onto the webapge: <a class="reference external" href="https://netron.app/">netron.app</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">onnxsim</span>
+<span class="kn">import</span> <span class="nn">onnx</span>
+
+<span class="n">simplified_onnx_model</span><span class="p">,</span> <span class="n">success</span> <span class="o">=</span> <span class="n">onnxsim</span><span class="o">.</span><span class="n">simplify</span><span class="p">(</span><span class="n">ONNX_MODEL_PATH</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">success</span><span class="p">,</span> <span class="s1">'Failed to simplify the ONNX model. You may have to skip this step'</span>
+<span class="n">simplified_onnx_model_path</span> <span class="o">=</span>  <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">WORKING_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">MODEL_NAME</span><span class="si">}</span><span class="s1">.simplified.onnx'</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating </span><span class="si">{</span><span class="n">simplified_onnx_model_path</span><span class="si">}</span><span class="s1"> ...'</span><span class="p">)</span>
+<span class="n">onnx</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">simplified_onnx_model</span><span class="p">,</span> <span class="n">simplified_onnx_model_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'done'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generating E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/cifar10_matlab_model.simplified.onnx ...
+done
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="convert-to-openvino-intermediate-format">
+<h3 id="convert-to-openvino-intermediate-format">Convert to OpenVino Intermediate Format<a class="headerlink" href="#convert-to-openvino-intermediate-format" title="Permalink to this headline">¶</a></h3>
+<p>Recall that the ONNX format uses the <code class="docutils literal notranslate"><span class="pre">NCHW</span></code> format while TF-Lite uses the <code class="docutils literal notranslate"><span class="pre">NHWC</span></code> format to store the model tensors.<br/>
+While doable, converting from one format to the other is non-trivial. As such, additional steps are required to do the conversion.</p>
+<p>The first step is converting the <code class="docutils literal notranslate"><span class="pre">.onnx</span></code> model to the <a class="reference external" href="https://www.intel.com/content/www/us/en/developer/tools/openvino-toolkit/overview.html">OpenVino</a> intermediate format.<br/>
+This is done using the tools installed by the <a class="reference external" href="https://pypi.org/project/openvino-dev/">openvino_dev</a> Python package.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># Import the model optimizer tool from the openvino_dev package</span>
+<span class="kn">from</span> <span class="nn">mo</span> <span class="kn">import</span> <span class="n">main</span> <span class="k">as</span> <span class="n">mo_main</span>
+<span class="kn">import</span> <span class="nn">onnx</span>
+<span class="kn">from</span> <span class="nn">onnx_tf.backend</span> <span class="kn">import</span> <span class="n">prepare</span>
+<span class="kn">from</span> <span class="nn">mltk.utils.shell_cmd</span> <span class="kn">import</span> <span class="n">run_shell_cmd</span>
+
+<span class="c1"># Load the ONNX model</span>
+<span class="n">onnx_model</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">ONNX_MODEL_PATH</span><span class="p">)</span>
+<span class="n">tf_rep</span> <span class="o">=</span> <span class="n">prepare</span><span class="p">(</span><span class="n">onnx_model</span><span class="p">)</span>
+
+<span class="c1"># Get the input tensor shape</span>
+<span class="n">input_tensor</span> <span class="o">=</span> <span class="n">tf_rep</span><span class="o">.</span><span class="n">signatures</span><span class="p">[</span><span class="n">tf_rep</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+<span class="n">input_shape</span> <span class="o">=</span> <span class="n">input_tensor</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">input_shape_str</span> <span class="o">=</span> <span class="s1">'['</span> <span class="o">+</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">input_shape</span><span class="p">])</span> <span class="o">+</span> <span class="s1">']'</span>
+
+
+<span class="n">openvino_out_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">WORKING_DIR</span><span class="si">}</span><span class="s1">/openvino'</span>
+<span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">openvino_out_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating openvino at: </span><span class="si">{</span><span class="n">openvino_out_dir</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span> 
+    <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="n">mo_main</span><span class="o">.</span><span class="vm">__file__</span><span class="p">,</span> 
+    <span class="s1">'--input_model'</span><span class="p">,</span> <span class="n">simplified_onnx_model_path</span><span class="p">,</span>
+    <span class="s1">'--input_shape'</span><span class="p">,</span> <span class="n">input_shape_str</span><span class="p">,</span>
+    <span class="s1">'--output_dir'</span><span class="p">,</span> <span class="n">openvino_out_dir</span><span class="p">,</span>
+    <span class="s1">'--data_type'</span><span class="p">,</span> <span class="s1">'FP32'</span>
+
+<span class="p">]</span>
+<span class="n">retcode</span><span class="p">,</span> <span class="n">retmsg</span> <span class="o">=</span> <span class="n">run_shell_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span>  <span class="n">outfile</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">retcode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'Failed to do conversion'</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generating openvino at: E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/openvino
+Model Optimizer arguments:
+Common parameters:
+	- Path to the Input Model: 	E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/cifar10_matlab_model.simplified.onnx
+	- Path for generated IR: 	E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/openvino
+	- IR output name: 	cifar10_matlab_model.simplified
+	- Log level: 	ERROR
+	- Batch: 	Not specified, inherited from the model
+	- Input layers: 	Not specified, inherited from the model
+	- Output layers: 	Not specified, inherited from the model
+	- Input shapes: 	[1,3,32,32]
+	- Mean values: 	Not specified
+	- Scale values: 	Not specified
+	- Scale factor: 	Not specified
+	- Precision of IR: 	FP32
+	- Enable fusing: 	True
+	- Enable grouped convolutions fusing: 	True
+	- Move mean values to preprocess section: 	None
+	- Reverse input channels: 	False
+ONNX specific parameters:
+	- Inference Engine found in: 	c:\Users\reed\Desktop\mltk_venv\lib\site-packages\openvino
+Inference Engine version: 	2021.4.2-3976-0943ed67223-refs/pull/539/head
+Model Optimizer version: 	2021.4.2-3976-0943ed67223-refs/pull/539/head
+[ SUCCESS ] Generated IR version 10 model.
+[ SUCCESS ] XML file: E:\reed\mltk\cifar10_matlab_model_onnx_to_tflite\openvino\cifar10_matlab_model.simplified.xml
+[ SUCCESS ] BIN file: E:\reed\mltk\cifar10_matlab_model_onnx_to_tflite\openvino\cifar10_matlab_model.simplified.bin
+[ SUCCESS ] Total execution time: 2.91 seconds. 
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="convert-from-openvino-to-tf-lite-float32">
+<h3 id="convert-from-openvino-to-tf-lite-float32">Convert from OpenVino to TF-Lite-Float32<a class="headerlink" href="#convert-from-openvino-to-tf-lite-float32" title="Permalink to this headline">¶</a></h3>
+<p>Next, we use the <a class="reference external" href="https://github.com/PINTO0309/openvino2tensorflow">openvino2tensorflow</a> Python package to convert from the OpenVino intermediate format to a <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.<br/>
+The generated model file has all of its weights and tensors in the <strong>float32</strong> data type.</p>
+<p><strong>NOTE:</strong> You can view the contents of the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file by dragging and dropping onto the webapge: <a class="reference external" href="https://netron.app/">netron.app</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span> 
+<span class="kn">from</span> <span class="nn">mltk.utils.shell_cmd</span> <span class="kn">import</span> <span class="n">run_shell_cmd</span>
+
+<span class="n">openvino2tensorflow_out_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">WORKING_DIR</span><span class="si">}</span><span class="s1">/openvino2tensorflow'</span>
+<span class="n">openvino_xml_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">simplified_onnx_model_path</span><span class="p">)[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.onnx'</span><span class="p">)]</span> <span class="o">+</span> <span class="s1">'.xml'</span>
+
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">'nt'</span><span class="p">:</span>
+  <span class="n">openvino2tensorflow_exe_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">),</span> <span class="s1">'openvino2tensorflow'</span><span class="p">)]</span>
+<span class="k">else</span><span class="p">:</span>
+  <span class="n">openvino2tensorflow_exe_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'openvino2tensorflow'</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating openvino2tensorflow model at: </span><span class="si">{</span><span class="n">openvino2tensorflow_out_dir</span><span class="si">}</span><span class="s1"> ...'</span><span class="p">)</span>
+<span class="n">cmd</span> <span class="o">=</span> <span class="n">openvino2tensorflow_exe_cmd</span> <span class="o">+</span> <span class="p">[</span> 
+    <span class="s1">'--model_path'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">openvino_out_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">openvino_xml_name</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+    <span class="s1">'--model_output_path'</span><span class="p">,</span> <span class="n">openvino2tensorflow_out_dir</span><span class="p">,</span>
+    <span class="s1">'--output_saved_model'</span><span class="p">,</span>
+    <span class="s1">'--output_no_quant_float32_tflite'</span>
+<span class="p">]</span>
+
+<span class="n">retcode</span><span class="p">,</span> <span class="n">retmsg</span> <span class="o">=</span> <span class="n">run_shell_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">retcode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">retmsg</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">'done'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generating openvino2tensorflow model at: E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/openvino2tensorflow ...
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="quantize-the-tf-lite-model">
+<h3 id="quantize-the-tf-lite-model">Quantize the TF-Lite Model<a class="headerlink" href="#quantize-the-tf-lite-model" title="Permalink to this headline">¶</a></h3>
+<p>The final conversion step is converting the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file which has <strong>float32</strong> tensors into a <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file that has <strong>int8</strong> tensors.
+A model with <strong>int8</strong> tensors executes much more efficiently on an embedded device and also reduces the memory requirements by a factor of 4.</p>
+<p>This conversion process is called <a class="reference external" href="https://www.tensorflow.org/lite/performance/post_training_quantization">Post-Training Quantization</a>.<br/>
+To do the conversion, we use the <a class="reference external" href="https://www.tensorflow.org/lite/convert">TfliteConverter</a> that comes with Tensorflow.</p>
+<p>To do the quantization, we need a <em>representative dataset</em>. We use the <code class="docutils literal notranslate"><span class="pre">x_test</span></code> samples for this purpose.</p>
+<p><strong>NOTE:</strong> You can view the contents of the quantized <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file by dragging and dropping onto the webapge: <a class="reference external" href="https://netron.app/">netron.app</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span> 
+
+<span class="n">tflite_int8_model_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">WORKING_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">MODEL_NAME</span><span class="si">}</span><span class="s1">.int8.tflite'</span>
+
+<span class="n">converter</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">TFLiteConverter</span><span class="o">.</span><span class="n">from_saved_model</span><span class="p">(</span><span class="n">openvino2tensorflow_out_dir</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">representative_dataset</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_test</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1000</span><span class="p">:</span> <span class="c1"># We only need a small portion of the dataset to do the quantization </span>
+            <span class="k">break</span>
+
+<span class="n">converter</span><span class="o">.</span><span class="n">optimizations</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">Optimize</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">]</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">target_spec</span><span class="o">.</span><span class="n">supported_ops</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">OpsSet</span><span class="o">.</span><span class="n">TFLITE_BUILTINS_INT8</span><span class="p">]</span> <span class="c1"># We only want to use int8 kernels</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">inference_input_type</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span> <span class="c1"># Can also be tf.int8</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">inference_output_type</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span>  <span class="c1"># Can also be tf.int8</span>
+<span class="n">converter</span><span class="o">.</span><span class="n">representative_dataset</span> <span class="o">=</span> <span class="n">representative_dataset</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating </span><span class="si">{</span><span class="n">tflite_int8_model_path</span><span class="si">}</span><span class="s1"> ...'</span><span class="p">)</span>
+<span class="n">tflite_quant_model</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">()</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">tflite_int8_model_path</span><span class="p">,</span> <span class="s1">'wb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">tflite_quant_model</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'done'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generating E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/cifar10_matlab_model.int8.tflite ...
+done
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="profile-the-quantized-model">
+<h2 id="profile-the-quantized-model">Profile the Quantized Model<a class="headerlink" href="#profile-the-quantized-model" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have converted the <code class="docutils literal notranslate"><span class="pre">.onnx</span></code> model to a quantized <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model, let’s profile it to see if it can run on an embedded target.</p>
+<p>For this, we use the <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">Model Profiler</span></a> that comes with the MLTK.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">profile_model</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="n">profile_model</span><span class="p">(</span>
+    <span class="n">tflite_int8_model_path</span><span class="p">,</span>
+    <span class="n">accelerator</span><span class="o">=</span><span class="s1">'mvp'</span> <span class="c1"># Optional profile using the MVP hardware accelerator</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Profiling model in simulator
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Profiling Summary
+Name: E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/cifar10_matlab_model.int8
+Accelerator: MVP
+Input Shape: 1x32x32x3
+Input Data Type: float32
+Output Shape: 1x10
+Output Data Type: float32
+Model File Size (bytes): 288.4k
+Runtime Memory Size (bytes): 87.1k
+# Operations: 76.2M
+# Multiply-Accumulates: 37.7M
+# Layers: 15
+# Unsupported Layers: 1
+# Accelerator Cycles: 49.5M
+# CPU Cycles: 25.9M
+CPU Utilization (%): 34.4
+Clock Rate (hz): 80.0M
+Time (s): 941.0m
+Energy (J): 12.4m
+J/Op: 162.2p
+J/MAC: 327.4p
+Ops/s: 81.0M
+MACs/s: 40.1M
+Inference/s: 1.1
+
+Model Layers
++-------+-------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+----------------------------------------------------+------------+-------------------------------------------------+
+| Index | OpCode      | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                            | Supported? | Error Msg                                       |
++-------+-------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+----------------------------------------------------+------------+-------------------------------------------------+
+| 0     | quantize    | 12.3k  | 0      | 0          | 111.3k     | 15.2u      | 1.4m     | 1x32x32x3               | 1x32x32x3    | BuiltinOptionsType=0                               | True       |                                                 |
+| 1     | pad         | 23.3k  | 0      | 0          | 77.1k      | 8.1u       | 963.9u   | 1x32x32x3,4x2           | 1x36x36x3    | BuiltinOptionsType=22                              | True       |                                                 |
+| 2     | conv_2d     | 10.0M  | 4.9M   | 0          | 24.2M      | 4.9m       | 302.2m   | 1x36x36x3,64x5x5x3,64   | 1x32x32x64   | Padding:valid stride:1x1 activation:relu           | False      | Output vector stride (2048) exceeded (max=2047) |
+| 3     | max_pool_2d | 147.5k | 0      | 94.3k      | 248.8k     | 52.6u      | 3.1m     | 1x32x32x64              | 1x16x16x64   | Padding:same stride:2x2 filter:3x3 activation:none | True       |                                                 |
+| 4     | pad         | 153.6k | 0      | 0          | 567.0k     | 111.6u     | 7.1m     | 1x16x16x64,4x2          | 1x20x20x64   | BuiltinOptionsType=22                              | True       |                                                 |
+| 5     | conv_2d     | 52.5M  | 26.2M  | 39.5M      | 10.4k      | 5.7m       | 493.2m   | 1x20x20x64,64x5x5x64,64 | 1x16x16x64   | Padding:valid stride:1x1 activation:relu           | True       |                                                 |
+| 6     | max_pool_2d | 36.9k  | 0      | 21.0k      | 248.8k     | 17.2u      | 3.1m     | 1x16x16x64              | 1x8x8x64     | Padding:same stride:2x2 filter:3x3 activation:none | True       |                                                 |
+| 7     | pad         | 55.3k  | 0      | 0          | 172.0k     | 29.5u      | 2.1m     | 1x8x8x64,4x2            | 1x12x12x64   | BuiltinOptionsType=22                              | True       |                                                 |
+| 8     | conv_2d     | 13.1M  | 6.6M   | 9.9M       | 10.7k      | 1.4m       | 123.3m   | 1x12x12x64,64x5x5x64,64 | 1x8x8x64     | Padding:valid stride:1x1 activation:relu           | True       |                                                 |
+| 9     | max_pool_2d | 9.2k   | 0      | 4.9k       | 248.8k     | 16.9u      | 3.1m     | 1x8x8x64                | 1x4x4x64     | Padding:same stride:2x2 filter:3x3 activation:none | True       |                                                 |
+| 10    | conv_2d     | 131.3k | 65.5k  | 98.6k      | 2.9k       | 45.7u      | 1.2m     | 1x4x4x64,64x4x4x64,64   | 1x1x1x64     | Padding:valid stride:1x1 activation:relu           | True       |                                                 |
+| 11    | conv_2d     | 1.3k   | 640.0  | 1.0k       | 2.9k       | 45.7u      | 36.8u    | 1x1x1x64,10x1x1x64,10   | 1x1x1x10     | Padding:valid stride:1x1 activation:none           | True       |                                                 |
+| 12    | reshape     | 0      | 0      | 0          | 264.9      | 0.0p       | 3.3u     | 1x1x1x10,2              | 1x10         | BuiltinOptionsType=0                               | True       |                                                 |
+| 13    | softmax     | 50.0   | 0      | 0          | 7.7k       | 16.5n      | 95.8u    | 1x10                    | 1x10         | BuiltinOptionsType=9                               | True       |                                                 |
+| 14    | dequantize  | 20.0   | 0      | 0          | 6.8k       | 159.2n     | 84.8u    | 1x10                    | 1x10         | BuiltinOptionsType=0                               | True       |                                                 |
++-------+-------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+----------------------------------------------------+------------+-------------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="evaluate-the-quantized-model">
+<h2 id="evaluate-the-quantized-model">Evaluate the Quantized Model<a class="headerlink" href="#evaluate-the-quantized-model" title="Permalink to this headline">¶</a></h2>
+<p>Additionally, we can evaluate the quantized model to see how accurate it is:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
+
+
+<span class="n">tflite_model</span> <span class="o">=</span> <span class="n">TfliteModel</span><span class="o">.</span><span class="n">load_flatbuffer_file</span><span class="p">(</span><span class="n">tflite_int8_model_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+
+<span class="n">n_samples</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x_test</span><span class="p">),</span> <span class="mi">100</span><span class="p">)</span> <span class="c1"># Only evaluate up to 100 samples</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">n_classes</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Executing </span><span class="si">{</span><span class="n">n_samples</span><span class="si">}</span><span class="s1"> samples in </span><span class="si">{</span><span class="n">tflite_int8_model_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_test</span><span class="p">[:</span><span class="n">n_samples</span><span class="p">]):</span>
+    <span class="n">pred</span> <span class="o">=</span> <span class="n">tflite_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y_dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">y_pred</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">pred</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'done'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>+-------+-------------+-------------------+-----------------+----------------------------------------------------+
+| Index | OpCode      | Input(s)          | Output(s)       | Config                                             |
++-------+-------------+-------------------+-----------------+----------------------------------------------------+
+| 0     | quantize    | 32x32x3 (float32) | 32x32x3 (int8)  | BuiltinOptionsType=0                               |
+| 1     | pad         | 32x32x3 (int8)    | 36x36x3 (int8)  | BuiltinOptionsType=22                              |
+|       |             | 2 (int32)         |                 |                                                    |
+| 2     | conv_2d     | 36x36x3 (int8)    | 32x32x64 (int8) | Padding:valid stride:1x1 activation:relu           |
+|       |             | 5x5x3 (int8)      |                 |                                                    |
+|       |             | 64 (int32)        |                 |                                                    |
+| 3     | max_pool_2d | 32x32x64 (int8)   | 16x16x64 (int8) | Padding:same stride:2x2 filter:3x3 activation:none |
+| 4     | pad         | 16x16x64 (int8)   | 20x20x64 (int8) | BuiltinOptionsType=22                              |
+|       |             | 2 (int32)         |                 |                                                    |
+| 5     | conv_2d     | 20x20x64 (int8)   | 16x16x64 (int8) | Padding:valid stride:1x1 activation:relu           |
+|       |             | 5x5x64 (int8)     |                 |                                                    |
+|       |             | 64 (int32)        |                 |                                                    |
+| 6     | max_pool_2d | 16x16x64 (int8)   | 8x8x64 (int8)   | Padding:same stride:2x2 filter:3x3 activation:none |
+| 7     | pad         | 8x8x64 (int8)     | 12x12x64 (int8) | BuiltinOptionsType=22                              |
+|       |             | 2 (int32)         |                 |                                                    |
+| 8     | conv_2d     | 12x12x64 (int8)   | 8x8x64 (int8)   | Padding:valid stride:1x1 activation:relu           |
+|       |             | 5x5x64 (int8)     |                 |                                                    |
+|       |             | 64 (int32)        |                 |                                                    |
+| 9     | max_pool_2d | 8x8x64 (int8)     | 4x4x64 (int8)   | Padding:same stride:2x2 filter:3x3 activation:none |
+| 10    | conv_2d     | 4x4x64 (int8)     | 1x1x64 (int8)   | Padding:valid stride:1x1 activation:relu           |
+|       |             | 4x4x64 (int8)     |                 |                                                    |
+|       |             | 64 (int32)        |                 |                                                    |
+| 11    | conv_2d     | 1x1x64 (int8)     | 1x1x10 (int8)   | Padding:valid stride:1x1 activation:none           |
+|       |             | 1x1x64 (int8)     |                 |                                                    |
+|       |             | 10 (int32)        |                 |                                                    |
+| 12    | reshape     | 1x1x10 (int8)     | 10 (int8)       | BuiltinOptionsType=0                               |
+|       |             | 2 (int32)         |                 |                                                    |
+| 13    | softmax     | 10 (int8)         | 10 (int8)       | BuiltinOptionsType=9                               |
+| 14    | dequantize  | 10 (int8)         | 10 (float32)    | BuiltinOptionsType=0                               |
++-------+-------------+-------------------+-----------------+----------------------------------------------------+
+Executing 100 samples in E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/cifar10_matlab_model.int8.tflite
+done
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">ClassifierEvaluationResults</span>
+
+<span class="c1"># Use the MLTK to evaluate the ONNX model predictions</span>
+<span class="n">results</span> <span class="o">=</span> <span class="n">ClassifierEvaluationResults</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="n">MODEL_NAME</span><span class="p">,</span>
+    <span class="n">model_type</span><span class="o">=</span><span class="s1">'classification'</span><span class="p">,</span> 
+    <span class="n">classes</span> <span class="o">=</span> <span class="n">mapped_class_labels</span>
+<span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">'Evaluating the int8 .tflite model predictions ...'</span><span class="p">)</span>
+<span class="n">results</span><span class="o">.</span><span class="n">calculate</span><span class="p">(</span><span class="n">y_test</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)],</span> <span class="n">y_pred</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="o">.</span><span class="n">generate_summary</span><span class="p">())</span>
+
+<span class="n">results</span><span class="o">.</span><span class="n">generate_plots</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Evaluating the int8 .tflite model predictions ...
+Name: cifar10_matlab_model
+Model Type: classification
+Overall accuracy: 85.000%
+Class accuracies:
+- frog = 100.000%
+- truck = 100.000%
+- ship = 100.000%
+- horse = 90.909%
+- airplane = 90.000%
+- automobile = 83.333%
+- bird = 75.000%
+- deer = 71.429%
+- cat = 60.000%
+- dog = 50.000%
+Average ROC AUC: 97.949%
+Class ROC AUC:
+- ship = 100.000%
+- frog = 100.000%
+- airplane = 99.889%
+- automobile = 99.823%
+- truck = 99.796%
+- horse = 98.672%
+- cat = 97.778%
+- deer = 97.389%
+- dog = 94.293%
+- bird = 91.848%
+</pre></div>
+</div>
+<img alt="../../_images/onnx_to_tflite_33_1.png" src="../../_images/onnx_to_tflite_33_1.png"/>
+<img alt="../../_images/onnx_to_tflite_33_2.png" src="../../_images/onnx_to_tflite_33_2.png"/>
+<img alt="../../_images/onnx_to_tflite_33_3.png" src="../../_images/onnx_to_tflite_33_3.png"/>
+<img alt="../../_images/onnx_to_tflite_33_4.png" src="../../_images/onnx_to_tflite_33_4.png"/>
+<img alt="../../_images/onnx_to_tflite_33_5.png" src="../../_images/onnx_to_tflite_33_5.png"/>
+</div>
+</div>
+</section>
+<section id="next-steps">
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have an <strong>int8</strong> <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file, we can deploy it to our embedded target using the Gecko SDK.</p>
+<p>Refer to the following links for more details:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/getting-started">Gecko SDK Documentation</a></p></li>
+<li><p><a class="reference internal" href="../../docs/cpp_development/index.html"><span class="doc std std-doc">MLTK C++ Development</span></a></p></li>
+</ul>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="keyword_spotting_with_transfer_learning.html" title="Keyword Spotting with Transfer Learning"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Keyword Spotting with Transfer Learning </span>
+              </div>
+            </a>
+          
+          
+            <a href="../../docs/examples.html" title="API Examples"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> API Examples </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Apr 26, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

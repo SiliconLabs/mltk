@@ -1,0 +1,932 @@
+{
+
+ "cells": [
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "# Model Summary API Examples\n",
+
+    "\n",
+
+    "This demonstrates how to use the [summarize_model](../../docs/python_api/operations.html#summarize-model) API.\n",
+
+    "\n",
+
+    "Refer to the [Model Summary](../../docs/guides/model_summary.md) guide for more details.\n",
+
+    "\n",
+
+    "__NOTES:__  \n",
+
+    "- Click here: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/examples/summarize_model.ipynb) to run this example interactively in your browser  \n",
+
+    "- Refer to the [Notebook Examples Guide](../../docs/guides/notebook_examples_guide.md) for how to run this example locally in VSCode  "
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Install MLTK Python Package"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 1,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "# Install the MLTK Python package (if necessary)\n",
+
+    "!pip install --upgrade silabs-mltk"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Import Python Packages"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 2,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "# Import the necessary MLTK APIs\n",
+
+    "from mltk.core import summarize_model"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 1: Summarize Keras model\n",
+
+    "\n",
+
+    "In this example, we generate a summary of the trained `.h5` model file in the [image_example1](../../docs/python_api/models/examples/image_example1.md) model's [model archive](../../docs/guides/model_archive.md)."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 3,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Model: \"image_example1\"\n",
+
+      "_________________________________________________________________\n",
+
+      "Layer (type)                 Output Shape              Param #   \n",
+
+      "=================================================================\n",
+
+      "conv2d (Conv2D)              (None, 48, 48, 24)        240       \n",
+
+      "_________________________________________________________________\n",
+
+      "average_pooling2d (AveragePo (None, 24, 24, 24)        0         \n",
+
+      "_________________________________________________________________\n",
+
+      "conv2d_1 (Conv2D)            (None, 11, 11, 16)        3472      \n",
+
+      "_________________________________________________________________\n",
+
+      "conv2d_2 (Conv2D)            (None, 9, 9, 24)          3480      \n",
+
+      "_________________________________________________________________\n",
+
+      "batch_normalization (BatchNo (None, 9, 9, 24)          96        \n",
+
+      "_________________________________________________________________\n",
+
+      "activation (Activation)      (None, 9, 9, 24)          0         \n",
+
+      "_________________________________________________________________\n",
+
+      "average_pooling2d_1 (Average (None, 4, 4, 24)          0         \n",
+
+      "_________________________________________________________________\n",
+
+      "flatten (Flatten)            (None, 384)               0         \n",
+
+      "_________________________________________________________________\n",
+
+      "dense (Dense)                (None, 3)                 1155      \n",
+
+      "_________________________________________________________________\n",
+
+      "activation_1 (Activation)    (None, 3)                 0         \n",
+
+      "=================================================================\n",
+
+      "Total params: 8,443\n",
+
+      "Trainable params: 8,395\n",
+
+      "Non-trainable params: 48\n",
+
+      "_________________________________________________________________\n",
+
+      "\n",
+
+      "Total MACs: 1.197 M\n",
+
+      "Total OPs: 2.528 M\n",
+
+      "Name: image_example1\n",
+
+      "Version: 1\n",
+
+      "Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images\n",
+
+      "Classes: rock, paper, scissor\n",
+
+      "hash: None\n",
+
+      "date: None\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "summary = summarize_model('image_example1')\n",
+
+    "print(summary)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 2: Summarize Tensorflow-Lite model\n",
+
+    "\n",
+
+    "In this example, we generate a summary of the trained `.tflite` model file in the [image_example1](../../docs/python_api/models/examples/image_example1.md) model's [model archive](../../docs/guides/model_archive.md)."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 4,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+
+      "| Index | OpCode          | Input(s)        | Output(s)       | Config                                              |\n",
+
+      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+
+      "| 0     | conv_2d         | 96x96x1 (int8)  | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |\n",
+
+      "|       |                 | 3x3x1 (int8)    |                 |                                                     |\n",
+
+      "|       |                 | 24 (int32)      |                 |                                                     |\n",
+
+      "| 1     | average_pool_2d | 48x48x24 (int8) | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 2     | conv_2d         | 24x24x24 (int8) | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |\n",
+
+      "|       |                 | 3x3x24 (int8)   |                 |                                                     |\n",
+
+      "|       |                 | 16 (int32)      |                 |                                                     |\n",
+
+      "| 3     | conv_2d         | 11x11x16 (int8) | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |\n",
+
+      "|       |                 | 3x3x16 (int8)   |                 |                                                     |\n",
+
+      "|       |                 | 24 (int32)      |                 |                                                     |\n",
+
+      "| 4     | average_pool_2d | 9x9x24 (int8)   | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 5     | reshape         | 4x4x24 (int8)   | 384 (int8)      | BuiltinOptionsType=0                                |\n",
+
+      "|       |                 | 2 (int32)       |                 |                                                     |\n",
+
+      "| 6     | fully_connected | 384 (int8)      | 3 (int8)        | Activation:none                                     |\n",
+
+      "|       |                 | 384 (int8)      |                 |                                                     |\n",
+
+      "|       |                 | 3 (int32)       |                 |                                                     |\n",
+
+      "| 7     | softmax         | 3 (int8)        | 3 (int8)        | BuiltinOptionsType=9                                |\n",
+
+      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+
+      "Total MACs: 1.197 M\n",
+
+      "Total OPs: 2.524 M\n",
+
+      "Name: image_example1\n",
+
+      "Version: 1\n",
+
+      "Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images\n",
+
+      "Classes: rock, paper, scissor\n",
+
+      "hash: 8bf54869131182b072b9ac3d65757a11\n",
+
+      "date: 2021-10-19T18:50:46.802Z\n",
+
+      "samplewise_norm.rescale: 0\n",
+
+      "samplewise_norm.mean_and_std: True\n",
+
+      ".tflite file size: 14.9kB\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "summary = summarize_model('image_example1', tflite=True)\n",
+
+    "print(summary)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 3: Summarize external Tensorflow-Lite model\n",
+
+    "\n",
+
+    "The given model need _not_ be generated by the MLTK. \n",
+
+    "External `.tflite` or `.h5` model files are also supported by the summarize API."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 5,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "import os \n",
+
+    "import tempfile\n",
+
+    "import urllib\n",
+
+    "import shutil\n",
+
+    "\n",
+
+    "# Use .tflite mode found here:\n",
+
+    "# https://github.com/mlcommons/tiny/tree/master/benchmark/training/keyword_spotting/trained_models\n",
+
+    "# NOTE: Update this URL to point to your model if necessary\n",
+
+    "TFLITE_MODEL_URL = 'https://github.com/mlcommons/tiny/raw/master/benchmark/training/keyword_spotting/trained_models/kws_ref_model.tflite'\n",
+
+    "\n",
+
+    "# Download the .tflite file and save to the temp dir\n",
+
+    "external_tflite_path = os.path.normpath(f'{tempfile.gettempdir()}/kws_ref_model.tflite')\n",
+
+    "with open(external_tflite_path, 'wb') as dst:\n",
+
+    "    with urllib.request.urlopen(TFLITE_MODEL_URL) as src:\n",
+
+    "        shutil.copyfileobj(src, dst)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 6,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "+-------+-------------------+----------------+----------------+-------------------------------------------------------+\n",
+
+      "| Index | OpCode            | Input(s)       | Output(s)      | Config                                                |\n",
+
+      "+-------+-------------------+----------------+----------------+-------------------------------------------------------+\n",
+
+      "| 0     | conv_2d           | 49x10x1 (int8) | 25x5x64 (int8) | Padding:same stride:2x2 activation:relu               |\n",
+
+      "|       |                   | 10x4x1 (int8)  |                |                                                       |\n",
+
+      "|       |                   | 64 (int32)     |                |                                                       |\n",
+
+      "| 1     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+
+      "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
+
+      "|       |                   | 64 (int32)     |                |                                                       |\n",
+
+      "| 2     | conv_2d           | 25x5x64 (int8) | 25x5x64 (int8) | Padding:same stride:1x1 activation:relu               |\n",
+
+      "|       |                   | 1x1x64 (int8)  |                |                                                       |\n",
+
+      "|       |                   | 64 (int32)     |                |                                                       |\n",
+
+      "| 3     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+
+      "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
+
+      "|       |                   | 64 (int32)     |                |                                                       |\n",
+
+      "| 4     | conv_2d           | 25x5x64 (int8) | 25x5x64 (int8) | Padding:same stride:1x1 activation:relu               |\n",
+
+      "|       |                   | 1x1x64 (int8)  |                |                                                       |\n",
+
+      "|       |                   | 64 (int32)     |                |                                                       |\n",
+
+      "| 5     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+
+      "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
+
+      "|       |                   | 64 (int32)     |                |                                                       |\n",
+
+      "| 6     | conv_2d           | 25x5x64 (int8) | 25x5x64 (int8) | Padding:same stride:1x1 activation:relu               |\n",
+
+      "|       |                   | 1x1x64 (int8)  |                |                                                       |\n",
+
+      "|       |                   | 64 (int32)     |                |                                                       |\n",
+
+      "| 7     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+
+      "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
+
+      "|       |                   | 64 (int32)     |                |                                                       |\n",
+
+      "| 8     | conv_2d           | 25x5x64 (int8) | 25x5x64 (int8) | Padding:same stride:1x1 activation:relu               |\n",
+
+      "|       |                   | 1x1x64 (int8)  |                |                                                       |\n",
+
+      "|       |                   | 64 (int32)     |                |                                                       |\n",
+
+      "| 9     | average_pool_2d   | 25x5x64 (int8) | 1x1x64 (int8)  | Padding:valid stride:5x25 filter:5x25 activation:none |\n",
+
+      "| 10    | reshape           | 1x1x64 (int8)  | 64 (int8)      | BuiltinOptionsType=0                                  |\n",
+
+      "|       |                   | 2 (int32)      |                |                                                       |\n",
+
+      "| 11    | fully_connected   | 64 (int8)      | 12 (int8)      | Activation:none                                       |\n",
+
+      "|       |                   | 64 (int8)      |                |                                                       |\n",
+
+      "|       |                   | 12 (int32)     |                |                                                       |\n",
+
+      "| 12    | softmax           | 12 (int8)      | 12 (int8)      | BuiltinOptionsType=9                                  |\n",
+
+      "+-------+-------------------+----------------+----------------+-------------------------------------------------------+\n",
+
+      "Total MACs: 2.657 M\n",
+
+      "Total OPs: 5.394 M\n",
+
+      "Name: summarize_model\n",
+
+      "Version: 1\n",
+
+      "Description: Generated by Silicon Lab's MLTK Python package\n",
+
+      "classes: []\n",
+
+      "hash: None\n",
+
+      "date: None\n",
+
+      ".tflite file size: 53.9kB\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "summary = summarize_model(external_tflite_path)\n",
+
+    "print(summary)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 4: Summarize model before training\n",
+
+    "Training a model can be very time-consuming, and it is useful to know basic information \n",
+
+    "about a model before investing time and energy into training it.  \n",
+
+    "For this reason, the MLTK `summarize` API features a `build` argument to build a model\n",
+
+    "and summarize it _before_ the model is fully trained.\n",
+
+    "\n",
+
+    "In this example, the [image_example1](../../docs/python_api/models/examples/image_example1.md) model is built\n",
+
+    "at API execution time and a summary is generated.  \n",
+
+    "Note that _only_ the [model specification](../../docs/guides/model_specification.md) script is required, it does _not_ need to be trained first."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 8,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Enabling test mode\n",
+
+      "Model: \"image_example1\"\n",
+
+      "_________________________________________________________________\n",
+
+      "Layer (type)                 Output Shape              Param #   \n",
+
+      "=================================================================\n",
+
+      "conv2d_3 (Conv2D)            (None, 48, 48, 24)        240       \n",
+
+      "_________________________________________________________________\n",
+
+      "average_pooling2d_2 (Average (None, 24, 24, 24)        0         \n",
+
+      "_________________________________________________________________\n",
+
+      "conv2d_4 (Conv2D)            (None, 11, 11, 16)        3472      \n",
+
+      "_________________________________________________________________\n",
+
+      "conv2d_5 (Conv2D)            (None, 9, 9, 24)          3480      \n",
+
+      "_________________________________________________________________\n",
+
+      "batch_normalization_1 (Batch (None, 9, 9, 24)          96        \n",
+
+      "_________________________________________________________________\n",
+
+      "activation_2 (Activation)    (None, 9, 9, 24)          0         \n",
+
+      "_________________________________________________________________\n",
+
+      "average_pooling2d_3 (Average (None, 4, 4, 24)          0         \n",
+
+      "_________________________________________________________________\n",
+
+      "flatten_1 (Flatten)          (None, 384)               0         \n",
+
+      "_________________________________________________________________\n",
+
+      "dense_1 (Dense)              (None, 3)                 1155      \n",
+
+      "_________________________________________________________________\n",
+
+      "activation_3 (Activation)    (None, 3)                 0         \n",
+
+      "=================================================================\n",
+
+      "Total params: 8,443\n",
+
+      "Trainable params: 8,395\n",
+
+      "Non-trainable params: 48\n",
+
+      "_________________________________________________________________\n",
+
+      "\n",
+
+      "Total MACs: 1.197 M\n",
+
+      "Total OPs: 2.528 M\n",
+
+      "Name: image_example1\n",
+
+      "Version: 1\n",
+
+      "Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images\n",
+
+      "Classes: rock, paper, scissor\n",
+
+      "hash: None\n",
+
+      "date: None\n",
+
+      "Test mode enabled, forcing max_samples_per_class=3, batch_size=3\n",
+
+      "Training dataset: Found 9 samples belonging to 3 classes:\n",
+
+      "      rock = 3\n",
+
+      "     paper = 3\n",
+
+      "   scissor = 3\n",
+
+      "Validation dataset: Found 9 samples belonging to 3 classes:\n",
+
+      "      rock = 3\n",
+
+      "     paper = 3\n",
+
+      "   scissor = 3\n",
+
+      "Forcing epochs=1 since test=true\n",
+
+      "Class weights:\n",
+
+      "- rock = 1.00\n",
+
+      "- paper = 1.00\n",
+
+      "- scissor = 1.00\n",
+
+      "Starting model training ...\n"
+
+     ]
+
+    },
+
+    {
+
+     "data": {
+
+      "application/vnd.jupyter.widget-view+json": {
+
+       "model_id": "3831d3e6c0844e46a20ed778c58b5f68",
+
+       "version_major": 2,
+
+       "version_minor": 0
+
+      },
+
+      "text/plain": [
+
+       "Training:   0%|           0/1 ETA: ?s,  ?epochs/s"
+
+      ]
+
+     },
+
+     "metadata": {},
+
+     "output_type": "display_data"
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Epoch 1/1\n"
+
+     ]
+
+    },
+
+    {
+
+     "data": {
+
+      "application/vnd.jupyter.widget-view+json": {
+
+       "model_id": "a50f8a887d0941728af5d15eb856d0e5",
+
+       "version_major": 2,
+
+       "version_minor": 0
+
+      },
+
+      "text/plain": [
+
+       "0/3           ETA: ?s - "
+
+      ]
+
+     },
+
+     "metadata": {},
+
+     "output_type": "display_data"
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Generating C:/Users/reed/.mltk/models/image_example1-test/image_example1.test.h5\n",
+
+      "\n",
+
+      "\n",
+
+      "*** Best training val_accuracy = 0.222\n",
+
+      "\n",
+
+      "\n",
+
+      "Training complete\n",
+
+      "Training logs here: C:/Users/reed/.mltk/models/image_example1-test\n",
+
+      "Trained model files here: c:/users/reed/workspace/silabs/mltk/mltk/models/examples/image_example1-test.mltk.zip\n",
+
+      "ProcessPoolManager using 7 of 24 CPU cores\n",
+
+      "NOTE: You may need to adjust the \"cores\" parameter of the data generator if you're experiencing performance issues\n",
+
+      "Generating tflite_model\n",
+
+      "INFO:tensorflow:Assets written to: E:\\tmpevbj7v09\\assets\n",
+
+      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+
+      "| Index | OpCode          | Input(s)        | Output(s)       | Config                                              |\n",
+
+      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+
+      "| 0     | conv_2d         | 96x96x1 (int8)  | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |\n",
+
+      "|       |                 | 3x3x1 (int8)    |                 |                                                     |\n",
+
+      "|       |                 | 24 (int32)      |                 |                                                     |\n",
+
+      "| 1     | average_pool_2d | 48x48x24 (int8) | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 2     | conv_2d         | 24x24x24 (int8) | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |\n",
+
+      "|       |                 | 3x3x24 (int8)   |                 |                                                     |\n",
+
+      "|       |                 | 16 (int32)      |                 |                                                     |\n",
+
+      "| 3     | conv_2d         | 11x11x16 (int8) | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |\n",
+
+      "|       |                 | 3x3x16 (int8)   |                 |                                                     |\n",
+
+      "|       |                 | 24 (int32)      |                 |                                                     |\n",
+
+      "| 4     | average_pool_2d | 9x9x24 (int8)   | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 5     | reshape         | 4x4x24 (int8)   | 384 (int8)      | BuiltinOptionsType=0                                |\n",
+
+      "|       |                 | 2 (int32)       |                 |                                                     |\n",
+
+      "| 6     | fully_connected | 384 (int8)      | 3 (int8)        | Activation:none                                     |\n",
+
+      "|       |                 | 384 (int8)      |                 |                                                     |\n",
+
+      "|       |                 | 3 (int32)       |                 |                                                     |\n",
+
+      "| 7     | softmax         | 3 (int8)        | 3 (int8)        | BuiltinOptionsType=9                                |\n",
+
+      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+
+      "Total MACs: 1.197 M\n",
+
+      "Total OPs: 2.524 M\n",
+
+      "Name: image_example1\n",
+
+      "Version: 1\n",
+
+      "Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images\n",
+
+      "Classes: rock, paper, scissor\n",
+
+      "hash: 0dd2d415f9fedd530c149e0ba870b44d\n",
+
+      "date: 2021-10-19T18:55:40.561Z\n",
+
+      "samplewise_norm.rescale: 0\n",
+
+      "samplewise_norm.mean_and_std: True\n",
+
+      ".tflite file size: 14.9kB\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "summary = summarize_model('image_example1', tflite=True, build=True)\n",
+
+    "print(summary)"
+
+   ]
+
+  }
+
+ ],
+
+ "metadata": {
+
+  "interpreter": {
+
+   "hash": "d2cfb25ea30f37ddda2085817c91f6bd2a4a914387b5b179eb21bf4600b69cf8"
+
+  },
+
+  "kernelspec": {
+
+   "display_name": "Python 3.9.7 64-bit ('.venv': venv)",
+
+   "name": "python3"
+
+  },
+
+  "language_info": {
+
+   "codemirror_mode": {
+
+    "name": "ipython",
+
+    "version": 3
+
+   },
+
+   "file_extension": ".py",
+
+   "mimetype": "text/x-python",
+
+   "name": "python",
+
+   "nbconvert_exporter": "python",
+
+   "pygments_lexer": "ipython3",
+
+   "version": "3.9.7"
+
+  },
+
+  "orig_nbformat": 4
+
+ },
+
+ "nbformat": 4,
+
+ "nbformat_minor": 2
+
+}
+
