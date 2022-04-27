@@ -116,7 +116,7 @@ html_theme_options = {
     'nav_title': 'Machine Learning Toolkit',
 
     # Set you GA account ID to enable tracking
-    'google_analytics_account': 'G-965PJZXVMY',
+    'google_analytics_account': 'G-HZ5MW943WF',
 
     # Set the color and the accent color
     'color_primary': 'red',

@@ -14,4 +14,4 @@ This directory has the following structure:
 /tools                                       - Tools used by the C++ build scripts
 ```
 
-Refer to the [C++ Development Guide](https://siliconlabs.github.io/mltk/docs/other/cpp_development.html) for more details.
+Refer to the [C++ Development Guide](https://siliconlabs.github.io/mltk/docs/cpp_development/index.html) for more details.
