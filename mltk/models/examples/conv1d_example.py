@@ -11,30 +11,30 @@ This uses the ParallelAudioDataGenerator with the AudioFeatureGenerator disabled
 Commands
 --------------
 
-.. code-block:: console
+.. code-block:: shell
 
    # Do a "dry run" test training of the model
-   > mltk train conv1d_example-test
+   mltk train conv1d_example-test
 
    # Train the model
-   > mltk train conv1d_example
+   mltk train conv1d_example
 
    # Evaluate the trained model .tflite model
-   > mltk evaluate conv1d_example --tflite
+   mltk evaluate conv1d_example --tflite
 
    # Profile the model in the MVP hardware accelerator simulator
-   > mltk profile conv1d_example --accelerator MVP
+   mltk profile conv1d_example --accelerator MVP
 
    # Profile the model on a physical development board
-   > mltk profile conv1d_example --accelerator MVP --device
+   mltk profile conv1d_example --accelerator MVP --device
 
 
 Model Summary
 --------------
 
-.. code-block:: console
+.. code-block:: shell
     
-    > mltk summarize conv1d_example --tflite --build
+    mltk summarize conv1d_example --tflite --build
     
     +-------+-----------------+------------------+------------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)         | Output(s)        | Config                                              |
@@ -128,9 +128,9 @@ Model Summary
 Model Diagram
 ------------------
 
-.. code-block:: console
+.. code-block:: shell
    
-   > mltk view conv1d_example --tflite --build
+   mltk view conv1d_example --tflite --build
 
 .. raw:: html
 

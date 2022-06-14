@@ -231,7 +231,18 @@ private:
   void* _processing_callback_arg = nullptr;
   uint8_t* _runtime_buffer = nullptr;
 
-  bool load_model_parameters();
+  bool load_interpreter(
+      const void* flatbuffer, 
+      tflite::MicroOpResolver& op_resolver,
+      uint8_t *runtime_buffer,
+      unsigned runtime_buffer_size 
+  );
+  bool find_optimal_buffer_size(
+      const void* flatbuffer, 
+      tflite::MicroOpResolver& op_resolver,
+      unsigned &runtime_buffer_size 
+  );
+  bool load_model_parameters(const void* flatbuffer=nullptr);
 };
 
 

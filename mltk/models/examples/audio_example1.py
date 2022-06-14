@@ -18,30 +18,32 @@ This use the Google speech_commands dataset with the :py:class:`mltk.core.prepro
 Commands
 --------------
 
-.. code-block:: console
+.. code-block:: shell
 
    # Do a "dry run" test training of the model
-   > mltk train audio_example1-test
+   mltk train audio_example1-test
 
    # Train the model
-   > mltk train audio_example1
+   mltk train audio_example1
 
    # Evaluate the trained model .tflite model
-   > mltk evaluate audio_example1 --tflite
+   mltk evaluate audio_example1 --tflite
 
    # Profile the model in the MVP hardware accelerator simulator
-   > mltk profile audio_example1 --accelerator MVP
+   mltk profile audio_example1 --accelerator MVP
 
    # Profile the model on a physical development board
-   > mltk profile audio_example1 --accelerator MVP --device
+   mltk profile audio_example1 --accelerator MVP --device
 
+   # Run this model in the audio classifier application
+   mltk classify_audio audio_example1 --device --verbose
 
 Model Summary
 --------------
 
-.. code-block:: console
+.. code-block:: shell
     
-    > mltk summarize audio_example1 --tflite
+    mltk summarize audio_example1 --tflite
     
     +-------+-------------------+-----------------+-----------------+-----------------------------------------------------+
     | Index | OpCode            | Input(s)        | Output(s)       | Config                                              |
@@ -104,12 +106,57 @@ Model Summary
     .tflite file size: 16.0kB
 
 
+Model Profiling Report
+-----------------------
+
+.. code-block:: shell
+   
+   # Profile on physical EFR32xG24 using MVP accelerator
+   mltk profile audio_example1 --device --accelerator MVP
+
+    Profiling Summary
+    Name: audio_example1
+    Accelerator: MVP
+    Input Shape: 1x59x49x1
+    Input Data Type: int8
+    Output Shape: 1x6
+    Output Data Type: int8
+    Flash, Model File Size (bytes): 16.0k
+    RAM, Runtime Memory Size (bytes): 12.3k
+    Operation Count: 1.4M
+    Multiply-Accumulate Count: 671.2k
+    Layer Count: 8
+    Unsupported Layer Count: 0
+    Accelerator Cycle Count: 1.0M
+    CPU Cycle Count: 350.9k
+    CPU Utilization (%): 28.4
+    Clock Rate (hz): 80.0M
+    Time (s): 15.4m
+    Ops/s: 89.2M
+    MACs/s: 43.4M
+    Inference/s: 64.7
+
+    Model Layers
+    +-------+-------------------+--------+--------+------------+------------+----------+-----------------------+--------------+------------------------------------------------------+
+    | Index | OpCode            | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape           | Output Shape | Options                                              |
+    +-------+-------------------+--------+--------+------------+------------+----------+-----------------------+--------------+------------------------------------------------------+
+    | 0     | depthwise_conv_2d | 606.0k | 294.0k | 434.5k     | 287.5k     | 7.5m     | 1x59x49x1,1x7x7x8,8   | 1x30x25x8    | Multiplier:8 padding:same stride:2x2 activation:relu |
+    | 1     | conv_2d           | 592.7k | 290.3k | 459.7k     | 6.6k       | 5.7m     | 1x30x25x8,24x3x3x8,24 | 1x14x12x24   | Padding:valid stride:2x2 activation:relu             |
+    | 2     | max_pool_2d       | 4.0k   | 0      | 3.2k       | 21.6k      | 270.0u   | 1x14x12x24            | 1x7x6x24     | Padding:valid stride:2x2 filter:2x2 activation:none  |
+    | 3     | conv_2d           | 174.0k | 86.4k  | 132.2k     | 8.6k       | 1.7m     | 1x7x6x24,20x3x3x24,20 | 1x5x4x20     | Padding:valid stride:1x1 activation:relu             |
+    | 4     | max_pool_2d       | 320.0  | 0      | 380.0      | 18.0k      | 210.0u   | 1x5x4x20              | 1x2x2x20     | Padding:valid stride:2x2 filter:2x2 activation:none  |
+    | 5     | reshape           | 0      | 0      | 0          | 878.0      | 30.0u    | 1x2x2x20,2            | 1x80         | Type=none                                            |
+    | 6     | fully_connected   | 966.0  | 480.0  | 776.0      | 2.1k       | 30.0u    | 1x80,6x80,6           | 1x6          | Activation:none                                      |
+    | 7     | softmax           | 30.0   | 0      | 0          | 5.7k       | 60.0u    | 1x6                   | 1x6          | Type=softmaxoptions                                  |
+    +-------+-------------------+--------+--------+------------+------------+----------+-----------------------+--------------+------------------------------------------------------+
+
+
 Model Diagram
 ------------------
 
-.. code-block:: console
+.. code-block:: shell
    
-   > mltk view audio_example1 --tflite
+   mltk view audio_example1 --tflite
 
 .. raw:: html
 

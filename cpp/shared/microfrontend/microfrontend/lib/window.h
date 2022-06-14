@@ -21,6 +21,7 @@ This file has been modified by Silicon Labs.
 #include <stdlib.h>
 
 #include "microfrontend/lib/utils.h"
+#include "microfrontend/lib/dc_notch_filter.h"
 
 #define kFrontendWindowBits 12
 
@@ -41,7 +42,7 @@ struct WindowState {
 
 // Applies a window to the samples coming in, stepping forward at the given
 // rate.
-DLL_EXPORT int WindowProcessSamples(struct WindowState* state, const int16_t* samples,
+DLL_EXPORT int WindowProcessSamples(struct WindowState* state, struct DcNotchFilterState *dc_notch_filter_state, const int16_t* samples,
                          size_t num_samples, size_t* num_samples_read);
 
 DLL_EXPORT void WindowReset(struct WindowState* state);

@@ -31,6 +31,17 @@ class AudioFeatureGeneratorSettings(dict):
         self['fe.pcan_gain_bits'] = 21
         self['fe.log_scale_enable'] = True
         self['fe.log_scale_shift'] = 6
+        self['fe.activity_detection_enable'] = False
+        self['fe.activity_detection_alpha_a'] = 0.5
+        self['fe.activity_detection_alpha_b'] = 0.8
+        self['fe.activity_detection_arm_threshold'] = 0.75
+        self['fe.activity_detection_trip_threshold'] = 0.8
+        self['fe.dc_notch_filter_enable'] = False
+        self['fe.dc_notch_filter_coefficient'] = 0.95
+        self['fe.quantize_dynamic_scale_enable'] = False
+        self['fe.quantize_dynamic_scale_range_db'] = 40.0
+
+
 
     @property
     def spectrogram_shape(self) -> Tuple[int, int]:
@@ -187,3 +198,98 @@ class AudioFeatureGeneratorSettings(dict):
     @log_scale_shift.setter
     def log_scale_shift(self, v: int):
         self['fe.log_scale_shift'] = int(v)
+
+    @property
+    def activity_detection_enable(self) -> bool:
+        """Enable the activity detection block.
+        This indicates when activity, such as a speech command, is detected in the audio stream, 
+        default False"""
+        return self['fe.activity_detection_enable']
+    @activity_detection_enable.setter
+    def activity_detection_enable(self, v: bool):
+        self['fe.activity_detection_enable'] = bool(v)
+
+    @property
+    def activity_detection_alpha_a(self) -> float:
+        """Activity detection filter A coefficient
+        The activity detection "fast filter" coefficient. 
+        The filter is a 1-real pole IIR filter: ``computes out = (1-k)*in + k*out``
+        Default 0.5"""
+        return self['fe.activity_detection_alpha_a']
+    @activity_detection_alpha_a.setter
+    def activity_detection_alpha_a(self, v: float):
+        self['fe.activity_detection_alpha_a'] = float(v)
+
+    @property
+    def activity_detection_alpha_b(self) -> float:
+        """Activity detection filter B coefficient
+        The activity detection "slow filter" coefficient. 
+        The filter is a 1-real pole IIR filter: ``computes out = (1-k)*in + k*out``
+        Default 0.8"""
+        return self['fe.activity_detection_alpha_b']
+    @activity_detection_alpha_b.setter
+    def activity_detection_alpha_b(self, v: float):
+        self['fe.activity_detection_alpha_b'] = float(v)
+
+    @property
+    def activity_detection_arm_threshold(self) -> float:
+        """Threshold for arming the detection block
+        The threshold for when there should be considered possible activity in the audio stream
+        Default 0.75"""
+        return self['fe.activity_detection_arm_threshold']
+    @activity_detection_arm_threshold.setter
+    def activity_detection_arm_threshold(self, v: float):
+        self['fe.activity_detection_arm_threshold'] = float(v)
+
+    @property
+    def activity_detection_trip_threshold(self) -> float:
+        """Threshold for tripping the detection block
+        The threshold for when activity is considered detected in the audio stream
+        Default 0.8"""
+        return self['fe.activity_detection_trip_threshold']
+    @activity_detection_trip_threshold.setter
+    def activity_detection_trip_threshold(self, v: float):
+        self['fe.activity_detection_trip_threshold'] = float(v)        
+
+    @property
+    def dc_notch_filter_enable(self) -> bool:
+        """Enable the DC notch filter
+        This will help negate any DC components in the audio signal
+        Default False"""
+        return self['fe.dc_notch_filter_enable']
+    @dc_notch_filter_enable.setter
+    def dc_notch_filter_enable(self, v: bool):
+        self['fe.dc_notch_filter_enable'] = bool(v)    
+
+    @property
+    def dc_notch_filter_coefficient(self) -> float:
+        """Coefficient used by DC notch filter
+        
+        The DC notch filter coefficient k in Q(16,15) format, ``H(z) = (1 - z^-1)/(1 - k*z^-1)``
+        Default 0.95"""
+        return self['fe.dc_notch_filter_coefficient']
+    @dc_notch_filter_coefficient.setter
+    def dc_notch_filter_coefficient(self, v: float):
+        self['fe.dc_notch_filter_coefficient'] = float(v)   
+
+    @property
+    def quantize_dynamic_scale_enable(self) -> bool:
+        """Enable dynamic quantization
+        
+        Enable dynamic quantization of the generated audio spectrogram. 
+        With this, the max spectrogram value is mapped to +127, 
+        and the max spectrogram minus :py:class:`~quantize_dynamic_scale_range_db` is mapped to -128. 
+        Anything below max spectrogram minus :py:class:`~quantize_dynamic_scale_range_db` is mapped to -128.
+        Default False"""
+        return self['fe.quantize_dynamic_scale_enable']
+    @quantize_dynamic_scale_enable.setter
+    def quantize_dynamic_scale_enable(self, v: bool):
+        self['fe.quantize_dynamic_scale_enable'] = bool(v)    
+
+    @property
+    def quantize_dynamic_scale_range_db(self) -> float:
+        """Rhe dynamic range in dB used by the dynamic quantization, default 40.0"""
+        return self['fe.quantize_dynamic_scale_range_db']
+    @quantize_dynamic_scale_range_db.setter
+    def quantize_dynamic_scale_range_db(self, v: float):
+        self['fe.quantize_dynamic_scale_range_db'] = float(v)  

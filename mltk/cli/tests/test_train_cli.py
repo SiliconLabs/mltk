@@ -24,15 +24,15 @@ def test_train_model_spec_path_cli():
     run_mltk_command('train', spec_path, '-v')
 
 def test_train_resume_cli():
-    run_mltk_command('train', 'test_image_model', '--clean', '-v', '--epochs', 2, update_model_path=True)
-    run_mltk_command('train', 'test_image_model', '--resume', update_model_path=True)
+    run_mltk_command('train', 'test_image_model', '--clean', '-v', '--epochs', 2, '--no-evaluate', update_model_path=True)
+    run_mltk_command('train', 'test_image_model', '--resume', '--no-evaluate', update_model_path=True)
 
 def test_train_resume_epoch_cli():
-    run_mltk_command('train', 'test_image_model',  '--clean', '-v', '--epochs', 3, update_model_path=True)
-    run_mltk_command('train', 'test_image_model', '--resume-epoch', 2, update_model_path=True)
+    run_mltk_command('train', 'test_image_model',  '--clean', '-v', '--epochs', 3, '--no-evaluate', update_model_path=True)
+    run_mltk_command('train', 'test_image_model', '--resume-epoch', 2, '--no-evaluate', update_model_path=True)
 
 def test_train_weights_best_cli():
-    run_mltk_command('train', 'test_image_model', '--weights', 'best', update_model_path=True)
+    run_mltk_command('train', 'test_image_model', '--weights', 'best', '--no-evaluate', update_model_path=True)
 
 def test_train_weights_path_cli():
-    run_mltk_command('train', 'test_image_model', '--weights', TEST_MODEL_WEIGHTS, update_model_path=True)
+    run_mltk_command('train', 'test_image_model', '--weights', TEST_MODEL_WEIGHTS, '--no-evaluate', update_model_path=True)

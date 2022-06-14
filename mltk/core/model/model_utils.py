@@ -205,7 +205,11 @@ def load_tflite_or_keras_model(
                 raise Exception('MltkModel must inherit TrainMixin')
             logger.debug('Building Keras model')
             built_model = model.build_model_function(model)
-        
+            if built_model is None:
+                raise RuntimeError(f'Your "my_model.build_model_function" must return the compiled Keras model (did you forget to add the "return keras_model" statement at the end?')
+            elif not isinstance(built_model, KerasModel):
+                raise RuntimeError('Your "my_model.build_model_function" must return the compiled Keras model instance')
+
         elif model_type in ('h5', '.h5', 'keras'):
             h5_path = model.h5_archive_path
 

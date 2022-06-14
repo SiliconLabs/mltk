@@ -15,7 +15,7 @@ archive_path = f'{MLTK_DIR}/utils/test_helper/test_image_model.mltk.zip'
 def test_train_model():
     if os.path.exists(archive_path):
         os.remove(archive_path)
-    run_mltk_command('train', 'test_image_model', '--clean', '-v', update_model_path=True)
+    run_mltk_command('train', 'test_image_model', '--clean', '-v', '--no-evaluate', update_model_path=True)
 
 
 def test_help():

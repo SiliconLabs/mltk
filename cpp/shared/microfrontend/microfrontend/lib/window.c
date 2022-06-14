@@ -15,10 +15,11 @@ limitations under the License.
 This file has been modified by Silicon Labs.
 ==============================================================================*/
 #include "microfrontend/lib/window.h"
+#include "microfrontend/lib/dc_notch_filter.h"
 
 #include <string.h>
 
-int WindowProcessSamples(struct WindowState* state, const int16_t* samples,
+int WindowProcessSamples(struct WindowState* state, struct DcNotchFilterState *dc_notch_filter_state, const int16_t* samples,
                          size_t num_samples, size_t* num_samples_read) {
   const int size = state->size;
 
@@ -27,8 +28,18 @@ int WindowProcessSamples(struct WindowState* state, const int16_t* samples,
   if (max_samples_to_copy > num_samples) {
     max_samples_to_copy = num_samples;
   }
-  memcpy(state->input + state->input_used, samples,
-         max_samples_to_copy * sizeof(*samples));
+
+  if(dc_notch_filter_state != NULL && dc_notch_filter_state->enable_dc_notch_filter) {
+    DcNotchFilterProcessSamples(
+      dc_notch_filter_state, 
+      samples, state->input + state->input_used,
+      max_samples_to_copy
+    );
+  } else {
+    memcpy(state->input + state->input_used, samples,
+          max_samples_to_copy * sizeof(*samples));
+  }
+
   *num_samples_read = max_samples_to_copy;
   state->input_used += max_samples_to_copy;
 

@@ -25,6 +25,7 @@ def download_tool(
 ) -> Tuple[bool, str]:
     """Download and extract a tool."""
 
+    retcode = -1 
     logger = logger or get_logger('mltk', level='DEBUG', log_file=log_file, log_file_mode='w')
 
     make_filelike(logger)
@@ -35,23 +36,21 @@ def download_tool(
         sys.stdout = logger
         sys.stderr = logger
 
-    # We need to import the archive extraction package
-    # AFTER overridding it in sys.stdout
-    from mltk.utils.archive_downloader import download_verify_extract
+    try:
+        # We need to import the archive extraction package
+        # AFTER overridding it in sys.stdout
+        from mltk.utils.archive_downloader import download_verify_extract
 
     
-    # Some archives have a directory in its root
-    # The extracted_dir accounts for the root directory
-    retval = extracted_dir or dest_dir
+        # Some archives have a directory in its root
+        # The extracted_dir accounts for the root directory
+        retval = extracted_dir or dest_dir
 
-    if clean_dest_dir and extracted_dir:
-        def _clean_dest_dir():
-            remove_directory(extracted_dir)
-        clean_dest_dir = _clean_dest_dir
+        if clean_dest_dir and extracted_dir:
+            def _clean_dest_dir():
+                remove_directory(extracted_dir)
+            clean_dest_dir = _clean_dest_dir
 
-    retcode = -1 
-
-    try:
         download_verify_extract(
             url=url, 
             dest_dir=dest_dir, 

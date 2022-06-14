@@ -44,9 +44,13 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
 {
   OpData* data = static_cast<OpData*>(node->user_data);
   auto* params = reinterpret_cast<TfLitePoolParams*>(node->builtin_data);
-  const TfLiteTensor* input  = GetInput(context, node, kInputTensor);
-  TfLiteTensor*       output = GetOutput(context, node, kOutputTensor);
 
+  MicroContext* micro_context = GetMicroContext(context);
+  TfLiteTensor* input =
+      micro_context->AllocateTempInputTensor(node, kInputTensor);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kOutputTensor);
+      
   data->op_params.padding       = params->padding == kTfLitePaddingSame;
   data->op_params.stride_height = params->stride_height;
   data->op_params.stride_width  = params->stride_width;
@@ -90,6 +94,9 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
     }
   }
 
+  micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(output);
+
   return kTfLiteOk;
 }
 
@@ -100,7 +107,6 @@ TfLiteStatus AveragePrepare(TfLiteContext* context, TfLiteNode* node)
 
   OpData* data = static_cast<OpData*>(node->user_data);
   MicroContext* micro_context = GetMicroContext(context);
-
   TfLiteTensor* input =
       micro_context->AllocateTempInputTensor(node, kInputTensor);
   TfLiteTensor* output =
@@ -129,8 +135,8 @@ TfLiteStatus AveragePrepare(TfLiteContext* context, TfLiteNode* node)
     }
   }
 
-  micro_context->DeallocateTempTfLiteTensor(output);
   micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(output);
   
   return status;
 }
@@ -141,8 +147,12 @@ TfLiteStatus MaxPrepare(TfLiteContext* context, TfLiteNode* node)
   TFLITE_DCHECK(node->builtin_data != nullptr);
 
   OpData* data = static_cast<OpData*>(node->user_data);
-  const TfLiteTensor* input  = GetInput(context, node, kInputTensor);
-  TfLiteTensor*       output = GetOutput(context, node, kOutputTensor);
+
+  MicroContext* micro_context = GetMicroContext(context);
+  TfLiteTensor* input =
+      micro_context->AllocateTempInputTensor(node, kInputTensor);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kOutputTensor);
   TF_LITE_ENSURE(context, input  != nullptr);
   TF_LITE_ENSURE(context, output != nullptr);
 
@@ -154,6 +164,9 @@ TfLiteStatus MaxPrepare(TfLiteContext* context, TfLiteNode* node)
                         ? kMvp : kCmsisNN;
     }
   }
+
+  micro_context->DeallocateTempTfLiteTensor(input);
+  micro_context->DeallocateTempTfLiteTensor(output);
 
   return status;
 }
@@ -218,7 +231,7 @@ TfLiteStatus AverageEval(TfLiteContext* context, TfLiteNode* node)
                        data->op_params.input, &filter_dims,
                        &output_dims,
                        data->op_params.output),
-        ARM_MATH_SUCCESS);
+        ARM_CMSIS_NN_SUCCESS);
 #else // __arm__
     tflite::PoolParams op_params;
     op_params.stride_height         = data->op_params.stride_height;
@@ -317,7 +330,7 @@ TfLiteStatus MaxEval(TfLiteContext* context, TfLiteNode* node)
                         data->op_params.input, &filter_dims,
                         &output_dims,
                         data->op_params.output),
-        ARM_MATH_SUCCESS);
+        ARM_CMSIS_NN_SUCCESS);
 #else // __arm__
 
     // Use TFLM reference kernel.

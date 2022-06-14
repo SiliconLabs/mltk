@@ -7,14 +7,16 @@ locally in [VSCode](https://code.visualstudio.com) or they can run in your web-b
 See the [Notebook Examples Guide](./guides/notebook_examples_guide.md) for more details on how to run these examples.  
 Also, refer to the documentation at the top of each example for specific details.
 
-- [Profile Model](../mltk/examples/profile_model.ipynb) - Examples of using the [profile_model()](mltk.core.profile_model) API
-- [Train Model](../mltk/examples/train_model.ipynb) - Examples of using the [train_model()](mltk.core.train_model) API
-- [Evaluate Model](../mltk/examples/evaluate_model.ipynb) - Examples of using the [evaluate_model()](mltk.core.evaluate_model) API
-- [Summarize Model](../mltk/examples/summarize_model.ipynb) - Examples of using the [summarize_model()](mltk.core.summarize_model) API
-- [View Model](../mltk/examples/view_model.ipynb) - Examples of using the [view_model()](mltk.core.view_model) API
-- [Update Model Parameters](../mltk/examples/update_params.ipynb) - Examples of using the [update_model_parameters()](mltk.core.update_model_parameters) API
-- [Quantize Model](../mltk/examples/quantize_model.ipynb) - Examples of using the [quantize_model()](mltk.core.quantize_model ) API
- 
+
+| Name                                                                                           | Description                                           |
+| ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [Profile Model](https://siliconlabs.github.io/mltk/mltk/examples/profile_model.html)           | Examples of using the `profile_model()` API           |
+| [Train Model](https://siliconlabs.github.io/mltk/mltk/examples/train_model.html)               | Examples of using the `train_model()` API             |
+| [Evaluate Model](https://siliconlabs.github.io/mltk/mltk/examples/evaluate_model.html)         | Examples of using the `evaluate_model()` API          |
+| [Summarize Model](https://siliconlabs.github.io/mltk/mltk/examples/summarize_model.html)       | Examples of using the `summarize_model()` API         |
+| [View Model](https://siliconlabs.github.io/mltk/mltk/examples/view_model.html)                 | Examples of using the `view_model()` API              |
+| [Update Model Parameters](https://siliconlabs.github.io/mltk/mltk/examples/update_params.html) | Examples of using the `update_model_parameters()` API |
+| [Quantize Model](https://siliconlabs.github.io/mltk/mltk/examples/quantize_model.html)         | Examples of using the `quantize_model()` API          |
 
 
 ```{eval-rst}

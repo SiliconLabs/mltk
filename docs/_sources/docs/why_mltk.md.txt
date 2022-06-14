@@ -20,22 +20,22 @@ Other projects that directly use the [Tensorflow / Keras API](https://www.tensor
 
 Consider the [Tensorflow-Lite Micro Examples](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples). To train the models for these examples requires numerous different python scripts and advanced knowledge of Tensorflow. A comparison between the MLTK and TFLM examples can be seen in the following links:
 
-| Example Name    | MLTK Solution | Tensorflow-Lite Micro Solution |
-|-----------------|---------------|--------------------------------|
-| micro_speech    | [tflite_micro_speech.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tflite_micro/tflite_micro_speech.py) | [micro_speech/train](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/micro_speech/train) |
-| magic_wand      | [tflite_micro_magic_wand.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tflite_micro/tflite_micro_magic_wand.py) | [magic_wand/train](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/magic_wand/train) |
+| Example Name | MLTK Solution                                                                                                                     | Tensorflow-Lite Micro Solution                                                                                               |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| micro_speech | [tflite_micro_speech.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tflite_micro/tflite_micro_speech.py)         | [micro_speech/train](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/micro_speech/train) |
+| magic_wand   | [tflite_micro_magic_wand.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tflite_micro/tflite_micro_magic_wand.py) | [magic_wand/train](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/magic_wand/train)     |
 
 
 
 Another example is the [TinyML Benchmark](https://github.com/mlcommons/tiny/tree/master/benchmark) examples. These also require numerous different Python scripts and advanced Tensorflow knowledge to train the models:
 
 
-| Example Name             | MLTK Solution |  TinyML Benchmark Solution |
-|--------------------------|---------------|----------------------------|
-| anomaly_detection        | [anomaly_detection.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/anomaly_detection.py) |  [anomaly_detection](https://github.com/mlcommons/tiny/tree/master/benchmark/training/anomaly_detection) |
-| image_classification     | [image_classification.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/image_classification.py) | [image_classification](https://github.com/mlcommons/tiny/tree/master/benchmark/training/image_classification) | 
-| keyword_spotting         | [keyword_spotting.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/keyword_spotting.py) | [keyword_spotting](https://github.com/mlcommons/tiny/tree/master/benchmark/training/keyword_spotting) |
-| visual_wake_words        | [visual_wake_words.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/visual_wake_words.py) | [visual_wake_words](https://github.com/mlcommons/tiny/tree/master/benchmark/training/visual_wake_words) |
+| Example Name         | MLTK Solution                                                                                                         | TinyML Benchmark Solution                                                                                     |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| anomaly_detection    | [anomaly_detection.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/anomaly_detection.py)       | [anomaly_detection](https://github.com/mlcommons/tiny/tree/master/benchmark/training/anomaly_detection)       |
+| image_classification | [image_classification.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/image_classification.py) | [image_classification](https://github.com/mlcommons/tiny/tree/master/benchmark/training/image_classification) |
+| keyword_spotting     | [keyword_spotting.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/keyword_spotting.py)         | [keyword_spotting](https://github.com/mlcommons/tiny/tree/master/benchmark/training/keyword_spotting)         |
+| visual_wake_words    | [visual_wake_words.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/visual_wake_words.py)       | [visual_wake_words](https://github.com/mlcommons/tiny/tree/master/benchmark/training/visual_wake_words)       |
 
 
 
@@ -45,17 +45,17 @@ The MLTK offers several different tools/utilities to analyze/modify the model fi
 Additionally, many of the tools support `.tflite` model files that were generated _outside_ of the MLTK (i.e. the `.tflite` model file need not be generated by the MLTK).
 
 
-| Tool Name           | External .tflite Supported?  | Description       |
-|---------------------|--------------------------------|-------------------|
-| [Model Profiler](https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html) | Yes | Calculate model run-time statistics like Latency, RAM usage, etc |
-| [Model Summary](https://siliconlabs.github.io/mltk/docs/guides/model_summary.html)  | Yes  | Generate text summary of model |
-| [Model Visualizer](https://siliconlabs.github.io/mltk/docs/guides/model_visualizer.html) | Yes  | View model in interative graph |
-| [Model Parameters](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html) | Yes | Embed parameters into `.tflite` model file |
-| [Model Trainer](https://siliconlabs.github.io/mltk/docs/guides/model_training.html) | No | Train model using Tensorflow |
-| [Model Evaluater](https://siliconlabs.github.io/mltk/docs/guides/model_evaluation.html) | No  | Evaluate accuracy of `.tflite` |
-| [Model Quantizer](https://siliconlabs.github.io/mltk/docs/guides/model_quantization.html) | No | Quantize model using Tensorflow-Lite Converter |
-| [Audio Visualizer](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-visualization-utility) | N/A  | View generated spectrograms in real-time |
-| [Audio Classifier](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility) | No  | Classify real-time audio from a microphone |
+| Tool Name                                                                   | External .tflite Supported? | Description                                                      |
+| --------------------------------------------------------------------------- | --------------------------- | ---------------------------------------------------------------- |
+| [Model Profiler](https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html)                                | Yes                         | Calculate model run-time statistics like Latency, RAM usage, etc |
+| [Model Summary](https://siliconlabs.github.io/mltk/docs/guides/model_summary.html)                                  | Yes                         | Generate text summary of model                                   |
+| [Model Visualizer](https://siliconlabs.github.io/mltk/docs/guides/model_visualizer.html)                            | Yes                         | View model in interative graph                                   |
+| [Model Parameters](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html)                            | Yes                         | Embed parameters into `.tflite` model file                       |
+| [Model Trainer](https://siliconlabs.github.io/mltk/docs/guides/model_training.html)                                 | No                          | Train model using Tensorflow                                     |
+| [Model Evaluater](https://siliconlabs.github.io/mltk/docs/guides/model_evaluation.html)                             | No                          | Evaluate accuracy of `.tflite`                                   |
+| [Model Quantizer](https://siliconlabs.github.io/mltk/docs/guides/model_quantization.html)                           | No                          | Quantize model using Tensorflow-Lite Converter                   |
+| [Audio Visualizer](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-visualization-utility)  | N/A                         | View generated spectrograms in real-time                         |
+| [Audio Classifier](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility) | No                          | Classify real-time audio from a microphone                       |
 
 ## C++ Python wrappers
 

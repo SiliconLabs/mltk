@@ -40,17 +40,21 @@ void dump_audio(const int16_t* buffer, int length)
     jlink_stream::write_all("audio", buffer, sizeof(int16_t)*length);
 }
 
-
 void dump_raw_spectrogram(const uint16_t* buffer, int length)
 {
-    jlink_stream::write_all("raw_spec", buffer, sizeof(uint16_t)*length);
+    jlink_stream::write_all("raw_spec", buffer, length*sizeof(uint16_t));
 }
 
-
-void dump_quantized_spectrogram(const int8_t* buffer, int length)
+void dump_int8_spectrogram(const int8_t* buffer, int length)
 {
     jlink_stream::write_all("quant_spec", buffer, length);
 }
+
+void dump_float_spectrogram(const float* buffer, int length)
+{
+    jlink_stream::write_all("quant_spec", buffer, length*sizeof(float));
+}
+
 
 
 } // extern "C"

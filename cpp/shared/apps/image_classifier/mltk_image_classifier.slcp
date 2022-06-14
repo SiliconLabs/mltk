@@ -7,11 +7,29 @@ description: >
 category: Example|Machine Learning Toolkit
 package: mltk
 quality: development
+# filter:
+#   - name: "Device Type"
+#     value: ["SoC"]
+#   - name: "MCU"
+#     value: ["32-bit MCU"]
+#   - name: "Project Difficulty"
+#     value: ["Advanced"]
+#   - name: "Capability"
+#     value: ["Machine Learning"]
 sdk_extension:
   - id: mltk
-    version: "1.0.0"
+    version: "0.7.0"
+include:
+  - path: .
+    file_list:
+      - path: app.h
+      - path: image_classifier.h  
+      - path: recognize_commands.h
 source:
-- path: main.cc
+  - path: app.cc
+  - path: image_classifier.cc
+  - path: main.cc
+  - path: recognize_commands.cc
 component:
 - id: iostream_recommended_stream
 - id: printf
@@ -21,9 +39,14 @@ component:
 - id: device_init_hfrco
 - id: silabs_core_sl_malloc
 - id: power_manager
+- id: status
 - id: sleeptimer
 - id: spidrv
   instance: [exp]
+- id: i2cspm
+  instance: [sensor]
+- id: simple_led
+  instance: [led0, led1]
 - id: mltk_tflite_micro_model
   from: mltk
 - id: mltk_arducam
@@ -43,11 +66,10 @@ configuration:
 config_file: 
   - path: "config/tflite/rock_paper_scissors.tflite"
     directory: "tflite"
+    file_id: flatbuffer_file_id
 
 readme:
   - path: README.md
 tag:
   - hardware:device:ram:128
   - hardware:device:flash:130
-other_file:
-  - path: image_dump_viewer.py

@@ -8,22 +8,25 @@ category: Utilities
 quality: development
 provides:
   - name: mltk_cmsis_nn
-root_path: shared/cmsis/v5.8.0
+root_path: shared/cmsis/v5.9.1
 define:
   - name: CMSIS_FORCE_BUILTIN_FUNCTIONS
   - name: "CMSIS_NN"
-  - name: __PROGRAM_START
+  - name: __START
     value: _start
+  - name: __PROGRAM_START
+    value: _dummy
+
 include:
   - path: CMSIS/Core/Include
     file_list:
       - path: cachel1_armv7.h
-      - path: cmsis_armcc.h       
-      - path: cmsis_armclang.h    
+      - path: cmsis_armcc.h
+      - path: cmsis_armclang.h
       - path: cmsis_armclang_ltm.h
-      - path: cmsis_compiler.h    
+      - path: cmsis_compiler.h
       - path: cmsis_gcc.h
-      - path: cmsis_iccarm.h      
+      - path: cmsis_iccarm.h
       - path: cmsis_version.h
       - path: core_armv81mml.h
       - path: core_armv8mbl.h
@@ -38,11 +41,13 @@ include:
       - path: core_cm4.h
       - path: core_cm55.h
       - path: core_cm7.h
+      - path: core_cm85.h
       - path: core_sc000.h
       - path: core_sc300.h
-      - path: core_star.h
+      - path: core_starmc1.h
       - path: mpu_armv7.h
       - path: mpu_armv8.h
+      - path: pac_armv81.h
       - path: pmu_armv8.h
       - path: tz_context.h
   - path: CMSIS/DSP/Include
@@ -101,12 +106,14 @@ include:
       - path: CMSIS/NN/Include/arm_nnsupportfunctions.h
 
 source:
-  - path: CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c
+  - path: CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c 
   - path: CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q7.c
   - path: CMSIS/NN/Source/ActivationFunctions/arm_relu6_s8.c
   - path: CMSIS/NN/Source/ActivationFunctions/arm_relu_q15.c
   - path: CMSIS/NN/Source/ActivationFunctions/arm_relu_q7.c
+  - path: CMSIS/NN/Source/BasicMathFunctions/arm_elementwise_add_s16.c
   - path: CMSIS/NN/Source/BasicMathFunctions/arm_elementwise_add_s8.c
+  - path: CMSIS/NN/Source/BasicMathFunctions/arm_elementwise_mul_s16.c
   - path: CMSIS/NN/Source/BasicMathFunctions/arm_elementwise_mul_s8.c
   - path: CMSIS/NN/Source/ConcatenationFunctions/arm_concatenation_s8_w.c
   - path: CMSIS/NN/Source/ConcatenationFunctions/arm_concatenation_s8_x.c
@@ -129,6 +136,7 @@ source:
   - path: CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_wrapper_s16.c
   - path: CMSIS/NN/Source/ConvolutionFunctions/arm_convolve_wrapper_s8.c
   - path: CMSIS/NN/Source/ConvolutionFunctions/arm_depthwise_conv_3x3_s8.c
+  - path: CMSIS/NN/Source/ConvolutionFunctions/arm_depthwise_conv_s16.c
   - path: CMSIS/NN/Source/ConvolutionFunctions/arm_depthwise_conv_s8.c
   - path: CMSIS/NN/Source/ConvolutionFunctions/arm_depthwise_conv_s8_opt.c
   - path: CMSIS/NN/Source/ConvolutionFunctions/arm_depthwise_conv_u8_basic_ver1.c
@@ -139,7 +147,6 @@ source:
   - path: CMSIS/NN/Source/ConvolutionFunctions/arm_nn_mat_mult_kernel_q7_q15.c
   - path: CMSIS/NN/Source/ConvolutionFunctions/arm_nn_mat_mult_kernel_q7_q15_reordered.c
   - path: CMSIS/NN/Source/ConvolutionFunctions/arm_nn_mat_mult_kernel_s8_s16.c
-  - path: CMSIS/NN/Source/ConvolutionFunctions/arm_nn_mat_mult_kernel_s8_s16_reordered.c
   - path: CMSIS/NN/Source/ConvolutionFunctions/arm_nn_mat_mult_s8.c
   - path: CMSIS/NN/Source/FullyConnectedFunctions/arm_fully_connected_mat_q7_vec_q15.c
   - path: CMSIS/NN/Source/FullyConnectedFunctions/arm_fully_connected_mat_q7_vec_q15_opt.c
@@ -167,14 +174,20 @@ source:
   - path: CMSIS/NN/Source/NNSupportFunctions/arm_q7_to_q15_reordered_no_shift.c
   - path: CMSIS/NN/Source/NNSupportFunctions/arm_q7_to_q15_reordered_with_offset.c
   - path: CMSIS/NN/Source/NNSupportFunctions/arm_q7_to_q15_with_offset.c
+  - path: CMSIS/NN/Source/PoolingFunctions/arm_avgpool_s16.c
   - path: CMSIS/NN/Source/PoolingFunctions/arm_avgpool_s8.c
+  - path: CMSIS/NN/Source/PoolingFunctions/arm_max_pool_s16.c
   - path: CMSIS/NN/Source/PoolingFunctions/arm_max_pool_s8.c
   - path: CMSIS/NN/Source/PoolingFunctions/arm_pool_q7_HWC.c
   - path: CMSIS/NN/Source/ReshapeFunctions/arm_reshape_s8.c
   - path: CMSIS/NN/Source/SVDFunctions/arm_svdf_s8.c
+  - path: CMSIS/NN/Source/SVDFunctions/arm_svdf_state_s16_s8.c
+  - path: CMSIS/NN/Source/SoftmaxFunctions/arm_nn_softmax_common_s8.c
   - path: CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_q15.c
   - path: CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_q7.c
+  - path: CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_s16.c
   - path: CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_s8.c
+  - path: CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_s8_s16.c
   - path: CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_u8.c
   - path: CMSIS/NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c
 ui_hints:

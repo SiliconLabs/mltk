@@ -1,5 +1,5 @@
 from typing import Union
-
+import datetime
 
 
 class FormattedInt(int):
@@ -84,4 +84,24 @@ def format_units(
     return retval
 
 
+def pretty_time_str() -> str:
+    """Return the current time as Y-m-d H-M-S """
+    now = datetime.datetime.now()
+    return now.strftime("%Y-%m-%d %H:%M:%S")
 
+
+def iso_time_str() -> str:
+    """Return the current time as ISO 8601 format
+    e.g.: 2019-01-19T23:20:25.459Z
+    """
+    now = datetime.datetime.utcnow()
+    return now.isoformat()[:-3]+'Z'
+
+
+def iso_time_filename_str() -> str:
+    """Return the current time as ISO 8601 format
+    that is suitable for a filename
+    e.g.: 2019-01-19T23-20-25-459
+    """
+    now = datetime.datetime.utcnow()
+    return now.isoformat()[:-3].replace(':', '-')

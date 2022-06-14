@@ -22,5 +22,7 @@ def test_conv1d_example(op, tflite, build):
 def test_siamese_contrastive_example(op, tflite, build):
     run_model_operation('siamese_contrastive-test', op, tflite, build)
 
-
+@pytest.mark.parametrize(*generate_run_model_params())
+def test_autoencoder_example(op, tflite, build):
+    run_model_operation('autoencoder_example-test', op, tflite, build)
 

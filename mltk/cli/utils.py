@@ -16,7 +16,7 @@ from click.parser import OptionParser
 from mltk.utils.logger import add_console_logger, make_filelike, redirect_stream
 from mltk.utils.logger import get_logger as get_base_logger
 from mltk.utils.python import debugger_is_active
-from mltk.utils.system import pretty_time_str
+from mltk.utils.string_formatting import pretty_time_str
 from mltk.utils import path
 from mltk.utils.gpu import check_tensorflow_cuda_compatibility_error
 
@@ -133,7 +133,14 @@ def abort(code=-1, msg=None):
 
 def handle_exception(msg: str, e: Exception, print_stderr=False, no_abort=False):
     """Handle an exception trigger while a cli command was executing"""
-    err_msg = f'{e}'
+
+    # If the exception args has just 1 string value, then use that
+    if hasattr(e, 'args') and isinstance(e.args, tuple) and len(e.args) == 1 and isinstance(e.args[0], str):
+        err_msg = e.args[0]
+    else:
+        # Otherwise, try to format the string
+        err_msg = f'{e}'
+    
     gpu_err = check_tensorflow_cuda_compatibility_error(log_file)
     if gpu_err:
         err_msg += f'\n\n{gpu_err}\n\n'

@@ -17,7 +17,7 @@ def import_tqdm_progressbar_callback(logger: logging.Logger = None):
     try:
         install_pip_package('tensorflow-addons', 'tensorflow_addons', upgrade=True, logger=logger)
         install_pip_package('ipywidgets', logger=logger)
-        install_pip_package('tqdm>=4.36.1', logger=logger)
+        install_pip_package('tqdm>=4.36.1')
 
         from tqdm import tqdm_notebook
         import tensorflow_addons as tfa

@@ -158,9 +158,10 @@ class TfliteMicroModel:
         tflm_wrapper, 
         tflm_accelerator:TfliteMicroAccelerator, 
         flatbuffer_data:bytes, 
-        enable_profiler:bool,
-        enable_recorder:bool,
-        force_buffer_overlap:bool
+        enable_profiler:bool=False,
+        enable_recorder:bool=False,
+        force_buffer_overlap:bool=False,
+        runtime_buffer_size:int=0,
     ):
         # pylint: disable=protected-access
         from .tflite_micro import TfliteMicro
@@ -173,7 +174,8 @@ class TfliteMicroModel:
             accelerator_wrapper, 
             enable_profiler,
             enable_recorder,
-            force_buffer_overlap
+            force_buffer_overlap,
+            runtime_buffer_size
         ):
             raise Exception(
                 f'Failed to load model, additional info:\n{TfliteMicro._get_logged_errors_str()}'
@@ -211,7 +213,7 @@ class TfliteMicroModel:
 
 
     def input(self, index = 0, value: np.ndarray=None) -> np.ndarray:
-        """Return a reference to a model input tensor
+        """Return a reference to a model input tensor's data
         If the value argument is provided then copy the value to the input tensor's buffer
         """
         if index >= self.input_size:
@@ -229,7 +231,7 @@ class TfliteMicroModel:
 
 
     def output(self, index = 0) -> np.ndarray:
-        """Return a reference to a model output tensor
+        """Return a reference to a model output tensor's data
         """
         if index >= self.output_size:
             raise IndexError(f'Output index: {index} >= max size: { self.output_size}')

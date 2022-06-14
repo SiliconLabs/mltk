@@ -4,6 +4,7 @@
 #include "sl_system_init.h"
 #include "logging/logging.hpp"
 #include "jlink_stream/jlink_stream.hpp"
+#include "jlink_stream/jlink_stream_internal.hpp"
 #include "fingerprint_reader/fingerprint_reader.h"
 
 #include "tflite_micro_model/tflite_micro_utils.hpp"
@@ -24,6 +25,9 @@ using namespace mltk;
 extern "C" const uint8_t sl_tflite_model_array[];
 extern "C" const uint32_t sl_tflite_model_len;
 
+// This is defined by the GSDK NVM library
+extern "C" const uint32_t linker_nvm_begin;
+
 
 AppController app_controller;
 FingerprintAuthenticator fingerprint_authenticator;
@@ -40,18 +44,31 @@ static void process_erase_signature_mode();
 extern "C" int main(void)
 {
     sl_status_t status;
+    const uint8_t* model_flatbuffer;
 
     sl_system_init();
 
 
     auto& logger = get_logger();
-    logger.flags(logging::Newline);
-    logger.level(logging::Info);
 
     MLTK_INFO("Fingerprint Authenticator app starting\n");
 
+    // First check if a new .tflite was programmed to the end of flash
+    // (This will happen when this app is executed from the command-line: "mltk classify_image my_model")
+    if(!mltk::get_tflite_flatbuffer_from_end_of_flash(&model_flatbuffer, nullptr, &linker_nvm_begin))
+    {
+        // If no .tflite was programmed, then just use the default model
+        printf("Using default model built into application\n");
+        model_flatbuffer = sl_tflite_model_array;
+    }
 
+
+
+    // This is used to transfer fingerprint images to the command:
+    // mltk fingerprint_reader
     jlink_stream::register_stream("raw", jlink_stream::Write);
+    jlink_stream::register_stream("proc", jlink_stream::Write);
+
 
     if(!app_controller.init())
     {
@@ -65,8 +82,15 @@ extern "C" int main(void)
         app_controller.update_state(AppController::State::fatalError);
         return -1;
     }
+
+    if(!verify_model_flatbuffer(sl_tflite_model_array, sl_tflite_model_len))
+    {
+        MLTK_ERROR("Invalid model flatbuffer");
+        app_controller.update_state(AppController::State::fatalError);
+        return -1;
+    }
     
-    if(!fingerprint_authenticator.load_model(sl_tflite_model_array))
+    if(!fingerprint_authenticator.load_model(model_flatbuffer))
     {
         MLTK_ERROR("Failed to load model");
         app_controller.update_state(AppController::State::fatalError);
@@ -102,11 +126,11 @@ extern "C" int main(void)
     logger.info("* Press button 2 for 10s then release to erase the current user's signatures.");
     logger.info("  The LED will pulse purple while the erase sequence initializes,");
     logger.info("  and flash purple when the signatures are erased.");
-    logger.info("  Release button 2 before 10s has elapsed to abort the sequence.\n");
+    logger.info("  Release button 2 before 10s have elapsed to abort the sequence.\n");
 
     logger.info("* Click button 1 to save the fingerprints for the current user.");
     logger.info("  The LED will flash blue when you should place your finger on the reader.");
-    logger.info("  If the LED flashes red then there was an reading error,");
+    logger.info("  If the LED flashes red then there was a reading error,");
     logger.info("  wait for the LED to flash blue to try again.");
     logger.info("  This sequence will repeat %d times.", SAVED_FINGERPRINT_COUNT);
     logger.info("  i.e. The SAME finger will be captured %d times.", SAVED_FINGERPRINT_COUNT);
@@ -119,6 +143,14 @@ extern "C" int main(void)
     logger.info("  The LED will be solid red, blue, or purple for the authenticated user.");
     logger.info("  The LED will flash purple for an unknown fingerprint\n");
 
+    logger.info("\n\nHINT: Run the following command to view the captured fingerprints:\n");
+    logger.info("mltk fingerprint_reader");
+
+    
+    if(fingerprint_authenticator.is_disabled())
+    {
+        MLTK_WARN("Inference disabled, not generating signature from fingerprint");
+    }
 
     MLTK_DEBUG("\n\nApp loop starting ...");
     for(;;)
@@ -189,7 +221,9 @@ static void process_normal_mode()
     app_controller.update_state(AppController::State::reading, false);
 
     // Read the fingerprint from the sensor
+    jlink_stream_set_interrupt_enabled(false);
     sl_status_t status = fingerprint_reader_get_image(app_controller.image_buffer);
+    jlink_stream_set_interrupt_enabled(true);
     if(status != SL_STATUS_OK)
     {
         if(status == SL_STATUS_EMPTY)
@@ -212,6 +246,11 @@ static void process_normal_mode()
 
     // Dump the raw fingerprint image if the Python script is connected
     jlink_stream::write_all("raw", app_controller.image_buffer, sizeof(fingerprint_reader_image_t));
+
+    if(fingerprint_authenticator.is_disabled())
+    {
+        return;
+    }
 
 
     MLTK_INFO("Generating signature from fingerprint");
@@ -384,15 +423,21 @@ static void process_erase_signature_mode()
 {
      const int32_t current_user_id = app_controller.current_user_id();
 
-    MLTK_INFO("Continue to press button for 10s then release to erase user %d's signatures", current_user_id);
+    MLTK_INFO("Continue to press button 2 for 10s then release to erase user %d's signatures", current_user_id);
     app_controller.update_state(AppController::State::eraseSignaturesInit, false);
     
     bool button_pressed;
     bool should_erase = false;
+    bool printed_msg = false;
 
     do 
     {
         button_pressed = app_controller.ensure_should_erase_user_signatures(should_erase);
+        if(should_erase && !printed_msg)
+        {
+            printed_msg = true;
+            MLTK_INFO("Release button 2 to erase user %d's signatures", current_user_id);
+        }
     } while(button_pressed);
 
     if(!should_erase)

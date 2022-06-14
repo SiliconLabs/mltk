@@ -21,7 +21,7 @@ test_archive_path = f'{tmp_dir}/test_params_model.mltk.zip'
 def test_train_model():
     os.environ['MLTK_MODEL_PATHS'] = tmp_dir
     shutil.copy(test_model_src, test_model_dst)
-    run_mltk_command('train', 'test_params_model')
+    run_mltk_command('train', 'test_params_model', '--no-evaluate')
     shutil.copy(test_archive_path, test_archive_path + '.bak')
 
 

@@ -202,9 +202,10 @@ bool AppController::display_user(int32_t user_id, bool check_button)
 /*************************************************************************************************/
 bool AppController::ensure_should_erase_user_signatures(bool &should_erase)
 {
+    uint32_t elapsed_time;
     should_erase = false;
 
-    if(button_is_pressed(&sl_button_btn1, _button1_press_context, 7000, 20000))
+    if(button_is_pressed(&sl_button_btn1, _button1_press_context, 7000, 20000, &elapsed_time) || elapsed_time > 10000)
     {
         should_erase = true;
     }

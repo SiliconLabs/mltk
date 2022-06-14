@@ -61,6 +61,12 @@ If necessary, install Git:
 [https://git-scm.com/downloads](https://git-scm.com/downloads)
 
 
+### 7) Windows: Install the C++ Redistributable Package
+
+If you're using Windows, install the [Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
+which is required by [Tensorflow](https://www.tensorflow.org/install/pip)
+
+
 
 ## Install MLTK
 

@@ -239,6 +239,27 @@ sl_status_t sl_ml_audio_feature_generation_get_features_raw(uint16_t *buffer, si
 
 /***************************************************************************//**
  * @brief
+ *    Retrieve the features as type float32 and copy them to the provided buffer.
+ *
+ * @param[out] buffer
+ *    Pointer to the buffer to store the feature data
+ *
+ * @param[in] num_elements
+ *    The number of elements corresponding to the size of the buffer; If this is
+ *    not large enough to store the entire feature buffer the function will return
+ *    with an error.
+ *
+ * @note
+ *    This function overwrites the entire buffer.
+ *
+ * @return
+ *    SL_STATUS_OK for success
+ *    SL_STATUS_INVALID_PARAMETER num_elements too small
+ ******************************************************************************/
+sl_status_t sl_ml_audio_feature_generation_get_features_raw_float32(float *buffer, size_t num_elements);
+
+/***************************************************************************//**
+ * @brief
  *    Retrieve the features quantized to signed integer numbers in the range
  *    -128 to 127 (int8) and copy them to the provided buffer.
  *
@@ -270,6 +291,101 @@ sl_status_t sli_ml_audio_feature_generation_get_features_quantized(int8_t *buffe
                                                                    size_t num_elements,
                                                                    uint16_t range_min,
                                                                    uint16_t range_max);
+
+/***************************************************************************//**
+ * @brief
+ *    Fill a TensorFlow tensor with feature data of type int8.
+ *
+ *    This converts the uint16 spectrograms to int8 using dynamic scaling.
+ *    With this, the max spectrogram value is mapped to +127, and the max spectrogram minus <dynamic_range>
+ *    is mapped to -128. Anything below max spectrogram minus <dynamic_range> is mapped to -128.
+ * 
+ *    The following scaling algorithm is used:
+ *     
+ *    maxval = max(uint16_features_data)
+ *    minval = max(maxval - dynamic_range, 0)
+ *    
+ *    FOR i IN range(num_elements):
+ *      value = uint16_features_data[i] - minval
+ *      value *= 255
+ *      value /= (maxval - minval)
+ *      value -= 128
+ *      value = min(max(value, -128), 127)
+ *      buffer[i] = (int8_t)value
+ *
+ * @param[out] buffer
+ *    Pointer to the buffer to store the feature data
+ *
+ * @param[in] num_elements
+ *    The number of elements corresponding to the size of the buffer, if this is
+ *    not large enough to store the entire feature buffer the function will return
+ *    with an error.
+ * 
+ * @param[in] dynamic_range
+ *    Dynamic range of uint16 spectrogram to be mapped to int8
+ *    dynamic_range = DYNAMIC_RANGE_DB*(2^log_scale_shift)*ln(10)/20
+ *    300 corresponds to a DYNAMIC_RANGE_DB of 40 dB
+ *
+ * @note
+ *    This function overwrites the entire buffer.
+ *
+ * @return
+ *    SL_STATUS_OK for success
+ *    SL_STATUS_INVALID_PARAMETER invalid input parameters
+ ******************************************************************************/
+sl_status_t sli_ml_audio_feature_generation_get_features_dynamically_quantized(int8_t *buffer,
+                                                                               size_t num_elements,
+                                                                               uint16_t dynamic_range);
+
+
+/***************************************************************************//**
+ * @brief
+ *    Retrieve the features, scales them by the given scaler, and fills float buffer.
+ *    
+ *    buffer = (float)uint16_features_data * scaler
+
+ * @param[out] buffer
+ *    Pointer to the buffer to store the scaled feature data
+ *
+ * @param[in] num_elements
+ *    The number of elements corresponding to the size of the buffer; If this is
+ *    not large enough to store the entire feature buffer the function will return
+ *    with an error.
+ *
+ * @note
+ *    This function overwrites the entire buffer.
+ *
+ * @return
+ *    SL_STATUS_OK for success
+ *    SL_STATUS_INVALID_PARAMETER num_elements too small
+ ******************************************************************************/
+sl_status_t sl_ml_audio_feature_generation_get_features_scaled(float *buffer, size_t num_elements, float scaler);
+
+
+/***************************************************************************//**
+ * @brief
+ *    Retrieve the features, normalizes them by centering about their mean and standard deviation
+ *    and fills float buffer.
+ *    
+ *    buffer = ((float)uint16_features_data - mean(uint16_features_data)) / std(uint16_features_data)
+
+ * @param[out] buffer
+ *    Pointer to the buffer to store the normalized feature data
+ *
+ * @param[in] num_elements
+ *    The number of elements corresponding to the size of the buffer; If this is
+ *    not large enough to store the entire feature buffer the function will return
+ *    with an error.
+ *
+ * @note
+ *    This function overwrites the entire buffer.
+ *
+ * @return
+ *    SL_STATUS_OK for success
+ *    SL_STATUS_INVALID_PARAMETER num_elements too small
+ ******************************************************************************/
+sl_status_t sl_ml_audio_feature_generation_get_features_mean_std_normalized(float *buffer, size_t num_elements);
+
 
 /***************************************************************************//**
  * @brief
@@ -320,7 +436,33 @@ int sl_ml_audio_feature_generation_get_feature_buffer_size();
  *    Reset the state of the audio feature generator.
  ******************************************************************************/
 void sl_ml_audio_feature_generation_reset();
+
+
+/***************************************************************************//**
+ * @brief
+ *    Return if the activity detection block detected activity in the audio
+ *    stream.
+ * 
+ *     @ref sl_ml_audio_feature_generation_update_features() must be periodically
+ *     called to detect activity.
+ * 
+ *    @note SL_ML_FRONTEND_ACTIVITY_DETECTION_ENABLE must be 1 to use this API.
+ *  
+ *    @note The internal state is reset after calling this API.
+ *          i.e. If this API returns SL_STATUS_OK, then calling this API
+ *          again will return SL_STATUS_IN_PROGRESS until new activity is detected.
+ *    
+ * @return
+ *    SL_STATUS_OK is activity was detected
+ *    SL_STATUS_IN_PROGRESS is no activity detected
+ *    SL_STATUS_NOT_AVAILABLE if the activity detection block is not enabled
+ ******************************************************************************/
+sl_status_t sl_ml_audio_feature_generation_activity_detected();
+
+
+
 /** @} (end addtogroup ml_audio_feature_generation) */
+
 
 #ifdef __cplusplus
 }

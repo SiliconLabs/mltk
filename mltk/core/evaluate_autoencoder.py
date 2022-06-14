@@ -5,6 +5,7 @@ import os
 import json
 
 import numpy as np
+import tensorflow as tf
 import sklearn
 
 import matplotlib.pyplot as plt
@@ -102,7 +103,7 @@ class AutoEncoderEvaluationResults(EvaluationResults):
         
         Args:
             y: 1D array of expected class ids
-            y_pred: 1D array of predicted class ids
+            y_pred: 1D array of scoring results, e.g. y_pred[i] = scoring_function(x[i], y[i])
             all_scores: 2D [n_samples, n_classes] of scores comparing the input vs auto-encoder generated out for each class type (normal, and all abnormal cases)
             thresholds: Optional, list of thresholds to use for calculating the TPR, FPR and AUC
         """
@@ -255,6 +256,7 @@ def evaluate_autoencoder(
 
         # loop over all original images and their corresponding reconstructions
         class_scores = np.empty((len(eval_data),), dtype=np.float32)
+        dump_count = 0
         for i, (orig, decoded) in enumerate(zip(eval_data, y_pred)):
             try:
                 class_scores[i] = scoring_function(orig, decoded)
@@ -262,7 +264,8 @@ def evaluate_autoencoder(
                 prepend_exception_msg(e, 'Error executing scoring function')
                 raise
                 
-            if dump:
+            if dump and dump_count < 200: # Don't dump more than 200 samples
+                dump_count += 1
                 dump_path = f'{dump_dir}/{class_label}/{i}.png'
                 _save_decoded_image(dump_path, orig, decoded, class_scores[i])
         
@@ -664,12 +667,19 @@ def plot_class_roc(results:dict, output_dir:str, show, logger: logging.Logger):
 
 
 
-def _retrieve_data(x):   
+def _retrieve_data(x):
     if isinstance(x, np.ndarray):
         return x 
-    
+    if isinstance(x, tf.Tensor):
+        return x.numpy()
+
     data = []
-    max_samples = getattr(x, 'samples', 10000)
+    if hasattr(x, 'max_samples'):
+        max_samples = getattr(x, 'max_samples')
+    elif hasattr(x, 'samples'):
+        max_samples = getattr(x, 'samples')
+    else:
+        max_samples = 10000
 
     for batch_x, _ in x:
         if len(data) >= max_samples: 
@@ -696,26 +706,40 @@ def _save_decoded_image(out_path, orig, decoded, score):
 
     from cv2 import cv2 
 
-    shape = orig.shape
-    img1 = sklearn.preprocessing.minmax_scale(orig.ravel(), feature_range=(0,255)).reshape(shape)
-    img2 = sklearn.preprocessing.minmax_scale(decoded.ravel(), feature_range=(0,255)).reshape(shape)
-    
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    
-    # stack the original and reconstructed image side-by-side
-    output = np.hstack([img1, img2])
-    outputs = cv2.applyColorMap(output.astype(np.uint8), cv2.COLORMAP_HOT)
-    scale_factor = 200 / outputs.shape[1]
-    width = int(outputs.shape[1] * scale_factor)
-    height = int(outputs.shape[0] * scale_factor)
-    outputs = cv2.resize(outputs, (width, height), interpolation = cv2.INTER_AREA)
-    outputs = cv2.putText(outputs, 
-                        text='Score: {:1.7f}'.format(abs(score)), 
-                        org=(1, 12), 
-                        fontFace=cv2.FONT_HERSHEY_SIMPLEX, 
-                        fontScale=.5,
-                        color=(0,255,0))
-    cv2.imwrite(out_path, outputs)
+
+    shape = orig.shape
+    if len(shape) == 1:
+        plt.plot(orig, 'b')
+        plt.plot(decoded, 'r')
+        plt.fill_between(np.arange(shape[0]), decoded, orig, color='lightcoral')
+        plt.legend(labels=["Input", "Reconstruction", "Error"])
+        plt.suptitle('Score: {:1.7f}'.format(abs(score)))
+        plt.savefig(out_path)
+        plt.clf()
+        plt.close()
+
+    elif len(shape) == 2 or len(shape) == 3:
+        img1 = sklearn.preprocessing.minmax_scale(orig.ravel(), feature_range=(0,255)).reshape(shape)
+        img2 = sklearn.preprocessing.minmax_scale(decoded.ravel(), feature_range=(0,255)).reshape(shape)
+        
+        
+        # stack the original and reconstructed image side-by-side
+        output = np.hstack([img1, img2])
+        outputs = cv2.applyColorMap(output.astype(np.uint8), cv2.COLORMAP_HOT)
+        scale_factor = 200 / outputs.shape[1]
+        width = int(outputs.shape[1] * scale_factor)
+        height = int(outputs.shape[0] * scale_factor)
+        outputs = cv2.resize(outputs, (width, height), interpolation = cv2.INTER_AREA)
+        outputs = cv2.putText(outputs, 
+                            text='Score: {:1.7f}'.format(abs(score)), 
+                            org=(1, 12), 
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, 
+                            fontScale=.5,
+                            color=(0,255,0))
+        cv2.imwrite(out_path, outputs)
+    else:
+        raise RuntimeError('Data shape not supported')
 
 
 def _encode_ndarray(obj):

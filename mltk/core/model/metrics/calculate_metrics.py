@@ -25,13 +25,20 @@ def calculate_model_metrics(
 
     layers_metrics = []
 
-    for model_layer in model.layers:
-        layer = parse_layer(model_layer)
-        if layer is None:
-            logger.debug(f'WARN: Model layer not included in metrics calculation, name: {model_layer.name}, type: {model_layer.__class__.__name__}')
-            continue 
-        layers_metrics.append(layer)
 
+    def _process_model_layers(model):
+        for model_layer in model.layers:
+            if isinstance(model_layer, KerasModel):
+                _process_model_layers(model_layer)
+                continue
+
+            layer = parse_layer(model_layer)
+            if layer is None:
+                logger.debug(f'WARN: Model layer not included in metrics calculation, name: {model_layer.name}, type: {model_layer.__class__.__name__}')
+                continue 
+            layers_metrics.append(layer)
+
+    _process_model_layers(model)
     total_macs = sum(map(lambda x: x.macs, layers_metrics))
     total_ops = sum(map(lambda x: x.ops, layers_metrics))
 

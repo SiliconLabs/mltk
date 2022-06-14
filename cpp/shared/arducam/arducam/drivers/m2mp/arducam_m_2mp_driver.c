@@ -83,12 +83,13 @@ sl_status_t arducam_driver_init(const arducam_config_t* config)
                                                << _GPIO_USART_CLKROUTE_PIN_SHIFT);
 
 #else
-    USART_PORT(ARDUCAM_USART_PERIPHERAL_NO)->ROUTELOC0 = (ARDUCAM_USART_CLK_LOC) |
-                        (ARDUCAM_USART_TX_LOC)  |
-                        (ARDUCAM_USART_RX_LOC); 
-
     // Enable USART pins
     USART_PORT(ARDUCAM_USART_PERIPHERAL_NO)->ROUTEPEN = USART_ROUTEPEN_CLKPEN | USART_ROUTEPEN_TXPEN | USART_ROUTEPEN_RXPEN;
+    USART_PORT(ARDUCAM_USART_PERIPHERAL_NO)->ROUTELOC0 = 
+        ((ARDUCAM_USART_CLK_LOC << _USART_ROUTELOC0_CLKLOC_SHIFT) |
+         (ARDUCAM_USART_TX_LOC  << _USART_ROUTELOC0_TXLOC_SHIFT)  |
+         (ARDUCAM_USART_RX_LOC  << _USART_ROUTELOC0_RXLOC_SHIFT)); 
+
 #endif 
 
     // Enable USART

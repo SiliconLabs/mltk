@@ -54,13 +54,14 @@
 <script>
     window.gTrackingId = 'G-HZ5MW943WF';
 </script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.evaluate_autoencoder &#8212; MLTK 0.6.0 documentation</title>
+    <title>mltk.core.evaluate_autoencoder &#8212; MLTK 0.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
@@ -103,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.6.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.7.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.6.0 documentation logo">
+                   alt="MLTK 0.7.0 documentation logo">
           
         </a>
       </div>
@@ -198,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.7.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.7.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -294,7 +295,28 @@
     <li class="md-nav__item">
     
     
+      <a href="../../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="../../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
       
     
     </li>
@@ -409,6 +431,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">sklearn</span>
 
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
@@ -506,7 +529,7 @@
 <span class="sd">        </span>
 <span class="sd">        Args:</span>
 <span class="sd">            y: 1D array of expected class ids</span>
-<span class="sd">            y_pred: 1D array of predicted class ids</span>
+<span class="sd">            y_pred: 1D array of scoring results, e.g. y_pred[i] = scoring_function(x[i], y[i])</span>
 <span class="sd">            all_scores: 2D [n_samples, n_classes] of scores comparing the input vs auto-encoder generated out for each class type (normal, and all abnormal cases)</span>
 <span class="sd">            thresholds: Optional, list of thresholds to use for calculating the TPR, FPR and AUC</span>
 <span class="sd">        """</span>
@@ -659,6 +682,7 @@
 
         <span class="c1"># loop over all original images and their corresponding reconstructions</span>
         <span class="n">class_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">eval_data</span><span class="p">),),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+        <span class="n">dump_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="n">decoded</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">eval_data</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">)):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">class_scores</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">scoring_function</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="n">decoded</span><span class="p">)</span>
@@ -666,7 +690,8 @@
                 <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'Error executing scoring function'</span><span class="p">)</span>
                 <span class="k">raise</span>
                 
-            <span class="k">if</span> <span class="n">dump</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">dump</span> <span class="ow">and</span> <span class="n">dump_count</span> <span class="o">&lt;</span> <span class="mi">200</span><span class="p">:</span> <span class="c1"># Don't dump more than 200 samples</span>
+                <span class="n">dump_count</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">dump_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">dump_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">class_label</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">.png'</span>
                 <span class="n">_save_decoded_image</span><span class="p">(</span><span class="n">dump_path</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">decoded</span><span class="p">,</span> <span class="n">class_scores</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
         
@@ -1068,12 +1093,19 @@
 
 
 
-<span class="k">def</span> <span class="nf">_retrieve_data</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>   
+<span class="k">def</span> <span class="nf">_retrieve_data</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span> 
-    
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
     <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">max_samples</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">'samples'</span><span class="p">,</span> <span class="mi">10000</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">'max_samples'</span><span class="p">):</span>
+        <span class="n">max_samples</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">'max_samples'</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">'samples'</span><span class="p">):</span>
+        <span class="n">max_samples</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s1">'samples'</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">max_samples</span> <span class="o">=</span> <span class="mi">10000</span>
 
     <span class="k">for</span> <span class="n">batch_x</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_samples</span><span class="p">:</span> 
@@ -1100,26 +1132,40 @@
 
     <span class="kn">from</span> <span class="nn">cv2</span> <span class="kn">import</span> <span class="n">cv2</span> 
 
-    <span class="n">shape</span> <span class="o">=</span> <span class="n">orig</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">img1</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">minmax_scale</span><span class="p">(</span><span class="n">orig</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">feature_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
-    <span class="n">img2</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">minmax_scale</span><span class="p">(</span><span class="n">decoded</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">feature_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
-    
     <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">out_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    
-    <span class="c1"># stack the original and reconstructed image side-by-side</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">])</span>
-    <span class="n">outputs</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">applyColorMap</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLORMAP_HOT</span><span class="p">)</span>
-    <span class="n">scale_factor</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">/</span> <span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">scale_factor</span><span class="p">)</span>
-    <span class="n">height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">scale_factor</span><span class="p">)</span>
-    <span class="n">outputs</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="n">interpolation</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">INTER_AREA</span><span class="p">)</span>
-    <span class="n">outputs</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> 
-                        <span class="n">text</span><span class="o">=</span><span class="s1">'Score: </span><span class="si">{:1.7f}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">score</span><span class="p">)),</span> 
-                        <span class="n">org</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> 
-                        <span class="n">fontFace</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span><span class="p">,</span> 
-                        <span class="n">fontScale</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span>
-                        <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
-    <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+
+    <span class="n">shape</span> <span class="o">=</span> <span class="n">orig</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">orig</span><span class="p">,</span> <span class="s1">'b'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">decoded</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">decoded</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">'lightcoral'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">"Input"</span><span class="p">,</span> <span class="s2">"Reconstruction"</span><span class="p">,</span> <span class="s2">"Error"</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">'Score: </span><span class="si">{:1.7f}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">score</span><span class="p">)))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">clf</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="n">img1</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">minmax_scale</span><span class="p">(</span><span class="n">orig</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">feature_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">img2</span> <span class="o">=</span> <span class="n">sklearn</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">minmax_scale</span><span class="p">(</span><span class="n">decoded</span><span class="o">.</span><span class="n">ravel</span><span class="p">(),</span> <span class="n">feature_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">))</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        
+        
+        <span class="c1"># stack the original and reconstructed image side-by-side</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">])</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">applyColorMap</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLORMAP_HOT</span><span class="p">)</span>
+        <span class="n">scale_factor</span> <span class="o">=</span> <span class="mi">200</span> <span class="o">/</span> <span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">scale_factor</span><span class="p">)</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">scale_factor</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="n">interpolation</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">INTER_AREA</span><span class="p">)</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">putText</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> 
+                            <span class="n">text</span><span class="o">=</span><span class="s1">'Score: </span><span class="si">{:1.7f}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">score</span><span class="p">)),</span> 
+                            <span class="n">org</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">12</span><span class="p">),</span> 
+                            <span class="n">fontFace</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">FONT_HERSHEY_SIMPLEX</span><span class="p">,</span> 
+                            <span class="n">fontScale</span><span class="o">=</span><span class="mf">.5</span><span class="p">,</span>
+                            <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+        <span class="n">cv2</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Data shape not supported'</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_encode_ndarray</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
@@ -1151,7 +1197,7 @@
               
           </div>
             Last updated on
-              Apr 26, 2022.
+              Jun 14, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

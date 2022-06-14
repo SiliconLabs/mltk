@@ -189,7 +189,9 @@ class ParallelAudioDataGenerator(object):
 
         speed_range:  Tuple (min, max) for randomly augmenting audio's speed, < 1.0 slow down, > 1.0 speed up
 
-        pitch_range: Tuple (min, max) for randomly augmenting audio's pitch, < 1.0 lower pitch, > 1.0 higher pitch
+        pitch_range: Tuple (min, max) for randomly augmenting audio's pitch, < 0 lower pitch, > 0 higher pitch
+            This can either be an integer or float. An integer represents the number of semitone steps.
+            A float is converted to semitone steps <float>*12, so for example, a range of (-.5,.5) is converted to (-6,6)
 
         vtlp_range: Tuple (min, max) for randomly augmenting audio's vocal tract length perturbation
 
@@ -501,7 +503,7 @@ class ParallelAudioDataGenerator(object):
             'bg_noise': None,
             'bg_noise_factor': 0.0,
             'speed_factor': 1.0,
-            'pitch_factor': 1.0,
+            'pitch_factor': 0,
             'vtlp_factor': 1.0
         })
     
@@ -551,7 +553,13 @@ class ParallelAudioDataGenerator(object):
             xform_params['speed_factor'] = speeds[np.random.randint(len(speeds))]
     
         if self.pitch_range:
-            xform_params['pitch_factor'] = np.random.randint(self.pitch_range[0], self.pitch_range[1])
+            def _convert_range(v):
+                if not isinstance(v, int):
+                    return int(v*12)
+                return v
+            lower = _convert_range(self.pitch_range[0])
+            upper = _convert_range(self.pitch_range[1])
+            xform_params['pitch_factor'] = np.random.randint(lower, upper)
     
         if self.vtlp_range:
             xform_params['vtlp_factor'] = np.random.randint(self.vtlp_range[0], self.vtlp_range[1])
@@ -602,7 +610,7 @@ class ParallelAudioDataGenerator(object):
             rate =  params['speed_factor']
             sample = librosa.effects.time_stretch(sample, rate=rate)
             
-        if params['pitch_factor'] and params['pitch_factor'] != 1.0:
+        if params['pitch_factor'] and params['pitch_factor'] != 0:
             sample = librosa.effects.pitch_shift(sample, sr=orignal_sr, n_steps=params['pitch_factor'])
         
         if params['vtlp_factor'] and params['vtlp_factor'] != 1.0:

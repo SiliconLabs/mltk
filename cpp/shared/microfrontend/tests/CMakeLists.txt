@@ -41,7 +41,7 @@ if(MLTK_PLATFORM_IS_EMBEDDED OR NOT HOST_OS_IS_WINDOWS)
 else()
     target_link_libraries(${PROJECT_NAME}
     PRIVATE 
-        microfrontend
+        microfrontend # Optional: link to the micrfrontend DLL instead of static library
     )
 endif()
 

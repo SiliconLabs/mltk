@@ -5,7 +5,7 @@ from typing import Union
 
 from mltk.utils.path import fullpath
 from mltk.utils.hasher import generate_hash
-from mltk.utils.system import iso_time_str
+from mltk.utils.string_formatting import iso_time_str
 from mltk.core import (TfliteModel, TfliteModelParameters, TFLITE_METADATA_TAG)
 from .model import (
     MltkModel, 
@@ -217,7 +217,11 @@ def add_default_parameters(
                     try:
                         from mltk.core.tflite_micro import TfliteMicro
 
-                        tflm_model = TfliteMicro.load_tflite_model(tflite_model, accelerator=accelerator)
+                        tflm_model = TfliteMicro.load_tflite_model(
+                            tflite_model, 
+                            accelerator=accelerator,
+                            runtime_buffer_size=-1 # Set the runtime buffer size to -1 so the optimal size is automatically found
+                        )
                         try:
                             model_parameters['runtime_memory_size'] = tflm_model.details.runtime_memory_size
                         finally:

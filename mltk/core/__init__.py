@@ -16,5 +16,5 @@ from .evaluate_autoencoder import (evaluate_autoencoder, AutoEncoderEvaluationRe
 from .evaluate_model import (evaluate_model, EvaluationResults)
 from .profile_model import (profile_model, ProfilingModelResults)
 from .update_model_parameters import update_model_parameters
-
+from .compile_model import compile_model
 

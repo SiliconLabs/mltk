@@ -1,8 +1,8 @@
-
+from __future__ import annotations
 import os
 import warnings
 
-from typing import List, Tuple, Dict, Union, Iterator
+from typing import List, Dict, Union, Iterator
 from prettytable import PrettyTable
 
 import numpy as np
@@ -24,7 +24,7 @@ TFLITE_FILE_IDENTIFIER = b"TFL3"
 
 
 
-class TfliteModel(object):
+class TfliteModel:
     """Class to access a .tflite model flatbuffer's layers and tensors
 
     Refer to `schema_v3.fbs <https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/schema/schema_v3.fbs>`_
@@ -78,7 +78,7 @@ class TfliteModel(object):
     """
 
     @staticmethod
-    def load_flatbuffer_file(path: str, cwd=None):
+    def load_flatbuffer_file(path: str, cwd=None) -> TfliteModel:
         """Load a .tflite flatbuffer file"""
         found_path = _existing_path(path, cwd=cwd)
         if found_path is None:
@@ -97,8 +97,9 @@ class TfliteModel(object):
         self._input0 : TfliteTensor = None
         self._output0 : TfliteTensor = None
         self._flatbuffer_data : bytes = flatbuffer_data
-        self._subgraph: _tflite_schema_fb.SubGraph = None
-        self._model:_tflite_schema_fb.Model = None 
+        self._model:_tflite_schema_fb.ModelT = None 
+        self._selected_model_subgraph_index = -1
+        self._subgraphs: List[_TfliteSubgraph] = []
         self._load_model()
     
     @property
@@ -130,38 +131,79 @@ class TfliteModel(object):
         
         .. note:: :py:func:`~save` must be called for changes to persist
         """
-        return '' if not self._model.Description() else self._model.Description().decode('utf-8')
+        return '' if self._model is None or not self._model.description else self._model.description.decode('utf-8')
     @description.setter
     def description(self, desc: str):
-        updated_model = _tflite_schema_fb.ModelT.InitFromObj(_tflite_schema_fb.Model.GetRootAsModel(self._flatbuffer_data, 0))
-        updated_model.description = desc
-        self._update_model(updated_model)
+        if self._model is None:
+            raise RuntimeError('Model not loaded')
+        desc = desc or ''
+        self._model.description = desc.encode('utf-8')
+        self.regenerate_flatbuffer()
 
     @property
     def flatbuffer_data(self) -> bytes:
         """Flatbuffer binary data"""
+        if self._flatbuffer_data is None:
+            return None
         return bytes(self._flatbuffer_data)
     
     @property
     def flatbuffer_size(self) -> int:
         """Size of the model flatbuffer in bytes"""
+        if self.flatbuffer_data is None:
+            return 0
         return len(self.flatbuffer_data)
 
+    def __len__(self) -> int:
+        return self.flatbuffer_size
+
     @property
-    def flatbuffer_model(self) -> _tflite_schema_fb.Model:
+    def flatbuffer_model(self) -> _tflite_schema_fb.ModelT:
         """Flatbuffer schema Model object"""
         return self._model
+
+    @property
+    def flatbuffer_subgraph(self) -> _tflite_schema_fb.SubGraphT:
+        """Flatbuffer schema model subgraph"""
+        if self._model is None:
+            return None
+        return self._model.subgraphs[self._selected_model_subgraph_index]
     
+    @property
+    def selected_model_subgraph(self) -> int:
+        """The index of the selected model subgraph.
+        Other properties and APIs will return layers/tensors from the selected subgraph
+        """
+        return self._selected_model_subgraph_index
+    @selected_model_subgraph.setter
+    def selected_model_subgraph(self, v: int):
+        if self._model is None:
+            return -1
+        if v < 0 or v >= self.n_subgraphs:
+            raise ValueError('Invalid model subgraph index')
+        self._selected_model_subgraph_index = v
+
+    @property
+    def n_subgraphs(self) -> int:
+        """Return the number of model subgraphs"""
+        if self._model is None:
+            return 0
+        return len(self._model.subgraphs)
+
     @property
     def n_inputs(self) -> int:
         """Return the number of model inputs"""
-        return self._subgraph.InputsLength()
+        if self.flatbuffer_subgraph is None:
+            return 0
+        return len(self.flatbuffer_subgraph.inputs)
 
     @property
     def inputs(self) -> List[TfliteTensor]:
         """List of all input tensors"""
+        if self.flatbuffer_subgraph is None:
+            return None
         retval = []
-        for index in self._subgraph.InputsAsNumpy():
+        for index in self.flatbuffer_subgraph.inputs:
             retval.append(self.get_tensor(index))
             
         return retval 
@@ -169,27 +211,36 @@ class TfliteModel(object):
     @property
     def n_outputs(self) -> int:
         """Return the number of model outputs"""
-        return self._subgraph.OutputsLength()
+        if self.flatbuffer_subgraph is None:
+            return 0
+        return len(self.flatbuffer_subgraph.outputs)
 
     @property
     def outputs(self) -> List[TfliteTensor]:
         """List of all output tensors"""
+        if self.flatbuffer_subgraph is None:
+            return None
         retval = []
-        for index in self._subgraph.OutputsAsNumpy():
+        for index in self.flatbuffer_subgraph.outputs:
             retval.append(self.get_tensor(index))
             
         return retval 
     
     @property
     def layers(self) -> List[TfliteLayer]:
-        """List of all model layers"""
-        retval = []
-        for i in range(self._subgraph.OperatorsLength()):
-            layer = TfliteLayer.from_model(i, self, self._subgraph.Operators(i))
-            retval.append(layer)
-        return retval
+        """List of all model layers for the current subgraph"""
+        if self._selected_model_subgraph_index == -1:
+            return None
+        return self._subgraphs[self._selected_model_subgraph_index].layers
+
+    @property
+    def tensors(self) -> List[TfliteTensor]:
+        """List of all model tensors for the current subgraph"""
+        if self._selected_model_subgraph_index == -1:
+            return None
+        return self._subgraphs[self._selected_model_subgraph_index].tensors
     
-    
+
     def summary(self) -> str:
         """Generate a summary of the model"""
         if self._flatbuffer_data is None:
@@ -219,31 +270,48 @@ class TfliteModel(object):
         return t.get_string()
 
 
+    def get_flatbuffer_subgraph(self, index:int=None) -> _tflite_schema_fb.SubGraphT:
+        """Flatbuffer schema model subgraph at the given index
+        
+        If no index is given, then use the selected_model_subgraph
+        """
+        if self._model is None:
+            raise RuntimeError('Model not loaded')
+        index = index or self._selected_model_subgraph_index
+        return self._model.subgraphs[index]
+
+
     def get_tensor(self, index : int) -> TfliteTensor:
         """Return a specific model tensor as a TfliteTensor """
-        if index >= self._subgraph.TensorsLength():
-            raise IndexError(f'Index overflow ({index} >= {self._subgraph.TensorsLength()})') 
-        return TfliteTensor(index, self.flatbuffer_model.Buffers, self._subgraph.Tensors(index))
+        if self._model is None:
+            raise RuntimeError('Model not loaded')
+        subgraph = self._subgraphs[self._selected_model_subgraph_index]
+        if index >= len(subgraph.tensors):
+            raise IndexError(f'Index overflow ({index} >= {len(subgraph.tensors)})') 
+        return subgraph.tensors[index]
 
 
     def get_tensor_data(self, index : int) -> np.ndarray:
         """Return a specific model tensor as a np.ndarray """
-        return self.get_tensor(index=index).data
+        tensor = self.get_tensor(index=index)
+        if tensor is None:
+            return None
+        return tensor.data
 
 
     def get_input_tensor(self, index: int = 0) -> TfliteTensor:
         """Return a model input tensor as a TfliteTensor"""
         if index >= self.n_inputs:
             raise IndexError(f'Index overflow ({index} >= {self.n_inputs})') 
-        tensor_index = self._subgraph.InputsAsNumpy()[index]
+        tensor_index = self.flatbuffer_subgraph.inputs[index]
         return self.get_tensor(tensor_index)
 
 
-    def get_input(self, index: int = 0) -> np.ndarray:
+    def get_input_data(self, index: int = 0) -> np.ndarray:
         """Return a model input as a np.ndarray"""
         if index >= self.n_inputs:
             raise IndexError(f'Index overflow ({index} >= {self.n_inputs})') 
-        tensor_index = self._subgraph.InputsAsNumpy()[index]
+        tensor_index = self.flatbuffer_subgraph.inputs[index]
         return self.get_tensor_data(tensor_index)
 
 
@@ -251,43 +319,43 @@ class TfliteModel(object):
         """Return a model output tensor as a TfliteTensor"""
         if index >= self.n_inputs:
             raise IndexError(f'Index overflow ({index} >= {self.n_outputs})') 
-        tensor_index = self._subgraph.OutputsAsNumpy()[index]
+        tensor_index = self.flatbuffer_subgraph.outputs[index]
         return self.get_tensor(tensor_index)
 
 
-    def get_output(self, index: int = 0) -> np.ndarray:
+    def get_output_data(self, index: int = 0) -> np.ndarray:
         """Return a model output tensor as a np.ndarray"""
         if index >= self.n_inputs:
             raise IndexError(f'Index overflow ({index} >= {self.n_outputs})') 
-        tensor_index = self._subgraph.OutputsAsNumpy()[index]
+        tensor_index = self.flatbuffer_subgraph.outputs[index]
         return self.get_tensor_data(tensor_index)
     
 
     def get_all_metadata(self) -> Dict[str,bytes]:
         """Return all model metadata as a dictionary"""
+        if self._model is None:
+            raise RuntimeError('Model not loaded')
         retval = {}
-        for i in range(self._model.MetadataLength()):
-            meta = self._model.Metadata(i)
-            name = meta.Name().decode("utf-8")
-            buffer_index = meta.Buffer()
-            metadata = self._model.Buffers(buffer_index)
-            retval[name] = metadata.DataAsNumpy().tobytes()
+        for metadata in self._model.metadata:
+            name = metadata.name.decode("utf-8")
+            buffer_index = metadata.buffer
+            retval[name] = self._model.buffers[buffer_index].data.tobytes()
 
         return retval
 
-    
+
     def get_metadata(self, tag : str) -> bytes:
         """Return model metadata with specified tag"""
-        metadata_buf = None
-        for i in range(self._model.MetadataLength()):
-            meta = self._model.Metadata(i)
-            if meta.Name().decode("utf-8") == tag:
-                buffer_index = meta.Buffer()
-                metadata = self._model.Buffers(buffer_index)
-                metadata_buf = metadata.DataAsNumpy().tobytes()
+        if self._model is None:
+            raise RuntimeError('Model not loaded')
+        metadata_value = None
+        for metadata in self._model.metadata:
+            if metadata.name.decode("utf-8") == tag:
+                buffer_index = metadata.buffer
+                metadata_value = self._model.buffers[buffer_index].data.tobytes()
                 break
     
-        return metadata_buf 
+        return metadata_value 
     
     
     def add_metadata(self, tag :str, value: bytes):
@@ -300,42 +368,67 @@ class TfliteModel(object):
             tag (str): The key to use to lookup the metadata
             value (bytes): The metadata value as a binary blob to add to the .tflite
         """
+        if self._model is None:
+            raise RuntimeError('Model not loaded')
         if not tag or not value:
-            raise Exception('Must provide valid tag and value arguments')
+            raise ValueError('Must provide valid tag and value arguments')
 
-        metadata_buf = bytearray(value)
-        
-        updated_model = _tflite_schema_fb.ModelT.InitFromObj(_tflite_schema_fb.Model.GetRootAsModel(self._flatbuffer_data, 0))
+
         buffer_field = _tflite_schema_fb.BufferT()
-        buffer_field.data = metadata_buf
+        buffer_field.data = np.frombuffer(value, dtype=np.uint8)
     
-        is_populated = False
-        if not updated_model.metadata:
-            updated_model.metadata = []
+        add_buffer = False
+        if not self._model.metadata:
+            self._model.metadata = []
         else:
-            # Check if metadata has already been populated.
-            for meta in updated_model.metadata:
+            # Check if metadata has already been add to the model.
+            for meta in self._model.metadata:
                 if meta.name.decode("utf-8") == tag:
-                    is_populated = True
-                    updated_model.buffers[meta.buffer] = buffer_field
+                    add_buffer = True
+                    self._model.buffers[meta.buffer] = buffer_field
     
-        if not is_populated:
-            if not updated_model.buffers:
-                updated_model.buffers = []
-            updated_model.buffers.append(buffer_field)
+        if not add_buffer:
+            if not self._model.buffers:
+                self._model.buffers = []
+            self._model.buffers.append(buffer_field)
             # Creates a new metadata field.
             metadata_field = _tflite_schema_fb.MetadataT()
-            metadata_field.name = tag
-            metadata_field.buffer = len(updated_model.buffers) - 1
-            updated_model.metadata.append(metadata_field)
-    
-        self._update_model(updated_model)
+            metadata_field.name = tag.encode('utf-8')
+            metadata_field.buffer = len(self._model.buffers) - 1
+            self._model.metadata.append(metadata_field)
+        
+        self.regenerate_flatbuffer()
 
 
     def remove_metadata(self, tag: str) -> bool:
-        """Remove model metadata with specified tag"""
-        # TODO: Add support for removing metadata
-        raise NotImplementedError('Removing metadata from the model is not currently supported')
+        """Remove model metadata with specified tag
+        
+        .. Note::
+            :func:`~tflite_model.TfliteModel.save` must be called for changes to persist
+        
+        Args:
+            tag (str): The key to use to lookup the metadata
+        
+        Return:
+            True if the metadata was found and removed, False else
+        
+        """
+        if self._model is None:
+            raise RuntimeError('Model not loaded')
+
+        if not self._model.metadata:
+            return False
+
+        removed_metadata = False
+        for meta in self._model.metadata:
+            if meta.name.decode("utf-8") == tag:
+                removed_metadata = True
+                self._model.metadata.remove(meta)
+                self._model.buffers.pop(meta.buffer)
+                self.regenerate_flatbuffer()
+                break
+
+        return removed_metadata
 
 
     def save(self, output_path: str = None):
@@ -343,11 +436,13 @@ class TfliteModel(object):
         If output_path is specified then write to new file,
         otherwise overwrite existing file
         """
-        if output_path is None:
-            output_path = self.path
+        output_path = output_path or self.path
 
         if not output_path:
             raise Exception('No output path specified')
+
+       # Re-generate the underlying flatbuffer
+        self.regenerate_flatbuffer()
 
         # Create the model's output directory if necessary
         out_dir = os.path.dirname(output_path)
@@ -356,6 +451,19 @@ class TfliteModel(object):
         
         with open(output_path, 'wb') as f:
             f.write(self._flatbuffer_data)
+    
+
+    def regenerate_flatbuffer(self):
+        """Re-generate the underlying flatbuffer based on  the information cached in the local ModelT instance
+        
+        .. Note::
+            :func:`~tflite_model.TfliteModel.save` must be called for changes to persist
+        """
+        if self._model is None:
+            raise RuntimeError('Model not loaded')
+        b = flatbuffers.Builder(0)
+        b.Finish(self._model.Pack(b), TFLITE_FILE_IDENTIFIER)
+        self._flatbuffer_data = b.Output()
     
 
     def predict(
@@ -387,7 +495,8 @@ class TfliteModel(object):
             y is a vector (i.e. batch) of model results.
             If y_dtype is given, the y if automatically converted/de-quantized to the given dtype.
         """
-
+        if self._flatbuffer_data is None:
+            raise RuntimeError('Model not loaded')
         if self.n_inputs != 1 or self.n_outputs != 1:
             raise RuntimeError('The TfliteModel.predict() currently only supports models with 1 input and 1 output')
 
@@ -461,6 +570,15 @@ class TfliteModel(object):
                 batch_results.append(batch_y)
                 n_samples += len(batch_y)
 
+                # If the generator specifies a "max_samples" property
+                # then break out of the loop once the specified number of samples have been processed
+                try:
+                    if hasattr(x, 'max_samples'):
+                        if n_samples >= x.max_samples:
+                            break
+                except:
+                    pass
+
             if len(batch_results) == 0:
                 raise Exception('No batch samples where generated by the data given data generator')
 
@@ -511,7 +629,7 @@ class TfliteModel(object):
             try:
                 import tensorflow as tf
             except ModuleNotFoundError as e:
-                raise ModuleNotFoundError(f'You must first install the "tensorflow" Python package to run inference, err: {e}')
+                raise ModuleNotFoundError(f'You must first install the "tensorflow" Python package to run inference, err: {e}') # pylint: disable=raise-missing-from
             
             self._interpreter_batch_size = batch_size
             self._interpreter = tf.lite.Interpreter(model_path=self._path)
@@ -526,36 +644,37 @@ class TfliteModel(object):
                 
             self._interpreter.allocate_tensors()
 
-
-    
-    def _update_model(self, updated_model):
-        b = flatbuffers.Builder(0)
-        b.Finish(updated_model.Pack(b), TFLITE_FILE_IDENTIFIER)
-        self._flatbuffer_data = b.Output()
-        self._load_model()
-    
     
     def _load_model(self):
         try:
-            self._model = _tflite_schema_fb.Model.GetRootAsModel(self._flatbuffer_data, 0)
-            subgraph_count = self._model.SubgraphsLength()
+            self._model = _tflite_schema_fb.ModelT.InitFromObj(_tflite_schema_fb.Model.GetRootAsModel(self._flatbuffer_data, 0))
+            subgraph_count = len(self._model.subgraphs)
         except Exception as e:
-            raise RuntimeError(
+            raise RuntimeError( # pylint: disable=raise-missing-from
                 'Failed to load .tflite model flatbuffer.\n'
                 'Ensure you have provided a valid .tflite model (i.e. ensure the binary data has not been corrupted)\n'
                 f'Error details: {e}'
             )
 
-        if subgraph_count > 1:
-            raise RuntimeError('Only one model subgraph currently supported')
-
-
-        schema_version = self._model.Version()
+        schema_version = self._model.version
         if schema_version != 3:
             raise RuntimeError('TF-Lite schema v3 is only supported')
-        
-        self._subgraph = self._model.Subgraphs(0)
     
+        if self._selected_model_subgraph_index == -1 or self._selected_model_subgraph_index >= subgraph_count:
+            self._selected_model_subgraph_index = 0
+
+        self._subgraphs = []
+        for fb_subgraph in self._model.subgraphs:
+            subgraph = _TfliteSubgraph()
+            self._subgraphs.append(subgraph)
+            for i, fb_tensor in enumerate(fb_subgraph.tensors):
+                tensor = TfliteTensor(i, self, fb_tensor)
+                subgraph.tensors.append(tensor)
+            for i, operator in enumerate(fb_subgraph.operators):
+                layer = TfliteLayer.from_flatbuffer(i, self, operator)
+                subgraph.layers.append(layer)
+            
+
 
 def _existing_path(path: str, cwd=None):
     if path is None:
@@ -570,3 +689,9 @@ def _existing_path(path: str, cwd=None):
         return path
 
     return None
+
+class _TfliteSubgraph:
+    def __init__(self):
+        self.layers: List[TfliteLayer] = []
+        self.tensors: List[TfliteTensor] = []
+

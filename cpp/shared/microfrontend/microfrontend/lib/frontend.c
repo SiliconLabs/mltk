@@ -27,7 +27,7 @@ struct FrontendOutput FrontendProcessSamples(struct FrontendState* state,
   output.size = 0;
 
   // Try to apply the window - if it fails, return and wait for more data.
-  if (!WindowProcessSamples(&state->window, samples, num_samples,
+  if (!WindowProcessSamples(&state->window, &state->dc_notch_filter, samples, num_samples,
                             num_samples_read)) {
     return output;
   }
@@ -47,6 +47,11 @@ struct FrontendOutput FrontendProcessSamples(struct FrontendState* state,
   FilterbankAccumulateChannels(&state->filterbank, energy);
   uint32_t* scaled_filterbank = FilterbankSqrt(&state->filterbank, input_shift);
 
+  // Activity Detection
+  if(state->activity_detection.enable_activity_detection) {
+    ActivityDetection(&state->activity_detection, scaled_filterbank);
+  }
+ 
   // Apply noise reduction.
   if (state->noise_reduction.enable_noise_reduction) {
     NoiseReductionApply(&state->noise_reduction, scaled_filterbank);    
@@ -73,4 +78,6 @@ void FrontendReset(struct FrontendState* state) {
   sli_ml_fft_reset(&state->fft);
   FilterbankReset(&state->filterbank);
   NoiseReductionReset(&state->noise_reduction);
+  DcNotchFilterReset(&state->dc_notch_filter);
+  ActivityDetectionReset(&state->activity_detection);
 }

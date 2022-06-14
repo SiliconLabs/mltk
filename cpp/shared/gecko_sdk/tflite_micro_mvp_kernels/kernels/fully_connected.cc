@@ -136,12 +136,12 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
     }
   }
 
-  micro_context->DeallocateTempTfLiteTensor(output);
   micro_context->DeallocateTempTfLiteTensor(input);
   micro_context->DeallocateTempTfLiteTensor(weight);
   if (bias != nullptr) {
     micro_context->DeallocateTempTfLiteTensor(bias);
   }
+  micro_context->DeallocateTempTfLiteTensor(output);
 
   return kTfLiteOk;
 }
@@ -235,7 +235,7 @@ TfLiteStatus EvalQuantizedInt8(TfLiteContext* context, TfLiteNode* node,
             tflite::micro::GetTensorData<int8_t>(filter), &bias_dims,
             tflite::micro::GetTensorData<int32_t>(bias), &output_dims,
             tflite::micro::GetTensorData<int8_t>(output)),
-        ARM_MATH_SUCCESS);
+        ARM_CMSIS_NN_SUCCESS);
   } else 
 #endif // __arm__
   {

@@ -156,7 +156,7 @@ class ControlsPanel(scrolled.ScrolledPanel):
         label_5 = wx.StaticText(self, wx.ID_ANY, "Pitch")
         grid_sizer_2.Add(label_5, 0, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 3)
 
-        self.window_3 = Slider(self, wx.ID_ANY, self, 'transform.pitch_factor')
+        self.window_3 = Slider(self, wx.ID_ANY, self, 'transform.pitch_factor', 'int')
         grid_sizer_2.Add(self.window_3, 1, wx.EXPAND, 0)
 
         label_7 = wx.StaticText(self, wx.ID_ANY, "Loudness")

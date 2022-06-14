@@ -112,7 +112,7 @@ endif()
 # Use the default model if one wasn't provided on the command-line
 mltk_get(AUDIO_CLASSIFIER_MODEL)
 if(NOT AUDIO_CLASSIFIER_MODEL)
-    set(AUDIO_CLASSIFIER_MODEL "keyword_spotting_on_off")
+    set(AUDIO_CLASSIFIER_MODEL "keyword_spotting_on_off_v2")
 endif()
 mltk_info("AUDIO_CLASSIFIER_MODEL=${AUDIO_CLASSIFIER_MODEL}")
 

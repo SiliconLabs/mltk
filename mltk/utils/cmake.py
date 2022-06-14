@@ -1,5 +1,6 @@
 from typing import List
 import sys
+import os
 import logging
 from cmake import CMAKE_BIN_DIR
 
@@ -95,7 +96,7 @@ def build_mltk_target(
         raise Exception(f'Unsupported platform {platform}, supported platforms are: {support_platforms}')
     toolchain_file = PLATFORM_TOOLCHAIN_MAPPING[platform]
 
-    python_path = sys.executable.replace('\\', '/')
+    python_dir = os.path.dirname(os.path.dirname(sys.executable)).replace('\\', '/')
     cmd = [
         f'{CMAKE_BIN_DIR}/cmake'.replace('\\', '/'),
         '--no-warn-unused-cli',
@@ -103,7 +104,7 @@ def build_mltk_target(
         '-DCMAKE_OBJECT_PATH_MAX:STRING=1024',
         f'-DCMAKE_TOOLCHAIN_FILE:FILEPATH={MLTK_ROOT_DIR}/cpp/tools/toolchains/{toolchain_file}',
         f'-DCMAKE_BUILD_TYPE:STRING={build_type}',
-        f'-DPYTHON_EXECUTABLE:FILEPATH={python_path}',
+        f'-DMLTK_PYTHON_VENV_DIR:FILEPATH={python_dir}',
         f'-DMLTK_PLATFORM_NAME:STRING={platform}',
         f'-DMLTK_TARGET:STRING={mltk_target}'
     ]
@@ -117,7 +118,7 @@ def build_mltk_target(
         cmd.append(f'-D{v}')
 
     cmd.extend([ 
-        f'-H{source_dir}',
+        f'-S{source_dir}',
         f'-B{build_dir}',
         '-G Ninja'
     ])

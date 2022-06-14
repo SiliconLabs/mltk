@@ -21,6 +21,9 @@ add_executable(mltk_image_classifier)
 target_sources(mltk_image_classifier
 PRIVATE 
     main.cc
+    app.cc
+    image_classifier.cc
+    recognize_commands.cc
 )
 
 target_link_libraries(mltk_image_classifier

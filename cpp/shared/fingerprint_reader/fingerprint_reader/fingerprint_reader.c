@@ -81,7 +81,9 @@ sl_status_t fingerprint_reader_init(const fingerprint_reader_config_t* config)
                                               << _GPIO_USART_RXROUTE_PIN_SHIFT);
 
 #else
-    FINGERPRINT_READER_USART->ROUTELOC0 = (FINGERPRINT_READER_USART_TX_LOC|FINGERPRINT_READER_USART_RX_LOC); 
+    FINGERPRINT_READER_USART->ROUTELOC0 = 
+        ((FINGERPRINT_READER_USART_TX_LOC << _USART_ROUTELOC0_TXLOC_SHIFT)|\
+         (FINGERPRINT_READER_USART_RX_LOC << _USART_ROUTELOC0_RXLOC_SHIFT)); 
     FINGERPRINT_READER_USART->ROUTEPEN = USART_ROUTEPEN_TXPEN | USART_ROUTEPEN_RXPEN;
 #endif 
 
@@ -109,6 +111,8 @@ sl_status_t fingerprint_reader_init(const fingerprint_reader_config_t* config)
     );
     GPIOINT_Init();
     GPIOINT_CallbackRegister(FINGERPRINT_READER_ACTIVITY_PIN, on_finger_detected_irq_handler);
+    
+    reader_context.initialized = true;
    
     return SL_STATUS_OK;
 }

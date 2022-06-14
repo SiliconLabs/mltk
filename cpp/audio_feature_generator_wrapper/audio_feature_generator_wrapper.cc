@@ -1,4 +1,4 @@
-
+#include <algorithm>
 #include "microfrontend/lib/frontend_util.h"
 #include "audio_feature_generator_wrapper.hpp"
 
@@ -18,16 +18,19 @@ static const auto float_dtype = py::format_descriptor<float>::format();
 
 
 static void verify_setting(const py::dict& settings, const std::string& name);
-typedef void* (*PopulateFunc)(const struct FrontendOutput& frontend_output, void* output);
-static void* populate_int8_slice(const struct FrontendOutput& frontend_output, void* output);
-static void* populate_uint16_slice(const struct FrontendOutput& frontend_output, void* output);
-static void* populate_float_slice(const struct FrontendOutput& frontend_output, void* output);
+typedef void* (*PopulateFunc)(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output);
+static void* populate_int8_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output);
+static void* populate_dynamic_scale_int8_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output);
+static void* populate_uint16_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output);
+static void* populate_float_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output);
 
 
 /*************************************************************************************************/
 AudioFeatureGeneratorWrapper::AudioFeatureGeneratorWrapper(const py::dict& settings)
 {
   FrontendConfig config;
+
+  FrontendFillConfigWithDefaults(&config);
 
   GET_INT(config.window.size_ms, "fe.window_size_ms");
   GET_INT(config.window.step_size_ms, "fe.window_step_ms");
@@ -49,13 +52,35 @@ AudioFeatureGeneratorWrapper::AudioFeatureGeneratorWrapper(const py::dict& setti
   GET_INT(config.log_scale.enable_log, "fe.log_scale_enable");
   GET_INT(config.log_scale.scale_shift, "fe.log_scale_shift");
 
-  
+  GET_INT(config.activity_detection.enable_activation_detection, "fe.activity_detection_enable");
+  GET_FLOAT(config.activity_detection.alpha_a, "fe.activity_detection_alpha_a");
+  GET_FLOAT(config.activity_detection.alpha_b, "fe.activity_detection_alpha_b");
+  GET_FLOAT(config.activity_detection.arm_threshold, "fe.activity_detection_arm_threshold");
+  GET_FLOAT(config.activity_detection.trip_threshold, "fe.activity_detection_trip_threshold");
+  GET_INT(config.dc_notch_filter.enable_dc_notch_filter, "fe.dc_notch_filter_enable");
+  GET_FLOAT(config.dc_notch_filter.coefficient, "fe.dc_notch_filter_coefficient");
+
   int sample_rate_hz, window_size_ms, window_step_ms, sample_length_ms;
   GET_INT(sample_rate_hz, "fe.sample_rate_hz");
   GET_INT(_n_channels, "fe.filterbank_n_channels");
   GET_INT(window_size_ms, "fe.window_size_ms");
   GET_INT(window_step_ms, "fe.window_step_ms");
   GET_INT(sample_length_ms, "fe.sample_length_ms");
+
+  float quantize_dynamic_scale_range_db;
+  int quantize_dynamic_scale_enable;
+  GET_INT(quantize_dynamic_scale_enable, "fe.quantize_dynamic_scale_enable");
+  GET_FLOAT(quantize_dynamic_scale_range_db, "fe.quantize_dynamic_scale_range_db");
+  if(quantize_dynamic_scale_enable)
+  {
+    // dynamic_range = quantize_dynamic_scale_range_db*(2^log_scale_shift)*ln(10)/20
+    #define LN10_DIV_20 0.11512925465
+    _dynamic_quantize_range = (int)(quantize_dynamic_scale_range_db * (float)(1 << config.log_scale.scale_shift) * LN10_DIV_20);
+  } 
+  else 
+  {
+    _dynamic_quantize_range = 0;
+  }
 
   _sample_length = (sample_rate_hz * sample_length_ms) / 1000;
   _window_size = (window_size_ms * sample_rate_hz) / 1000;
@@ -103,7 +128,7 @@ void AudioFeatureGeneratorWrapper::process_sample(const py::array_t<int16_t>& in
 
   if(dtype == int8_dtype)
   {
-    populate_func = &populate_int8_slice;
+    populate_func = _dynamic_quantize_range > 0 ? &populate_dynamic_scale_int8_slice : &populate_int8_slice;
   }
   else if(dtype == uint16_dtype)
   {
@@ -136,9 +161,16 @@ void AudioFeatureGeneratorWrapper::process_sample(const py::array_t<int16_t>& in
     );
     samples_processed += num_samples_read;
     audio_ptr += num_samples_read;
-    output_ptr = populate_func(frontend_output, output_ptr);
+    output_ptr = populate_func(this, frontend_output, output_ptr);
   }
 }
+
+/*************************************************************************************************/
+bool AudioFeatureGeneratorWrapper::activity_was_detected()
+{
+  return ActivityDetectionTripped(&_frontend_state.activity_detection);
+}
+
 
 
 /*************************************************************************************************/
@@ -156,7 +188,7 @@ static void verify_setting(const py::dict& settings, const std::string& name)
  * and sli_ml_audio_feature_generation_get_features_quantized()
  * for more details on  what is going on here
  */
-static void* populate_int8_slice(const struct FrontendOutput& frontend_output, void* output)
+static void* populate_int8_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output)
 {
 // Feature range min and max, used for determining valid range to quantize from
 #define SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MIN      0
@@ -187,8 +219,43 @@ static void* populate_int8_slice(const struct FrontendOutput& frontend_output, v
   return dst;
 }
 
+/*************************************************************************************************
+ */
+static void* populate_dynamic_scale_int8_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output)
+{
+  const uint16_t* src = frontend_output.values;
+  int8_t *dst = static_cast<int8_t*>(output);
+
+  // Find the maximum value in the uint16 spectrogram
+  int32_t maxval = 0;
+
+  for (size_t i = frontend_output.size; i > 0; --i) 
+  {
+    const int32_t value = (int32_t)*src++;
+    maxval = std::max(value, maxval);
+  }
+
+  const int32_t minval = std::max(maxval - self->_dynamic_quantize_range, 0);
+  const int32_t val_range = std::max(maxval - minval, 1);
+  src = frontend_output.values;
+
+  // Scaling the uint16 spectrogram between -128 and +127 using the given range
+  for (size_t i = frontend_output.size; i > 0; --i) 
+  {
+    int32_t value = (int32_t)*src++;
+    value -= minval;
+    value *= 255;
+    value /= val_range;
+    value -= 128;
+    value = std::min(std::max(value, -128), 127);
+    *dst++ = (int8_t)value;
+  }
+
+  return dst;
+}
+
 /*************************************************************************************************/
-static void* populate_uint16_slice(const struct FrontendOutput& frontend_output, void* output)
+static void* populate_uint16_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output)
 {
   const uint16_t* src = frontend_output.values;
   uint16_t *dst = static_cast<uint16_t*>(output);
@@ -200,7 +267,7 @@ static void* populate_uint16_slice(const struct FrontendOutput& frontend_output,
 }
 
 /*************************************************************************************************/
-static void* populate_float_slice(const struct FrontendOutput& frontend_output, void* output)
+static void* populate_float_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output)
 {
   const uint16_t* src = frontend_output.values;
   float *dst = static_cast<float*>(output);

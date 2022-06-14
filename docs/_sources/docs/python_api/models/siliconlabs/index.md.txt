@@ -10,7 +10,10 @@ The source code for these models may be found on Github: [https://github.com/sil
 
 ./keyword_spotting_mobilenetv2
 ./keyword_spotting_on_off
+./keyword_spotting_on_off_v2
 ./keyword_spotting_with_transfer_learning
+./rock_paper_scissors
+./fingerprint_signature_generator
 ```
 
 

@@ -1,12 +1,13 @@
 import os
 import shutil
-import tempfile
 import pytest
 from mltk.core import TfliteModel, TfliteModelParameters
 from mltk.utils.test_helper.data import IMAGE_CLASSIFICATION_TFLITE_PATH
+from mltk.utils.path import create_tempdir
 
 
-tmp_tflite_path = f'{tempfile.gettempdir()}/{os.path.basename(IMAGE_CLASSIFICATION_TFLITE_PATH)}'
+
+tmp_tflite_path = f'{create_tempdir()}/{os.path.basename(IMAGE_CLASSIFICATION_TFLITE_PATH)}'
 
 
 

@@ -1,63 +1,86 @@
 """CIFAR10
 ****************************************
 
-  This is a dataset of 50,000 32x32 color training images and 10,000 test
-  images, labeled over 10 categories. See more info at the
-  [CIFAR homepage](https://www.cs.toronto.edu/~kriz/cifar.html).
+This is a dataset of 50,000 32x32 color training images and 10,000 test
+images, labeled over 10 categories. See more info at the
+`CIFAR homepage <https://www.cs.toronto.edu/~kriz/cifar.html>`_
 
-  The classes are:
+The classes are:   
+ 
+- airplane
+- automobile
+- bird
+- cat
+- deer
+- dog
+- frog
+- horse
+- ship
+- truck
 
-  | Label | Description |
-  |:-----:|-------------|
-  |   0   | airplane    |
-  |   1   | automobile  |
-  |   2   | bird        |
-  |   3   | cat         |
-  |   4   | deer        |
-  |   5   | dog         |
-  |   6   | frog        |
-  |   7   | horse       |
-  |   8   | ship        |
-  |   9   | truck       |
+Returns:
+  Tuple of NumPy arrays: ``(x_train, y_train), (x_test, y_test)``.
 
-  Returns:
-    Tuple of NumPy arrays: `(x_train, y_train), (x_test, y_test)`.
+**x_train**: uint8 NumPy array of grayscale image data with shapes
+  ``(50000, 32, 32, 3)``, containing the training data. Pixel values range
+  from 0 to 255.
 
-  **x_train**: uint8 NumPy array of grayscale image data with shapes
-    `(50000, 32, 32, 3)`, containing the training data. Pixel values range
-    from 0 to 255.
+**y_train**: uint8 NumPy array of labels (integers in range 0-9)
+  with shape ``(50000, 1)`` for the training data.
 
-  **y_train**: uint8 NumPy array of labels (integers in range 0-9)
-    with shape `(50000, 1)` for the training data.
+**x_test**: uint8 NumPy array of grayscale image data with shapes
+  (10000, 32, 32, 3), containing the test data. Pixel values range
+  from 0 to 255.
 
-  **x_test**: uint8 NumPy array of grayscale image data with shapes
-    (10000, 32, 32, 3), containing the test data. Pixel values range
-    from 0 to 255.
+**y_test**: uint8 NumPy array of labels (integers in range 0-9)
+  with shape ``(10000, 1)`` for the test data.
 
-  **y_test**: uint8 NumPy array of labels (integers in range 0-9)
-    with shape `(10000, 1)` for the test data.
+Example:
 
-  Example:
+.. code-block::
 
-  ```python
-  (x_train, y_train), (x_test, y_test) = keras.datasets.cifar10.load_data()
-  assert x_train.shape == (50000, 32, 32, 3)
-  assert x_test.shape == (10000, 32, 32, 3)
-  assert y_train.shape == (50000, 1)
-  assert y_test.shape == (10000, 1)
-  ```
+    (x_train, y_train), (x_test, y_test) = cifar10.load_data()
+    assert x_train.shape == (50000, 32, 32, 3)
+    assert x_test.shape == (10000, 32, 32, 3)
+    assert y_train.shape == (50000, 1)
+    assert y_test.shape == (10000, 1)
+
 
 """
 import os
+from typing import Tuple
 import numpy as np
 import pickle
 
 from tensorflow.keras import backend
 from mltk.utils.archive_downloader import download_verify_extract
+from mltk.utils.path import create_user_dir
+from mltk.utils.logger import get_logger
+from keras_preprocessing.image.utils import array_to_img
 
 
-def load_data():
-    """-
+INPUT_SHAPE = (32,32,3)
+CLASSES = [ 
+  'airplane', 
+  'automobile', 
+  'bird', 
+  'cat', 
+  'deer', 
+  'dog', 
+  'frog', 
+  'horse', 
+  'ship', 
+  'truck'
+]
+
+
+
+def load_data() -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
+    """Download the dataset, extract, load into memory, 
+    and return as a tuple of numpy arrays
+    
+    Returns:
+        Tuple of NumPy arrays: ``(x_train, y_train), (x_test, y_test)``
     """
 
     path = download_verify_extract(
@@ -91,6 +114,56 @@ def load_data():
     y_test = y_test.astype(y_train.dtype)
 
     return (x_train, y_train), (x_test, y_test)
+
+
+
+def load_data_directory() -> str:
+    """Download the dataset, extract all sample images to a directory, 
+    and return the path to the directory.
+
+    Each sample type is extract to its corresponding subdirectory, e.g.:
+
+    ~/.mltk/datasets/cifar10/airplane
+    ~/.mltk/datasets/cifar10/automobile
+    ...
+    
+    Returns:
+        Path to extract directory:
+    """
+
+    dataset_dir = f'{create_user_dir()}/datasets/cifar10'
+
+
+    (x_train, y_train), (x_test, y_test) = load_data()
+    x_samples = np.concatenate((x_train, x_test))
+    y_samples = np.concatenate((y_train, y_test))
+
+    class_ids, class_counts = np.unique(y_samples, return_counts=True)
+
+    expected_class_counts = {}
+    for class_id, class_count in zip(class_ids, class_counts):
+        expected_class_counts[CLASSES[class_id]] = class_count
+
+    for class_id, class_label in enumerate(CLASSES):
+        dataset_class_dir = f'{dataset_dir}/{class_label}'
+        os.makedirs(dataset_class_dir, exist_ok=True)
+        class_count = len(os.listdir(dataset_class_dir))
+
+        if class_count != expected_class_counts[class_label]:
+            get_logger().warning(f'Generating {dataset_class_dir}')
+            sample_count = 0
+            for x, y in zip(x_samples, y_samples):
+                if class_id != y:
+                    continue
+                sample_path = f'{dataset_class_dir}/{sample_count}.jpg'
+                sample_count += 1
+
+                img = array_to_img(x, scale=False, dtype='uint8')
+                img.save(sample_path)
+
+    return dataset_dir
+
+
 
 
 def _load_batch(fpath, label_key='labels'):

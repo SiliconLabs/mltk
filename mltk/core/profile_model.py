@@ -90,7 +90,7 @@ def profile_model_in_simulator(
     """
 
     logger = get_mltk_logger()
-    logger.info('Profiling model in simulator')
+    logger.error('Profiling model in simulator ...')
 
     # Profile the model in the hardware simulator
     # and estimate various metrics if possible
@@ -127,6 +127,7 @@ def profile_model_on_device(
     logger = get_mltk_logger()
     accelerator = TfliteMicro.normalize_accelerator_name(accelerator)
 
+    logger.error('Programming ML model to device ...')
     firmware_apps.program_image_with_model(
         name='mltk_model_profiler',
         accelerator=accelerator,
@@ -145,7 +146,7 @@ def profile_model_on_device(
     make_filelike(serial_logger, level='INFO' if logger.verbose else 'DEBUG')
        
     # Start the serial COM port reader
-    logger.info('Profiling ML model on device ...')
+    logger.error('Profiling ML model on device ...')
     with SerialReader( 
         port=port,
         baud=115200, 
@@ -158,7 +159,6 @@ def profile_model_on_device(
         fail_regex=[
             re.compile(r'.*hardfault.*', re.IGNORECASE), 
             re.compile(r'.*assert.*', re.IGNORECASE), 
-            re.compile(r'.*failed.*', re.IGNORECASE),
             re.compile(r'.*error.*', re.IGNORECASE)
         ]
     ) as serial_reader:
@@ -197,7 +197,7 @@ def parse_device_model_profiler_log(
     layer_results:List[ProfilingLayerResult] = []
     
     cpu_clock_re = re.compile(r'CPU clock:\s([\d\.Mk]+)Hz')
-    runtime_memory_re = re.compile(r'Total runtime memory:\s([\d\.Mk]+)')
+    runtime_memory_re = re.compile(r'Tensor runtime memory:\s([\d\.Mk]+)')
     layer_name_re = re.compile(r'Op(\d+)-\S+')
     cpu_cycles_re = re.compile(r'([\d\.kMG]+) CPU cycles')
     acc_cycles_re = re.compile(r'([\d\.kMG]+) Accelerator cycles')

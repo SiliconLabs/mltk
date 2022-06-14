@@ -7,7 +7,9 @@ import logging
 import importlib
 import inspect
 import time
-from typing import Iterable, Any
+import copy
+from enum import Enum
+from typing import Iterable, Any, Union
 
 from mltk import MLTK_ROOT_DIR
 from .logger import DummyLogger, make_filelike
@@ -20,6 +22,8 @@ SHORT_VERSION = '.'.join([str(x) for x in sys.version_info[:2]])
 e.g.: 3.9
 """
 
+def _defaultdict_not_found():
+    return None
 
 def DefaultDict(d: dict = None, **kwargs) -> collections.defaultdict:
     """Creates a directory that returns None if a key does not exist
@@ -40,11 +44,15 @@ def DefaultDict(d: dict = None, **kwargs) -> collections.defaultdict:
     for key, value in kwargs.items():
         kwargs[key] = _convert_to_default_dict(value)
     
-    return collections.defaultdict(lambda: None, kwargs)
+
+    return collections.defaultdict(_defaultdict_not_found, kwargs)
 
 
-def merge_dict(destination: dict, source: dict) -> dict:
+def merge_dict(destination: dict, source: dict, copy_destination=False) -> dict:
     """Merge the source dictionary into the destination and return the destination"""
+    if copy_destination:
+        destination = copy.deepcopy(destination)
+    
     for key, value in source.items():
         if isinstance(value, dict):
             # get node or create one
@@ -160,14 +168,18 @@ def prepend_exception_msg(e:Exception, msg:str) -> Exception:
     e.args = (msg, *e.args)
     all_str = True 
     for x in e.args:
-        if not isinstance(x,str):
+        try:
+            str(x)
+        except:
             all_str = False 
             break 
+
     # If every entry in the exception msg is a string
     # then make it look pretty by combining into a coma-separated string
     if all_str:
-        s = ', '.join(e.args)
+        s = ', '.join(str(x) for x in e.args)
         e.args = (s, )
+
     return e 
 
 
@@ -176,13 +188,16 @@ def append_exception_msg(e:Exception, msg:str) -> Exception:
     e.args = (*e.args, msg)
     all_str = True 
     for x in e.args:
-        if not isinstance(x,str):
+        try:
+            str(x)
+        except:
             all_str = False 
             break 
+
     # If every entry in the exception msg is a string
     # then make it look pretty by combining into a coma-separated string
     if all_str:
-        s = ', '.join(e.args)
+        s = ', '.join(str(x) for x in e.args)
         e.args = (s, )
     return e 
 
@@ -218,18 +233,20 @@ def install_pip_package(
             logger.info(f'Adding {install_dir} to sys.path')
             sys.path.append(install_dir)
 
+    version_match = re.match(r'([\w\_\-]+)([=<>]).*', package)
     if not module_name:
-        version_match = re.match(r'([\w\_\-]+)([=<>]).*', package)
         if version_match:
             module_name = package[:version_match.start(2)]
         else:
             module_name = package
 
-    try:
-        importlib.import_module(module_name)
-        return
-    except:
-        pass
+    # Only try to import the module without running pip if no version is specified and upgrade=False
+    if not upgrade and not version_match:
+        try:
+            importlib.import_module(module_name)
+            return
+        except:
+            pass
 
     make_filelike(logger)
     cmd = [sys.executable, "-m", "pip", "install"]
@@ -329,7 +346,11 @@ def load_json_safe(path:str, *args, **kwargs) -> object:
     return json.loads(filtered_json_string, *args, **kwargs)
 
     
-def find_object_key_with_value(obj:object, needle) -> str:
+def find_object_key_with_value(
+    obj:object, 
+    needle:object,
+    throw_exception=False
+) -> str:
     """Given an  class or class instance, search the 
     attribute values of the object for the given "needle" and return its corresponding key.
 
@@ -338,33 +359,47 @@ def find_object_key_with_value(obj:object, needle) -> str:
     Args:
         obj: Class or class instance
         needle: Class attribute value to find in class instance 
+        throw_exception: If true, throw an exception if the needle is not found, return 'none' otherwise
     Return:
         Lowercase key of found attribute value or "none" if value is not found
     """
-    if inspect.isclass(obj):
+    
+    if inspect.isclass(obj) and not issubclass(obj, Enum):
         obj = obj()
     
     for key in dir(obj):
         if getattr(obj, key) == needle:
             return key.lower()
         
+    if throw_exception:
+        raise ValueError(f'{needle} not found in {obj}')
+
     return 'none'
 
 
-def find_object_value_with_key(obj:object, needle:str, ignore_case=False):
-    """Given an  class or class instance, search the 
+def find_object_value_with_key(
+    obj:object, 
+    needle:str, 
+    ignore_case=False,
+    throw_exception=False
+):
+    """Given a class or class instance, search the 
     attribute keys of the object for the given "needle" and return its corresponding value.
 
-    Note: If a class if given then it must be instantiable using a default constructor.
+    NOTE: If a class if given then it must be instantiable using a default constructor (except of Enum classes).
     
     Args:
         obj: Class or class instance
         needle: Class attribute key to find in class instance 
         ignore_case: Ignore the key's case if True
+        throw_exception: If true, throw an exception if the needle is not found, return None otherwise
     Return:
         Value of found attribute key or None if key is not found
     """
-    if inspect.isclass(obj):
+    if needle is None:
+        return None 
+
+    if inspect.isclass(obj) and not issubclass(obj, Enum):
         obj = obj()
 
     if ignore_case:
@@ -377,6 +412,50 @@ def find_object_value_with_key(obj:object, needle:str, ignore_case=False):
         else:
             if key == needle:
                 return getattr(obj, key)
+        
+    if throw_exception:
+        raise ValueError(f'{needle} not found in {obj}')
+
+    return None
+
+
+def find_object_value_with_key_or_value(
+    obj:object, needle:Union[str,object], 
+    ignore_case=False, 
+    throw_exception=False
+):
+    """Given a class or class instance, search the 
+    attribute keys and values of the object for the given "needle" and return its corresponding value.
+
+    NOTE: If a class if given then it must be instantiable using a default constructor (except of Enum classes).
+    
+    Args:
+        obj: Class or class instance
+        needle: Class attribute key or value to find in class instance 
+        ignore_case: Ignore the key's case if True (needle must be a string)
+        throw_exception: If true, throw an exception if the needle is not found, return None otherwise
+    Return:
+        Value of found attribute key or None if key/value is not found
+    """
+    if needle is None:
+        return None 
+
+    if inspect.isclass(obj) and not issubclass(obj, Enum):
+        obj = obj()
+
+    needle_lower = None
+    if ignore_case and isinstance(needle, str):
+        needle_lower = needle.lower()
+    
+    for key in dir(obj):
+        value = getattr(obj, key)
+        if (needle_lower is None and key == needle) or \
+            (needle_lower is not None and key.lower() == needle_lower) or \
+            (value == needle):
+            return value
+
+    if throw_exception:
+        raise ValueError(f'{needle} not found in {obj}')
         
     return None
 

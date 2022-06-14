@@ -27,13 +27,13 @@ bool TfliteMicroModelWrapper::load(
     void* accelerator,
     bool enable_profiler,
     bool enable_recorder,
-    bool force_buffer_overlap
+    bool force_buffer_overlap,
+    int runtime_memory_size
 )
 {
     get_logger().debug("Loading model ...");
 
     tflite::MicroOpResolver *op_resolver;
-    this->_runtime_buffer.reserve(16*1024*1024);
     this->_flatbuffer_data = flatbuffer_data;
     this->_accelerator_wrapper = accelerator;
 
@@ -60,11 +60,18 @@ bool TfliteMicroModelWrapper::load(
 
     mltk_tflm_force_buffer_overlap = force_buffer_overlap;
 
+    uint8_t* runtime_buffer = nullptr;
+    if(runtime_memory_size > 0)
+    {
+        _runtime_memory.reserve(runtime_memory_size);
+        runtime_buffer = (uint8_t*)_runtime_memory.c_str();
+    }
+
     bool retval = TfliteMicroModel::load(
         this->_flatbuffer_data.c_str(),
         *op_resolver,
-        (uint8_t*)this->_runtime_buffer.c_str(),
-        this->_runtime_buffer.capacity()
+        runtime_buffer, 
+        runtime_memory_size
     );
 
     mltk_tflm_force_buffer_overlap = false;
@@ -109,8 +116,6 @@ py::dict TfliteMicroModelWrapper::get_details() const
     details_dict["classes"] = classes;
 
     // These are used internally for debugging
-    details_dict["runtime_memory_buffer_addr"] = (uint32_t)((uintptr_t)this->_runtime_buffer.c_str());
-    details_dict["runtime_memory_buffer_length"] = this->_runtime_buffer.capacity();
     details_dict["tflite_buffer_addr"] = (uint32_t)((uintptr_t)this->_flatbuffer_data.c_str());
     details_dict["tflite_buffer_Length"] = this->_flatbuffer_data.length();
 

@@ -125,6 +125,15 @@ class ProcessPoolManager(object):
                 return 
             raise e 
 
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, tb):
+        self.wait()
+        self.close()
+
+
     def _on_complete(self, result):
         try:
             

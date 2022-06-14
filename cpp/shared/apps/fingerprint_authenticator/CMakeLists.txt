@@ -47,7 +47,7 @@ PRIVATE
 # Use the default model if one wasn't provided on the command-line
 mltk_get(FINGERPRINT_AUTHENTICATOR_MODEL)
 if(NOT FINGERPRINT_AUTHENTICATOR_MODEL)
-    set(FINGERPRINT_AUTHENTICATOR_MODEL "fingerprint_reader")
+    set(FINGERPRINT_AUTHENTICATOR_MODEL "fingerprint_signature_generator")
 endif()
 mltk_info("FINGERPRINT_AUTHENTICATOR_MODEL=${FINGERPRINT_AUTHENTICATOR_MODEL}")
 

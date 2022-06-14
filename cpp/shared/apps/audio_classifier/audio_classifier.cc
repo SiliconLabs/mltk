@@ -72,60 +72,11 @@ extern "C" const uint8_t sl_tflite_model_array[];
 
 
 
-static void handle_result(int32_t current_time, int result, uint8_t score, bool is_new_command);
+static void handle_results(int32_t current_time, int result, uint8_t score, bool is_new_command);
+static sl_status_t run_inference();
+static sl_status_t process_output(const bool did_run_inference);
 
-/***************************************************************************//**
- * Run model inference 
- * 
- * Copies the currently available data from the feature_buffer into the input 
- * tensor and runs inference, updating the global output tensor.
- *
- * @return
- *   SL_STATUS_OK on success, other value on failure.
- ******************************************************************************/
-static sl_status_t run_inference()
-{
-  // Update model input tensor
-  sl_status_t status = sl_ml_audio_feature_generation_fill_tensor(model.input());
-  if (status != SL_STATUS_OK){
-    return SL_STATUS_FAIL;
-  }
-  // Run the model on the spectrogram input and make sure it succeeds.
-  if (!model.invoke()) {
-    return SL_STATUS_FAIL;
-  }
 
-  return SL_STATUS_OK;
-}
-
-/***************************************************************************//**
- * Processes the output from the output tensor
- *
- * @return
- *   SL_STATUS_OK on success, other value on failure.
- ******************************************************************************/
-static sl_status_t process_output(){
-  // Determine whether a command was recognized based on the output of inference
-  uint8_t result = 0;
-  uint8_t score = 0;
-  bool is_new_command = false;
-  uint32_t current_time_stamp;
-  sl_status_t status = SL_STATUS_OK;
-
-  // Get current time stamp needed by CommandRecognizer
-  current_time_stamp = sl_sleeptimer_tick_to_ms(sl_sleeptimer_get_tick_count());
-
-  TfLiteStatus process_status = command_recognizer->ProcessLatestResults(
-      model.output(), current_time_stamp, &result, &score, &is_new_command);
-
-  if (process_status == kTfLiteOk) {
-    handle_result(current_time_stamp, result, score, is_new_command);
-  } else {
-    status = SL_STATUS_FAIL;
-  }
-
-  return status;
-}
 
 /***************************************************************************//**
  * Initialize audio classifier application.
@@ -192,7 +143,7 @@ void audio_classifier_init(void)
   category_label_count = CATEGORY_LABELS.size();
 
   sl_ml_audio_feature_generation_init();
-  
+
   // Instantiate CommandRecognizer  
   static RecognizeCommands static_recognizer(model.error_reporter(), SMOOTHING_WINDOW_DURATION_MS,
       DETECTION_THRESHOLD, SUPPRESION_TIME_MS, MINIMUM_DETECTION_COUNT, IGNORE_UNDERSCORE_LABELS);
@@ -218,9 +169,16 @@ void audio_classifier_init(void)
            category_count, category_label_count);
   }
 
-  if ((input->type != kTfLiteInt8) || (output->type != kTfLiteInt8)) {
-    printf("ERROR: Invalid input/output tensor type.\n"
-           "Application requires input and output tensors to be of type int8.\n");
+  if (!(input->type == kTfLiteInt8 || input->type == kTfLiteUInt16 || input->type == kTfLiteFloat32)) {
+    printf("ERROR: Invalid input tensor type.\n"
+           "Application requires input and output tensors to be of type int8, uint16, or float32.\n");
+    while (1)
+      ;
+  }
+
+  if (!(output->type == kTfLiteInt8 || output->type != kTfLiteFloat32)) {
+    printf("ERROR: Invalid output tensor type.\n"
+           "Application requires input and output tensors to be of type int8 or float32.\n");
     while (1)
       ;
   }
@@ -286,6 +244,11 @@ void audio_classifier_task(void *arg)
 }
 #endif
 
+/***************************************************************************//**
+ * Run a single application loop
+ *
+ * This function is executed by either the RTOS task or main.c loop
+ ******************************************************************************/
 extern "C" void app_process_action()
 {
   static uint32_t prev_loop_timestamp = 0;
@@ -294,12 +257,89 @@ extern "C" void app_process_action()
 
   if((current_timestamp - prev_loop_timestamp) >= INFERENCE_INTERVAL_MS)
   {
+    // Store the current timestamp before we run the audio feature generator
+    // and do model inference
+    command_recognizer->base_timestamp_ = current_timestamp;
     // Perform a word detection
     prev_loop_timestamp = current_timestamp;
+
+    // Process the audio buffer
     sl_ml_audio_feature_generation_update_features();
-    run_inference();
-    process_output();
+  
+    // Determine if we should run inference
+    // If the activity detection block is disabled, then always run inference
+    // If the activity detection block is enabled, then ensure there is activity before running inference
+    const bool should_run_inference = (!SL_ML_FRONTEND_ACTIVITY_DETECTION_ENABLE || (sl_ml_audio_feature_generation_activity_detected() == SL_STATUS_OK));
+
+    if(should_run_inference)
+    {
+      // Execute the processed audio in the ML model
+      run_inference();
+    }
+   
+    // Process the ML model results
+    // NOTE: We do this even if we didn't run inference.
+    //       This way, the LEDs blink correctly
+    process_output(should_run_inference);
   }
+}
+
+
+/***************************************************************************//**
+ * Run model inference 
+ * 
+ * Copies the currently available data from the feature_buffer into the input 
+ * tensor and runs inference, updating the global output tensor.
+ *
+ * @return
+ *   SL_STATUS_OK on success, other value on failure.
+ ******************************************************************************/
+static sl_status_t run_inference()
+{
+  // Update model input tensor
+  sl_status_t status = sl_ml_audio_feature_generation_fill_tensor(model.input());
+  if (status != SL_STATUS_OK){
+    return SL_STATUS_FAIL;
+  }
+  // Run the model on the spectrogram input and make sure it succeeds.
+  if (!model.invoke()) {
+    return SL_STATUS_FAIL;
+  }
+
+  return SL_STATUS_OK;
+}
+
+/***************************************************************************//**
+ * Processes the output from the output tensor
+ *
+ * @return
+ *   SL_STATUS_OK on success, other value on failure.
+ ******************************************************************************/
+static sl_status_t process_output(const bool did_run_inference){
+  // Determine whether a command was recognized based on the output of inference
+  uint8_t result = 0;
+  uint8_t score = 0;
+  bool is_new_command = false;
+  sl_status_t status = SL_STATUS_OK;
+  TfLiteStatus process_status = kTfLiteOk;
+  const uint32_t current_timestamp = sl_sleeptimer_tick_to_ms(sl_sleeptimer_get_tick_count());
+
+  if(did_run_inference)
+      process_status = command_recognizer->ProcessLatestResults(
+        model.output(), 
+        current_timestamp, 
+        &result, 
+        &score, 
+        &is_new_command
+      );
+
+  if (process_status == kTfLiteOk) {
+    handle_results(current_timestamp, result, score, is_new_command);
+  } else {
+    status = SL_STATUS_FAIL;
+  }
+
+  return status;
 }
 
 /***************************************************************************//**
@@ -313,15 +353,21 @@ extern "C" void app_process_action()
  *   of the result classification.
  * @param is_new_command true if the result is a new command, false otherwise.
  ******************************************************************************/
-static void handle_result(int32_t current_time, int result, uint8_t score, bool is_new_command) {
+static void handle_results(int32_t current_time, int result, uint8_t score, bool is_new_command) {
   const char *label = get_category_label(result);
 
   if (is_new_command) {
+    // Reset the AFG internal state so we can detect a new keyword
+    // NOTE: Alternatively, the "suppression" setting can be increased to add a delay
+    //       until processing states again (this effectively clears the audio buffer)
+    sl_ml_audio_feature_generation_reset(); 
+    
     printf("Detected class=%d label=%s score=%d @%ldms\n", result, label, score, current_time);
     fflush(stdout);
     sl_led_turn_on(&DETECTION_LED);
     sl_led_turn_off(&ACTIVITY_LED);
-    detected_timeout = current_time + SUPPRESION_TIME_MS;
+    activity_timestamp = 0;
+    detected_timeout = current_time + 1200;
   } else if (detected_timeout != 0 && current_time >= detected_timeout) {
     detected_timeout = 0;
     previous_score = score;
@@ -330,6 +376,32 @@ static void handle_result(int32_t current_time, int result, uint8_t score, bool 
     sl_led_turn_off(&DETECTION_LED);
   }
 
+  // If we're using the activity detection block,
+  // then inference is only done when activity is detected
+  // in the audio stream. In this case, we control
+  // the LEDs based on static timeouts
+  if(SL_ML_FRONTEND_ACTIVITY_DETECTION_ENABLE)
+  {
+    if (detected_timeout == 0 && score > 0 && previous_result != result) {
+      activity_timestamp = current_time + 1000;
+    } else if(current_time >= activity_timestamp) {
+      activity_timestamp = 0;
+      sl_led_turn_off(&ACTIVITY_LED);
+    }
+
+    if (activity_timestamp != 0) {
+      if (current_time - activity_toggle_timestamp >= 100) {
+        activity_toggle_timestamp = current_time;
+        sl_led_toggle(&ACTIVITY_LED);
+      }
+    }
+    return;
+  }
+
+  // If the activity detection block is NOT used,
+  // then inference is also done a a specific interval.
+  // In this case, we control the LEDs based on the scores 
+  // returned by the inference
   if (detected_timeout == 0) {
     if (previous_score == 0) {
       previous_result = result;

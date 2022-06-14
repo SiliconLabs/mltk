@@ -22,9 +22,6 @@ def build_python_package_command(
     python_exe: str = typer.Option(None, '--python', '-p', 
         help='Path to Python executable or Python command found on PATH. If omitted, use current Python'
     ),
-    clean_venv: bool = typer.Option(True, 
-        help='Clean the Python virtual environment before building'
-    ),
     install: bool = typer.Option(True,
         help='Install the local repo into the venv, e.g.: pip install -e .'
     ),
@@ -90,15 +87,11 @@ Release for all supported Python versions.
     NOTE: Before releasing, the __version__ in <mltk repo>/mltk/__init__.py must be incremented.
 
     This effectively runs the commands:
-
-    \b
-    if --clean-venv:
-        rm -rf  temp/mltk/python_venvs/<python version>
-    python -m venv temp/mltk/python_venvs/<python version>
     \b
     if --install:
         export MLTK_NO_BUILD_WRAPPERS=1
-        <venv pip> install -e .
+        git clone MLTK_ROOT_DIR temp/mltk/release/mltk/python_<version>
+        python temp/mltk/release/mltk/python_<version>/install_mltk.py
     \b
     if --build:
         <venv python> setup.py bdist_wheel
@@ -107,19 +100,19 @@ Release for all supported Python versions.
         rm -rf  temp/mltk/python_venvs/tests/<python version>
         python -m venv temp/mltk/python_venvs/tests/<python version>
         <venv python> install <built wheel>
-        mltk utest all
+        mltk utest api
     \b
     if --release-test:
         twine upload --repository testpypi dist/*
         if --release-utests:
             <venv pip> install --extra-index-url https://test.pypi.org/simple silabs-mltk
-            mltk utest all
+            mltk utest api
     \b
     if --release-public:
         twine upload dist/*
         if --release-utests:
             <venv pip> install silabs-mltk
-            mltk utest all
+            mltk utest api
 
     HINT: Add the --all option to release for all Python versions at once
     """
@@ -162,7 +155,7 @@ Release for all supported Python versions.
             cmd = copy.deepcopy(sys.argv)
             cmd.remove('--all')
             cmd.extend(['--python', python_path])
-            retcode, _ = run_shell_cmd(cmd, outfile=logger)
+            retcode, _ = run_shell_cmd(cmd, outfile=logger, logger=logger)
             if retcode != 0:
                 cli.abort(code=retcode, msg=f'Failed to release wheel for {python_path}')
 
@@ -175,7 +168,7 @@ Release for all supported Python versions.
 
     logger.info(f'Build MLTK wheel using {python_exe} ...')
 
-    retcode, retmsg = run_shell_cmd([python_exe, '--version'], outfile=logger)
+    retcode, retmsg = run_shell_cmd([python_exe, '--version'], outfile=logger, logger=logger)
     if retcode != 0:
         cli.abort(msg=f'Failed to get Python version, err: {retmsg}\nEnsure the given Python executable is valid')
 
@@ -187,34 +180,48 @@ Release for all supported Python versions.
     python_version_minor = match.group(2)
     python_version = f'{python_version_major}.{python_version_minor}'
 
+    mltk_release_dir = create_tempdir(f'release/mltk/python_{python_version}')
+    python_venv_dir = f'{mltk_release_dir}/.venv'
+
+
     ##########################################
-    # Create the Python virtual environment
+    # Clone MLTK to tempdir and run install_mltk.py
 
-    python_venv_dir = create_tempdir(f'release/python_venvs/{python_version}')
-    setup_py_path = f'{MLTK_ROOT_DIR}/setup.py'
+    if install:
+        logger.info('#' * 100)
 
-    if clean_venv:
-        logger.info(f'Cleaning {python_venv_dir} ...')
-        remove_directory(python_venv_dir)
-    os.makedirs(python_venv_dir, exist_ok=True)
+        logger.info(f'Cleaning {mltk_release_dir} ...')
+        remove_directory(mltk_release_dir)
 
-    logger.info(f'Creating Python v{python_version} virtual environment at {python_venv_dir}')
-    retcode, retmsg = run_shell_cmd([python_exe, '-m', 'venv', python_venv_dir], outfile=logger)
-    if retcode != 0:
-        additional_msg = ''
-        if 'ensurepip' in retmsg:
-            additional_msg += '\n\nTry running the following command first:\n'
-            additional_msg += f'sudo apt-get install python{python_version}-venv\n\n'
-        
-        cli.abort(msg=f'Failed to create Python venv, err: {retmsg}{additional_msg}')
+        logger.info(f'Cloning {MLTK_ROOT_DIR} to {mltk_release_dir}')
+
+        retcode, retmsg = run_shell_cmd(['git', 'clone', MLTK_ROOT_DIR, mltk_release_dir] , outfile=logger, logger=logger)
+        if retcode != 0:
+            cli.abort(msg=f'Failed to clone {MLTK_ROOT_DIR} to {mltk_release_dir}, err: {retmsg}')
+
+        logger.info('#' * 100)
+        logger.info(f'Running {mltk_release_dir}/install_mltk.py')
+
+        env = os.environ.copy()
+        if 'PYTHONHOME' in env:
+            del env['PYTHONHOME']
+        env['PATH'] = os.path.dirname(python_exe) + os.pathsep + env['PATH']
+
+        retcode, retmsg = run_shell_cmd(
+            [python_exe, f'./install_mltk.py'], 
+            env=env,
+            cwd=mltk_release_dir, 
+            outfile=logger, 
+            logger=logger,
+        )
+        if retcode != 0:
+            cli.abort(msg=f'Failed to install the MLTK, err: {retmsg}')
+
 
     if os.name == 'nt':
         python_venv_exe = f'{python_venv_dir}/Scripts/python.exe'  
     else:
         python_venv_exe = f'{python_venv_dir}/bin/python3'
-
-    # Work around install error
-    run_shell_cmd([python_venv_exe, '-m', 'pip', 'install', '-U', 'certifi'], outfile=logger)
 
 
     if release_test:
@@ -237,40 +244,24 @@ Release for all supported Python versions.
 
 
     #################################
-    # Install the local MLTK repo into the venv
-
-    if install:
-        logger.info('#' * 100)
-        logger.info(f'Installing local MLTK package into {python_venv_dir} ...')
-        env = os.environ.copy()
-        env['MLTK_NO_BUILD_WRAPPERS'] = '1'
-        cmd = [python_venv_exe, '-m', 'pip', 'install']
-        if clean_venv:
-            cmd.append('--force-reinstall')
-        cmd.extend(['-e', MLTK_ROOT_DIR])
-        retcode, retmsg = run_shell_cmd(cmd, env=env, outfile=logger, cwd=MLTK_ROOT_DIR)
-        if retcode != 0:
-            additional_msg = ''
-            if 'includes non-existent path' in retmsg:
-                additional_msg += '\n\nTry running the following command first:\n'
-                additional_msg += f'sudo apt-get install python{python_version}-dev\n\n'
-            
-            cli.abort(msg=f'Failed to install MLTK Python package, err: {retmsg}{additional_msg}')
-
-
-    #################################
     # Build the MLTK wheel
 
     if build:
         logger.info('#' * 100)
         logger.info(f'Building the MLTK Python wheel for Python {python_version} ...')
 
-        remove_directory(f'{MLTK_ROOT_DIR}/dist')
+        remove_directory(f'{mltk_release_dir}/dist')
+        remove_directory(f'{mltk_release_dir}/build')
 
+        # That wrappers where already built in the above step
+        env = os.environ.copy()
+        env['MLTK_NO_BUILD_WRAPPERS'] = '1'
         retcode, retmsg = run_shell_cmd(
-            [python_venv_exe, setup_py_path, 'bdist_wheel'], 
+            [python_venv_exe, f'{mltk_release_dir}/setup.py', 'bdist_wheel'], 
             outfile=logger, 
-            cwd=MLTK_ROOT_DIR
+            cwd=mltk_release_dir,
+            logger=logger,
+            env=env
         )
         if retcode != 0:
             cli.abort(msg=f'Failed to build MLTK Python wheel, err: {retmsg}')
@@ -281,11 +272,11 @@ Release for all supported Python versions.
 
     mltk_version_regex = mltk_version.replace('.', '\\.')
     wheel_paths = recursive_listdir(
-        base_dir=f'{MLTK_ROOT_DIR}/dist',
+        base_dir=f'{mltk_release_dir}/dist',
         regex=f'.*/silabs_mltk-{mltk_version_regex}-\\d+-cp{python_version_major}{python_version_minor}-.*' + '\\.whl'
     )
     if not wheel_paths:
-        cli.abort(msg=f'Failed to find built .whl file in {MLTK_ROOT_DIR}/dist')
+        cli.abort(msg=f'Failed to find built .whl file in {mltk_release_dir}/dist')
 
     wheel_path = wheel_paths[0].replace('\\', '/')
 
@@ -330,7 +321,8 @@ Release for all supported Python versions.
         logger.info(f'Uploading {wheel_path} to https://test.pypi.org ...')
         retcode, retmsg = run_shell_cmd(
             [sys.executable, '-m', 'twine', 'upload', '--repository', 'testpypi', '-u', '__token__', '-p', test_pypi_token, wheel_path], 
-            outfile=logger
+            outfile=logger, 
+            logger=logger
         )
         if retcode != 0:
             cli.abort(msg=f'Failed to run upload to https://test.pypi.org, err: {retmsg}')
@@ -352,7 +344,8 @@ Release for all supported Python versions.
         logger.info(f'Uploading {wheel_path} to https://pypi.org ...')
         retcode, retmsg = run_shell_cmd(
             [sys.executable, '-m', 'twine', 'upload', '-u', '__token__', '-p', pypi_token, wheel_path], 
-            outfile=logger
+            outfile=logger, 
+            logger=logger
         )
         if retcode != 0:
             cli.abort(msg=f'Failed to run upload to https://pypi.org, err: {retmsg}')
@@ -381,6 +374,9 @@ def _run_unit_tests(
     retry:bool = False,
 ):
     logger.info('#' * 100)
+    if not utests:
+        logger.info('NOT running unit tests, but still checking that the package was properly built ...')
+
     logger.info('Installing built wheel in virtual environment ...')
     python_test_venv_dir = create_tempdir(f'release/python_venvs/tests/{python_version}')
     logger.info(f'Cleaning {python_test_venv_dir} ...')
@@ -388,7 +384,7 @@ def _run_unit_tests(
     os.makedirs(python_test_venv_dir, exist_ok=True)
    
     logger.info(f'Creating Python v{python_version} virtual environment at {python_test_venv_dir}')
-    retcode, retmsg = run_shell_cmd([python_exe, '-m', 'venv', python_test_venv_dir], outfile=logger)
+    retcode, retmsg = run_shell_cmd([python_exe, '-m', 'venv', python_test_venv_dir], outfile=logger, logger=logger)
     if retcode != 0:
         cli.abort(msg=f'Failed to create Python venv, err: {retmsg}')
 
@@ -404,7 +400,7 @@ def _run_unit_tests(
     cmd_str = ' '.join(pip_cmd)
     logger.info(f'Run {pip_cmd}')
     for i in range(3):
-        retcode, retmsg = run_shell_cmd(pip_cmd, outfile=logger)
+        retcode, retmsg = run_shell_cmd(pip_cmd, outfile=logger, logger=logger)
         if retcode != 0:
             if i < 2 and retry:
                 time.sleep(3)
@@ -418,7 +414,7 @@ def _run_unit_tests(
         cmd = [python_venv_exe, '-m', 'pip', 'install']
         for pkg in pip_packages.split('|'):
             cmd.append(pkg)
-        retcode, retmsg = run_shell_cmd(cmd, outfile=logger)
+        retcode, retmsg = run_shell_cmd(cmd, outfile=logger, logger=logger)
         if retcode != 0:
             cli.abort(msg=f'Failed to force Tensorflow version, err: {retmsg}')
 
@@ -428,7 +424,7 @@ def _run_unit_tests(
     else:
         mltk_exe = f'{python_test_venv_dir}/bin/mltk'
 
-    retcode, retmsg = run_shell_cmd([mltk_exe, '--help'], outfile=logger)
+    retcode, retmsg = run_shell_cmd([mltk_exe, '--help'], outfile=logger, logger=logger)
     if retcode != 0:
         cmd_str = f'{mltk_exe} --help'
         cli.abort(msg=f'Failed to run simple mltk cmd: {cmd_str}, err: {retmsg}')
@@ -440,7 +436,7 @@ def _run_unit_tests(
     if utests:
         logger.info('#' * 100)
         logger.info('Running MLTK unit tests ...')
-        retcode, retmsg = run_shell_cmd([mltk_exe, 'utest', utests], outfile=logger, cwd=python_test_venv_dir)
+        retcode, retmsg = run_shell_cmd([mltk_exe, 'utest', utests], outfile=logger, cwd=python_test_venv_dir, logger=logger)
         if retcode != 0:
             cli.abort(msg=f'Failed to run MLTK unit tests, err: {retmsg}')
 
@@ -452,7 +448,7 @@ def _check_pip_version(venv_python_exe, python_version, use_test_pypi, logger):
         cmd.extend(['-i', 'https://test.pypi.org/simple/'])
     cmd.append('silabs-mltk==')
 
-    _, retmsg = run_shell_cmd(cmd)
+    _, retmsg = run_shell_cmd(cmd, logger=logger)
    
     start_index = retmsg.find('(from versions:')
     if start_index == -1:

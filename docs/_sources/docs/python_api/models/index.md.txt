@@ -9,9 +9,9 @@ The source code for these models may be found on Github: [https://github.com/sil
 ```{toctree}
 :maxdepth: 1
 
-./common_models
 ./examples/index
 ./siliconlabs/index
 ./tinyml/index
 ./tflite_micro/index
+./common_models
 ```

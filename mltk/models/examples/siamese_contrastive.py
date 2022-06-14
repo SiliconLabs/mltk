@@ -16,28 +16,28 @@ while minimizing the distance between embeddings of similar classes, resulting i
 Commands
 --------------
 
-.. code-block:: console
+.. code-block:: shell
 
    # Do a "dry run" test training of the model
-   > mltk train siamese_contrastive-test
+   mltk train siamese_contrastive-test
 
    # Train the model
-   > mltk train siamese_contrastive
+   mltk train siamese_contrastive
 
    # Evaluate the trained model .tflite model
-   > mltk evaluate siamese_contrastive --tflite
+   mltk evaluate siamese_contrastive --tflite
 
    # Profile the model in the MVP hardware accelerator simulator
-   > mltk profile siamese_contrastive --accelerator MVP
+   mltk profile siamese_contrastive --accelerator MVP
 
    # Profile the model on a physical development board
-   > mltk profile siamese_contrastive --accelerator MVP --device
+   mltk profile siamese_contrastive --accelerator MVP --device
 
 
 Model Summary
 --------------
 
-.. code-block:: console
+.. code-block:: shell
     
     >  mltk summarize siamese_contrastive --tflite --build
     
@@ -109,9 +109,9 @@ Model Summary
 Model Diagram
 ------------------
 
-.. code-block:: console
+.. code-block:: shell
    
-   > mltk view siamese_contrastive --tflite --build
+   mltk view siamese_contrastive --tflite --build
 
 .. raw:: html
 

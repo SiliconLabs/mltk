@@ -31,5 +31,6 @@ PYBIND11_MODULE(MODULE_NAME, m)
     py::class_<mltk::AudioFeatureGeneratorWrapper>(m, "AudioFeatureGeneratorWrapper")
     .def(py::init<const py::dict&>())
     .def("process_sample", &mltk::AudioFeatureGeneratorWrapper::process_sample)
+    .def("activity_was_detected", &mltk::AudioFeatureGeneratorWrapper::activity_was_detected)
     ;
 }

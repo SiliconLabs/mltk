@@ -152,18 +152,12 @@ def test_simplicity_studio_project(app_name, board):
 def _get_slc_exe() -> str:
     """Download the slc_cli stand-alone utility and return the path to the executable"""
     WINDOWS_URL = 'https://www.silabs.com/documents/login/software/slc_cli_windows.zip'
-    WINDOWS_SHA1 = '5EF98BDC361BBA307BD51640737A55778AB8E097'
     LINUX_URL = 'https://www.silabs.com/documents/login/software/slc_cli_linux.zip'
-    LINUX_SHA1 = '910DC7C34634BE0D555D738D7A03D96A5A5E99E1'
-
 
     url = WINDOWS_URL if os.name == 'nt' else LINUX_URL
-    sha1 = WINDOWS_SHA1 if os.name == 'nt' else LINUX_SHA1
 
     slc_dir = download_verify_extract( 
         url=url,
-        file_hash=sha1,
-        file_hash_algorithm='sha1',
         dest_subdir='tools/slc_cli',
         remove_root_dir=True,
         logger=generate_slcp_logger

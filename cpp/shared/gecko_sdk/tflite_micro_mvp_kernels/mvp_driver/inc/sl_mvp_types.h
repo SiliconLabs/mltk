@@ -34,9 +34,14 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "em_common.h"
-#include "mltk_tflite_micro_helper.hpp"
+#if !defined(__arm__)
+// This works around a build error in sl_common.h on Windows
+#include "cmsis_compiler.h"
+#define __STATIC_INLINE static inline
+#endif 
 
+#include "sl_common.h"
+#include "mltk_tflite_micro_helper.hpp"
 
 #ifdef __arm__
 
@@ -48,8 +53,10 @@ DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk
 #else // __arm__
 
 #include <assert.h>
+
 #include "sl_mvp_simulator.hpp"
 
+#undef EFM_ASSERT
 #define EFM_ASSERT assert
 
 #endif // __arm__

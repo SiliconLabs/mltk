@@ -1,26 +1,30 @@
-
-from typing import List, Tuple, Dict
+from __future__ import annotations
+from typing import List, Tuple, Dict, TypeVar
 import numpy as np
 import tensorflow_lite_support.metadata.schema_py_generated as _tflite_schema_fb
 from tensorflow_lite_support.metadata.schema_py_generated import BuiltinOperator as TfliteOpCode
 from .tflite_tensor import TfliteTensor
 
 
-class TfliteLayerOptions(object):
-    pass
+TfliteModel = TypeVar('TfliteModel')
 
 
-class TfliteLayer(object):
+
+class TfliteLayer:
     """Wrapper for TFLite flatbuffer layer"""
 
     @staticmethod
-    def from_model(index, model, fb_operation):
+    def from_flatbuffer(
+        index:int, 
+        model:TfliteModel, 
+        fb_operation:_tflite_schema_fb.OperatorT
+    ) -> TfliteLayer:
         """Instantiate a TfliteLayer from then given TfliteModel flatbuffer operation"""
-        fb_opcode = model.flatbuffer_model.OperatorCodes(fb_operation.OpcodeIndex())
+        fb_opcode = model.flatbuffer_model.operatorCodes[fb_operation.opcodeIndex]
         # See: https://github.com/tensorflow/community/pull/285/files
         # for why we return the max(DeprecatedBuiltinCode, BuiltinCode)
-        opcode = max(fb_opcode.DeprecatedBuiltinCode(), fb_opcode.BuiltinCode())
-        opcode_version = fb_opcode.Version()
+        opcode = max(fb_opcode.deprecatedBuiltinCode, fb_opcode.builtinCode)
+        opcode_version = fb_opcode.version
 
         if opcode == TfliteOpCode.ADD:
             layer_cls = TfliteAddLayer
@@ -60,30 +64,34 @@ class TfliteLayer(object):
         index:int, 
         opcode:TfliteOpCode, 
         opcode_version:int, 
-        model:_tflite_schema_fb.Model, 
-        fb_operation:_tflite_schema_fb.Operator
+        model:TfliteModel, 
+        fb_operation:_tflite_schema_fb.OperatorT
     ):
         self._index:int = index 
+        self._model:TfliteModel = model
         self._opcode:TfliteOpCode = opcode
         self._opcode_version:int = opcode_version
         self._opcode_str:str = _convert_object_value_to_string(TfliteOpCode(), self.opcode)
+        self._options = TfliteLayerOptions(
+            fb_object=fb_operation.builtinOptions, 
+            type=fb_operation.builtinOptionsType
+        )
+        self._metadata:Dict[str,object] = {}
+
 
         self._inputs : List[TfliteTensor] = []
         self._outputs : List[TfliteTensor] = []
         
-        for i in fb_operation.InputsAsNumpy():
+        for i in fb_operation.inputs:
             if i >= 0:
                 self.inputs.append(model.get_tensor(i))
-        for i in fb_operation.OutputsAsNumpy():
+        for i in fb_operation.outputs:
             if i >= 0:
                 self.outputs.append(model.get_tensor(i))
         
-        self._options:TfliteLayerOptions = self._get_options(fb_operation.BuiltinOptionsType(), fb_operation.BuiltinOptions())
-        self._metadata:Dict[str,object] = {}
-
 
     def __str__(self):
-        return f'{self.name}'
+        return self.name
 
     @property
     def index(self) -> int:
@@ -109,6 +117,11 @@ class TfliteLayer(object):
     def options(self) -> TfliteLayerOptions:
         """Layer-specific options/config"""
         return self._options 
+
+    @property
+    def model(self) -> TfliteModel:
+        """Reference to associated TfliteModel"""
+        return self._model
 
     @property 
     def metadata(self) -> Dict[str,object]:
@@ -145,7 +158,7 @@ class TfliteLayer(object):
             raise IndexError(f'Index overflow ({index} >= {self.n_inputs})') 
         return self._inputs[index]
 
-    def get_input(self, index=0) -> np.ndarray:
+    def get_input_data(self, index=0) -> np.ndarray:
         """Get layer input tensor as np.ndarray"""
         if index >= self.n_inputs:
             raise IndexError(f'Index overflow ({index} >= {self.n_inputs})') 
@@ -157,62 +170,104 @@ class TfliteLayer(object):
             raise IndexError(f'Index overflow ({index} >= {self.n_outputs})') 
         return self._outputs[index]
 
-    def get_output(self, index=0) -> np.ndarray:
+    def get_output_data(self, index=0) -> np.ndarray:
         """Layer output tensor as np.ndarray"""
         if index >= self.n_outputs:
             raise IndexError(f'Index overflow ({index} >= {self.n_outputs})') 
         return self._outputs[index].data
 
 
-    def _get_options(self, opts_type, opts_buf):
-        if opts_type == _tflite_schema_fb.BuiltinOptions.Conv2DOptions:
-            return TfliteLayerOptionsConv2D(opts_buf)
-        elif opts_type == _tflite_schema_fb.BuiltinOptions.TransposeConvOptions:
-            return TfliteLayerOptionsTransposeConv(opts_buf)
-        elif opts_type == _tflite_schema_fb.BuiltinOptions.DepthwiseConv2DOptions:
-            return TfliteLayerOptionsDepthwiseConv2D(opts_buf)
-        elif opts_type == _tflite_schema_fb.BuiltinOptions.Pool2DOptions:
-            return TfliteLayerOptionsPool2D(opts_buf)
-        elif opts_type == _tflite_schema_fb.BuiltinOptions.FullyConnectedOptions:
-            return TfliteLayerOptionsFullyConnected(opts_buf)
-        elif opts_type == _tflite_schema_fb.BuiltinOptions.AddOptions:
-            return TfliteLayerOptionsAdd(opts_buf)
-        elif opts_type == _tflite_schema_fb.BuiltinOptions.MulOptions:
-            return TfliteLayerOptionsMul(opts_buf)
-        else:
-            return TfliteLayerOptionsUnsupported(opts_type)
-        
-    
+class TfliteLayerOptions:
+    """Generic layer options object"""
+    def __init__(self, fb_object=None, type:_tflite_schema_fb.BuiltinOptions=None):
+        self._type = type
+        if fb_object is not None:
+            for x in vars(fb_object):
+                setattr(self, x, getattr(fb_object, x))
+    @property
+    def options_type(self) -> _tflite_schema_fb.BuiltinOptions:
+        return self._type
+
+    @property
+    def options_type_str(self) -> str:
+        return _convert_object_value_to_string(_tflite_schema_fb.BuiltinOptions(), self._type)
+
+    def __str__(self):
+        return f'Type={self.options_type_str}'
+
+
+
         
 class TfliteAddLayer(TfliteLayer):
     """ADD operation TfliteLayer"""
+    def __init__(self, fb_operation:_tflite_schema_fb.OperatorT, **kwargs):
+        TfliteLayer.__init__(self, fb_operation=fb_operation, **kwargs)
+        self._options = TfliteAddLayerOptions(fb_operation.builtinOptions)
+
+    @property 
+    def options(self) -> TfliteAddLayerOptions:
+        """Layer-specific options/config"""
+        return self._options 
     @property
     def activation(self) -> str:
         """Fused activation"""
-        return self._options.activation
+        return self._options.activation_str
+    @property
+    def input1_tensor(self) -> TfliteTensor:
+        """First input tensor data"""
+        return self._inputs[0]
     @property
     def input1_data(self) -> np.ndarray:
         """First input tensor data"""
-        return self._inputs[0].data
+        return self.input1_tensor.data
+    @property
+    def input2_tensor(self) -> TfliteTensor:
+        """Second input tensor data"""
+        return self._inputs[1]
     @property
     def input2_data(self) -> np.ndarray:
         """Second input tensor data"""
-        return self._inputs[1].data
+        return self.input2_tensor.data
+    @property
+    def output_tensor(self) -> TfliteTensor:
+        """Output tensor data"""
+        return self._outputs[0]
     @property
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
-        return self._outputs[0].data
+        return self.output_tensor.data
+
+
+class TfliteAddLayerOptions(_tflite_schema_fb.AddOptionsT, TfliteLayerOptions):
+    def __init__(self, opts=None):
+        _tflite_schema_fb.AddOptionsT.__init__(self)
+        TfliteLayerOptions.__init__(self, opts,
+            type=_tflite_schema_fb.BuiltinOptions.AddOptions
+        )
+        
+    @property
+    def activation_str(self) -> str:
+        return _get_fused_activation_str(self.fusedActivationFunction)
+    @activation_str.setter
+    def activation_str(self, v):
+        self.fusedActivationFunction = _get_fused_activation_int(v) 
+    def __str__(self):
+        return f'Activation:{self.activation_str}'
 
 
 class TfliteConv2dLayer(TfliteLayer):
     """CONV_2D operation TfliteLayer"""
-    def __init__(self, *args, **kwargs):
-        TfliteLayer.__init__(self, *args, **kwargs)
-        filters_shape = self._inputs[1].data.shape
+    def __init__(self, fb_operation:_tflite_schema_fb.OperatorT, **kwargs):
+        TfliteLayer.__init__(self, fb_operation=fb_operation, **kwargs)
+        self._options = TfliteConv2DLayerOptions(fb_operation.builtinOptions)
+        filters_shape = self.filters_tensor.shape
         self._kernel_size = (filters_shape[1], filters_shape[2])
         self._filters = filters_shape[3]
-        self._bias_data = None if len(self._inputs) < 3 else self._inputs[2].data
 
+    @property 
+    def options(self) -> TfliteConv2DLayerOptions:
+        """Layer-specific options/config"""
+        return self._options 
     @property
     def filters(self) -> int:
         """The number of filters"""
@@ -228,42 +283,99 @@ class TfliteConv2dLayer(TfliteLayer):
     @property
     def padding(self) -> str:
         """Kernel padding"""
-        return self._options.padding
+        return self._options.padding_str
     @property
     def activation(self) -> str:
         """Fused activation"""
-        return self._options.activation
+        return self._options.activation_str
     @property
     def use_bias(self) -> bool:
         """Return if the layer uses a bias"""
-        return self._bias_data is not None
+        return len(self._inputs) > 2
+    @property
+    def input_tensor(self) -> TfliteTensor:
+        """Input tensor data"""
+        return self._inputs[0]
     @property
     def input_data(self) -> np.ndarray:
         """Input tensor data"""
-        return self._inputs[0].data
+        return self.input_tensor.data
+    @property
+    def filters_tensor(self) -> TfliteTensor:
+        """Filters tensor data"""
+        return self._inputs[1]
     @property
     def filters_data(self) -> np.ndarray:
         """Filters tensor data"""
-        return self._inputs[1].data
+        return self.filters_tensor.data
+    @property
+    def bias_tensor(self) -> TfliteTensor:
+        """Bias tensor data (None if no bias used)"""
+        return self._inputs[2] if self.use_bias else None
     @property
     def bias_data(self) -> np.ndarray:
         """Bias tensor data (None if no bias used)"""
-        return self._bias_data
+        return self.bias_tensor.data if self.use_bias else None
+    @property
+    def output_tensor(self) -> TfliteTensor:
+        """Output tensor data"""
+        return self._outputs[0]
     @property
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
-        return self._outputs[0].data
+        return self.output_tensor.data
+
+
+class TfliteConv2DLayerOptions(_tflite_schema_fb.Conv2DOptionsT, TfliteLayerOptions):
+    def __init__(self, opts=None):
+        _tflite_schema_fb.Conv2DOptionsT.__init__(self)
+        TfliteLayerOptions.__init__(
+            self, opts, 
+            type=_tflite_schema_fb.BuiltinOptions.Conv2DOptions
+        )
+       
+    @property
+    def stride_width(self) -> int:
+        return self.strideW
+    @stride_width.setter
+    def stride_width(self, v):
+        self.strideW = v
+    @property
+    def stride_height(self) -> int:
+        return self.strideH
+    @stride_height.setter
+    def stride_height(self, v):
+        self.strideH = v
+    @property
+    def padding_str(self) -> str:
+        return _get_padding_str(self.padding)
+    @padding_str.setter
+    def padding_str(self, v):
+        self.padding = _get_padding_int(v)
+    @property
+    def activation_str(self) -> str:
+        return _get_fused_activation_str(self.fusedActivationFunction)
+    @activation_str.setter
+    def activation_str(self, v):
+        self.fusedActivationFunction = _get_fused_activation_int(v)
+
+    def __str__(self):
+        return f'Padding:{self.padding_str} stride:{self.stride_width}x{self.stride_height} activation:{self.activation_str}'
 
 
 class TfliteTransposeConvLayer(TfliteLayer):
     """TRANSPOSE_CONV operation TfliteLayer"""
-    def __init__(self, *args, **kwargs):
-        TfliteLayer.__init__(self, *args, **kwargs)
-        filters_shape = self._inputs[1].data.shape
+    def __init__(self, fb_operation:_tflite_schema_fb.OperatorT, **kwargs):
+        TfliteLayer.__init__(self, fb_operation=fb_operation, **kwargs)
+        self._options = TfliteTransposeConvLayerOptions(fb_operation.builtinOptions)
+        filters_shape = self.filters_tensor.shape
         self._kernel_size = (filters_shape[1], filters_shape[2])
         self._filters = filters_shape[1]
-        self._bias_data = None if len(self._inputs) < 4 else self._inputs[3].data
 
+    @property 
+    def options(self) -> TfliteTransposeConvLayerOptions:
+        """Layer-specific options/config"""
+        return self._options 
     @property
     def filters(self) -> int:
         """The number of filters"""
@@ -279,77 +391,162 @@ class TfliteTransposeConvLayer(TfliteLayer):
     @property
     def padding(self) -> str:
         """Kernel padding"""
-        return self._options.padding
+        return self._options.padding_str
     @property
     def use_bias(self) -> bool:
         """Return if the layer uses a bias"""
-        return self._bias_data is not None
+        return len(self._inputs) > 3
+    @property
+    def input_tensor(self) -> TfliteTensor:
+        """Input tensor data"""
+        return self._inputs[2]
     @property
     def input_data(self) -> np.ndarray:
         """Input tensor data"""
-        return self._inputs[2].data
+        return self.input_tensor.data
+    @property
+    def filters_tensor(self) -> TfliteTensor:
+        """Filters tensor data"""
+        return self._inputs[1]
     @property
     def filters_data(self) -> np.ndarray:
         """Filters tensor data"""
-        return self._inputs[1].data
+        return self.filters_tensor.data
+    @property
+    def bias_tensor(self) -> TfliteTensor:
+        """Bias tensor data (None if no bias used)"""
+        return self._inputs[3] if self.use_bias else None
     @property
     def bias_data(self) -> np.ndarray:
         """Bias tensor data (None if no bias used)"""
-        return self._bias_data
+        return self.bias_tensor.data if self.use_bias else None
+    @property
+    def output_tensor(self) -> TfliteTensor:
+        """Output tensor data"""
+        return self._outputs[0]
     @property
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
-        return self._outputs[0].data
+        return self.output_tensor.data
+
+
+class TfliteTransposeConvLayerOptions(_tflite_schema_fb.TransposeConvOptionsT, TfliteLayerOptions):
+    def __init__(self, opts=None):
+        _tflite_schema_fb.TransposeConvOptionsT.__init__(self)
+        TfliteLayerOptions.__init__(self, opts,
+            type=_tflite_schema_fb.BuiltinOptions.TransposeConvOptions
+        )
+        
+    @property
+    def stride_width(self) -> int:
+        return self.strideW
+    @stride_width.setter
+    def stride_width(self, v):
+        self.strideW = v
+    @property
+    def stride_height(self) -> int:
+        return self.strideH
+    @stride_height.setter
+    def stride_height(self, v):
+        self.strideH = v
+    @property
+    def padding_str(self) -> str:
+        return _get_padding_str(self.padding)
+    @padding_str.setter
+    def padding_str(self, v):
+        self.padding = _get_padding_int(v) 
+    def __str__(self):
+        return f'Padding:{self.padding_str} stride:{self.stride_width}x{self.stride_height}'
 
 
 class TfliteFullyConnectedLayer(TfliteLayer):
     """FULLY_CONNECT operation TfliteLayer"""
-    def __init__(self, *args, **kwargs):
-        TfliteLayer.__init__(self, *args, **kwargs)
-        self._bias_data = None if len(self._inputs) < 3 else self._inputs[2].data
+    def __init__(self, fb_operation:_tflite_schema_fb.OperatorT, **kwargs):
+        TfliteLayer.__init__(self, fb_operation=fb_operation, **kwargs)
+        self._options = TfliteFullyConnectedLayerOptions(fb_operation.builtinOptions)
 
+    @property 
+    def options(self) -> TfliteFullyConnectedLayerOptions:
+        """Layer-specific options/config"""
+        return self._options 
     @property
     def accumulator_depth(self) -> int:
         """Number of weights to accumulate"""
-        return self.weights_data.shape[-1]
+        return self.weights_tensor.shape[-1]
     @property
     def units(self) -> int:
         """Number of neurons"""
-        return self.output_data.shape[-1]
+        return self.output_tensor.shape[-1]
     @property
     def activation(self) -> str:
         """Fused activation"""
-        return self._options.activation
+        return self._options.activation_str
     @property
     def use_bias(self) -> bool:
         """Return if the layer uses a bias"""
-        return self._bias_data is not None
+        return len(self._inputs) > 2
+    @property
+    def input_tensor(self) -> TfliteTensor:
+        """Input tensor data"""
+        return self._inputs[0]
     @property
     def input_data(self) -> np.ndarray:
         """Input tensor data"""
-        return self._inputs[0].data
+        return self.input_tensor.data
+    @property
+    def weights_tensor(self) -> TfliteTensor:
+        """Weights tensor data"""
+        return self._inputs[1]
     @property
     def weights_data(self) -> np.ndarray:
         """Weights tensor data"""
-        return self._inputs[1].data
+        return self.weights_tensor.data
+    @property
+    def bias_tensor(self) -> TfliteTensor:
+        """Bias tensor data (None if no bias used)"""
+        return self._inputs[2] if self.use_bias else None
     @property
     def bias_data(self) -> np.ndarray:
         """Bias tensor data (None if no bias used)"""
-        return self._bias_data
+        return self.bias_tensor.data if self.use_bias else None
+    @property
+    def output_tensor(self) -> TfliteTensor:
+        """Output tensor data"""
+        return self._outputs[0]
     @property
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
-        return self._outputs[0].data
+        return self.output_tensor.data
+
+
+class TfliteFullyConnectedLayerOptions(_tflite_schema_fb.FullyConnectedOptionsT, TfliteLayerOptions):
+    def __init__(self, opts=None):
+        _tflite_schema_fb.FullyConnectedOptionsT.__init__(self)
+        TfliteLayerOptions.__init__(self, opts,
+            type=_tflite_schema_fb.BuiltinOptions.FullyConnectedOptions
+        )
+    @property
+    def activation_str(self) -> str:
+        return _get_fused_activation_str(self.fusedActivationFunction) 
+    @activation_str.setter
+    def activation_str(self, v):
+        self.fusedActivationFunction = _get_fused_activation_int(v) 
+    def __str__(self):
+        return f'Activation:{self.activation_str}'
 
 
 class TfliteDepthwiseConv2dLayer(TfliteLayer):
     """DEPTHWISE_CONV_2D operation TfliteLayer"""
-    def __init__(self, *args, **kwargs):
-        TfliteLayer.__init__(self, *args, **kwargs)
-        filters_shape = self._inputs[1].data.shape
+    def __init__(self, fb_operation:_tflite_schema_fb.OperatorT, **kwargs):
+        TfliteLayer.__init__(self, fb_operation=fb_operation, **kwargs)
+        self._options = TfliteDepthwiseConv2DLayerOptions(fb_operation.builtinOptions)
+        filters_shape = self.filters_tensor.shape
         self._kernel_size = (filters_shape[1], filters_shape[2])
-        self._bias_data = None if len(self._inputs) < 3 else self._inputs[2].data
 
+    @property 
+    def options(self) -> TfliteDepthwiseConv2DLayerOptions:
+        """Layer-specific options/config"""
+        return self._options 
     @property
     def multiplier(self) -> int:
         """Depth multiplier"""
@@ -365,38 +562,100 @@ class TfliteDepthwiseConv2dLayer(TfliteLayer):
     @property
     def padding(self) -> str:
         """Kernel padding"""
-        return self._options.padding
+        return self._options.padding_str
     @property
     def activation(self) -> str:
         """Fused activation"""
-        return self._options.activation
+        return self._options.activation_str
     @property
     def use_bias(self) -> bool:
         """Return if the layer uses a bias"""
-        return self._bias_data is not None
+        return len(self._inputs) > 2
+    @property
+    def input_tensor(self) -> TfliteTensor:
+        """Input tensor data"""
+        return self._inputs[0]
     @property
     def input_data(self) -> np.ndarray:
         """Input tensor data"""
-        return self._inputs[0].data
+        return self.input_tensor.data
+    @property
+    def filters_tensor(self) -> TfliteTensor:
+        """Filters tensor data"""
+        return self._inputs[1]
     @property
     def filters_data(self) -> np.ndarray:
         """Filters tensor data"""
-        return self._inputs[1].data
+        return self.filters_tensor.data
+    @property
+    def bias_tensor(self) -> TfliteTensor:
+        """Bias tensor data (None if no bias used)"""
+        return self._inputs[2] if self.use_bias else None
     @property
     def bias_data(self) -> np.ndarray:
         """Bias tensor data (None if no bias used)"""
-        return self._bias_data
+        return self.bias_tensor.data if self.use_bias else None
+    @property
+    def output_tensor(self) -> TfliteTensor:
+        """Output tensor data"""
+        return self._outputs[0]
     @property
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
-        return self._outputs[0].data
+        return self.output_tensor.data
+
+
+class TfliteDepthwiseConv2DLayerOptions(_tflite_schema_fb.DepthwiseConv2DOptionsT, TfliteLayerOptions):
+    def __init__(self, opts=None):
+        _tflite_schema_fb.DepthwiseConv2DOptionsT.__init__(self)
+        TfliteLayerOptions.__init__(self, opts,
+            type=_tflite_schema_fb.BuiltinOptions.DepthwiseConv2DOptions
+        )
+       
+    @property
+    def stride_width(self) -> int:
+        return self.strideW
+    @stride_width.setter
+    def stride_width(self, v):
+        self.strideW = v
+    @property
+    def stride_height(self) -> int:
+        return self.strideH
+    @stride_height.setter
+    def stride_height(self, v):
+        self.strideH = v
+    @property
+    def multiplier(self) -> int:
+        return self.depthMultiplier
+    @multiplier.setter
+    def multiplier(self, v):
+        self.depthMultiplier = v
+    @property
+    def padding_str(self) -> str:
+        return _get_padding_str(self.padding)
+    @padding_str.setter
+    def padding_str(self, v):
+        self.padding = _get_padding_int(v)
+    @property
+    def activation_str(self) -> str:
+        return _get_fused_activation_str(self.fusedActivationFunction)
+    @activation_str.setter
+    def activation_str(self, v):
+        self.fusedActivationFunction = _get_fused_activation_int(v)
+    def __str__(self):
+        return f'Multiplier:{self.multiplier} padding:{self.padding_str} stride:{self.stride_width}x{self.stride_height} activation:{self.activation_str}'
 
 
 class TflitePooling2dLayer(TfliteLayer):
     """AVERAGE_POOL_2D or MAX_POOL_2D operation TfliteLayer"""
-    def __init__(self, *args, **kwargs):
-        TfliteLayer.__init__(self, *args, **kwargs)
+    def __init__(self, fb_operation:_tflite_schema_fb.OperatorT, **kwargs):
+        TfliteLayer.__init__(self, fb_operation=fb_operation, **kwargs)
+        self._options = TflitePool2DLayerOptions(fb_operation.builtinOptions)
  
+    @property 
+    def options(self) -> TflitePool2DLayerOptions:
+        """Layer-specific options/config"""
+        return self._options
     @property
     def pool_size(self) -> Tuple[int,int]:
         """Kernel size as height x width"""
@@ -408,19 +667,76 @@ class TflitePooling2dLayer(TfliteLayer):
     @property
     def padding(self) -> str:
         """Kernel padding"""
-        return self._options.padding
+        return self._options.padding_str
     @property
     def activation(self) -> str:
         """Fused activation"""
-        return self._options.activation
+        return self._options.activation_str
+    @property
+    def input_tensor(self) -> TfliteTensor:
+        """Input tensor data"""
+        return self._inputs[0]
     @property
     def input_data(self) -> np.ndarray:
         """Input tensor data"""
-        return self._inputs[0].data
+        return self.input_tensor.data
+    @property
+    def output_tensor(self) -> TfliteTensor:
+        """Output tensor data"""
+        return self._outputs[0]
     @property
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
-        return self._outputs[0].data
+        return self.output_tensor.data
+
+
+class TflitePool2DLayerOptions(_tflite_schema_fb.Pool2DOptionsT, TfliteLayerOptions):
+    def __init__(self, opts=None):
+        _tflite_schema_fb.Pool2DOptionsT.__init__(self)
+        TfliteLayerOptions.__init__(self, opts,
+            type=_tflite_schema_fb.BuiltinOptions.Pool2DOptions
+        )
+       
+    @property
+    def stride_width(self) -> int:
+        return self.strideW
+    @stride_width.setter
+    def stride_width(self, v):
+        self.strideW = v
+    @property
+    def stride_height(self) -> int:
+        return self.strideH
+    @stride_height.setter
+    def stride_height(self, v):
+        self.strideH = v
+    @property
+    def filter_width(self) -> int:
+        return self.filterWidth
+    @filter_width.setter
+    def filter_width(self, v):
+        self.filterWidth = v
+    @property
+    def filter_height(self) -> int:
+        return self.filterHeight
+    @filter_height.setter
+    def filter_height(self, v):
+        self.filterHeight = v
+    @property
+    def padding_str(self) -> str:
+        return _get_padding_str(self.padding)
+    @padding_str.setter
+    def padding_str(self, v):
+        self.padding = _get_padding_int(v)
+    @property
+    def activation_str(self) -> str:
+        return _get_fused_activation_str(self.fusedActivationFunction)
+    @activation_str.setter
+    def activation_str(self, v):
+        self.fusedActivationFunction = _get_fused_activation_int(v)
+    def __str__(self):
+        return f'Padding:{self.padding_str} stride:{self.stride_width}x{self.stride_height} filter:{self.filter_width}x{self.filter_height} activation:{self.activation_str}'
+
+
 
 
 class TfliteReshapeLayer(TfliteLayer):
@@ -429,13 +745,21 @@ class TfliteReshapeLayer(TfliteLayer):
         TfliteLayer.__init__(self, *args, **kwargs)
 
     @property
+    def input_tensor(self) -> TfliteTensor:
+        """Input tensor data"""
+        return self._inputs[0]
+    @property
     def input_data(self) -> np.ndarray:
         """Input tensor data"""
-        return self._inputs[0].data
+        return self.input_tensor.data
+    @property
+    def output_tensor(self) -> TfliteTensor:
+        """Output tensor data"""
+        return self._outputs[0]
     @property
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
-        return self._outputs[0].data
+        return self.output_tensor.data
 
     @property
     def requires_copy(self) -> bool:
@@ -451,164 +775,126 @@ class TfliteReshapeLayer(TfliteLayer):
 class TfliteDequantizeLayer(TfliteLayer):
     """DEQUANTIZE operation TfliteLayer"""
     @property
+    def input_tensor(self) -> TfliteTensor:
+        """Input tensor data"""
+        return self._inputs[0]
+    @property
     def input_data(self) -> np.ndarray:
         """Input tensor data"""
-        return self._inputs[0].data
+        return self.input_tensor.data
+    @property
+    def output_tensor(self) -> TfliteTensor:
+        """Output tensor data"""
+        return self._outputs[0]
     @property
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
-        return self._outputs[0].data
+        return self.output_tensor.data
 
 
 class TfliteQuantizeLayer(TfliteLayer):
     """QUANTIZE operation TfliteLayer"""
     @property
+    def input_tensor(self) -> TfliteTensor:
+        """Input tensor data"""
+        return self._inputs[0]
+    @property
     def input_data(self) -> np.ndarray:
         """Input tensor data"""
-        return self._inputs[0].data
+        return self.input_tensor.data
+    @property
+    def output_tensor(self) -> TfliteTensor:
+        """Output tensor data"""
+        return self._outputs[0]
     @property
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
-        return self._outputs[0].data
+        return self.output_tensor.data
 
 
 class TfliteMulLayer(TfliteLayer):
     """MUL operation TfliteLayer"""
+    def __init__(self, fb_operation:_tflite_schema_fb.OperatorT, **kwargs):
+        TfliteLayer.__init__(self, fb_operation=fb_operation, **kwargs)
+        self._options = TfliteMulLayerOptions(fb_operation.builtinOptions)
+
+    @property 
+    def options(self) -> TfliteMulLayerOptions:
+        """Layer-specific options/config"""
+        return self._options
     @property
     def activation(self) -> str:
         """Fused activation"""
-        return self._options.activation
+        return self._options.activation_str
+    @property
+    def input1_tensor(self) -> TfliteTensor:
+        """First input tensor data"""
+        return self._inputs[0]
     @property
     def input1_data(self) -> np.ndarray:
         """First input tensor data"""
-        return self._inputs[0].data
+        return self.input1_tensor.data
+    @property
+    def input2_tensor(self) -> TfliteTensor:
+        """Second input tensor data"""
+        return self._inputs[1]
     @property
     def input2_data(self) -> np.ndarray:
         """Second input tensor data"""
-        return self._inputs[1].data
+        return self.input2_tensor.data
+    @property
+    def output_tensor(self) -> TfliteTensor:
+        """Output tensor data"""
+        return self._outputs[0]
     @property
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
-        return self._outputs[0].data
+        return self.output_tensor.data
 
 
-class TfliteLayerOptionsUnsupported(TfliteLayerOptions):
-    def __init__(self, opts_type):
-        TfliteLayerOptions.__init__(self)
-        self.opts_type = opts_type
-
+class TfliteMulLayerOptions(_tflite_schema_fb.MulOptionsT, TfliteLayerOptions):
+    def __init__(self, opts=None):
+        _tflite_schema_fb.MulOptionsT.__init__(self)
+        TfliteLayerOptions.__init__(self, opts,
+            type=_tflite_schema_fb.BuiltinOptions.MulOptions
+        )
+       
+    @property
+    def activation_str(self) -> str:
+        return _get_fused_activation_str(self.fusedActivationFunction)
+    @activation_str.setter
+    def activation_str(self, v):
+        self.fusedActivationFunction = _get_fused_activation_int(v) 
     def __str__(self):
-        return f'BuiltinOptionsType={self.opts_type}'
-
-        
-class TfliteLayerOptionsConv2D(TfliteLayerOptions):
-    def __init__(self, opts_buf):
-        TfliteLayerOptions.__init__(self)
-    
-        opts = _tflite_schema_fb.Conv2DOptions()
-        opts.Init(opts_buf.Bytes, opts_buf.Pos)
-        self.stride_width = opts.StrideW()
-        self.stride_height = opts.StrideH()
-        self.padding = _get_padding(opts.Padding())
-        self.activation = _get_fused_activation(opts.FusedActivationFunction())
-        
-    def __str__(self):
-        return f'Padding:{self.padding} stride:{self.stride_width}x{self.stride_height} activation:{self.activation}'
-
-        
-class TfliteLayerOptionsTransposeConv(TfliteLayerOptions):
-    def __init__(self, opts_buf):
-        TfliteLayerOptions.__init__(self)
-    
-        opts = _tflite_schema_fb.TransposeConvOptions()
-        opts.Init(opts_buf.Bytes, opts_buf.Pos)
-        self.stride_width = opts.StrideW()
-        self.stride_height = opts.StrideH()
-        self.padding = _get_padding(opts.Padding())
-
-    def __str__(self):
-        return f'Padding:{self.padding} stride:{self.stride_width}x{self.stride_height}'
+        return f'Activation:{self.activation_str}'
 
 
-class TfliteLayerOptionsDepthwiseConv2D(TfliteLayerOptions):
-    def __init__(self, opts_buf):
-        TfliteLayerOptions.__init__(self)
-    
-        opts = _tflite_schema_fb.DepthwiseConv2DOptions()
-        opts.Init(opts_buf.Bytes, opts_buf.Pos)
-        self.stride_width = opts.StrideW()
-        self.stride_height = opts.StrideH()
-        self.multiplier = opts.DepthMultiplier()
-        self.padding = _get_padding(opts.Padding())
-        self.activation = _get_fused_activation(opts.FusedActivationFunction())
-        
-    def __str__(self):
-        return f'Multipler:{self.multiplier} padding:{self.padding} stride:{self.stride_width}x{self.stride_height} activation:{self.activation}'
 
 
-class TfliteLayerOptionsPool2D(TfliteLayerOptions):
-    def __init__(self, opts_buf):
-        TfliteLayerOptions.__init__(self)
-    
-        opts = _tflite_schema_fb.Pool2DOptions()
-        opts.Init(opts_buf.Bytes, opts_buf.Pos)
-        self.stride_width = opts.StrideW()
-        self.stride_height = opts.StrideH()
-        self.filter_width = opts.FilterWidth()
-        self.filter_height = opts.FilterHeight()
-        self.padding = _get_padding(opts.Padding())
-        self.activation = _get_fused_activation(opts.FusedActivationFunction())
-        
-    def __str__(self):
-        return f'Padding:{self.padding} stride:{self.stride_width}x{self.stride_height} filter:{self.filter_width}x{self.filter_height} activation:{self.activation}'
 
 
-class TfliteLayerOptionsFullyConnected(TfliteLayerOptions):
-    def __init__(self, opts_buf):
-        TfliteLayerOptions.__init__(self)
-    
-        opts = _tflite_schema_fb.FullyConnectedOptions()
-        opts.Init(opts_buf.Bytes, opts_buf.Pos)
-        self.activation = _get_fused_activation(opts.FusedActivationFunction())
-        
-    def __str__(self):
-        return f'Activation:{self.activation}'
-
-
-class TfliteLayerOptionsAdd(TfliteLayerOptions):
-    def __init__(self, opts_buf):
-        TfliteLayerOptions.__init__(self)
-    
-        opts = _tflite_schema_fb.AddOptions()
-        opts.Init(opts_buf.Bytes, opts_buf.Pos)
-        self.activation = _get_fused_activation(opts.FusedActivationFunction())
-        
-    def __str__(self):
-        return f'Activation:{self.activation}'
-
-
-class TfliteLayerOptionsMul(TfliteLayerOptions):
-    def __init__(self, opts_buf):
-        TfliteLayerOptions.__init__(self)
-    
-        opts = _tflite_schema_fb.MulOptions()
-        opts.Init(opts_buf.Bytes, opts_buf.Pos)
-        self.activation = _get_fused_activation(opts.FusedActivationFunction())
-        
-    def __str__(self):
-        return f'Activation:{self.activation}'
-
-
-def _get_padding(padding) -> str:
+def _get_padding_str(padding:int) -> str:
     return _convert_object_value_to_string(_tflite_schema_fb.Padding(), padding)
+def _get_padding_int(padding:str) -> int:
+    return _convert_object_value_to_int(_tflite_schema_fb.Padding(), padding)
     
-def _get_fused_activation(act) -> str:
+
+def _get_fused_activation_str(act:int) -> str:
     return _convert_object_value_to_string(_tflite_schema_fb.ActivationFunctionType(), act)
+def _get_fused_activation_int(act:str) -> int:
+    return _convert_object_value_to_int(_tflite_schema_fb.ActivationFunctionType(), act)
     
-def _convert_object_value_to_string(obj, needle) -> str:
+
+def _convert_object_value_to_string(obj, needle:int) -> str:
     for key in dir(obj):
         if getattr(obj, key) == needle:
             return key.lower()
         
     return 'None'
 
+def _convert_object_value_to_int(obj, needle:str) -> int:
+    for key in dir(obj):
+        if key.lower() == needle.lower():
+            return getattr(obj, key)
+
+    return -1

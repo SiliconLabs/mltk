@@ -28,7 +28,3 @@ mltk_define(TFLITE_MICRO_EXCLUDED_REF_KERNELS
 mltk_define(TFLITE_MICRO_SIMULATOR_ENABLED
 "Enable the accelerator simulator"
 )
-
-mltk_define(TFLITE_MICRO_OVERRIDE_QUANTIZED_MULTIPLIER_API
-"Enable  updated quantized multiplier defined here: https://github.com/tensorflow/tensorflow/pull/50290"
-)

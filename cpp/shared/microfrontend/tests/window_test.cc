@@ -69,7 +69,7 @@ TEST(WindowState, CheckResidualInput) {
   size_t num_samples_read;
 
   EXPECT_TRUE(WindowProcessSamples(
-      &state, kFakeAudioData,
+      &state, NULL, kFakeAudioData,
       sizeof(kFakeAudioData) / sizeof(kFakeAudioData[0]), &num_samples_read));
 
   int i;
@@ -88,7 +88,7 @@ TEST(WindowState, CheckOutputValues) {
   size_t num_samples_read;
 
   EXPECT_TRUE(WindowProcessSamples(
-      &state, kFakeAudioData,
+      &state, NULL, kFakeAudioData,
       sizeof(kFakeAudioData) / sizeof(kFakeAudioData[0]), &num_samples_read));
 
   const int16_t expected[] = {
@@ -111,7 +111,7 @@ TEST(WindowState, CheckMaxAbsValue) {
   size_t num_samples_read;
 
   EXPECT_TRUE(WindowProcessSamples(
-      &state, kFakeAudioData,
+      &state, NULL, kFakeAudioData,
       sizeof(kFakeAudioData) / sizeof(kFakeAudioData[0]), &num_samples_read));
 
   EXPECT_EQ(state.max_abs_output_value, 32256);
@@ -127,10 +127,10 @@ TEST(WindowState, CheckConsecutiveWindow) {
   size_t num_samples_read;
 
   EXPECT_TRUE(WindowProcessSamples(
-      &state, kFakeAudioData,
+      &state, NULL, kFakeAudioData,
       sizeof(kFakeAudioData) / sizeof(kFakeAudioData[0]), &num_samples_read));
   EXPECT_TRUE(WindowProcessSamples(
-      &state, kFakeAudioData + kWindowSamples,
+      &state, NULL, kFakeAudioData + kWindowSamples,
       sizeof(kFakeAudioData) / sizeof(kFakeAudioData[0]) - kWindowSamples,
       &num_samples_read));
 
@@ -154,15 +154,15 @@ TEST(WindowState, CheckNotEnoughSamples) {
   size_t num_samples_read;
 
   EXPECT_TRUE(WindowProcessSamples(
-      &state, kFakeAudioData,
+      &state, NULL, kFakeAudioData,
       sizeof(kFakeAudioData) / sizeof(kFakeAudioData[0]), &num_samples_read));
   EXPECT_TRUE(WindowProcessSamples(
-      &state, kFakeAudioData + kWindowSamples,
+      &state, NULL, kFakeAudioData + kWindowSamples,
       sizeof(kFakeAudioData) / sizeof(kFakeAudioData[0]) - kWindowSamples,
       &num_samples_read));
   EXPECT_EQ(
       false, WindowProcessSamples(
-                 &state, kFakeAudioData + kWindowSamples + kStepSamples,
+                 &state, NULL, kFakeAudioData + kWindowSamples + kStepSamples,
                  sizeof(kFakeAudioData) / sizeof(kFakeAudioData[0]) -
                      kWindowSamples - kStepSamples,
                  &num_samples_read));

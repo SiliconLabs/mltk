@@ -18,10 +18,14 @@ The MLTK supports three modes of installation:
 This describes how to install the MLTK Python package into your Python3 environment.  
 
 ```{note} 
-- Before installing, you must have [Python3.7, 3.8, or 3.9](https://www.python.org/downloads/) installed on your computer.
-- Installing the MLTK will also install Google [Tensorflow](https://www.tensorflow.org/install) into your Python environment,  
-  if your computer has an NVidia GPU, then ensure the proper drivers are [installed](https://www.tensorflow.org/install/gpu).
+- Before installing, you must have [Python3.7, 3.8, or 3.9](https://www.python.org/downloads/) installed on your computer
+- Installing the MLTK will also install Google [Tensorflow](https://www.tensorflow.org/install) into your Python environment,
+  if your computer has an NVidia GPU, then ensure the proper drivers are [installed](https://www.tensorflow.org/install/gpu)
+- If you're using Windows, be sure to install the [Microsoft Visual C++ Redistributable for Visual Studio 2015, 2017 and 2019](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads) which is required by [Tensorflow](https://www.tensorflow.org/install/pip)
+
 ```
+
+
 
 
 1 ) __Optionally__ create and activate a Python [virtual environment](https://docs.python.org/3/tutorial/venv.html): 

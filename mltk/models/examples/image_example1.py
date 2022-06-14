@@ -20,73 +20,124 @@ given image is a "rock", "paper", or "scissor" hand gesture.
 Commands
 --------------
 
-.. code-block:: console
+.. code-block:: shell
 
    # Do a "dry run" test training of the model
-   > mltk train image_example1-test
+   mltk train image_example1-test
 
    # Train the model
-   > mltk train image_example1
+   mltk train image_example1
 
    # Evaluate the trained model .tflite model
-   > mltk evaluate image_example1 --tflite
+   mltk evaluate image_example1 --tflite
 
    # Profile the model in the MVP hardware accelerator simulator
-   > mltk profile image_example1 --accelerator MVP
+   mltk profile image_example1 --accelerator MVP
 
    # Profile the model on a physical development board
-   > mltk profile image_example1 --accelerator MVP --device
+   mltk profile image_example1 --accelerator MVP --device
 
+   # Use the model custom command to dump the augmented samples to ~/.mltk/models/image_example1/datagen_dump
+   mltk custom image_example1 datagen_dump --count 20
 
 
 Model Summary
 --------------
 
-.. code-block:: console
+.. code-block:: shell
     
-    > mltk summarize image_example1 --tflite
+    mltk summarize image_example1 --tflite
     
-    +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+  
-    | Index | OpCode          | Input(s)        | Output(s)       | Config                                              |  
-    +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+  
-    | 0     | conv_2d         | 96x96x1 (int8)  | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |  
-    |       |                 | 3x3x1 (int8)    |                 |                                                     |  
-    |       |                 | 24 (int32)      |                 |                                                     |  
-    | 1     | average_pool_2d | 48x48x24 (int8) | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |  
-    | 2     | conv_2d         | 24x24x24 (int8) | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |  
-    |       |                 | 3x3x24 (int8)   |                 |                                                     |  
-    |       |                 | 16 (int32)      |                 |                                                     |  
-    | 3     | conv_2d         | 11x11x16 (int8) | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |  
-    |       |                 | 3x3x16 (int8)   |                 |                                                     |  
-    |       |                 | 24 (int32)      |                 |                                                     |  
-    | 4     | average_pool_2d | 9x9x24 (int8)   | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |  
-    | 5     | reshape         | 4x4x24 (int8)   | 384 (int8)      | BuiltinOptionsType=0                                |  
-    |       |                 | 2 (int32)       |                 |                                                     |  
-    | 6     | fully_connected | 384 (int8)      | 3 (int8)        | Activation:none                                     |  
-    |       |                 | 384 (int8)      |                 |                                                     |  
-    |       |                 | 3 (int32)       |                 |                                                     |  
-    | 7     | softmax         | 3 (int8)        | 3 (int8)        | BuiltinOptionsType=9                                |  
-    +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+  
-    Total MACs: 1.197 M                                                                                                    
-    Total OPs: 2.524 M                                                                                                     
-    Name: image_example1                                                                                                   
-    Version: 1                                                                                                             
-    Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images                        
-    Classes: rock, paper, scissor                                                                                          
-    hash: b60ad56115089679c5006f04e4c9a9b0                                                                                 
-    date: 2022-02-04T18:48:51.997Z                                                                                         
-    runtime_memory_size: 71172                                                                                             
-    samplewise_norm.rescale: 0.0                                                                                           
-    samplewise_norm.mean_and_std: True                                                                                     
-    .tflite file size: 15.7kB
+    +-------+-----------------+-------------------+-----------------+-----------------------------------------------------+
+    | Index | OpCode          | Input(s)          | Output(s)       | Config                                              |
+    +-------+-----------------+-------------------+-----------------+-----------------------------------------------------+
+    | 0     | quantize        | 96x96x1 (float32) | 96x96x1 (int8)  | BuiltinOptionsType=0                                |
+    | 1     | conv_2d         | 96x96x1 (int8)    | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |
+    |       |                 | 3x3x1 (int8)      |                 |                                                     |
+    |       |                 | 24 (int32)        |                 |                                                     |
+    | 2     | average_pool_2d | 48x48x24 (int8)   | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |
+    | 3     | conv_2d         | 24x24x24 (int8)   | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |
+    |       |                 | 3x3x24 (int8)     |                 |                                                     |
+    |       |                 | 16 (int32)        |                 |                                                     |
+    | 4     | conv_2d         | 11x11x16 (int8)   | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |
+    |       |                 | 3x3x16 (int8)     |                 |                                                     |
+    |       |                 | 24 (int32)        |                 |                                                     |
+    | 5     | average_pool_2d | 9x9x24 (int8)     | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |
+    | 6     | reshape         | 4x4x24 (int8)     | 384 (int8)      | BuiltinOptionsType=0                                |
+    |       |                 | 2 (int32)         |                 |                                                     |
+    | 7     | fully_connected | 384 (int8)        | 3 (int8)        | Activation:none                                     |
+    |       |                 | 384 (int8)        |                 |                                                     |
+    |       |                 | 3 (int32)         |                 |                                                     |
+    | 8     | softmax         | 3 (int8)          | 3 (int8)        | BuiltinOptionsType=9                                |
+    | 9     | dequantize      | 3 (int8)          | 3 (float32)     | BuiltinOptionsType=0                                |
+    +-------+-----------------+-------------------+-----------------+-----------------------------------------------------+
+    Total MACs: 1.197 M
+    Total OPs: 2.561 M
+    Name: image_example1
+    Version: 1
+    Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images
+    Classes: rock, paper, scissor
+    hash: 31bdc72ea90bfbcfcbe0fccaed749686
+    date: 2022-04-28T17:33:35.474Z
+    runtime_memory_size: 71408
+    samplewise_norm.rescale: 0.0
+    samplewise_norm.mean_and_std: True
+    .tflite file size: 15.0kB
+
+
+Model Profiling Report
+-----------------------
+
+.. code-block:: shell
+   
+   # Profile on physical EFR32xG24 using MVP accelerator
+   mltk profile image_example1 --device --accelerator MVP
+
+    Profiling Summary
+    Name: image_example1
+    Accelerator: MVP
+    Input Shape: 1x96x96x1
+    Input Data Type: float32
+    Output Shape: 1x3
+    Output Data Type: float32
+    Flash, Model File Size (bytes): 15.0k
+    RAM, Runtime Memory Size (bytes): 71.4k
+    Operation Count: 2.7M
+    Multiply-Accumulate Count: 1.2M
+    Layer Count: 10
+    Unsupported Layer Count: 0
+    Accelerator Cycle Count: 2.9M
+    CPU Cycle Count: 982.3k
+    CPU Utilization (%): 25.9
+    Clock Rate (hz): 80.0M
+    Time (s): 47.5m
+    Ops/s: 56.4M
+    MACs/s: 25.2M
+    Inference/s: 21.1
+
+    Model Layers
+    +-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+    | Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape             | Output Shape | Options                                             |
+    +-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+    | 0     | quantize        | 36.9k  | 0      | 0          | 332.6k     | 4.0m     | 1x96x96x1               | 1x96x96x1    | Type=none                                           |
+    | 1     | conv_2d         | 1.2M   | 497.7k | 1.8M       | 14.4k      | 22.1m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |
+    | 2     | average_pool_2d | 69.1k  | 0      | 48.5k      | 569.2k     | 7.4m     | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |
+    | 3     | conv_2d         | 842.2k | 418.2k | 638.9k     | 6.3k       | 7.9m     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |
+    | 4     | conv_2d         | 565.7k | 279.9k | 431.6k     | 8.4k       | 5.3m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |
+    | 5     | average_pool_2d | 1.9k   | 0      | 1.6k       | 42.1k      | 510.0u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |
+    | 6     | reshape         | 0      | 0      | 0          | 2.4k       | 30.0u    | 1x4x4x24,2              | 1x384        | Type=none                                           |
+    | 7     | fully_connected | 2.3k   | 1.1k   | 1.8k       | 2.1k       | 30.0u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |
+    | 8     | softmax         | 15.0   | 0      | 0          | 3.7k       | 60.0u    | 1x3                     | 1x3          | Type=softmaxoptions                                 |
+    | 9     | dequantize      | 6.0    | 0      | 0          | 1.0k       | 0        | 1x3                     | 1x3          | Type=none                                           |
+    +-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
 
 
 Model Diagram
 ------------------
 
-.. code-block:: console
+.. code-block:: shell
    
-   > mltk view image_example1 --tflite
+   mltk view image_example1 --tflite
 
 .. raw:: html
 
@@ -151,7 +202,7 @@ my_model.description = 'Image classifier example for detecting Rock/Paper/Scisso
 
 #################################################
 # Training Settings
-my_model.epochs = -1 # We use the EarlyStopping keras callback to stop the training
+my_model.epochs = 100
 my_model.batch_size = 32
 my_model.optimizer = 'adam'
 my_model.metrics = ['accuracy']
@@ -170,8 +221,9 @@ my_model.checkpoint['monitor'] =  'val_accuracy'
 # then decrease the learning rate by 'factor'
 my_model.reduce_lr_on_plateau = dict(
   monitor='loss',
-  factor = 0.25,
-  patience = 10
+  factor = 0.95,
+  min_delta=0.0001,
+  patience = 1
 )
 
 # If the validation accuracy doesn't improve after 35 epochs then stop training
@@ -186,8 +238,8 @@ my_model.early_stopping = dict(
 # TF-Lite converter settings
 my_model.tflite_converter['optimizations'] = ['DEFAULT']
 my_model.tflite_converter['supported_ops'] = ['TFLITE_BUILTINS_INT8']
-my_model.tflite_converter['inference_input_type'] = 'int8' # can also be float32
-my_model.tflite_converter['inference_output_type'] = 'int8'
+my_model.tflite_converter['inference_input_type'] = 'float32' # Need to use float32 used using samplewise_center=True and samplewise_std_normalization=True
+my_model.tflite_converter['inference_output_type'] = 'float32'
  # generate a representative dataset from the validation data
 my_model.tflite_converter['representative_dataset'] = 'generate'
 

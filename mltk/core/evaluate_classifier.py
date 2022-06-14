@@ -329,6 +329,7 @@ def plot_results(
     plot_precision_vs_recall(results, show=show, output_dir=output_dir, logger=logger)
     plot_tpr(results, show=show, output_dir=output_dir, logger=logger)
     plot_fpr(results, show=show, output_dir=output_dir, logger=logger)
+    plot_tpr_and_fpr(results, show=show, output_dir=output_dir, logger=logger)
     plot_confusion_matrix(results, show=show, output_dir=output_dir, logger=logger)
 
 
@@ -538,7 +539,7 @@ def plot_precision_vs_recall(results:dict, output_dir:str, show, logger: logging
     fig = plt.figure(title)
 
     for i in range(n_classes):
-        plt.plot(recall[i], precision[i], label=f'{classes[i]}')
+        plt.plot(recall[i], precision[i], label=_normalize_class_name(classes[i]))
     
     plt.xlim([0.5, 1.0])
     plt.ylim([0.5, 1.01])
@@ -572,7 +573,7 @@ def plot_tpr(results:dict, output_dir:str, show, logger: logging.Logger):
     fig = plt.figure(title)
 
     for i in range(n_classes):
-        plt.plot(thresholds, tpr[i], label=f'{classes[i]}')
+        plt.plot(thresholds, tpr[i], label=_normalize_class_name(classes[i]))
     
     plt.xlim([0.0, 1.0])
     plt.ylim([0.8, 1.01])
@@ -606,7 +607,7 @@ def plot_fpr(results:dict, output_dir:str, show, logger: logging.Logger):
     fig = plt.figure(title)
 
     for i in range(n_classes):
-        plt.plot(thresholds, fpr[i], label=f'{classes[i]}')
+        plt.plot(thresholds, fpr[i], label=_normalize_class_name(classes[i]))
     
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 0.1])
@@ -619,6 +620,42 @@ def plot_fpr(results:dict, output_dir:str, show, logger: logging.Logger):
     if output_dir:
         output_path = output_dir + f'/{name}-fpr.png'
         plt.savefig(output_path)
+        logger.debug(f'Generated {output_dir}')
+    if show:
+        plt.show(block=False)
+    else:
+        fig.clear()
+        plt.close(fig)
+
+
+def plot_tpr_and_fpr(results:dict, output_dir:str, show, logger: logging.Logger):
+    """Generate a plot of the threshold vs FPR"""
+    
+    name = results['name']
+    classes = results['classes']
+    tpr = results['tpr']
+    fpr = results['fpr']
+    thresholds = results['roc_thresholds']
+    n_classes = len(classes)
+
+    title = f'Thres vs True/False Positive: {name}'
+    fig = plt.figure(title)
+
+    for i in range(n_classes):
+        plt.plot(thresholds, fpr[i], label=f'FPR: {_normalize_class_name(classes[i])}')
+        plt.plot(thresholds, tpr[i], label=f'TPR: {_normalize_class_name(classes[i])}')
+    
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.0])
+    plt.legend(loc="center left", bbox_to_anchor=(1, 0))
+    plt.xlabel('Threshold')
+    plt.ylabel('True/False Positive Rate')
+    plt.title(title)
+    plt.grid()
+
+    if output_dir:
+        output_path = output_dir + f'/{name}-tfp_fpr.png'
+        plt.savefig(output_path, bbox_inches='tight')
         logger.debug(f'Generated {output_dir}')
     if show:
         plt.show(block=False)
@@ -701,3 +738,11 @@ def _label_binarize(y_label):
         y_true = y_tmp
 
     return y_true
+
+
+def _normalize_class_name(label:str) -> str:
+    if label.startswith('_'):
+        label = label[1:]
+    if label.endswith('_'):
+        label = label[:-1]
+    return label

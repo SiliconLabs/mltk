@@ -33,7 +33,7 @@ struct TfliteTensorView : public TfLiteTensor
     TfliteTensorShape shape() const;
 
     template <typename qtype>
-    float quantized_value(int index) const 
+    float dequantized_value(int index) const 
     {
         const qtype quant_val = static_cast<const qtype*>(data.raw_const)[index];
         return (((float)quant_val) - params.zero_point) * params.scale;
@@ -41,10 +41,12 @@ struct TfliteTensorView : public TfLiteTensor
 };
 
 template <typename qtype>
-float quantized_value(const TfLiteQuantizationParams& params, qtype value) 
+float dequantized_value(const TfLiteQuantizationParams& params, qtype value) 
 {
     return (((float)value) - params.zero_point) * params.scale;
 }
+
+
 
 const char* to_str(TfLiteType dtype);
 

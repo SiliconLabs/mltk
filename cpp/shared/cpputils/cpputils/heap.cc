@@ -104,9 +104,18 @@ extern "C" void heap_set_buffer(void* buffer, uint32_t length)
 {
     if(length != 0)
     {
-        uint8_t* buffer_ptr = reinterpret_cast<uint8_t*>(buffer);
-        uintptr_t buffer_addr = (uintptr_t)buffer_ptr;
+        uintptr_t buffer_addr = (uintptr_t)buffer;
+        uintptr_t start_addr = uintptr_t(buffer_addr) + sizeof(pool_t);
+        auto start_alignment_required = sizeof(header_t);  // required by _free(start[1]) invocation        
+        while(start_addr & (start_alignment_required-1)) {
+            ++start_addr;
+            ++buffer_addr;
+            --length;
+        }
+        uint8_t* buffer_ptr = reinterpret_cast<uint8_t*>(buffer_addr);
+
         uint8_t unaligned_amount = (buffer_addr & (sizeof(uintptr_t)-1));
+        assert(unaligned_amount == 0);  // since now aligning based on header_t, just check that this old alignment requirement is already met
         uint8_t align_amount = (unaligned_amount > 0) ? sizeof(uintptr_t) - unaligned_amount : 0;
         buffer_ptr += align_amount;
         length -= align_amount;

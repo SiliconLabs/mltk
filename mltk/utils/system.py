@@ -63,19 +63,6 @@ def raise_signal(sig = signal.SIGINT):
     os.kill(os.getpid(), sig)
 
 
-def pretty_time_str() -> str:
-    """Return the current time as Y-m-d H-M-S """
-    now = datetime.datetime.now()
-    return now.strftime("%Y-%m-%d %H:%M:%S")
-
-
-def iso_time_str() -> str:
-    """Return the current time as ISO 8601 format
-    e.g.: 2019-01-19T23:20:25.459Z
-    """
-    now = datetime.datetime.utcnow()
-    return now.isoformat()[:-3]+'Z'
-
 
 def make_path_executable(path:str):
     """Set the executable permissions of the given executable path"""

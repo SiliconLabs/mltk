@@ -43,17 +43,22 @@ public:
     bool remove_signatures(int32_t user_id);
 
 
+    bool is_disabled() const 
+    {
+        return _disabled;
+    }
+
     static const char* signature_to_str(const FingerprintSignature& signature, char* buffer = nullptr);
     
 
 private:
     tflite::AllOpsResolver _op_resolver;
     DataPreprocessor _data_preprocessor;
-    uint8_t* _tensor_arena = nullptr;
     TfliteTensorView* _input_tensor = nullptr;
     TfliteTensorView* _output_tensor = nullptr;
     uint8_t _signature_length = 0;
     float _auth_threshold = 0;
+    bool _disabled = false;
 };
 
 } // namespace mltk

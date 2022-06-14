@@ -1,15 +1,12 @@
 import sys  
 import os 
+import traceback
 
 
 CURDIR = os.path.dirname(os.path.abspath(__file__))
 
-sys.path.append(f'{CURDIR}/../../../../..')
+sys.path.append(os.path.normpath(f'{CURDIR}/../../../../..'))
 
-
-from cpp.tools.utils.download_tool import download_tool 
-from mltk.utils.path import create_user_dir
-from mltk.utils.system import get_current_os
 
 
 # https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads
@@ -32,28 +29,43 @@ URLS = {
 
 
 def download_arm_toolchain(return_path=False):
-    curdir = os.path.dirname(os.path.abspath(__file__))
-    current_os = get_current_os()
+    retcode = 0
+    log_file=f'{CURDIR}/download.log'
 
-    if current_os not in URLS:
-        raise Exception(f'OS {current_os} not supported')
+    try:
+        from cpp.tools.utils.download_tool import download_tool 
+        from mltk.utils.path import create_user_dir
+        from mltk.utils.system import get_current_os
 
-    url_info = URLS[current_os]
-    
-    dest_dir = create_user_dir(f'tools/toolchains/gcc/arm/{url_info["version"]}')
-    extracted_dir = dest_dir + url_info['extract_subdir']
+        current_os = get_current_os()
 
-    # NOTE: If the tool already exists then this doesn't do anything
-    retcode, retval = download_tool(
-        url=url_info['url'], 
-        name='GCC', 
-        dest_dir=dest_dir, 
-        extracted_dir=extracted_dir,
-        file_hash=url_info['md5'],
-        show_progress=False,
-        log_file=f'{curdir}/download.log',
-        override_stdout_with_logger=True
-    )
+        if current_os not in URLS:
+            raise Exception(f'OS {current_os} not supported')
+
+        url_info = URLS[current_os]
+        
+        dest_dir = create_user_dir(f'tools/toolchains/gcc/arm/{url_info["version"]}')
+        extracted_dir = dest_dir + url_info['extract_subdir']
+    except Exception as e:
+        retcode = -1
+        with open(log_file, 'w') as f:
+            f.write(traceback.format_exc() + '\n')
+            f.write(f'Python path: {sys.executable}\n')
+            f.write(f'Error while importing MLTK package, do you run the install_mltk.py script first?\nError details: {e}')    
+            
+
+    if retcode == 0:
+        # NOTE: If the tool already exists then this doesn't do anything
+        retcode, retval = download_tool(
+            url=url_info['url'], 
+            name='GCC', 
+            dest_dir=dest_dir, 
+            extracted_dir=extracted_dir,
+            file_hash=url_info['md5'],
+            show_progress=False,
+            log_file=log_file,
+            override_stdout_with_logger=True
+        )
 
     if current_os == 'windows':
         ext = '.exe'
@@ -65,6 +77,16 @@ def download_arm_toolchain(return_path=False):
             raise RuntimeError(f'Failed to download ARM GCC toolchain, err: {retval}')
         return retval
     else:
+        if retcode != 0:
+            retval = log_file
+            try:
+                with open(log_file, 'r') as f:
+                    data = f.read()
+                with open(log_file, 'w') as f:
+                    f.write(data.replace('\n', ';\n'))
+            except:
+                pass
+
         sys.stdout.write(f'{retval};{ext};')
         sys.exit(retcode)
 

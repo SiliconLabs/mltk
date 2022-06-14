@@ -56,7 +56,7 @@ Longer durations (in milliseconds) will give a higher confidence that the result
         metavar='<duration ms>'
     ),
     minimum_count: int = typer.Option(None, '--count', '-c', 
-        help='The *minimum* number of inference results to average when calculating the detection value',
+        help='The *minimum* number of inference results to average when calculating the detection value. Set to 0 to disable averaging',
         metavar='<count>'
     ),
     detection_threshold: int = typer.Option(None, '--threshold', '-t', 
@@ -118,13 +118,6 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
     System Dataflow:
     Microphone -> AudioFeatureGenerator -> ML Model -> Command Recognizer -> Local Terminal  
     \b
-    The audio classification application was adapted from TF-Lite Micro's "Micro Speech" 
-    example:  
-    https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/micro_speech
-    \b
-    The TFLM app was modified so that settings can be dynamically loaded from the command-line or
-    given ML model.
-    \b
     Refer to the mltk.models.tflite_micro.tflite_micro_speech model for a reference on how to train
     an ML model that works the audio classification application.
     \b
@@ -177,13 +170,17 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
     logger = cli.get_logger()
 
+    have_cv2 = False
     try:
         install_pip_package('opencv-python', 'cv2', logger=logger)
         from cv2 import cv2
         have_cv2 = True
-    except:
-        have_cv2 = False
-
+    except Exception as e:
+        try:
+            import cv2
+            have_cv2 = True 
+        except:
+            pass
 
     accelerator = cli.parse_accelerator_option(accelerator)
 
@@ -206,7 +203,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         except Exception as e:
             cli.handle_exception('Failed to load model', e)
 
-    
+    input_dtype = tflite_model.inputs[0].dtype
     platform = get_current_os() if not use_device else commander.query_platform()
   
 
@@ -278,7 +275,8 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
                     time.sleep(0.005)
 
                 if reader.error_message:
-                    stop_event.set()
+                    if stop_event is not None:
+                        stop_event.set()
                     raise RuntimeError(f'Device error: {reader.error_message}')
             except KeyboardInterrupt:
                 if stop_event is not None:
@@ -364,15 +362,27 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
 
     ###############################################################
+    def _dtype_to_str(dtype:np.dtype) -> str:
+        if dtype == np.int8:
+            return 'int8'
+        if dtype == np.uint16:
+            return 'uint16'
+        if dtype == np.float32:
+            return 'float32'
+        raise RuntimeError(f'Unsupported dtype {dtype}')
+
+
+    ###############################################################
     def _generate_video_from_dumped_spectrograms(
         dump_dir:str,
-        dtype:str
+        dtype:np.dtype
     ):
         """Combine the genated .jpg spectrograms into an .mp4 video file"""
         spec_1_path = f'{dump_dir}/jpg/1.jpg'
         video_path = f'{dump_dir}/dump_spectrograms.mp4'
 
-        fps_name = f'{dtype}_spectrogram_fps'
+        dtype_str = _dtype_to_str(dtype)
+        fps_name = f'{dtype_str}_spectrogram_fps'
         if fps_name not in globals():
             return
         spectrogram_fps = globals()[fps_name]
@@ -398,7 +408,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
     ###############################################################
     def _start_spectrogram_jpg_generator(
         dump_dir:str,
-        dtype:str
+        dtype:np.dtype
     ):
         """Start a thread to periodically sample the spectrogram dump directory and generate a .jpg when one if found
         
@@ -406,6 +416,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         """
         stop_event = threading.Event()
 
+        dtype_str = _dtype_to_str(dtype) 
         src_dir = f'{dump_dir}/bin'
         dst_dir = f'{dump_dir}/jpg'
         os.makedirs(dst_dir, exist_ok=True)
@@ -416,8 +427,8 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
             prev_time = None
             counter = 1
             while not stop_event.is_set():
-                src_path = f'{src_dir}/{counter}.{dtype}.npy.txt'
-                next_path = f'{src_dir}/{counter+1}.{dtype}.npy.txt'
+                src_path = f'{src_dir}/{counter}.{dtype_str}.npy.txt'
+                next_path = f'{src_dir}/{counter+1}.{dtype_str}.npy.txt'
                 dst_path = f'{dst_dir}/{counter}.jpg'
 
                 # We wait until the NEXT spectrogram file is found
@@ -434,7 +445,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
                     elapsed = (now - prev_time) or .1
                     prev_time = now
                     fps_list.append(elapsed)
-                    globals()[f'{dtype}_spectrogram_fps'] = len(fps_list) / sum(fps_list)
+                    globals()[f'{dtype_str}_spectrogram_fps'] = len(fps_list) / sum(fps_list)
 
                 counter += 1
 
@@ -447,11 +458,14 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
                 # Transpose to put the time on the x-axis
                 spectrogram = np.transpose(spectrogram)
                 # Convert from int8 to uint8 
-                if dtype == 'int8':
+                if dtype_str == 'int8':
                     spectrogram = np.clip(spectrogram +128, 0, 255)
                     spectrogram = spectrogram.astype(np.uint8)
-                elif dtype == 'uint16':
+                elif dtype_str == 'uint16':
                     spectrogram = np.clip(spectrogram / 4, 0, 255)
+                    spectrogram = spectrogram.astype(np.uint8)
+                elif dtype_str == 'float32':
+                    spectrogram = np.clip(spectrogram *255, 0, 255)
                     spectrogram = spectrogram.astype(np.uint8)
 
                 jpg_data = cv2.applyColorMap(spectrogram, cv2.COLORMAP_HOT)
@@ -600,10 +614,10 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
                 if spec_counter == 0:
                     logger.info('Quantized spectrogram recording started')
                 while len(spectrogram_data) > 0:
-                    spectrogram_buf = np.frombuffer(spectrogram_data[:quantized_spectrogram_min_read_size], dtype=np.int8)
+                    spectrogram_buf = np.frombuffer(spectrogram_data[:quantized_spectrogram_min_read_size], dtype=input_dtype)
                     spectrogram_data = spectrogram_data[quantized_spectrogram_min_read_size:]
                     spectrogram = np.reshape(spectrogram_buf, (spectrogram_cols, spectrogram_rows))
-                    bin_path = f'{dump_quantized_spectrograms_dir}/{spec_counter}.int8.npy.txt'
+                    bin_path = f'{dump_quantized_spectrograms_dir}/{spec_counter}.{_dtype_to_str(input_dtype)}.npy.txt'
                     np.savetxt(bin_path, spectrogram, fmt='%d', delimiter=',')
                     spec_counter += 1
 
@@ -742,9 +756,9 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
             atexit.register(functools.partial(
                 _generate_video_from_dumped_spectrograms, 
                 dump_dir=dump_quantized_spectrograms_dir,
-                dtype='int8'
+                dtype=input_dtype
             ))
-            _start_spectrogram_jpg_generator(dump_quantized_spectrograms_dir, 'int8')
+            _start_spectrogram_jpg_generator(dump_quantized_spectrograms_dir, input_dtype)
         else:
             logger.warning('Failed to import opencv-python, NOT dumping spectrograms')
 
@@ -762,3 +776,6 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
             dump_raw_spectrograms_dir=dump_raw_spectrograms_bin_dir,
             dump_quantized_spectrograms_dir=dump_quantized_spectrograms_bin_dir
         )
+
+
+    

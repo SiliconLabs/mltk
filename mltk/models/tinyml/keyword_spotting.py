@@ -41,30 +41,30 @@ Performance (quantized tflite model)
 Commands
 --------------
 
-.. code-block:: console
+.. code-block:: shell
 
    # Do a "dry run" test training of the model
-   > mltk train keyword_spotting-test
+   mltk train keyword_spotting-test
 
    # Train the model
-   > mltk train keyword_spotting
+   mltk train keyword_spotting
 
    # Evaluate the trained model .tflite model
-   > mltk evaluate keyword_spotting --tflite
+   mltk evaluate keyword_spotting --tflite
 
    # Profile the model in the MVP hardware accelerator simulator
-   > mltk profile keyword_spotting --accelerator MVP
+   mltk profile keyword_spotting --accelerator MVP
 
    # Profile the model on a physical development board
-   > mltk profile keyword_spotting --accelerator MVP --device
+   mltk profile keyword_spotting --accelerator MVP --device
 
 
 Model Summary
 --------------
 
-.. code-block:: console
+.. code-block:: shell
     
-    > mltk summarize keyword_spotting --tflite
+    mltk summarize keyword_spotting --tflite
     
     +-------+-------------------+-------------------+----------------+-------------------------------------------------------+  
     | Index | OpCode            | Input(s)          | Output(s)      | Config                                                |  
@@ -120,12 +120,64 @@ Model Summary
     .tflite file size: 53.7kB
 
 
+Model Profiling Report
+-----------------------
+
+.. code-block:: shell
+   
+   # Profile on physical EFR32xG24 using MVP accelerator
+   mltk profile keyword_spotting --device --accelerator MVP
+
+    Profiling Summary
+    Name: keyword_spotting
+    Accelerator: MVP
+    Input Shape: 1x50x10x1
+    Input Data Type: float32
+    Output Shape: 1x12
+    Output Data Type: float32
+    Flash, Model File Size (bytes): 53.7k
+    RAM, Runtime Memory Size (bytes): 24.4k
+    Operation Count: 5.5M
+    Multiply-Accumulate Count: 2.7M
+    Layer Count: 15
+    Unsupported Layer Count: 0
+    Accelerator Cycle Count: 4.6M
+    CPU Cycle Count: 781.5k
+    CPU Utilization (%): 16.1
+    Clock Rate (hz): 80.0M
+    Time (s): 60.8m
+    Ops/s: 90.7M
+    MACs/s: 43.7M
+    Inference/s: 16.5
+
+    Model Layers
+    +-------+-------------------+--------+--------+------------+------------+----------+------------------------+--------------+-------------------------------------------------------+
+    | Index | OpCode            | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape            | Output Shape | Options                                               |
+    +-------+-------------------+--------+--------+------------+------------+----------+------------------------+--------------+-------------------------------------------------------+
+    | 0     | quantize          | 2.0k   | 0      | 0          | 18.8k      | 240.0u   | 1x50x10x1              | 1x50x10x1    | Type=none                                             |
+    | 1     | conv_2d           | 664.0k | 320.0k | 861.8k     | 48.8k      | 10.7m    | 1x50x10x1,64x10x4x1,64 | 1x25x5x64    | Padding:same stride:2x2 activation:relu               |
+    | 2     | depthwise_conv_2d | 168.0k | 72.0k  | 115.2k     | 170.6k     | 2.3m     | 1x25x5x64,1x3x3x64,64  | 1x25x5x64    | Multiplier:1 padding:same stride:1x1 activation:relu  |
+    | 3     | conv_2d           | 1.0M   | 512.0k | 816.0k     | 3.6k       | 10.0m    | 1x25x5x64,64x1x1x64,64 | 1x25x5x64    | Padding:same stride:1x1 activation:relu               |
+    | 4     | depthwise_conv_2d | 168.0k | 72.0k  | 115.2k     | 170.3k     | 2.3m     | 1x25x5x64,1x3x3x64,64  | 1x25x5x64    | Multiplier:1 padding:same stride:1x1 activation:relu  |
+    | 5     | conv_2d           | 1.0M   | 512.0k | 816.0k     | 3.6k       | 10.0m    | 1x25x5x64,64x1x1x64,64 | 1x25x5x64    | Padding:same stride:1x1 activation:relu               |
+    | 6     | depthwise_conv_2d | 168.0k | 72.0k  | 115.2k     | 170.3k     | 2.3m     | 1x25x5x64,1x3x3x64,64  | 1x25x5x64    | Multiplier:1 padding:same stride:1x1 activation:relu  |
+    | 7     | conv_2d           | 1.0M   | 512.0k | 816.0k     | 3.6k       | 10.0m    | 1x25x5x64,64x1x1x64,64 | 1x25x5x64    | Padding:same stride:1x1 activation:relu               |
+    | 8     | depthwise_conv_2d | 168.0k | 72.0k  | 115.2k     | 170.3k     | 2.3m     | 1x25x5x64,1x3x3x64,64  | 1x25x5x64    | Multiplier:1 padding:same stride:1x1 activation:relu  |
+    | 9     | conv_2d           | 1.0M   | 512.0k | 816.0k     | 3.6k       | 10.0m    | 1x25x5x64,64x1x1x64,64 | 1x25x5x64    | Padding:same stride:1x1 activation:relu               |
+    | 10    | average_pool_2d   | 8.1k   | 0      | 4.1k       | 3.7k       | 90.0u    | 1x25x5x64              | 1x1x1x64     | Padding:valid stride:5x25 filter:5x25 activation:none |
+    | 11    | reshape           | 0      | 0      | 0          | 758.0      | 0        | 1x1x1x64,2             | 1x64         | Type=none                                             |
+    | 12    | fully_connected   | 1.5k   | 768.0  | 1.2k       | 2.1k       | 30.0u    | 1x64,12x64,12          | 1x12         | Activation:none                                       |
+    | 13    | softmax           | 60.0   | 0      | 0          | 10.0k      | 120.0u   | 1x12                   | 1x12         | Type=softmaxoptions                                   |
+    | 14    | dequantize        | 24.0   | 0      | 0          | 1.6k       | 0        | 1x12                   | 1x12         | Type=none                                             |
+    +-------+-------------------+--------+--------+------------+------------+----------+------------------------+--------------+-------------------------------------------------------+
+
+
 Model Diagram
 ------------------
 
-.. code-block:: console
+.. code-block:: shell
    
-   > mltk view keyword_spotting --tflite
+   mltk view keyword_spotting --tflite
 
 .. raw:: html
 

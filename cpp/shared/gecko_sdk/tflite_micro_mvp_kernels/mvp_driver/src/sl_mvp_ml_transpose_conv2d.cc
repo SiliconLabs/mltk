@@ -31,12 +31,10 @@
 #include "sl_mvp_ml_transpose_conv2d.h"
 #include "sl_mvp.h"
 #include "sl_mvp_util.h"
-#include "em_common.h"
+#include "sl_mvp_program_area.h"
+#include "sl_common.h"
 
 /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
-
-static sli_mvp_program_context_t program;
-static sli_mvp_program_context_t *p = &program;
 
 static sl_status_t transpose_conv(const sli_mvp_ml_transpose_conv2d_s8_params_t *params, bool execute);
 
@@ -94,7 +92,8 @@ static sl_status_t transpose_conv(const sli_mvp_ml_transpose_conv2d_s8_params_t 
   float16_t *tmp_buf                   = params->scratch_buffer;
   static const float16_t zero[2] = {float16_t(0), float16_t(0)};
 
-  sl_status_t status = SL_STATUS_OK;
+  sl_status_t status                   = SL_STATUS_OK;
+  sli_mvp_program_context_t *p         = sli_mvp_get_program_area_context();
 
   if ((needs_padding == false) && ((pad_width != 0) || (pad_height != 0))) {
     status = SL_STATUS_INVALID_PARAMETER;
@@ -216,7 +215,7 @@ static sl_status_t transpose_conv(const sli_mvp_ml_transpose_conv2d_s8_params_t 
           sli_mvp_prog_set_reg_f16(p->p, SLI_MVP_R0, (float16_t)SLI_MVP_ACCUMULATOR_SCALER);
           sli_mvp_prog_set_reg_f16(p->p, SLI_MVP_R1, (float16_t)(input_offset * SLI_MVP_ACCUMULATOR_SCALER));
 
-          sli_mvp_pb_begin_loop(p, input_depth, &status);          // Loop over input channels.
+          sli_mvp_pb_begin_loop(p, input_depth, &status); {         // Loop over input channels.
 
             // Calculate: tmp_buf += (input + input_offset) * ACCUMULATOR_SCALER * filter
             //      =>    tmp_buf += ((input * ACCUMULATOR_SCALER) + input_offset_scaled) * filter
@@ -233,8 +232,8 @@ static sl_status_t transpose_conv(const sli_mvp_ml_transpose_conv2d_s8_params_t 
                                SLI_MVP_NONE,
                                &status);
 
-            sli_mvp_pb_begin_loop(p, filter_y_count, &status);     // Loop over filter height.
-              sli_mvp_pb_begin_loop(p, filter_x_count, &status);   // Loop over filter width.
+            sli_mvp_pb_begin_loop(p, filter_y_count, &status); {        // Loop over filter height.
+              sli_mvp_pb_begin_loop(p, filter_x_count, &status); {      // Loop over filter width.
 
                 // R4 = tmp_buf
                 // R3 = Filter
@@ -250,17 +249,19 @@ static sl_status_t transpose_conv(const sli_mvp_ml_transpose_conv2d_s8_params_t 
                                    | SLI_MVP_LOAD(1, SLI_MVP_R3, filter_array, SLI_MVP_INCRDIM_WIDTH),
                                    SLI_MVP_STORE(SLI_MVP_R7, tmp_buf_array, SLI_MVP_INCRDIM_WIDTH),
                                    &status);
-
-              sli_mvp_pb_end_loop(p);  // Filter width.
+              }
+              sli_mvp_pb_end_loop(p);      // Filter width.
               sli_mvp_pb_postloop_reset_dim(p, tmp_buf_array, SLI_MVP_RESETDIM_WIDTH);
-              sli_mvp_pb_postloop_reset_dim(p, filter_array,  SLI_MVP_RESETDIM_WIDTH);
-              sli_mvp_pb_postloop_incr_dim(p,  tmp_buf_array, SLI_MVP_INCRDIM_HEIGHT);
-              sli_mvp_pb_postloop_incr_dim(p,  filter_array,  SLI_MVP_INCRDIM_HEIGHT);
-            sli_mvp_pb_end_loop(p);  // Filter height.
+              sli_mvp_pb_postloop_reset_dim(p, filter_array, SLI_MVP_RESETDIM_WIDTH);
+              sli_mvp_pb_postloop_incr_dim(p, tmp_buf_array, SLI_MVP_INCRDIM_HEIGHT);
+              sli_mvp_pb_postloop_incr_dim(p, filter_array, SLI_MVP_INCRDIM_HEIGHT);
+            }
+            sli_mvp_pb_end_loop(p);    // Filter height.
             sli_mvp_pb_postloop_reset_dim(p, tmp_buf_array, SLI_MVP_RESETDIM_HEIGHT);
-            sli_mvp_pb_postloop_reset_dim(p, filter_array,  SLI_MVP_RESETDIM_HEIGHT);
-            sli_mvp_pb_postloop_incr_dim(p,  input_array,   SLI_MVP_INCRDIM_DEPTH);
-            sli_mvp_pb_postloop_incr_dim(p,  filter_array,  SLI_MVP_INCRDIM_DEPTH);
+            sli_mvp_pb_postloop_reset_dim(p, filter_array, SLI_MVP_RESETDIM_HEIGHT);
+            sli_mvp_pb_postloop_incr_dim(p, input_array, SLI_MVP_INCRDIM_DEPTH);
+            sli_mvp_pb_postloop_incr_dim(p, filter_array, SLI_MVP_INCRDIM_DEPTH);
+          }
           sli_mvp_pb_end_loop(p);  // Input channels.
 
           // Check if any errors found during program generation.
@@ -377,18 +378,18 @@ static sl_status_t transpose_conv(const sli_mvp_ml_transpose_conv2d_s8_params_t 
                        SLI_MVP_NONE,
                        &status);
 
-    sli_mvp_pb_begin_loop(p, output_height, &status);
-      sli_mvp_pb_begin_loop(p, output_width, &status);
+    sli_mvp_pb_begin_loop(p, output_height, &status); {
+      sli_mvp_pb_begin_loop(p, output_width, &status); {
 
         // R3 = tmp_buf
         sli_mvp_pb_compute(p,
-                          SLI_MVP_OP(NOOP),
-                          SLI_MVP_NONE,
-                          SLI_MVP_LOAD(0, SLI_MVP_R3, tmp_buf_array, SLI_MVP_NOINCR),
-                          SLI_MVP_NONE,
-                          &status);
+                           SLI_MVP_OP(NOOP),
+                           SLI_MVP_NONE,
+                           SLI_MVP_LOAD(0, SLI_MVP_R3, tmp_buf_array, SLI_MVP_NOINCR),
+                           SLI_MVP_NONE,
+                           &status);
 
-        sli_mvp_pb_begin_loop(p, output_depth, &status);
+        sli_mvp_pb_begin_loop(p, output_depth, &status); {
 
           // Calculate: output = ((tmp_buf + bias) * scaler) + output_offset
           //            output = MAX(output, activation_min)
@@ -435,12 +436,15 @@ static sl_status_t transpose_conv(const sli_mvp_ml_transpose_conv2d_s8_params_t 
                                SLI_MVP_STORE(SLI_MVP_R7, output_array, SLI_MVP_INCRDIM_DEPTH),
                                &status);
           }
-        sli_mvp_pb_end_loop(p);  // Output depth.
-        sli_mvp_pb_postloop_incr_dim(p, output_array,  SLI_MVP_INCRDIM_WIDTH);
+        }
+        sli_mvp_pb_end_loop(p);      // Output depth.
+        sli_mvp_pb_postloop_incr_dim(p, output_array, SLI_MVP_INCRDIM_WIDTH);
         sli_mvp_pb_postloop_incr_dim(p, tmp_buf_array, SLI_MVP_INCRDIM_WIDTH);
-      sli_mvp_pb_end_loop(p);  // Output width.
-      sli_mvp_pb_postloop_incr_dim(p, output_array,  SLI_MVP_INCRDIM_HEIGHT);
+      }
+      sli_mvp_pb_end_loop(p);    // Output width.
+      sli_mvp_pb_postloop_incr_dim(p, output_array, SLI_MVP_INCRDIM_HEIGHT);
       sli_mvp_pb_postloop_incr_dim(p, tmp_buf_array, SLI_MVP_INCRDIM_HEIGHT);
+    }
     sli_mvp_pb_end_loop(p);  // Output height.
 
     // Check if any errors found during program generation.

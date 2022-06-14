@@ -249,7 +249,7 @@ def _update_gsdk_dir(gsdk_dir, git_tag, logger):
 
     if not os.path.exists(f'{gsdk_dir}/.git'):
         gsdk_git_url = 'https://github.com/SiliconLabs/gecko_sdk.git'
-        logger.info(f'Cloning Gecko SDK from:\n{gsdk_git_url}\nto: {gsdk_dir}')
+        logger.info(f'Cloning Gecko SDK from:\n{gsdk_git_url}\nto: {gsdk_dir}\nNOTE: This may take awhile as all of the GSDK binary assets need to be downloaded ...')
 
         version_dir = os.path.basename(gsdk_dir)
         retcode, retmsg = run_shell_cmd(['git', 'clone', gsdk_git_url, version_dir], cwd=os.path.dirname(gsdk_dir), outfile=logger)
@@ -261,7 +261,7 @@ def _update_gsdk_dir(gsdk_dir, git_tag, logger):
             raise RuntimeError(f'Failed to checkout {git_tag} from  {gsdk_dir}')
     
     else:
-        logger.info(f'Updating {gsdk_dir}')
+        logger.info(f'Updating {gsdk_dir}\nNOTE: This may take awhile as all of the GSDK binary assets need to be downloaded ...')
         retcode, retmsg = run_shell_cmd(['git', 'lfs', 'pull'], cwd=gsdk_dir, outfile=logger)
         if retcode  != 0:
             raise RuntimeError(f'Failed to update {gsdk_dir}')

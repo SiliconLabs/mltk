@@ -41,8 +41,8 @@ extern __INLINE int sli_mvp_util_offset_nhwc(int height, int width, int depth,
  * Assumes that *dst is 4 byte aligned.
  *
  ******************************************************************************/
-extern "C" sl_status_t sli_mvp_util_memclr_f16(sli_mvp_program_context_t *p,
-                                    void *d,
+sl_status_t sli_mvp_util_memclr_f16(sli_mvp_program_context_t *p,
+                                    void *dst,
                                     unsigned short batches,
                                     unsigned short vecs,
                                     unsigned short rows,
@@ -65,8 +65,6 @@ extern "C" sl_status_t sli_mvp_util_memclr_f16(sli_mvp_program_context_t *p,
     width /= 2;
     parallel = true;
   }
-
-  uint8_t* dst = (uint8_t*)d;
 
   // Loop through batches which is usually only one.
   for (int batch = 0; batch < batches; ++batch) {
@@ -102,7 +100,7 @@ extern "C" sl_status_t sli_mvp_util_memclr_f16(sli_mvp_program_context_t *p,
     } else {
       return status;
     }
-    dst += batch_size;
+    dst = (uint8_t*)dst + batch_size;
   }
   return status;
 }

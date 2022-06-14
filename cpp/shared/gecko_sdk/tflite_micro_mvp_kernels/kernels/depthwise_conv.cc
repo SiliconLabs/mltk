@@ -106,17 +106,18 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
 
   MicroContext* micro_context = GetMicroContext(context);
 
-  TfLiteTensor* input =
-      micro_context->AllocateTempInputTensor(node, kInputTensor);
-  TF_LITE_ENSURE(context, input != nullptr);
-  TfLiteTensor* filter =
-      micro_context->AllocateTempInputTensor(node, kFilterTensor);
-  TF_LITE_ENSURE(context, filter != nullptr);
-  TfLiteTensor* bias =
-      micro_context->AllocateTempInputTensor(node, kBiasTensor);
   TfLiteTensor* output =
       micro_context->AllocateTempOutputTensor(node, kOutputTensor);
+  TfLiteTensor* bias =
+      micro_context->AllocateTempInputTensor(node, kBiasTensor);
+  TfLiteTensor* input =
+      micro_context->AllocateTempInputTensor(node, kInputTensor);
+  TfLiteTensor* filter =
+      micro_context->AllocateTempInputTensor(node, kFilterTensor);
+
+  TF_LITE_ENSURE(context, input  != nullptr);
   TF_LITE_ENSURE(context, output != nullptr);
+  TF_LITE_ENSURE(context, filter != nullptr);
 
   data->op_params.batches         = input->dims->data[0];
   data->op_params.in_channels     = input->dims->data[3];
@@ -255,13 +256,13 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
     data->scratch_buffer_index = -1;
   }
 
-  micro_context->DeallocateTempTfLiteTensor(output);
   micro_context->DeallocateTempTfLiteTensor(input);
   micro_context->DeallocateTempTfLiteTensor(filter);
-  if(bias != nullptr) {
+  micro_context->DeallocateTempTfLiteTensor(output);
+  if (bias != nullptr) {
     micro_context->DeallocateTempTfLiteTensor(bias);
   }
-
+  
   return kTfLiteOk;
 }
 
@@ -336,7 +337,7 @@ TfLiteStatus eval_cmsis_int8(TfLiteContext* context,
   if (data->scratch_buffer_index > -1) {
     ctx.buf = context->GetScratchBuffer(context, data->scratch_buffer_index);
   }
-  TFLITE_DCHECK_EQ(ARM_MATH_SUCCESS,
+  TFLITE_DCHECK_EQ(ARM_CMSIS_NN_SUCCESS,
                    arm_depthwise_conv_wrapper_s8(
                      &ctx, &dw_conv_params, &quant_params,
                      &input_dims,  tflite::micro::GetTensorData<int8_t>(input),

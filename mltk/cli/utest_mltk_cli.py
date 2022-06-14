@@ -66,6 +66,7 @@ Comma separated list of unit test types, options are:
 
     if test_type & {'all', 'cpp'}:
         test_dirs.append('../cpp/tools/tests/test_build_apps.py')
+        test_dirs.append('../cpp/tools/tests/test_build_cli.py')
 
     if test_type & {'all', 'studio'}:
         test_dirs.append('../cpp/tools/tests/test_simplicity_studio.py')

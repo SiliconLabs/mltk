@@ -44,30 +44,30 @@ Performance (quantized tflite model)
 Commands
 --------------
 
-.. code-block:: console
+.. code-block:: shell
 
    # Do a "dry run" test training of the model
-   > mltk train vww_model-test
+   mltk train vww_model-test
 
    # Train the model
-   > mltk train vww_model
+   mltk train vww_model
 
    # Evaluate the trained model .tflite model
-   > mltk evaluate vww_model --tflite
+   mltk evaluate vww_model --tflite
 
    # Profile the model in the MVP hardware accelerator simulator
-   > mltk profile vww_model --accelerator MVP
+   mltk profile vww_model --accelerator MVP
 
    # Profile the model on a physical development board
-   > mltk profile vww_model --accelerator MVP --device
+   mltk profile vww_model --accelerator MVP --device
 
 
 Model Summary
 --------------
 
-.. code-block:: console
+.. code-block:: shell
     
-    > mltk summarize visual_wake_words --tflite
+    mltk summarize visual_wake_words --tflite
     
     +-------+-------------------+-------------------+-----------------+-----------------------------------------------------+
     | Index | OpCode            | Input(s)          | Output(s)       | Config                                              |
@@ -177,12 +177,83 @@ Model Summary
     .tflite file size: 334.2kB
 
 
+Model Profiling Report
+-----------------------
+
+.. code-block:: shell
+   
+   # Profile on physical EFR32xG24 using MVP accelerator
+   mltk profile visual_wake_words --device --accelerator MVP
+
+    Profiling Summary
+    Name: visual_wake_words
+    Accelerator: MVP
+    Input Shape: 1x96x96x3
+    Input Data Type: float32
+    Output Shape: 1x2
+    Output Data Type: float32
+    Flash, Model File Size (bytes): 334.2k
+    RAM, Runtime Memory Size (bytes): 165.9k
+    Operation Count: 15.8M
+    Multiply-Accumulate Count: 7.5M
+    Layer Count: 33
+    Unsupported Layer Count: 0
+    Accelerator Cycle Count: 13.4M
+    CPU Cycle Count: 3.0M
+    CPU Utilization (%): 19.8
+    Clock Rate (hz): 80.0M
+    Time (s): 190.7m
+    Ops/s: 82.6M
+    MACs/s: 39.3M
+    Inference/s: 5.2
+
+    Model Layers
+    +-------+-------------------+--------+--------+------------+------------+----------+---------------------------+--------------+------------------------------------------------------+
+    | Index | OpCode            | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape               | Output Shape | Options                                              |
+    +-------+-------------------+--------+--------+------------+------------+----------+---------------------------+--------------+------------------------------------------------------+
+    | 0     | quantize          | 110.6k | 0      | 0          | 996.2k     | 12.2m    | 1x96x96x3                 | 1x96x96x3    | Type=none                                            |
+    | 1     | conv_2d           | 1.1M   | 497.7k | 1.6M       | 14.1k      | 19.3m    | 1x96x96x3,8x3x3x3,8       | 1x48x48x8    | Padding:same stride:2x2 activation:relu              |
+    | 2     | depthwise_conv_2d | 387.1k | 165.9k | 583.5k     | 244.4k     | 9.1m     | 1x48x48x8,1x3x3x8,8       | 1x48x48x8    | Multiplier:1 padding:same stride:1x1 activation:relu |
+    | 3     | conv_2d           | 700.4k | 294.9k | 663.6k     | 4.0k       | 8.2m     | 1x48x48x8,16x1x1x8,16     | 1x48x48x16   | Padding:same stride:1x1 activation:relu              |
+    | 4     | depthwise_conv_2d | 193.5k | 82.9k  | 297.4k     | 249.6k     | 5.6m     | 1x48x48x16,1x3x3x16,16    | 1x24x24x16   | Multiplier:1 padding:same stride:2x2 activation:relu |
+    | 5     | conv_2d           | 645.1k | 294.9k | 553.0k     | 4.0k       | 6.8m     | 1x24x24x16,32x1x1x16,32   | 1x24x24x32   | Padding:same stride:1x1 activation:relu              |
+    | 6     | depthwise_conv_2d | 387.1k | 165.9k | 297.9k     | 751.0k     | 9.2m     | 1x24x24x32,1x3x3x32,32    | 1x24x24x32   | Multiplier:1 padding:same stride:1x1 activation:relu |
+    | 7     | conv_2d           | 1.2M   | 589.8k | 995.3k     | 3.6k       | 12.2m    | 1x24x24x32,32x1x1x32,32   | 1x24x24x32   | Padding:same stride:1x1 activation:relu              |
+    | 8     | depthwise_conv_2d | 96.8k  | 41.5k  | 74.5k      | 188.9k     | 2.3m     | 1x24x24x32,1x3x3x32,32    | 1x12x12x32   | Multiplier:1 padding:same stride:2x2 activation:relu |
+    | 9     | conv_2d           | 617.5k | 294.9k | 497.6k     | 3.6k       | 6.2m     | 1x12x12x32,64x1x1x32,64   | 1x12x12x64   | Padding:same stride:1x1 activation:relu              |
+    | 10    | depthwise_conv_2d | 193.5k | 82.9k  | 138.8k     | 195.7k     | 2.8m     | 1x12x12x64,1x3x3x64,64    | 1x12x12x64   | Multiplier:1 padding:same stride:1x1 activation:relu |
+    | 11    | conv_2d           | 1.2M   | 589.8k | 940.0k     | 3.6k       | 11.6m    | 1x12x12x64,64x1x1x64,64   | 1x12x12x64   | Padding:same stride:1x1 activation:relu              |
+    | 12    | depthwise_conv_2d | 48.4k  | 20.7k  | 34.7k      | 49.8k      | 690.0u   | 1x12x12x64,1x3x3x64,64    | 1x6x6x64     | Multiplier:1 padding:same stride:2x2 activation:relu |
+    | 13    | conv_2d           | 603.6k | 294.9k | 469.9k     | 3.6k       | 5.8m     | 1x6x6x64,128x1x1x64,128   | 1x6x6x128    | Padding:same stride:1x1 activation:relu              |
+    | 14    | depthwise_conv_2d | 96.8k  | 41.5k  | 61.9k      | 50.0k      | 1.1m     | 1x6x6x128,1x3x3x128,128   | 1x6x6x128    | Multiplier:1 padding:same stride:1x1 activation:relu |
+    | 15    | conv_2d           | 1.2M   | 589.8k | 912.3k     | 3.6k       | 11.2m    | 1x6x6x128,128x1x1x128,128 | 1x6x6x128    | Padding:same stride:1x1 activation:relu              |
+    | 16    | depthwise_conv_2d | 96.8k  | 41.5k  | 61.9k      | 50.0k      | 1.0m     | 1x6x6x128,1x3x3x128,128   | 1x6x6x128    | Multiplier:1 padding:same stride:1x1 activation:relu |
+    | 17    | conv_2d           | 1.2M   | 589.8k | 912.3k     | 3.6k       | 11.2m    | 1x6x6x128,128x1x1x128,128 | 1x6x6x128    | Padding:same stride:1x1 activation:relu              |
+    | 18    | depthwise_conv_2d | 96.8k  | 41.5k  | 61.9k      | 50.0k      | 1.0m     | 1x6x6x128,1x3x3x128,128   | 1x6x6x128    | Multiplier:1 padding:same stride:1x1 activation:relu |
+    | 19    | conv_2d           | 1.2M   | 589.8k | 912.3k     | 3.6k       | 11.2m    | 1x6x6x128,128x1x1x128,128 | 1x6x6x128    | Padding:same stride:1x1 activation:relu              |
+    | 20    | depthwise_conv_2d | 96.8k  | 41.5k  | 61.9k      | 50.0k      | 1.0m     | 1x6x6x128,1x3x3x128,128   | 1x6x6x128    | Multiplier:1 padding:same stride:1x1 activation:relu |
+    | 21    | conv_2d           | 1.2M   | 589.8k | 912.3k     | 3.6k       | 11.2m    | 1x6x6x128,128x1x1x128,128 | 1x6x6x128    | Padding:same stride:1x1 activation:relu              |
+    | 22    | depthwise_conv_2d | 96.8k  | 41.5k  | 61.9k      | 50.0k      | 1.1m     | 1x6x6x128,1x3x3x128,128   | 1x6x6x128    | Multiplier:1 padding:same stride:1x1 activation:relu |
+    | 23    | conv_2d           | 1.2M   | 589.8k | 912.3k     | 3.6k       | 11.2m    | 1x6x6x128,128x1x1x128,128 | 1x6x6x128    | Padding:same stride:1x1 activation:relu              |
+    | 24    | depthwise_conv_2d | 24.2k  | 10.4k  | 15.5k      | 13.4k      | 270.0u   | 1x6x6x128,1x3x3x128,128   | 1x3x3x128    | Multiplier:1 padding:same stride:2x2 activation:relu |
+    | 25    | conv_2d           | 596.7k | 294.9k | 456.0k     | 3.6k       | 5.6m     | 1x3x3x128,256x1x1x128,256 | 1x3x3x256    | Padding:same stride:1x1 activation:relu              |
+    | 26    | depthwise_conv_2d | 48.4k  | 20.7k  | 24.9k      | 13.3k      | 390.0u   | 1x3x3x256,1x3x3x256,256   | 1x3x3x256    | Multiplier:1 padding:same stride:1x1 activation:relu |
+    | 27    | conv_2d           | 1.2M   | 589.8k | 898.3k     | 3.6k       | 11.1m    | 1x3x3x256,256x1x1x256,256 | 1x3x3x256    | Padding:same stride:1x1 activation:relu              |
+    | 28    | average_pool_2d   | 2.6k   | 0      | 1.6k       | 3.7k       | 60.0u    | 1x3x3x256                 | 1x1x1x256    | Padding:valid stride:3x3 filter:3x3 activation:none  |
+    | 29    | reshape           | 0      | 0      | 0          | 1.7k       | 30.0u    | 1x1x1x256,2               | 1x256        | Type=none                                            |
+    | 30    | fully_connected   | 1.0k   | 512.0  | 801.0      | 2.1k       | 30.0u    | 1x256,2x256,2             | 1x2          | Activation:none                                      |
+    | 31    | softmax           | 10.0   | 0      | 0          | 3.0k       | 30.0u    | 1x2                       | 1x2          | Type=softmaxoptions                                  |
+    | 32    | dequantize        | 4.0    | 0      | 0          | 911.0      | 30.0u    | 1x2                       | 1x2          | Type=none                                            |
+    +-------+-------------------+--------+--------+------------+------------+----------+---------------------------+--------------+------------------------------------------------------+
+
+
+
 Model Diagram
 ------------------
 
-.. code-block:: console
+.. code-block:: shell
    
-   > mltk view visual_wake_words --tflite
+   mltk view visual_wake_words --tflite
 
 .. raw:: html
 

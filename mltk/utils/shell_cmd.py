@@ -39,7 +39,10 @@ def run_shell_cmd(
         cmd = [str(x) for x in cmd]
 
     if logger is not None:
-        cmd_str = ' '.join(cmd)
+        cmd_str = ''
+        if cwd:
+            cmd_str += f'CWD:{cwd}, '
+        cmd_str += ' '.join(cmd)
         logger.debug(cmd_str)
      
     process_line_by_line = line_processor is not None or outfile is not None

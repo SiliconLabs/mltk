@@ -16,6 +16,10 @@ PUBLIC
 
 
 set(sources
+    microfrontend/lib/activity_detection.c
+    microfrontend/lib/activity_detection_util.c
+    microfrontend/lib/dc_notch_filter.c
+    microfrontend/lib/dc_notch_filter_util.c
     microfrontend/lib/filterbank_util.c
     microfrontend/lib/filterbank.c
     microfrontend/lib/frontend_util.c
@@ -92,3 +96,4 @@ endif()
 
 
 add_subdirectory(tests)
+add_subdirectory(example)

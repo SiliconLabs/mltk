@@ -1,0 +1,2159 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, machine-learning, machinelearning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tensorflow-lite-micro, keras-tensorflow, keras, tflite, embedded, embedded-systems, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HZ5MW943WF"></script>
+<script>
+    window.gTrackingId = 'G-HZ5MW943WF';
+</script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
+  
+  
+    <title>Image Classification - Rock, Paper, Scissors &#8212; MLTK 0.7.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Model Optimization for MVP Hardware Accelerator" href="model_optimization.html" />
+    <link rel="prev" title="Keyword Spotting - On/Off" href="keyword_spotting_on_off.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/tutorials/image_classification" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.7.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.7.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Image Classification - Rock, Paper, Scissors </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.7.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.7.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_on_off.html" class="md-nav__link">Keyword Spotting - On/Off</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Image Classification - Rock, Paper, Scissors </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Image Classification - Rock, Paper, Scissors</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-image-classification--page-root" class="md-nav__link">Image Classification - Rock, Paper, Scissors</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#quick-links" class="md-nav__link">Quick Links</a>
+        </li>
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#objectives" class="md-nav__link">Objectives</a>
+        </li>
+        <li class="md-nav__item"><a href="#content" class="md-nav__link">Content</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-a-notebook" class="md-nav__link">Running this tutorial from a notebook</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-the-command-line" class="md-nav__link">Running this tutorial from the command-line</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#required-hardware" class="md-nav__link">Required Hardware</a>
+        </li>
+        <li class="md-nav__item"><a href="#install-mltk-python-package" class="md-nav__link">Install MLTK Python Package</a>
+        </li>
+        <li class="md-nav__item"><a href="#classification-machine-learning-models-overview" class="md-nav__link">Classification Machine Learning Models Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#class-ids" class="md-nav__link">Class IDs</a>
+        </li>
+        <li class="md-nav__item"><a href="#convolution-neural-networks" class="md-nav__link">Convolution Neural Networks</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#creating-a-labeled-dataset" class="md-nav__link">Creating a Labeled Dataset</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#rock-paper-scissors-dataset-overview" class="md-nav__link">Rock, Paper, Scissors Dataset Overview</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-the-dataset" class="md-nav__link">Update the Dataset</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-sequence" class="md-nav__link">Update Sequence</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#creating-the-model-specification" class="md-nav__link">Creating the Model Specification</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#create-the-specification-script" class="md-nav__link">Create the specification script</a>
+        </li>
+        <li class="md-nav__item"><a href="#add-necessary-imports" class="md-nav__link">Add necessary imports</a>
+        </li>
+        <li class="md-nav__item"><a href="#define-model-object" class="md-nav__link">Define Model Object</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-general-model-settings" class="md-nav__link">Configure the general model settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-basic-training-settings" class="md-nav__link">Configure the basic training settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-training-callbacks" class="md-nav__link">Configure the training callbacks</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-tf-lite-converter-settings" class="md-nav__link">Configure the TF-Lite Converter settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-dataset-settings" class="md-nav__link">Configure the dataset settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-data-augmentation-settings" class="md-nav__link">Configure the data augmentation settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#data-preprocessing" class="md-nav__link">Data preprocessing</a>
+        </li>
+        <li class="md-nav__item"><a href="#define-the-model-layout" class="md-nav__link">Define the model layout</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-parameters" class="md-nav__link">Model Parameters</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-summary" class="md-nav__link">Model Summary</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-visualization" class="md-nav__link">Model Visualization</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#visualize-keras-model" class="md-nav__link">Visualize Keras model</a>
+        </li>
+        <li class="md-nav__item"><a href="#visualize-tf-lite-model" class="md-nav__link">Visualize TF-Lite model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-profiler" class="md-nav__link">Model Profiler</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#profile-in-simulator" class="md-nav__link">Profile in simulator</a>
+        </li>
+        <li class="md-nav__item"><a href="#profile-on-physical-device" class="md-nav__link">Profile on physical device</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-cpu-utilization" class="md-nav__link">Note about CPU utilization</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-model-size-and-hardware-constraints" class="md-nav__link">Note about model size and hardware constraints</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-training" class="md-nav__link">Model Training</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#train-as-a-dry-run" class="md-nav__link">Train as a “dry run”</a>
+        </li>
+        <li class="md-nav__item"><a href="#training-locally" class="md-nav__link">Training locally</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-evaluation" class="md-nav__link">Model Evaluation</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#command" class="md-nav__link">Command</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-model-accuracy" class="md-nav__link">Note about model accuracy</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-testing" class="md-nav__link">Model Testing</a>
+        </li>
+        <li class="md-nav__item"><a href="#deploying-the-model" class="md-nav__link">Deploying the Model</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#using-the-mltk" class="md-nav__link">Using the MLTK</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/image_classification.ipynb.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_optimization.html" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_with_transfer_learning.html" class="md-nav__link">Keyword Spotting with Transfer Learning</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="fingerprint_authentication.html" class="md-nav__link">Fingerprint Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="onnx_to_tflite.html" class="md-nav__link">ONNX to TF-Lite Model Conversion</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-image-classification--page-root" class="md-nav__link">Image Classification - Rock, Paper, Scissors</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#quick-links" class="md-nav__link">Quick Links</a>
+        </li>
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#objectives" class="md-nav__link">Objectives</a>
+        </li>
+        <li class="md-nav__item"><a href="#content" class="md-nav__link">Content</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-a-notebook" class="md-nav__link">Running this tutorial from a notebook</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-the-command-line" class="md-nav__link">Running this tutorial from the command-line</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#required-hardware" class="md-nav__link">Required Hardware</a>
+        </li>
+        <li class="md-nav__item"><a href="#install-mltk-python-package" class="md-nav__link">Install MLTK Python Package</a>
+        </li>
+        <li class="md-nav__item"><a href="#classification-machine-learning-models-overview" class="md-nav__link">Classification Machine Learning Models Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#class-ids" class="md-nav__link">Class IDs</a>
+        </li>
+        <li class="md-nav__item"><a href="#convolution-neural-networks" class="md-nav__link">Convolution Neural Networks</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#creating-a-labeled-dataset" class="md-nav__link">Creating a Labeled Dataset</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#rock-paper-scissors-dataset-overview" class="md-nav__link">Rock, Paper, Scissors Dataset Overview</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-the-dataset" class="md-nav__link">Update the Dataset</a>
+        </li>
+        <li class="md-nav__item"><a href="#update-sequence" class="md-nav__link">Update Sequence</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#creating-the-model-specification" class="md-nav__link">Creating the Model Specification</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#create-the-specification-script" class="md-nav__link">Create the specification script</a>
+        </li>
+        <li class="md-nav__item"><a href="#add-necessary-imports" class="md-nav__link">Add necessary imports</a>
+        </li>
+        <li class="md-nav__item"><a href="#define-model-object" class="md-nav__link">Define Model Object</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-general-model-settings" class="md-nav__link">Configure the general model settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-basic-training-settings" class="md-nav__link">Configure the basic training settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-training-callbacks" class="md-nav__link">Configure the training callbacks</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-tf-lite-converter-settings" class="md-nav__link">Configure the TF-Lite Converter settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-dataset-settings" class="md-nav__link">Configure the dataset settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#configure-the-data-augmentation-settings" class="md-nav__link">Configure the data augmentation settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#data-preprocessing" class="md-nav__link">Data preprocessing</a>
+        </li>
+        <li class="md-nav__item"><a href="#define-the-model-layout" class="md-nav__link">Define the model layout</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-parameters" class="md-nav__link">Model Parameters</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-summary" class="md-nav__link">Model Summary</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-visualization" class="md-nav__link">Model Visualization</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#visualize-keras-model" class="md-nav__link">Visualize Keras model</a>
+        </li>
+        <li class="md-nav__item"><a href="#visualize-tf-lite-model" class="md-nav__link">Visualize TF-Lite model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-profiler" class="md-nav__link">Model Profiler</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#profile-in-simulator" class="md-nav__link">Profile in simulator</a>
+        </li>
+        <li class="md-nav__item"><a href="#profile-on-physical-device" class="md-nav__link">Profile on physical device</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-cpu-utilization" class="md-nav__link">Note about CPU utilization</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-model-size-and-hardware-constraints" class="md-nav__link">Note about model size and hardware constraints</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-training" class="md-nav__link">Model Training</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#train-as-a-dry-run" class="md-nav__link">Train as a “dry run”</a>
+        </li>
+        <li class="md-nav__item"><a href="#training-locally" class="md-nav__link">Training locally</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-evaluation" class="md-nav__link">Model Evaluation</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#command" class="md-nav__link">Command</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-model-accuracy" class="md-nav__link">Note about model accuracy</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#model-testing" class="md-nav__link">Model Testing</a>
+        </li>
+        <li class="md-nav__item"><a href="#deploying-the-model" class="md-nav__link">Deploying the Model</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#using-the-mltk" class="md-nav__link">Using the MLTK</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/image_classification.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li class="active"><a href="../../docs/tutorials.html" accesskey="U">Tutorials</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="image-classification-rock-paper-scissors">
+<h1 id="mltk-tutorials-image-classification--page-root">Image Classification - Rock, Paper, Scissors<a class="headerlink" href="#mltk-tutorials-image-classification--page-root" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial describes how to use the MLTK to develop a machine learning model to detect the hand gestures:</p>
+<ul class="simple">
+<li><p><strong>Rock</strong></p></li>
+<li><p><strong>Paper</strong></p></li>
+<li><p><strong>Scissors</strong></p></li>
+<li><p><strong>Unknown</strong></p></li>
+</ul>
+<section id="quick-links">
+<h2 id="quick-links">Quick Links<a class="headerlink" href="#quick-links" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/SiliconLabs/mltk/blob/master/mltk/tutorials/image_classification.ipynb">GitHub Source</a> - View this tutorial on Github</p></li>
+<li><p><a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/tutorials/image_classification.ipynb">Run on Colab</a> - Run this tutorial on Google Colab</p></li>
+<li><p><a class="reference internal" href="../../docs/cpp_development/examples/image_classifier.html"><span class="doc std std-doc">C++ Example Application</span></a> - View this tutorial’s associated C++ example application</p></li>
+<li><p><a class="reference internal" href="../../docs/python_api/models/siliconlabs/rock_paper_scissors.html"><span class="doc std std-doc">Machine Learning Model</span></a> - View this tutorial’s associated machine learning model</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">IPython.lib.display</span> <span class="kn">import</span> <span class="n">YouTubeVideo</span>
+
+<span class="n">YouTubeVideo</span><span class="p">(</span><span class="s1">'hIfGOc9ST50'</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s1">'800'</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="s1">'500'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html">
+<iframe allowfullscreen="" frameborder="0" height="500" src="https://www.youtube.com/embed/hIfGOc9ST50" width="800"></iframe>
+</div></div>
+</div>
+</section>
+<section id="overview">
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<section id="objectives">
+<h3 id="objectives">Objectives<a class="headerlink" href="#objectives" title="Permalink to this headline">¶</a></h3>
+<p>After completing this tutorial, you will have:</p>
+<ol class="arabic simple">
+<li><p>A better understanding of how image classification machine learning models work</p></li>
+<li><p>A better understanding of how labeled datasets are created</p></li>
+<li><p>All of the tools needed to develop your own image classification model</p></li>
+<li><p>A working demo to detect the hand gestures: “Rock”, “Paper”, “Scissors”</p></li>
+</ol>
+</section>
+<section id="content">
+<h3 id="content">Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h3>
+<p>This tutorial is divided into the following sections:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#classification-machine-learning-models-overview"><span class="std std-doc">Overview of classification machine learning models</span></a></p></li>
+<li><p><a class="reference internal" href="#creating-a-labeled-dataset"><span class="std std-doc">Creating a labeled dataset</span></a></p></li>
+<li><p><a class="reference internal" href="#creating-the-model-specification"><span class="std std-doc">Creating the model specification</span></a></p></li>
+<li><p><a class="reference internal" href="#model-parameters"><span class="std std-doc">Note about model parameters</span></a></p></li>
+<li><p><a class="reference internal" href="#model-visualization"><span class="std std-doc">Summarizing the model</span></a></p></li>
+<li><p><a class="reference internal" href="#model-visualization"><span class="std std-doc">Visualizing the model graph</span></a></p></li>
+<li><p><a class="reference internal" href="#model-profiler"><span class="std std-doc">Profiling the model</span></a></p></li>
+<li><p><a class="reference internal" href="#model-training"><span class="std std-doc">Training the model</span></a></p></li>
+<li><p><a class="reference internal" href="#model-evaluation"><span class="std std-doc">Evaluating the model</span></a></p></li>
+<li><p><a class="reference internal" href="#model-testing"><span class="std std-doc">Testing the model</span></a></p></li>
+<li><p><a class="reference internal" href="#deploying-the-model"><span class="std std-doc">Deploying the model to an embedded device</span></a></p></li>
+</ol>
+</section>
+<section id="running-this-tutorial-from-a-notebook">
+<h3 id="running-this-tutorial-from-a-notebook">Running this tutorial from a notebook<a class="headerlink" href="#running-this-tutorial-from-a-notebook" title="Permalink to this headline">¶</a></h3>
+<p>For documentation purposes, this tutorial was designed to run within a <a class="reference external" href="https://jupyter.org">Jupyter Notebook</a>.
+The notebook can either run locally on your PC <em>or</em> on a remote server like <a class="reference external" href="https://colab.research.google.com/notebooks/welcome.ipynb">Google Colab</a>.</p>
+<ul class="simple">
+<li><p>Refer to the <a class="reference internal" href="../../docs/guides/notebook_examples_guide.html"><span class="doc std std-doc">Notebook Examples Guide</span></a> for more details</p></li>
+<li><p>Click here: <a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/tutorials/image_classification.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"/></a> to run this tutorial interactively in your browser</p></li>
+</ul>
+<p><strong>NOTE:</strong> Some of the following sections require this tutorial to be running locally with a supported embedded platform connected.</p>
+</section>
+<section id="running-this-tutorial-from-the-command-line">
+<h3 id="running-this-tutorial-from-the-command-line">Running this tutorial from the command-line<a class="headerlink" href="#running-this-tutorial-from-the-command-line" title="Permalink to this headline">¶</a></h3>
+<p>While this tutorial uses a <a class="reference external" href="https://jupyter.org">Jupyter Notebook</a>,
+the recommended approach is to use your favorite text editor and standard command terminal, no Jupyter Notebook required.</p>
+<p>See the <a class="reference external" href="../../docs/installation.html#standard-python-package">Standard Python Package Installation</a> guide for more details on how to enable the <code class="docutils literal notranslate"><span class="pre">mltk</span></code> command in your local terminal.</p>
+<p>In this mode, when you encounter a <code class="docutils literal notranslate"><span class="pre">!mltk</span></code> command in this tutorial, the command should actually run in your local terminal (excluding the <code class="docutils literal notranslate"><span class="pre">!</span></code>)</p>
+</section>
+</section>
+<section id="required-hardware">
+<h2 id="required-hardware">Required Hardware<a class="headerlink" href="#required-hardware" title="Permalink to this headline">¶</a></h2>
+<p>Some parts of the tutorial requires a supported development board and the <a class="reference external" href="https://www.arducam.com/product/arducam-2mp-spi-camera-b0067-arduino">ArduCAM</a> camera module.</p>
+<p>See the <a class="reference external" href="../../docs/cpp_development/examples/image_classifier.html#hardware-setup">Hardware Setup</a> section of the Image Classification C++ example application for details on how to connect the camera to the development board.</p>
+<p><strong>NOTE:</strong> Only the camera needs to be connected to the development board. You do <em>not</em> need to build the C++ application from source for this tutorial.</p>
+</section>
+<section id="install-mltk-python-package">
+<h2 id="install-mltk-python-package">Install MLTK Python Package<a class="headerlink" href="#install-mltk-python-package" title="Permalink to this headline">¶</a></h2>
+<p>Before using the MLTK, it must first be installed.<br/>
+See the <a class="reference internal" href="../../docs/installation.html"><span class="doc std std-doc">Installation Guide</span></a> for more details.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip install --upgrade silabs-mltk
+</pre></div>
+</div>
+</div>
+</div>
+<p>All MLTK modeling operations are accessible via the <code class="docutils literal notranslate"><span class="pre">mltk</span></code> command.<br/>
+Run the command <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">--help</span></code> to ensure it is working.<br/>
+<strong>NOTE:</strong> The exclamation point <code class="docutils literal notranslate"><span class="pre">!</span></code> tells the Notebook to run a shell command, it is not required in a <a class="reference external" href="../../docs/installation.html#standard-python-package">standard terminal</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk --help
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Usage: mltk [OPTIONS] COMMAND [ARGS]...
+
+  Silicon Labs Machine Learning Toolkit
+
+  This is a Python package with command-line utilities and scripts to aid the
+  development of machine learning models for Silicon Lab's embedded platforms.
+
+Options:
+  --version                       Display the version of this mltk package and
+                                  exit
+  --install-completion [bash|zsh|fish|powershell|pwsh]
+                                  Install completion for the specified shell.
+  --show-completion [bash|zsh|fish|powershell|pwsh]
+                                  Show completion for the specified shell, to
+                                  copy it or customize the installation.
+  --help                          Show this message and exit.
+
+Commands:
+  build           MLTK build commands
+  classify_audio  Classify keywords/events detected in a microphone's...
+  classify_image  Classify images detected by a camera connected to an...
+  commander       Silab's Commander Utility
+  custom          Custom Model Operations
+  evaluate        Evaluate a trained ML model
+  profile         Profile a model
+  quantize        Quantize a model into a .tflite file
+  summarize       Generate a summary of a model
+  train           Train an ML model
+  update_params   Update the parameters of a previously trained model
+  utest           Run the all unit tests
+  view            View an interactive graph of the given model in a...
+  view_audio      View the spectrograms generated by the...
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="classification-machine-learning-models-overview">
+<h2 id="classification-machine-learning-models-overview">Classification Machine Learning Models Overview<a class="headerlink" href="#classification-machine-learning-models-overview" title="Permalink to this headline">¶</a></h2>
+<p>Before continuing with this tutorial, it is recommended to review the <a class="reference internal" href="../../docs/overview.html"><span class="doc std std-doc">MLTK Overview</span></a>, which provides an overview of the core concepts used by the this tutorial.</p>
+<p>Image classification is one of the most important applications of deep learning and Artificial Intelligence. Image classification refers to assigning labels to images based on certain characteristics or features present in them. The algorithm identifies these features and uses them to differentiate between different images and assign labels to them <a class="reference external" href="https://www.simplilearn.com/tutorials/deep-learning-tutorial/guide-to-building-powerful-keras-image-classification-models">[1]</a>.</p>
+<section id="class-ids">
+<h3 id="class-ids">Class IDs<a class="headerlink" href="#class-ids" title="Permalink to this headline">¶</a></h3>
+<p>In this tutorial, we have a dataset with four different image types, a.k.a. <strong>classes</strong>:</p>
+<ul class="simple">
+<li><p><strong>rock</strong> - Images of a person’s hand making a “rock” gesture</p></li>
+<li><p><strong>paper</strong> - Images of a person’s hand making a “paper” gesture</p></li>
+<li><p><strong>scissors</strong> - Images of a persons’s hand making a “scissors” gesture</p></li>
+<li><p><strong>unknown</strong> - Random images not containing any of the above</p></li>
+</ul>
+<p>We assign an ID, a.k.a. <strong>label</strong>, 0-3, to each of these classes.<br/>
+We then “train” a machine learning model so that when we input an image from one of the classes is given to the model, the model’s output is the corresponding class ID. In this way, at runtime on the embedded device when the camera captures an image of a person’s hand, the ML model predicts its corresponding class ID which the firmware application uses accordingly. i.e.</p>
+<p><img alt="" src="../../_images/rock_paper_scissors_overview.png"/></p>
+</section>
+<section id="convolution-neural-networks">
+<h3 id="convolution-neural-networks">Convolution Neural Networks<a class="headerlink" href="#convolution-neural-networks" title="Permalink to this headline">¶</a></h3>
+<p>The type of machine learning model used in this tutorial is Convolution Neural Network (CNN).</p>
+<p>A Convolutional Neural Network (ConvNet/CNN) is a Deep Learning algorithm which can take in an input image, assign importance (learnable weights and biases) to various aspects/objects in the image and be able to differentiate one from the other <a class="reference external" href="https://towardsdatascience.com/a-comprehensive-guide-to-convolutional-neural-networks-the-eli5-way-3bd2b1164a53">[2]</a>.</p>
+<p>A typical CNN can be visualized as follows:</p>
+<p><img alt="" src="https://miro.medium.com/max/1400/1*vkQ0hXDaQv57sALXAJquxA.jpeg"/><br/>
+<a class="reference external" href="https://towardsdatascience.com/a-comprehensive-guide-to-convolutional-neural-networks-the-eli5-way-3bd2b1164a53">Typical CNN Diagram</a></p>
+<p>A typical CNN is comprised of multiple <strong>layers</strong>. A given layer is basically a mathematical operation that operates on multi-dimensional arrays (a.k.a tensors).
+The layers of a CNN can be split into two core phases:</p>
+<ul class="simple">
+<li><p><strong>Feature Learning</strong> - This uses Convolutional layers to extract “features” from the input image</p></li>
+<li><p><strong>Classification</strong> - This takes the flatten “feature vector” from the feature learning layers and uses “fully connected” layer(s) to make a prediction on which class the input image belongs</p></li>
+</ul>
+</section>
+</section>
+<section id="creating-a-labeled-dataset">
+<h2 id="creating-a-labeled-dataset">Creating a Labeled Dataset<a class="headerlink" href="#creating-a-labeled-dataset" title="Permalink to this headline">¶</a></h2>
+<p>The most important part of a machine learning model is the dataset that was used to train the model.
+For a machine learning model to work well in the field, it must be trained with a dataset this is <strong>representative</strong> of what would be seen in the field.
+Put another way, a machine learning model can only make accurate predictions on samples that are similar to what it has previously seen (i.e. trained with).
+As such, approximately 80% of the effort of creating a robust machine learning model is generating the dataset.</p>
+<p>Typically, a good dataset should have the following characteristics:</p>
+<ul class="simple">
+<li><p><strong>Numerous samples per class</strong> - 1k+ -&gt; ok, 10k+ -&gt; good, 100k+ -&gt; great</p></li>
+<li><p><strong>Mostly “balanced”</strong> - The sample count for each class should be mostly the same</p></li>
+<li><p><strong>Representative</strong> - There should be samples for all the possible orientations, lighting, backgrounds, etc. that could be seen in the field (the model can only make accurate predictions on stuff it has seen during training)</p></li>
+<li><p><strong>Non-redundant</strong> - Each of the samples should be relatively unique, duplicate samples usually doesn’t make the model more robust</p></li>
+<li><p><strong>Correctly labeled</strong> - The samples in the dataset should be correctly labeled. A few mislabled samples is typically ok, but too many can degrade the model’s accuracy</p></li>
+<li><p><strong>Uses same sensor as the one in the field</strong> - While not a hard requirement, it is usually best if the training dataset samples are generated using the same sensor as the one that will be used in the field. This way, the samples “look” the same during training as they do in the field</p></li>
+</ul>
+<section id="rock-paper-scissors-dataset-overview">
+<h3 id="rock-paper-scissors-dataset-overview">Rock, Paper, Scissors Dataset Overview<a class="headerlink" href="#rock-paper-scissors-dataset-overview" title="Permalink to this headline">¶</a></h3>
+<p>This tutorial uses the <a class="reference external" href="../../docs/python_api/datasets/index.html#rock-paper-scissors-v2">Rock, Paper, Scissors</a> dataset.</p>
+<p>You can import this dataset into a Python script using:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the Rock, Paper, Scissors v2 dataset</span>
+<span class="kn">from</span> <span class="nn">mltk.datasets.image</span> <span class="kn">import</span> <span class="n">rock_paper_scissors_v2</span>
+
+<span class="c1"># Then download and extract the archive</span>
+<span class="n">dataset_dir</span> <span class="o">=</span> <span class="n">rock_paper_scissors_v2</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Rock, Paper, Scissors dataset directory path: </span><span class="si">{</span><span class="n">dataset_dir</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Extracting: C:/Users/reed/.mltk/downloads/rock_paper_scissors_v2.7z
+to: C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2
+(This may take awhile, please be patient ...)
+</pre></div>
+</div>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>patool: Extracting C:/Users/reed/.mltk/downloads/rock_paper_scissors_v2.7z ...
+patool: running "C:\Program Files\7-Zip\7z.EXE" x -y -oE:/reed/mltk/tmp_archives/rock_paper_scissors_v2 -- C:/Users/reed/.mltk/downloads/rock_paper_scissors_v2.7z
+patool: ... C:/Users/reed/.mltk/downloads/rock_paper_scissors_v2.7z extracted to `E:/reed/mltk/tmp_archives/rock_paper_scissors_v2'.
+Rock, Paper, Scissors dataset directory path: C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2
+</pre></div>
+</div>
+</div>
+</div>
+<p>This dataset has the following subdirectories:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span> 
+
+<span class="c1"># The dataset has the following sub-directories:</span>
+<span class="k">for</span> <span class="n">sub_dir</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">dataset_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">sub_dir</span><span class="si">}</span><span class="s1">'</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">sub_dir</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>paper
+rock
+scissor
+_unknown_
+</pre></div>
+</div>
+</div>
+</div>
+<p>Each subdirectory represents a <strong>class</strong>.
+So the “paper” subdirectory contains images of someone’s hand making the “paper” gesture, and similar for the other subdirectories.</p>
+<p>Each image file (a.k.a “sample”) is a 96x96 grayscale JPEG image.</p>
+<p>The following shows some of the samples in the dataset:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
+
+<span class="c1"># Collect 5 samples file paths for each class in the dataset</span>
+<span class="n">class_samples</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">):</span>
+    <span class="n">class_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">dataset_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1">'</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">class_dir</span><span class="p">):</span>
+        <span class="k">continue</span>
+    <span class="k">if</span> <span class="n">class_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">class_samples</span><span class="p">:</span>
+        <span class="n">class_samples</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">sample_filename</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">class_dir</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">class_samples</span><span class="p">[</span><span class="n">class_name</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="c1"># We only want 5 samples from each class</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">sample_filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.jpg'</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="n">sample_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">class_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">sample_filename</span><span class="si">}</span><span class="s1">'</span>
+        <span class="n">class_samples</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span>
+
+<span class="c1"># Display the class samples</span>
+<span class="k">for</span> <span class="n">class_name</span><span class="p">,</span> <span class="n">sample_paths</span> <span class="ow">in</span> <span class="n">class_samples</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">class_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">dataset_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1">'</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Class: </span><span class="si">{</span><span class="n">class_name</span><span class="si">}</span><span class="s1">, path: </span><span class="si">{</span><span class="n">class_dir</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+    <span class="n">axs</span> <span class="o">=</span> <span class="n">axs</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">sample_path</span><span class="p">,</span> <span class="n">ax</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">sample_paths</span><span class="p">,</span> <span class="n">axs</span><span class="p">):</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class: paper, path: C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/paper
+</pre></div>
+</div>
+<img alt="../../_images/d0930156d61edc3553af2818bfef0eace2c26e51671cebd9e4ed43ee7d8251ab.png" src="../../_images/d0930156d61edc3553af2818bfef0eace2c26e51671cebd9e4ed43ee7d8251ab.png"/>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class: rock, path: C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/rock
+</pre></div>
+</div>
+<img alt="../../_images/b15d32d8a65d4b8081bb0f681595f9c18c71daa96090911830d68c047d81f314.png" src="../../_images/b15d32d8a65d4b8081bb0f681595f9c18c71daa96090911830d68c047d81f314.png"/>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class: scissor, path: C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/scissor
+</pre></div>
+</div>
+<img alt="../../_images/24e640c655607edd2620c1a0dae91787426ebecba2639971c36ae7d79ead173a.png" src="../../_images/24e640c655607edd2620c1a0dae91787426ebecba2639971c36ae7d79ead173a.png"/>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Class: _unknown_, path: C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/_unknown_
+</pre></div>
+</div>
+<img alt="../../_images/32dc95311d025929fa5bf6c88ef781e4f67dc378c12b756dc00bc5bec340f86c.png" src="../../_images/32dc95311d025929fa5bf6c88ef781e4f67dc378c12b756dc00bc5bec340f86c.png"/>
+</div>
+</div>
+</section>
+<section id="update-the-dataset">
+<h3 id="update-the-dataset">Update the Dataset<a class="headerlink" href="#update-the-dataset" title="Permalink to this headline">¶</a></h3>
+<p>Currently, the dataset contains less than 5k samples. This is quite small and will likely not produce a robust model.
+The best way to make a robust model is it add more <strong>representative</strong> samples to the dataset.</p>
+<p>For this dataset, “representative” means:</p>
+<ul class="simple">
+<li><p>Different people’s hands making each gesture</p></li>
+<li><p>Different lighting angles</p></li>
+<li><p>Different backgrounds</p></li>
+<li><p>Different distances from the camera</p></li>
+<li><p>Use of “left” and “right” hand</p></li>
+<li><p>Showing front and back of hand</p></li>
+</ul>
+<p>So basically, to improve the model we need to increase the size of the dataset by having different people record their hands performing “rock”, “paper”, “scissors” from different orientations.
+The more images we add, the more “representative” the dataset becomes, which should (hopefully) make the model more robust.</p>
+<p>Fortunately, the MLTK features a command that allows for recording images from the embedded device.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk classify_image --help
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Usage: mltk classify_image [OPTIONS] &lt;model&gt;
+
+  Classify images detected by a camera connected to an embedded device.
+
+  NOTE: A supported embedded device must be locally connected to use this
+  command.
+
+Arguments:
+  &lt;model&gt;  On of the following:
+           - MLTK model name 
+           - Path to .tflite file
+           - Path to model archive file (.mltk.zip)
+           NOTE: The model must have been previously trained for image classification  [required]
+
+Options:
+  -a, --accelerator &lt;name&gt;        Name of accelerator to use while executing the audio classification ML model
+  --port &lt;port&gt;                   Serial COM port of a locally connected embedded device.
+                                  'If omitted, then attempt to automatically determine the serial COM port
+  -v, --verbose                   Enable verbose console logs
+  -w, --window_duration &lt;duration ms&gt;
+                                  Controls the smoothing. Drop all inference results that are older than &lt;now&gt; minus window_duration.
+                                  Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some images
+  -c, --count &lt;count&gt;             The *minimum* number of inference results to
+                                  average when calculating the detection value
+  -t, --threshold &lt;threshold&gt;     Minimum averaged model output threshold for
+                                  a class to be considered detected, 0-255.
+                                  Higher values increase precision at the cost
+                                  of recall
+  -s, --suppression &lt;count&gt;       Number of samples that should be different
+                                  than the last detected sample before
+                                  detecting again
+  -l, --latency &lt;latency ms&gt;      This the amount of time in milliseconds
+                                  between processing loops
+  -i, --sensitivity FLOAT         Sensitivity of the activity indicator LED.
+                                  Much less than 1.0 has higher sensitivity
+  -x, --dump-images               Dump the raw images from the device camera to a directory on the local PC. 
+                                  NOTE: Use the --no-inference option to ONLY dump images and NOT run inference on the device
+                                  Use the --dump-threshold option to control how unique the images must be to dump
+  --dump-threshold FLOAT          This controls how unique the camera images must be before they're dumped.
+                                  This is useful when generating a dataset.
+                                  If this value is set to 0 then every image from the camera is dumped.
+                                  if this value is closer to 1. then the images from the camera should be sufficiently unique from
+                                  prior images that have been dumped.  [default: 0.1]
+  --no-inference                  By default inference is executed on the
+                                  device. Use --no-inference to disable
+                                  inference on the device which can improve
+                                  image dumping throughput
+  -g, --generate-dataset          Update the model's dataset.
+                                  This will iterate through each data class used by the model and instruct the user
+                                  the display the class in front of the camera. An image is captured from the device's camera
+                                  and saved to the model's corresponding dataset sub-directory.
+                                  This process will repeat until the user exits the command.   
+                                  Use the --sample-count option to specify the number of samples per class to collect
+                                  NOTE: Device inference is disabled when using this option  
+                                  See the --dump-images option as an alternative to generating a dataset   
+  --sample-count INTEGER          The number of samples to collect per class
+                                  before iterating to the next class
+                                  [default: 5]
+  --app &lt;path&gt;                    By default, the image_classifier app is automatically downloaded. 
+                                  This option allows for overriding with a custom built app.
+                                  Alternatively, set this option to "none" to NOT program the image_classifier app to the device.
+                                  In this case, ONLY the .tflite will be programmed and the existing image_classifier app will be re-used.
+  --test                          Run as a unit test
+  --help                          Show this message and exit.
+</pre></div>
+</div>
+</div>
+</div>
+<p>Using the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mltk</span> <span class="n">rock_paper_scissors</span> <span class="o">--</span><span class="n">dump</span><span class="o">-</span><span class="n">images</span> <span class="o">--</span><span class="n">dump</span><span class="o">-</span><span class="n">threshold</span> <span class="mf">0.01</span>
+</pre></div>
+</div>
+<p>Images from the embedded device will be saved to the local PC.
+The images can then by copied into the “Rock, Paper, Scissors” dataset directory.</p>
+</section>
+<section id="update-sequence">
+<h3 id="update-sequence">Update Sequence<a class="headerlink" href="#update-sequence" title="Permalink to this headline">¶</a></h3>
+<p>The process for updating (i.e. adding more samples to) the “Rock, Paper, Scissors” dataset is as follows:</p>
+<p><strong>NOTE:</strong> A similar process can be used for other image based datasets</p>
+<ol class="arabic simple">
+<li><p>Purchase an <a class="reference external" href="https://www.arducam.com/product/arducam-2mp-spi-camera-b0067-arduino">ArduCAM</a> camera module</p></li>
+<li><p>Connect the ArduCAM to a supported development board as described in the <a class="reference internal" href="../../docs/cpp_development/examples/image_classifier.html"><span class="doc std std-doc">image_classifier</span></a> example application</p></li>
+<li><p>Issue the command: <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">rock_paper_scissors</span> <span class="pre">--dump-images</span> <span class="pre">--dump-threshold</span> <span class="pre">0.01</span></code></p></li>
+<li><p>Open the dump directory that is printed in the terminal
+(which should be something like <code class="docutils literal notranslate"><span class="pre">~/.mltk/image_classifier_images/brd2601</span></code>),
+you should see images being dumped to this directory.<br/>
+<strong>Ensure the background is a solid color</strong> (A <em>much</em> larger dataset is required to use random backgrounds)</p></li>
+<li><p>Make the “rock” gesture in front of the camera, and move your hand is various orientations and distances from the camera</p></li>
+<li><p>Repeat step 4 showing the other side of your hand making the “rock” gesture<br/>
+(if possible, also change the lighting conditions to collect even more samples)</p></li>
+<li><p>Once enough images have been dumped (~100-200), review the images in the dump directory.<br/>
+Delete all images that do not clearly show your hand making the “rock” gesture</p></li>
+<li><p>Once the dump directory only contains images of your hand making the “rock” gesture, copy all of the images to the dataset directory: <code class="docutils literal notranslate"><span class="pre">~/.mltk/datasets/rock_paper_scissors/v2/rock</span></code></p></li>
+<li><p>Repeat steps 5-8 using the “paper” gesture and then the “scissors” gesture</p></li>
+</ol>
+<p>Once this process is complete, the model should be retrained.e.g.: <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">train</span> <span class="pre">rock_paper_scissors</span> <span class="pre">--clean</span></code> which will use the updated dataset.</p>
+</section>
+</section>
+<section id="creating-the-model-specification">
+<h2 id="creating-the-model-specification">Creating the Model Specification<a class="headerlink" href="#creating-the-model-specification" title="Permalink to this headline">¶</a></h2>
+<p>The model specification is a standard Python script containing everything needed to build, train, and evaluate a machine learning model in the MLTK.</p>
+<p>Refer to the <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">Model Specification Guide</span></a> for more details about this file.</p>
+<p>The completed model specification used for this tutorial may be found on Github: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/rock_paper_scissors.py">rock_paper_scissors.py</a>.</p>
+<p>The following sub-sections describe how to create this model specification from scratch.</p>
+<section id="create-the-specification-script">
+<h3 id="create-the-specification-script">Create the specification script<a class="headerlink" href="#create-the-specification-script" title="Permalink to this headline">¶</a></h3>
+<p>From your favorite text editor, create a model specification Python script file, e.g:
+<code class="docutils literal notranslate"><span class="pre">my_rock_paper_scissors.py</span></code></p>
+<p>The name of this file is the name given to the model. So all subsequent <code class="docutils literal notranslate"><span class="pre">mltk</span></code> commands will use the model name <code class="docutils literal notranslate"><span class="pre">my_rock_paper_scissors</span></code>, e.g:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk train my_rock_paper_scissors
+</pre></div>
+</div>
+<p>You may use any name as long as it contains alphanumeric or underscore characters.</p>
+<p>When executing a command, the MLTK searches for the model specification script by model name.<br/>
+The MLTK commands search the current working directory then any configured paths.<br/>
+Refer to the <a class="reference internal" href="../../docs/guides/model_search_path.html"><span class="doc std std-doc">Model Search Path Guide</span></a> for more details.</p>
+<p><strong>NOTE:</strong> The commands below use the pre-defined model name: <code class="docutils literal notranslate"><span class="pre">rock_paper_scissors</span></code>, however, you should replace that with your model’s name, e.g.: <code class="docutils literal notranslate"><span class="pre">my_rock_paper_scissors</span></code>.</p>
+</section>
+<section id="add-necessary-imports">
+<h3 id="add-necessary-imports">Add necessary imports<a class="headerlink" href="#add-necessary-imports" title="Permalink to this headline">¶</a></h3>
+<p>Next, open the newly created Python script: <code class="docutils literal notranslate"><span class="pre">my_rock_paper_scissors.py</span></code><br/>
+in your favorite text editor and add the following to the top of the model specification script:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Bring in the required Keras classes</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Activation</span><span class="p">,</span> <span class="n">Flatten</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Conv2D</span><span class="p">,</span> <span class="n">MaxPooling2D</span>
+
+<span class="kn">from</span> <span class="nn">mltk.core.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MltkModel</span><span class="p">,</span>
+    <span class="n">TrainMixin</span><span class="p">,</span>
+    <span class="n">ImageDatasetMixin</span><span class="p">,</span>
+    <span class="n">EvaluateClassifierMixin</span>
+<span class="p">)</span>
+
+<span class="c1"># By default, we use the ParallelImageDataGenerator</span>
+<span class="c1"># We could use the Keras ImageDataGenerator but it is slower</span>
+<span class="kn">from</span> <span class="nn">mltk.core.preprocess.image.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelImageDataGenerator</span>
+<span class="c1">#from keras.preprocessing.image import ImageDataGenerator</span>
+<span class="c1"># Import the dataset</span>
+<span class="kn">from</span> <span class="nn">mltk.datasets.image</span> <span class="kn">import</span> <span class="n">rock_paper_scissors_v2</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>These import various Tensorflow and MLTK packages we’ll use throughout the script.<br/>
+Refer to the comments above each import for more details.</p>
+</section>
+<section id="define-model-object">
+<h3 id="define-model-object">Define Model Object<a class="headerlink" href="#define-model-object" title="Permalink to this headline">¶</a></h3>
+<p>Next, add the following to the model specification script:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Instantiate the MltkModel object with the following 'mixins':</span>
+<span class="c1"># - TrainMixin            - Provides classifier model training operations and settings</span>
+<span class="c1"># - ImageDatasetMixin     - Provides image data generation operations and settings</span>
+<span class="c1"># - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings</span>
+<span class="c1"># @mltk_model # NOTE: This tag is required for this model be discoverable</span>
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+    <span class="n">MltkModel</span><span class="p">,</span> 
+    <span class="n">TrainMixin</span><span class="p">,</span> 
+    <span class="n">ImageDatasetMixin</span><span class="p">,</span> 
+    <span class="n">EvaluateClassifierMixin</span>
+<span class="p">):</span>
+    <span class="k">pass</span>
+<span class="n">my_model</span> <span class="o">=</span> <span class="n">MyModel</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This defines and instantiates a custom MltkModel object with several model “mixins”.</p>
+<p>The custom model object must inherit the <a class="reference internal" href="../../docs/python_api/core/mltk_model.html"><span class="doc std std-doc">MltkModel</span></a> object.<br/>
+Additionally, it inherits:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/python_api/core/mltk_model.html#trainmixin"><span class="std std-doc">TrainMixin</span></a> so that we can train the model</p></li>
+<li><p><a class="reference external" href="../../docs/python_api/core/mltk_model.html#imagedatasetmixin">ImageDatasetMixin</a> so that we can train the model with the <a class="reference external" href="../../docs/python_api/data_preprocessing/image_data_generator.html">ParallelImageDataGenerator</a></p></li>
+<li><p><a class="reference internal" href="../../docs/python_api/core/mltk_model.html#evaluateclassifiermixin"><span class="std std-doc">EvaluateClassifierMixin</span></a> so that we can evaluate the trained model</p></li>
+</ul>
+<p>The rest of the model specification script configures the various properties of our custom model object.</p>
+</section>
+<section id="configure-the-general-model-settings">
+<h3 id="configure-the-general-model-settings">Configure the general model settings<a class="headerlink" href="#configure-the-general-model-settings" title="Permalink to this headline">¶</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># For better tracking, the version should be incremented any time a non-trivial change is made</span>
+<span class="c1"># NOTE: The version is optional and not used directly used by the MLTK</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># Provide a brief description about what this model models</span>
+<span class="c1"># This description goes in the "description" field of the .tflite model file</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">'Image classifier example for detecting Rock/Paper/Scissors hand gestures in images'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-basic-training-settings">
+<h3 id="configure-the-basic-training-settings">Configure the basic training settings<a class="headerlink" href="#configure-the-basic-training-settings" title="Permalink to this headline">¶</a></h3>
+<p>Refer to the <a class="reference internal" href="../../docs/python_api/core/mltk_model.html#trainmixin"><span class="std std-doc">TrainMixin</span></a> for more details about each property.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This specifies the number of times we run the training</span>
+<span class="c1"># samples through the model to update the model weights.</span>
+<span class="c1"># Typically, a larger value leads to better accuracy at the expense of training time.</span>
+<span class="c1"># Set to -1 to use the early_stopping callback and let the scripts</span>
+<span class="c1"># determine how many epochs to train for (see below).</span>
+<span class="c1"># Otherwise set this to a specific value (typically 40-200)</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="mi">125</span>
+<span class="c1"># Specify how many samples to pass through the model</span>
+<span class="c1"># before updating the training gradients.</span>
+<span class="c1"># Typical values are 10-64</span>
+<span class="c1"># NOTE: Larger values require more memory and may not fit on your GPU</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">32</span>
+<span class="c1"># This specifies the algorithm used to update the model gradients</span>
+<span class="c1"># during training. Adam is very common</span>
+<span class="c1"># See https://www.tensorflow.org/api_docs/python/tf/keras/optimizers</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="s1">'adam'</span>
+<span class="c1"># List of metrics to be evaluated by the model during training and testing</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'accuracy'</span><span class="p">]</span>
+<span class="c1"># The "loss" function used to update the weights</span>
+<span class="c1"># This is a classification problem with more than two labels so we use categorical_crossentropy</span>
+<span class="c1"># See https://www.tensorflow.org/api_docs/python/tf/keras/losses</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">loss</span> <span class="o">=</span> <span class="s1">'categorical_crossentropy'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-training-callbacks">
+<h3 id="configure-the-training-callbacks">Configure the training callbacks<a class="headerlink" href="#configure-the-training-callbacks" title="Permalink to this headline">¶</a></h3>
+<p>Refer to the <a class="reference internal" href="../../docs/python_api/core/mltk_model.html#trainmixin"><span class="std std-doc">TrainMixin</span></a> for more details about each property.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Generate checkpoints every time the validation accuracy improves</span>
+<span class="c1"># See https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ModelCheckpoint</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">'monitor'</span><span class="p">]</span> <span class="o">=</span>  <span class="s1">'val_accuracy'</span>
+
+<span class="c1"># https://keras.io/api/callbacks/reduce_lr_on_plateau/</span>
+<span class="c1"># If the test loss doesn't improve after 'patience' epochs </span>
+<span class="c1"># then decrease the learning rate by 'factor'</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">reduce_lr_on_plateau</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+  <span class="n">monitor</span><span class="o">=</span><span class="s1">'loss'</span><span class="p">,</span>
+  <span class="n">factor</span> <span class="o">=</span> <span class="mf">0.95</span><span class="p">,</span>
+  <span class="n">min_delta</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+  <span class="n">patience</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="p">)</span>
+
+<span class="c1"># If the  accuracy doesn't improve after 35 epochs then stop training</span>
+<span class="c1"># https://keras.io/api/callbacks/early_stopping/</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">early_stopping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span> 
+  <span class="n">monitor</span> <span class="o">=</span> <span class="s1">'accuracy'</span><span class="p">,</span>
+  <span class="n">patience</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
+  <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-tf-lite-converter-settings">
+<h3 id="configure-the-tf-lite-converter-settings">Configure the TF-Lite Converter settings<a class="headerlink" href="#configure-the-tf-lite-converter-settings" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference external" href="https://www.tensorflow.org/lite/convert">Tensorflow-Lite Converter</a> is used to “quantize” the model.<br/>
+The quantized model is what is eventually programmed to the embedded device.</p>
+<p>Refer to the <a class="reference internal" href="../../docs/guides/model_quantization.html"><span class="doc std std-doc">Model Quantization Guide</span></a> for more details.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'optimizations'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'DEFAULT'</span><span class="p">]</span>
+<span class="c1"># Tell the TfliteConverter to generated int8 weights/filters</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'supported_ops'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'TFLITE_BUILTINS_INT8'</span><span class="p">]</span>
+<span class="c1"># We want the input/output model data types to be float32</span>
+<span class="c1"># since we're using samplewise_std_normalization=True during training</span>
+<span class="c1"># With this, the TfliteConverter will automatically add quantize/dequantize</span>
+<span class="c1"># layers to the model to automatically convert the float32 data to int8</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_input_type'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'float32'</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_output_type'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'float32'</span>
+<span class="c1"># Generate a representative dataset from the validation data</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'representative_dataset'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'generate'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-dataset-settings">
+<h3 id="configure-the-dataset-settings">Configure the dataset settings<a class="headerlink" href="#configure-the-dataset-settings" title="Permalink to this headline">¶</a></h3>
+<p>Next, we specify the dataset. In this tutorial we use the <a class="reference external" href="../../docs/python_api/datasets/index.html#rock-paper-scissors-v2">Rock Paper Scissors v2</a> dataset which comes as an MLTK package.</p>
+<p><strong>NOTE:</strong> While the MLTK comes with pre-defined datasets, any external dataset may also be specified.<br/>
+Refer to the <a class="reference external" href="../../docs/python_api/core/mltk_model.html#mltk.core.ImageDatasetMixin">ImageDatasetMixin.dataset</a> property for more details.</p>
+<p><strong>NOTE:</strong> While a dataset path can be hard coded, it is <em>strongly</em> recommended that the script dynamically downloads the dataset from the internet. This allows for the model training and evaluating to be reproducible. It also enables remote training on cloud services like <a class="reference external" href="https://colab.research.google.com/notebooks/welcome.ipynb">Google Colab</a> which need to download the dataset any time a virtual instance is created.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The directory of the training data</span>
+<span class="c1"># NOTE: This can also be a directory path or a callback function</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">rock_paper_scissors_v2</span>
+<span class="c1"># The classification type</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">class_mode</span> <span class="o">=</span> <span class="s1">'categorical'</span>
+<span class="c1"># The class labels found in your training dataset directory</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="n">rock_paper_scissors_v2</span><span class="o">.</span><span class="n">CLASSES</span>
+<span class="c1"># The input shape to the model. The dataset samples will be resized if necessary</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">84</span><span class="p">,</span><span class="mi">84</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># Shuffle the dataset directory once</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">shuffle_dataset_enabled</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="c1"># The numbers of samples for each class is different</span>
+<span class="c1"># Then ensures each class contributes equally to training the model</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">class_weights</span> <span class="o">=</span> <span class="s1">'balanced'</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="configure-the-data-augmentation-settings">
+<h3 id="configure-the-data-augmentation-settings">Configure the data augmentation settings<a class="headerlink" href="#configure-the-data-augmentation-settings" title="Permalink to this headline">¶</a></h3>
+<p>Next, we configure how we want to augment the dataset during training.<br/>
+See the <a class="reference internal" href="../../docs/python_api/data_preprocessing/image_data_generator.html"><span class="doc std std-doc">ParallelImageDataGenerator</span></a> API doc for more details.</p>
+<p>With these settings, random augmentations are done to the training subset samples during training.
+This effectively increases the size of the dataset.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">datagen</span> <span class="o">=</span> <span class="n">ParallelImageDataGenerator</span><span class="p">(</span>
+    <span class="n">cores</span><span class="o">=</span><span class="mf">0.65</span><span class="p">,</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">max_batches_pending</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> 
+    <span class="n">validation_split</span><span class="o">=</span> <span class="mf">0.15</span><span class="p">,</span>
+    <span class="n">validation_augmentation_enabled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">rotation_range</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+    <span class="n">width_shift_range</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">height_shift_range</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+    <span class="n">brightness_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.80</span><span class="p">,</span> <span class="mf">1.10</span><span class="p">),</span>
+    <span class="n">contrast_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.80</span><span class="p">,</span> <span class="mf">1.10</span><span class="p">),</span>
+    <span class="n">noise</span><span class="o">=</span><span class="p">[</span><span class="s1">'gauss'</span><span class="p">,</span> <span class="s1">'poisson'</span><span class="p">,</span> <span class="s1">'s&amp;p'</span><span class="p">],</span>
+    <span class="n">zoom_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">1.05</span><span class="p">),</span>
+    <span class="n">rescale</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">horizontal_flip</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">vertical_flip</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">samplewise_center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="c1"># These settings require the model input to be float32</span>
+                            <span class="c1"># NOTE: With these settings, the embedded device must also convert the images at runtime</span>
+    <span class="n">samplewise_std_normalization</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="data-preprocessing">
+<h3 id="data-preprocessing">Data preprocessing<a class="headerlink" href="#data-preprocessing" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="../../docs/python_api/data_preprocessing/image_data_generator.html"><span class="doc std std-doc">ParallelImageDataGenerator</span></a> also features some data preprocessing settings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">samplewise_center</span><span class="o">=</span><span class="kc">True</span>
+<span class="n">samplewise_std_normalization</span><span class="o">=</span><span class="kc">True</span>
+</pre></div>
+</div>
+<p>This normalizes the input images using:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">norm_img</span> <span class="o">=</span> <span class="p">(</span><span class="n">img</span> <span class="o">-</span> <span class="n">mean</span><span class="p">(</span><span class="n">img</span><span class="p">))</span> <span class="o">/</span> <span class="n">std</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This helps to ensure the model is not as dependent on camera and lighting variations.</p>
+<p>Alternatively, you could use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">rescale</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="mf">255.</span>
+</pre></div>
+</div>
+<p>To scale each pixel between 0-1. This helps the model converge faster during training.</p>
+<p>Either way, any preprocessing that is done during training must also be done at runtime on the embedded device.</p>
+<p>The <a class="reference internal" href="../../docs/cpp_development/examples/image_classifier.html"><span class="doc std std-doc">image_classifier</span></a> example application demonstrates how to do these image preprocessing algorithms.</p>
+</section>
+<section id="define-the-model-layout">
+<h3 id="define-the-model-layout">Define the model layout<a class="headerlink" href="#define-the-model-layout" title="Permalink to this headline">¶</a></h3>
+<p>This defines the actual structure of the model that runs on the embedded device using the <a class="reference external" href="https://keras.io/about">Keras API</a>.
+The details of how to create the model structure are out-of-scope for this tutorial.</p>
+<p>The model used by this tutorial was taken from: <a class="reference external" href="https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html">Building powerful image classification models using very little data</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build the ML Model</span>
+<span class="c1"># This model was adapted from:</span>
+<span class="c1"># https://blog.keras.io/building-powerful-image-classification-models-using-very-little-data.html</span>
+<span class="c1">#</span>
+<span class="c1"># This defines the actual model layout using the Keras API.</span>
+<span class="c1"># This particular model is a relatively standard</span>
+<span class="c1"># sequential Convolution Neural Network (CNN).</span>
+<span class="c1">#</span>
+<span class="c1"># It is important to the note the usage of the </span>
+<span class="c1"># "model" argument.</span>
+<span class="c1"># Rather than hardcode values, the model is</span>
+<span class="c1"># used to build the model, e.g.:</span>
+<span class="c1"># Dense(model.n_classes)</span>
+<span class="c1">#</span>
+<span class="c1"># This way, the various model properties above can be modified</span>
+<span class="c1"># without having to re-write this section.</span>
+<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+    <span class="n">keras_model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+
+    <span class="c1"># Increasing this value can increase model accuracy </span>
+    <span class="c1"># at the expense of more RAM and execution latency</span>
+    <span class="n">filter_count</span> <span class="o">=</span> <span class="mi">16</span> 
+
+    <span class="c1"># "Feature Learning" layers </span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filter_count</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">input_shape</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">))</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">))</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filter_count</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">))</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="n">filter_count</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">))</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+
+    <span class="c1"># "Classification" layers</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Flatten</span><span class="p">())</span>  <span class="c1"># this converts our 3D feature maps to 1D feature vectors</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">filter_count</span><span class="o">*</span><span class="mi">2</span><span class="p">))</span> <span class="c1"># This should be the same size at the previous Conv2D layer count</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">))</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">'softmax'</span><span class="p">))</span>
+
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span> 
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">metrics</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">keras_model</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>At this point, the model specification script should have everything needed to train, evaluate, and generate model file that can run on an embedded device.<br/>
+The following sections describe how to use the MLTK to perform these tasks.</p>
+</section>
+</section>
+<section id="model-parameters">
+<h2 id="model-parameters">Model Parameters<a class="headerlink" href="#model-parameters" title="Permalink to this headline">¶</a></h2>
+<p>It is extremely important that whatever transforms are done to the dataset during training are also done at run-time on the embedded device.</p>
+<p>To help with this, the MLTK allows for embedding parameters into the generated <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.</p>
+<p>Refer to the <a class="reference internal" href="../../docs/guides/model_parameters.html"><span class="doc std std-doc">Model Parameters Guide</span></a> for more details about how this works.</p>
+<p>This is useful for this tutorial as the MLTK will automatically embed <a class="reference internal" href="../../docs/guides/model_parameters.html#imagedatasetmixin"><span class="std std-doc">ImageDatasetMixin</span></a> parameters into the generated <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.
+Later, the Gecko SDK will read the settings from the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file when generating the project.</p>
+<p><strong>NOTE:</strong> The <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">summarize</span> <span class="pre">--tflite</span></code> command prints all the parameters that are embedded into the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.</p>
+</section>
+<section id="model-summary">
+<h2 id="model-summary">Model Summary<a class="headerlink" href="#model-summary" title="Permalink to this headline">¶</a></h2>
+<p>With the model specification complete, it is sometimes useful to generate a summary of the model before we spend the time to train it.<br/>
+This can be done using the <code class="docutils literal notranslate"><span class="pre">summarize</span></code> command.</p>
+<p>If you’re using a local terminal, navigate to the same directory are your model specification script, e.g. <code class="docutils literal notranslate"><span class="pre">my_rock_paper_scissors.py</span></code> and modify the commands to use <code class="docutils literal notranslate"><span class="pre">my_rock_paper_scissors</span></code> or whatever you called your model.</p>
+<p><strong>NOTE:</strong> Since we have not trained our model yet, we must add the <code class="docutils literal notranslate"><span class="pre">--build</span></code> option to the command.<br/>
+Once the model is trained, this option is not required.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Summarize the Keras Model</span>
+<span class="c1"># This is the non-quantized model used for training</span>
+<span class="c1"># NOTE: Running this the first time may take awhile since the dataset needs to be downloaded</span>
+<span class="o">!</span>mltk summarize rock_paper_scissors --build 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/scissor/2022-04-29T23-01-25.981.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/rock/2022-04-29T23-13-28.550.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/_unknown_/2022-05-02T17-55-00.359.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/paper/2022-04-29T23-06-01.204.jpg not found in existing index, re-generating index
+Model: "sequential"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #   
+=================================================================
+ conv2d (Conv2D)             (None, 82, 82, 16)        160       
+                                                                 
+ activation (Activation)     (None, 82, 82, 16)        0         
+                                                                 
+ max_pooling2d (MaxPooling2D  (None, 41, 41, 16)       0         
+ )                                                               
+                                                                 
+ conv2d_1 (Conv2D)           (None, 39, 39, 16)        2320      
+                                                                 
+ activation_1 (Activation)   (None, 39, 39, 16)        0         
+                                                                 
+ max_pooling2d_1 (MaxPooling  (None, 19, 19, 16)       0         
+ 2D)                                                             
+                                                                 
+ conv2d_2 (Conv2D)           (None, 17, 17, 32)        4640      
+                                                                 
+ activation_2 (Activation)   (None, 17, 17, 32)        0         
+                                                                 
+ max_pooling2d_2 (MaxPooling  (None, 8, 8, 32)         0         
+ 2D)                                                             
+                                                                 
+ flatten (Flatten)           (None, 2048)              0         
+                                                                 
+ dense (Dense)               (None, 32)                65568     
+                                                                 
+ activation_3 (Activation)   (None, 32)                0         
+                                                                 
+ dropout (Dropout)           (None, 32)                0         
+                                                                 
+ dense_1 (Dense)             (None, 4)                 132       
+                                                                 
+=================================================================
+Total params: 72,820
+Trainable params: 72,820
+Non-trainable params: 0
+_________________________________________________________________
+
+Total MACs: 5.870 M
+Total OPs: 12.303 M
+Name: rock_paper_scissors
+Version: 1
+Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images
+Classes: rock, paper, scissor, _unknown_
+hash: 
+date: 
+runtime_memory_size: 0
+detection_threshold: 175
+average_window_duration_ms: 500
+minimum_count: 2
+suppression_count: 1
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Summarize the TF-Lite Model</span>
+<span class="c1"># This is the quantized model that eventually goes on the embedded device</span>
+<span class="o">!</span>mltk summarize rock_paper_scissors --tflite --build
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/scissor/2022-04-29T23-01-25.981.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/rock/2022-04-29T23-13-28.550.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/paper/2022-04-29T23-05-47.387.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/_unknown_/2022-04-29T22-04-13.350.jpg not found in existing index, re-generating index
+C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\tensorflow\lite\python\convert.py:746: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.
+  warnings.warn("Statistics for quantized inputs were expected, but not "
++-------+-----------------+-------------------+-----------------+-----------------------------------------------------+
+| Index | OpCode          | Input(s)          | Output(s)       | Config                                              |
++-------+-----------------+-------------------+-----------------+-----------------------------------------------------+
+| 0     | quantize        | 84x84x1 (float32) | 84x84x1 (int8)  | BuiltinOptionsType=0                                |
+| 1     | conv_2d         | 84x84x1 (int8)    | 82x82x16 (int8) | Padding:valid stride:1x1 activation:relu            |
+|       |                 | 3x3x1 (int8)      |                 |                                                     |
+|       |                 | 16 (int32)        |                 |                                                     |
+| 2     | max_pool_2d     | 82x82x16 (int8)   | 41x41x16 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 3     | conv_2d         | 41x41x16 (int8)   | 39x39x16 (int8) | Padding:valid stride:1x1 activation:relu            |
+|       |                 | 3x3x16 (int8)     |                 |                                                     |
+|       |                 | 16 (int32)        |                 |                                                     |
+| 4     | max_pool_2d     | 39x39x16 (int8)   | 19x19x16 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 5     | conv_2d         | 19x19x16 (int8)   | 17x17x32 (int8) | Padding:valid stride:1x1 activation:relu            |
+|       |                 | 3x3x16 (int8)     |                 |                                                     |
+|       |                 | 32 (int32)        |                 |                                                     |
+| 6     | max_pool_2d     | 17x17x32 (int8)   | 8x8x32 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 7     | reshape         | 8x8x32 (int8)     | 2048 (int8)     | BuiltinOptionsType=0                                |
+|       |                 | 2 (int32)         |                 |                                                     |
+| 8     | fully_connected | 2048 (int8)       | 32 (int8)       | Activation:relu                                     |
+|       |                 | 2048 (int8)       |                 |                                                     |
+|       |                 | 32 (int32)        |                 |                                                     |
+| 9     | fully_connected | 32 (int8)         | 4 (int8)        | Activation:none                                     |
+|       |                 | 32 (int8)         |                 |                                                     |
+|       |                 | 4 (int32)         |                 |                                                     |
+| 10    | softmax         | 4 (int8)          | 4 (int8)        | BuiltinOptionsType=9                                |
+| 11    | dequantize      | 4 (int8)          | 4 (float32)     | BuiltinOptionsType=0                                |
++-------+-----------------+-------------------+-----------------+-----------------------------------------------------+
+Total MACs: 5.870 M
+Total OPs: 12.050 M
+Name: rock_paper_scissors
+Version: 1
+Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images
+Classes: rock, paper, scissor, _unknown_
+hash: 2482ff1c6e512f70479605f20e18e5fc
+date: 2022-05-03T23:33:50.754Z
+runtime_memory_size: 137176
+detection_threshold: 175
+average_window_duration_ms: 500
+minimum_count: 2
+suppression_count: 1
+samplewise_norm.rescale: 0.0
+samplewise_norm.mean_and_std: True
+.tflite file size: 80.2kB
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="model-visualization">
+<h2 id="model-visualization">Model Visualization<a class="headerlink" href="#model-visualization" title="Permalink to this headline">¶</a></h2>
+<p>The MLTK also allows for visualizing the model in an interactive webpage.</p>
+<p>This is done using the <code class="docutils literal notranslate"><span class="pre">view</span></code> command.
+Refer to the <a class="reference internal" href="../../docs/guides/model_visualizer.html"><span class="doc std std-doc">Model Visualization Guide</span></a> for more details on how this works.</p>
+<p><strong>NOTES:</strong></p>
+<ul class="simple">
+<li><p>This will open a new tab to your web-browser</p></li>
+<li><p>You must click the opened webpage’s ‘Accept’ button the first time it runs (and possibly re-run the command)</p></li>
+<li><p>Since we have not trained our model yet, we must add the <code class="docutils literal notranslate"><span class="pre">--build</span></code> option to the command. This is not required once the model is trained.</p></li>
+<li><p>This command must run locally, it will not work from a remote terminal/notebook</p></li>
+</ul>
+<section id="visualize-keras-model">
+<h3 id="visualize-keras-model">Visualize Keras model<a class="headerlink" href="#visualize-keras-model" title="Permalink to this headline">¶</a></h3>
+<p>By default, the <code class="docutils literal notranslate"><span class="pre">view</span></code> command will visualize the <a class="reference internal" href="../../docs/python_api/core/keras_model.html"><span class="doc std std-doc">KerasModel</span></a>, the model used for training (file extension <code class="docutils literal notranslate"><span class="pre">.h5</span></code>).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This will open a new tab in your web browser</span>
+<span class="c1"># Be sure the click the 'Accept' button in the opened webpage</span>
+<span class="c1"># (you may need to re-run this command after doing so)</span>
+<span class="o">!</span>mltk view rock_paper_scissors --build
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="visualize-tf-lite-model">
+<h3 id="visualize-tf-lite-model">Visualize TF-Lite model<a class="headerlink" href="#visualize-tf-lite-model" title="Permalink to this headline">¶</a></h3>
+<p>Alternatively, the <code class="docutils literal notranslate"><span class="pre">--tflite</span></code> flag can be used to view the <a class="reference external" href="../../docs/python_api/core/tflite_model.html#mltk.core.TfliteModel">TfliteModel</a>, the quantized model that is programmed to the embedded device (file extension <code class="docutils literal notranslate"><span class="pre">.tflite</span></code>).</p>
+<p>Note that the structure of the Keras and TfLite models are similar, but the TfLite model is a bit more simple. This is because the <a class="reference external" href="https://www.tensorflow.org/lite/convert">TF-Lite Converter</a> optimized the model by merging/fusing as many layers as possible.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># This will open a new tab in your web browser</span>
+<span class="c1"># Be sure the click the 'Accept' button in the opened webpage</span>
+<span class="c1"># (you may need to re-run this command after doing so)</span>
+<span class="o">!</span>mltk view rock_paper_scissors --tflite --build
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="model-profiler">
+<h2 id="model-profiler">Model Profiler<a class="headerlink" href="#model-profiler" title="Permalink to this headline">¶</a></h2>
+<p>Before spending the time and energy to train the model, it may be useful to profile the model to determine how efficiently it may run on the embedded device.
+If it’s determined that the model does not fit within the time or memory constraints, then the model layout should be adjusted, the model input size should be reduced, and/or a different model should be selected.</p>
+<p>For this reason, th MLTK features a model profiler. Refer to the <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">Model Profiler Guide</span></a> for more details.</p>
+<p><strong>NOTE:</strong> The following examples use the <code class="docutils literal notranslate"><span class="pre">--build</span></code> flag since the model has not been trained yet. Once the model is trained this flag is no longer needed.</p>
+<section id="profile-in-simulator">
+<h3 id="profile-in-simulator">Profile in simulator<a class="headerlink" href="#profile-in-simulator" title="Permalink to this headline">¶</a></h3>
+<p>The following command will profile our model in the MVP hardware simulator and return estimates about the time and energy the model might require on the embedded device.</p>
+<p><strong>NOTES:</strong></p>
+<ul class="simple">
+<li><p>An embedded device does not needed to be locally connected to run this command.</p></li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">--accelerator</span> <span class="pre">MVP</span></code> option if you are targeting a device that does not have an MVP hardware accelerator.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk profile rock_paper_scissors --build --accelerator MVP
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/scissor/2022-04-29T23-01-25.981.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/rock/2022-04-29T23-13-28.550.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/paper/2022-04-29T23-05-47.387.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/_unknown_/2022-04-29T22-04-13.350.jpg not found in existing index, re-generating index
+C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\tensorflow\lite\python\convert.py:746: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.
+  warnings.warn("Statistics for quantized inputs were expected, but not "
+
+Profiling Summary
+Name: rock_paper_scissors
+Accelerator: MVP
+Input Shape: 1x84x84x1
+Input Data Type: float32
+Output Shape: 1x4
+Output Data Type: float32
+Flash, Model File Size (bytes): 80.2k
+RAM, Runtime Memory Size (bytes): 137.2k
+Operation Count: 12.3M
+Multiply-Accumulate Count: 5.9M
+Layer Count: 12
+Unsupported Layer Count: 0
+Accelerator Cycle Count: 11.0M
+CPU Cycle Count: 345.4k
+CPU Utilization (%): 3.1
+Clock Rate (hz): 80.0M
+Time (s): 141.5m
+Energy (J): 1.5m
+J/Op: 122.3p
+J/MAC: 256.8p
+Ops/s: 87.2M
+MACs/s: 41.5M
+Inference/s: 7.1
+
+Model Layers
++-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                             |
++-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| 0     | quantize        | 28.2k  | 0      | 0          | 254.7k     | 41.3u      | 3.2m     | 1x84x84x1               | 1x84x84x1    | BuiltinOptionsType=0                                |
+| 1     | conv_2d         | 2.3M   | 968.3k | 3.4M       | 7.4k       | 478.0u     | 43.0m    | 1x84x84x1,16x3x3x1,16   | 1x82x82x16   | Padding:valid stride:1x1 activation:relu            |
+| 2     | max_pool_2d     | 107.6k | 0      | 80.7k      | 16.2k      | 9.2u       | 1.0m     | 1x82x82x16              | 1x41x41x16   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 3     | conv_2d         | 7.1M   | 3.5M   | 5.4M       | 7.3k       | 745.6u     | 66.9m    | 1x41x41x16,16x3x3x16,16 | 1x39x39x16   | Padding:valid stride:1x1 activation:relu            |
+| 4     | max_pool_2d     | 23.1k  | 0      | 17.3k      | 16.2k      | 4.0u       | 216.6u   | 1x39x39x16              | 1x19x19x16   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 5     | conv_2d         | 2.7M   | 1.3M   | 2.0M       | 7.2k       | 226.1u     | 25.4m    | 1x19x19x16,32x3x3x16,32 | 1x17x17x32   | Padding:valid stride:1x1 activation:relu            |
+| 6     | max_pool_2d     | 8.2k   | 0      | 6.1k       | 27.3k      | 1.7u       | 341.3u   | 1x17x17x32              | 1x8x8x32     | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 7     | reshape         | 0      | 0      | 0          | 217.3      | 0.0p       | 2.7u     | 1x8x8x32,2              | 1x2048       | BuiltinOptionsType=0                                |
+| 8     | fully_connected | 131.2k | 65.5k  | 98.4k      | 1.6k       | 1.6u       | 1.2m     | 1x2048,32x2048,32       | 1x32         | Activation:relu                                     |
+| 9     | fully_connected | 260.0  | 128.0  | 208.0      | 1.7k       | 7.7n       | 21.7u    | 1x32,4x32,4             | 1x4          | Activation:none                                     |
+| 10    | softmax         | 20.0   | 0      | 0          | 4.1k       | 16.5n      | 51.8u    | 1x4                     | 1x4          | BuiltinOptionsType=9                                |
+| 11    | dequantize      | 8.0    | 0      | 0          | 1.4k       | 159.1n     | 17.5u    | 1x4                     | 1x4          | BuiltinOptionsType=0                                |
++-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+Generating profiling report at C:/Users/reed/.mltk/models/rock_paper_scissors-test/profiling
+Profiling time: 16.559938 seconds
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="profile-on-physical-device">
+<h3 id="profile-on-physical-device">Profile on physical device<a class="headerlink" href="#profile-on-physical-device" title="Permalink to this headline">¶</a></h3>
+<p>Alternatively, if we have a device locally connected, we can directly profile on that instead. This is useful as the returned profiling numbers are “real”, they are not estimated as they would be in the simulator case.</p>
+<p>To profile on a physical device, simply added the <code class="docutils literal notranslate"><span class="pre">--device</span></code> command flag.</p>
+<p><strong>NOTES:</strong></p>
+<ul class="simple">
+<li><p>An embedded device must be locally connected to run this command.</p></li>
+<li><p>Remove the <code class="docutils literal notranslate"><span class="pre">--accelerator</span> <span class="pre">MVP</span></code> option if you are targeting a device that does not have an MVP hardware accelerator.</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk profile rock_paper_scissors --build --device --accelerator MVP
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/scissor/2022-04-29T23-01-25.981.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/rock/2022-04-29T23-13-28.550.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/paper/2022-04-29T23-05-47.387.jpg not found in existing index, re-generating index
+File C:/Users/reed/.mltk/datasets/rock_paper_scissors/v2/_unknown_/2022-04-29T22-04-13.350.jpg not found in existing index, re-generating index
+C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\tensorflow\lite\python\convert.py:746: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.
+  warnings.warn("Statistics for quantized inputs were expected, but not "
+
+Profiling Summary
+Name: rock_paper_scissors
+Accelerator: MVP
+Input Shape: 1x84x84x1
+Input Data Type: float32
+Output Shape: 1x4
+Output Data Type: float32
+Flash, Model File Size (bytes): 80.2k
+RAM, Runtime Memory Size (bytes): 137.1k
+Operation Count: 12.3M
+Multiply-Accumulate Count: 5.9M
+Layer Count: 12
+Unsupported Layer Count: 0
+Accelerator Cycle Count: 11.3M
+CPU Cycle Count: 358.9k
+CPU Utilization (%): 3.1
+Clock Rate (hz): 80.0M
+Time (s): 142.7m
+Ops/s: 86.4M
+MACs/s: 41.1M
+Inference/s: 7.0
+
+Model Layers
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape             | Output Shape | Options                                             |
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| 0     | quantize        | 28.2k  | 0      | 0          | 254.8k     | 3.1m     | 1x84x84x1               | 1x84x84x1    | BuiltinOptionsType=0                                |
+| 1     | conv_2d         | 2.2M   | 968.2k | 3.6M       | 9.3k       | 44.9m    | 1x84x84x1,16x3x3x1,16   | 1x82x82x16   | Padding:valid stride:1x1 activation:relu            |
+| 2     | max_pool_2d     | 107.6k | 0      | 80.8k      | 15.0k      | 1.1m     | 1x82x82x16              | 1x41x41x16   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 3     | conv_2d         | 7.1M   | 3.5M   | 5.4M       | 8.5k       | 66.2m    | 1x41x41x16,16x3x3x16,16 | 1x39x39x16   | Padding:valid stride:1x1 activation:relu            |
+| 4     | max_pool_2d     | 23.1k  | 0      | 17.4k      | 14.9k      | 300.0u   | 1x39x39x16              | 1x19x19x16   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 5     | conv_2d         | 2.7M   | 1.3M   | 2.0M       | 8.5k       | 25.2m    | 1x19x19x16,32x3x3x16,32 | 1x17x17x32   | Padding:valid stride:1x1 activation:relu            |
+| 6     | max_pool_2d     | 8.2k   | 0      | 6.4k       | 28.1k      | 330.0u   | 1x17x17x32              | 1x8x8x32     | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 7     | reshape         | 0      | 0      | 0          | 10.7k      | 150.0u   | 1x8x8x32,2              | 1x2048       | BuiltinOptionsType=0                                |
+| 8     | fully_connected | 131.2k | 65.5k  | 98.5k      | 2.1k       | 1.2m     | 1x2048,32x2048,32       | 1x32         | Activation:relu                                     |
+| 9     | fully_connected | 260.0  | 128.0  | 231.0      | 1.8k       | 30.0u    | 1x32,4x32,4             | 1x4          | Activation:none                                     |
+| 10    | softmax         | 20.0   | 0      | 0          | 4.1k       | 60.0u    | 1x4                     | 1x4          | BuiltinOptionsType=9                                |
+| 11    | dequantize      | 8.0    | 0      | 0          | 1.1k       | 0        | 1x4                     | 1x4          | BuiltinOptionsType=0                                |
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+Generating profiling report at C:/Users/reed/.mltk/models/rock_paper_scissors-test/profiling
+Profiling time: 49.481894 seconds
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="note-about-cpu-utilization">
+<h3 id="note-about-cpu-utilization">Note about CPU utilization<a class="headerlink" href="#note-about-cpu-utilization" title="Permalink to this headline">¶</a></h3>
+<p>An important metric the model profiler provides when using the MVP hardware accelerator is <code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">Utilization</span></code>.
+This gives an indication of how much CPU is required to run the machine learning model.</p>
+<p>If no hardware accelerator is used, then the CPU utilization is 100% as 100% of the machine learning model’s calculations are executed on the CPU.
+With the hardware accelerator, many of the model’s calculations can be offloaded to the accelerator freeing the CPU to do other tasks.</p>
+<p>The additional CPU cycles the hardware accelerator provides can be a major benefit, especially when other tasks such as real-time audio processing are required.</p>
+</section>
+<section id="note-about-model-size-and-hardware-constraints">
+<h3 id="note-about-model-size-and-hardware-constraints">Note about model size and hardware constraints<a class="headerlink" href="#note-about-model-size-and-hardware-constraints" title="Permalink to this headline">¶</a></h3>
+<p>The model used in this tutorial has already been optimized for the embedded device.</p>
+<p>The original model <a class="reference external" href="https://gist.github.com/fchollet/f35fbc80e066a49d65f1688a7e99f069">definition</a> used 32 Conv2D filters in the first layer and the input images were 96x96.</p>
+<p>If you revert your model specification to these parameters, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">96</span><span class="p">,</span><span class="mi">96</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+    <span class="n">keras_model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+
+    <span class="c1"># Increasing this value can increase model accuracy </span>
+    <span class="c1"># at the expense of more RAM and execution latency</span>
+    <span class="n">filter_count</span> <span class="o">=</span> <span class="mi">32</span> 
+</pre></div>
+</div>
+<p>Then profile the model:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mltk</span> <span class="n">profile</span> <span class="n">rock_paper_scissors</span> <span class="o">--</span><span class="n">accelerator</span> <span class="n">MVP</span> <span class="o">--</span><span class="n">build</span>
+</pre></div>
+</div>
+<p>You’ll find that the model exceeds the available RAM.</p>
+<p>Using the tips in the FAQ question <a class="reference internal" href="../../docs/faq/how_to_reduce_model_size.html"><span class="doc std std-doc">How can I reduce my model’s size</span></a>, the model parameters were reduced to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">84</span><span class="p">,</span><span class="mi">84</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+    <span class="n">keras_model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+
+    <span class="c1"># Increasing this value can increase model accuracy </span>
+    <span class="c1"># at the expense of more RAM and execution latency</span>
+    <span class="n">filter_count</span> <span class="o">=</span> <span class="mi">16</span> 
+</pre></div>
+</div>
+<p>Which produces a model that is much more suitable for the embedded hardware.</p>
+</section>
+</section>
+<section id="model-training">
+<h2 id="model-training">Model Training<a class="headerlink" href="#model-training" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have our model fully specified and it fits within the constraints of the embedded device, we can train the model.</p>
+<p>The basic flow for model training is:</p>
+<ol class="arabic simple">
+<li><p>Invoke the <code class="docutils literal notranslate"><span class="pre">train</span></code> command</p></li>
+<li><p>Tensorflow trains the model</p></li>
+<li><p>A <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">Model Archive</span></a> containing the trained model is generated in the same directory as the model specification script</p></li>
+</ol>
+<p>Refer to the <a class="reference internal" href="../../docs/guides/model_training.html"><span class="doc std std-doc">Model Training Guide</span></a> for more details about this process.</p>
+<section id="train-as-a-dry-run">
+<h3 id="train-as-a-dry-run">Train as a “dry run”<a class="headerlink" href="#train-as-a-dry-run" title="Permalink to this headline">¶</a></h3>
+<p>Before fully training the model, sometimes it is useful to train the model as a “dry run” to ensure the end-to-end training process works. Here, the model is trained for a few epochs on a subset of the dataset.</p>
+<p>To train as a dry run, append <code class="docutils literal notranslate"><span class="pre">-test</span></code> to the model name.<br/>
+At the end of training, a <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">Model Archive</span></a> with <code class="docutils literal notranslate"><span class="pre">-test</span></code> appended to the archive name is generated in the same directory as the model specification script.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Train as a dry run by appending "-test" to the model name</span>
+<span class="o">!</span>mltk train rock_paper_scissors-test
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="training-locally">
+<h3 id="training-locally">Training locally<a class="headerlink" href="#training-locally" title="Permalink to this headline">¶</a></h3>
+<p>One option for training your model is to run the <code class="docutils literal notranslate"><span class="pre">train</span></code> command in your local terminal.<br/>
+Most of the models used by embedded devices are small enough that this is a feasible option.<br/>
+Never the less, this is a very CPU intensive operation. Many times it’s best to issue the <code class="docutils literal notranslate"><span class="pre">train</span></code> command and let it run over night.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Be sure to replace "rock_paper_scissors"</span>
+<span class="c1"># with the name of your model</span>
+<span class="c1"># WARNING: This command may take several hours</span>
+<span class="o">!</span>mltk train rock_paper_scissors
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="model-evaluation">
+<h2 id="model-evaluation">Model Evaluation<a class="headerlink" href="#model-evaluation" title="Permalink to this headline">¶</a></h2>
+<p>With our model trained, we can now evaluate it to see how accurate it is.</p>
+<p>The basic idea behind model evaluation is to send test samples (i.e. new, unknown samples the model was <em>not</em> trained with) through the model, and compare the model’s predictions versus the expected values. If all the model predictions match the expected values then the model is 100% accurate, and every wrong prediction decreases the model accuracy, e.g.:</p>
+<p><img alt="Model Accuracy" src="https://bit.ly/3w9xQXV"/></p>
+<p>Assuming the test samples are <em>representative</em> then the model accuracy should indicate how well it will perform in the real-world.</p>
+<p>Model evaluation is done using the <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> MLTK command. Along with accuracy, the <code class="docutils literal notranslate"><span class="pre">evaluate</span></code> command generates other statistics such as <a class="reference external" href="https://en.wikipedia.org/wiki/Receiver_operating_characteristic">ROC-AUC</a> and <a class="reference external" href="https://en.wikipedia.org/wiki/Precision_and_recall">Precision &amp; Recall</a>.<br/>
+Refer to the <a class="reference internal" href="../../docs/guides/model_evaluation.html"><span class="doc std std-doc">Model Evaluation Guide</span></a> for more details about using the MLTK for model evaluation.</p>
+<section id="command">
+<h3 id="command">Command<a class="headerlink" href="#command" title="Permalink to this headline">¶</a></h3>
+<p>To evaluate the newly trained model, issue the following command:</p>
+<p><strong>NOTE:</strong> Be sure to replace <code class="docutils literal notranslate"><span class="pre">rock_paper_scissors</span></code> with the name of your model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the model evaluation command</span>
+<span class="o">!</span>mltk evaluate rock_paper_scissors --tflite --show
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># For documentation purposes, we use the evaluate_model Python API so</span>
+<span class="c1"># the evaluation plots are generated inline with the docs</span>
+<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">evaluate_model</span> 
+<span class="n">evaluation_results</span> <span class="o">=</span> <span class="n">evaluate_model</span><span class="p">(</span><span class="s1">'rock_paper_scissors'</span><span class="p">,</span> <span class="n">tflite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">evaluation_results</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../../_images/333b3bca725c92598c97956f5f81ccb27db11c377192d45dbb328cb38e9e3f21.png" src="../../_images/333b3bca725c92598c97956f5f81ccb27db11c377192d45dbb328cb38e9e3f21.png"/>
+<img alt="../../_images/dbc5738d1a6426f9358c2cd306fb7bc1ecda8f9e25fa1db1a5c323e942387fe3.png" src="../../_images/dbc5738d1a6426f9358c2cd306fb7bc1ecda8f9e25fa1db1a5c323e942387fe3.png"/>
+<img alt="../../_images/e6788a65a0565b51786edef52951a48c7c0be08605b141535db712d03ee36f21.png" src="../../_images/e6788a65a0565b51786edef52951a48c7c0be08605b141535db712d03ee36f21.png"/>
+<img alt="../../_images/ef72ffaeecf075dc7a67f3ac27b75be080497f43f2b9d7f3d302f0abc3bda6f0.png" src="../../_images/ef72ffaeecf075dc7a67f3ac27b75be080497f43f2b9d7f3d302f0abc3bda6f0.png"/>
+<img alt="../../_images/32d6655cd5279597a12378a7e360ecfdc88675c64a9dd52547c31084f241dfb6.png" src="../../_images/32d6655cd5279597a12378a7e360ecfdc88675c64a9dd52547c31084f241dfb6.png"/>
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Name: rock_paper_scissors
+Model Type: classification
+Overall accuracy: 95.037%
+Class accuracies:
+- paper = 98.394%
+- scissor = 97.500%
+- rock = 92.476%
+- _unknown_ = 92.083%
+Average ROC AUC: 98.664%
+Class ROC AUC:
+- paper = 99.461%
+- _unknown_ = 99.042%
+- scissor = 98.554%
+- rock = 97.600%
+</pre></div>
+</div>
+</div>
+</div>
+<p>So in this case, our model has a 95.0% overall accuracy.</p>
+<p>Once again, please refer to the <a class="reference internal" href="../../docs/guides/model_evaluation.html"><span class="doc std std-doc">Model Evaluation Guide</span></a> for more details about the various metrics generated by this command.</p>
+</section>
+<section id="note-about-model-accuracy">
+<h3 id="note-about-model-accuracy">Note about model accuracy<a class="headerlink" href="#note-about-model-accuracy" title="Permalink to this headline">¶</a></h3>
+<p>The following are things to keep in mind to improve the model accuracy:</p>
+<ul class="simple">
+<li><p><strong>Verify the dataset</strong> - Ensure all the samples are properly labeled and in a consistent format</p></li>
+<li><p><strong>Add more representative dataset</strong> - The more representative samples that are in the dataset, the better chance the model has at learning the important features in the samples</p></li>
+<li><p><strong>Increase the model size</strong> - Increase the model size by adding more or wider layers (e.g. add more Conv2D filers)</p></li>
+</ul>
+</section>
+</section>
+<section id="model-testing">
+<h2 id="model-testing">Model Testing<a class="headerlink" href="#model-testing" title="Permalink to this headline">¶</a></h2>
+<p><strong>NOTE:</strong> This section is <strong>experimental</strong> and is optional for the rest of this tutorial.
+You may safely skip to the next section.</p>
+<p>To help evaluate the model’s performance on real hardware, the MLTK offers the command: <code class="docutils literal notranslate"><span class="pre">classify_image</span></code>. With this command, the trained model can be used to classify images captured by an embedded camera. The <code class="docutils literal notranslate"><span class="pre">classify_image</span></code> command features:</p>
+<ul class="simple">
+<li><p>Support for executing a model on a supported embedded development board</p></li>
+<li><p>Support for dumping the captured images to the local PC</p></li>
+<li><p>Support for displaying capture image on the local PC in real-time</p></li>
+<li><p>Support for adjusting the detection threshold</p></li>
+<li><p>Support for viewing the model prediction results in real-time</p></li>
+</ul>
+<p><strong>NOTE:</strong> The <code class="docutils literal notranslate"><span class="pre">classify_image</span></code> command must run locally. It will not work remotely (e.g. on Colab or remote SSH)</p>
+<p>See the output of the command help for more details:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk classify_image --help
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Usage: mltk classify_image [OPTIONS] &lt;model&gt;
+
+  Classify images detected by a camera connected to an embedded device.
+
+  NOTE: A supported embedded device must be locally connected to use this
+  command.
+
+Arguments:
+  &lt;model&gt;  On of the following:
+           - MLTK model name 
+           - Path to .tflite file
+           - Path to model archive file (.mltk.zip)
+           NOTE: The model must have been previously trained for image classification  [required]
+
+Options:
+  -a, --accelerator &lt;name&gt;        Name of accelerator to use while executing the audio classification ML model
+  --port &lt;port&gt;                   Serial COM port of a locally connected embedded device.
+                                  'If omitted, then attempt to automatically determine the serial COM port
+  -v, --verbose                   Enable verbose console logs
+  -w, --window_duration &lt;duration ms&gt;
+                                  Controls the smoothing. Drop all inference results that are older than &lt;now&gt; minus window_duration.
+                                  Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some images
+  -c, --count &lt;count&gt;             The *minimum* number of inference results to
+                                  average when calculating the detection value
+  -t, --threshold &lt;threshold&gt;     Minimum averaged model output threshold for
+                                  a class to be considered detected, 0-255.
+                                  Higher values increase precision at the cost
+                                  of recall
+  -s, --suppression &lt;count&gt;       Number of samples that should be different
+                                  than the last detected sample before
+                                  detecting again
+  -l, --latency &lt;latency ms&gt;      This the amount of time in milliseconds
+                                  between processing loops
+  -i, --sensitivity FLOAT         Sensitivity of the activity indicator LED.
+                                  Much less than 1.0 has higher sensitivity
+  -x, --dump-images               Dump the raw images from the device camera to a directory on the local PC. 
+                                  NOTE: Use the --no-inference option to ONLY dump images and NOT run inference on the device
+                                  Use the --dump-threshold option to control how unique the images must be to dump
+  --dump-threshold FLOAT          This controls how unique the camera images must be before they're dumped.
+                                  This is useful when generating a dataset.
+                                  If this value is set to 0 then every image from the camera is dumped.
+                                  if this value is closer to 1. then the images from the camera should be sufficiently unique from
+                                  prior images that have been dumped.  [default: 0.1]
+  --no-inference                  By default inference is executed on the
+                                  device. Use --no-inference to disable
+                                  inference on the device which can improve
+                                  image dumping throughput
+  -g, --generate-dataset          Update the model's dataset.
+                                  This will iterate through each data class used by the model and instruct the user
+                                  the display the class in front of the camera. An image is captured from the device's camera
+                                  and saved to the model's corresponding dataset sub-directory.
+                                  This process will repeat until the user exits the command.   
+                                  Use the --sample-count option to specify the number of samples per class to collect
+                                  NOTE: Device inference is disabled when using this option  
+                                  See the --dump-images option as an alternative to generating a dataset   
+  --sample-count INTEGER          The number of samples to collect per class
+                                  before iterating to the next class
+                                  [default: 5]
+  --app &lt;path&gt;                    By default, the image_classifier app is automatically downloaded. 
+                                  This option allows for overriding with a custom built app.
+                                  Alternatively, set this option to "none" to NOT program the image_classifier app to the device.
+                                  In this case, ONLY the .tflite will be programmed and the existing image_classifier app will be re-used.
+  --test                          Run as a unit test
+  --help                          Show this message and exit.
+</pre></div>
+</div>
+</div>
+</div>
+<p>To run this command with the trained model, issue the command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run the image classifier with the trained model</span>
+<span class="c1"># Use the MVP hardware accelerator</span>
+<span class="c1"># Verbosely print the inference results</span>
+<span class="c1"># Dump images to the local PC</span>
+<span class="c1"># NOTE: This command must run from a local terminal</span>
+mltk classify_image rock_paper_scissors --accelerator MVP --verbose --dump-images
+</pre></div>
+</div>
+</section>
+<section id="deploying-the-model">
+<h2 id="deploying-the-model">Deploying the Model<a class="headerlink" href="#deploying-the-model" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have a trained model, it is time to run it in on an embedded device.</p>
+<p>There are several different ways this can be done:</p>
+<section id="using-the-mltk">
+<h3 id="using-the-mltk">Using the MLTK<a class="headerlink" href="#using-the-mltk" title="Permalink to this headline">¶</a></h3>
+<p>The MLTK supports building <a class="reference internal" href="../../docs/cpp_development/index.html"><span class="doc std std-doc">C++ Applications</span></a>.</p>
+<p>It also features an <a class="reference internal" href="../../docs/cpp_development/examples/image_classifier.html"><span class="doc std std-doc">image_classifier</span></a> C++ application
+which can be built using:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/cpp_development/vscode.html"><span class="doc std std-doc">Visual Studio Code</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/cpp_development/simplicity_studio.html"><span class="doc std std-doc">Simplicity Studio</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/cpp_development/command_line.html"><span class="doc std std-doc">Command Line</span></a></p></li>
+</ul>
+<p>Refer to the <a class="reference internal" href="../../docs/cpp_development/examples/image_classifier.html"><span class="doc std std-doc">image_classifier</span></a> application’s documentation
+for how include your model into the built application.</p>
+</section>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="keyword_spotting_on_off.html" title="Keyword Spotting - On/Off"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Keyword Spotting - On/Off </span>
+              </div>
+            </a>
+          
+          
+            <a href="model_optimization.html" title="Model Optimization for MVP Hardware Accelerator"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> Model Optimization for MVP Hardware Accelerator </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Jun 14, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

@@ -76,7 +76,7 @@ void dump_raw_spectrogram(const uint16_t* buffer, int length)
 }
 
 
-void dump_quantized_spectrogram(const int8_t* buffer, int length)
+void dump_int8_spectrogram(const int8_t* buffer, int length)
 {
     static int spectrogram_counter = 0;
     const char* spectrogram_dir = dump_spectrograms_dir.c_str();
@@ -96,6 +96,37 @@ void dump_quantized_spectrogram(const int8_t* buffer, int length)
             {
                 char tmp[64];
                 int l = sprintf(tmp, "%d,", *ptr++);
+                if(c == SL_ML_FRONTEND_FILTERBANK_N_CHANNELS-1)
+                {
+                    tmp[l-1] = '\n';
+                }
+                fwrite(tmp, 1, l, spectrogram_fp);
+            }
+        }
+        fclose(spectrogram_fp);
+    }
+}
+
+void dump_float_spectrogram(const float* buffer, int length)
+{
+    static int spectrogram_counter = 0;
+    const char* spectrogram_dir = dump_spectrograms_dir.c_str();
+    if(spectrogram_dir == nullptr)
+    {
+        return;
+    }
+    char path[1024];
+    snprintf(path, sizeof(path), "%s/%d.float32.npy.txt", spectrogram_dir, spectrogram_counter++);
+    auto spectrogram_fp = fopen(path, "wb");
+    if(spectrogram_fp != nullptr)
+    {
+        const float* ptr = buffer;
+        for(int r = 0; r < FEATURE_BUFFER_SLICE_COUNT; ++r)
+        {
+            for(int c = 0; c < SL_ML_FRONTEND_FILTERBANK_N_CHANNELS; ++c)
+            {
+                char tmp[64];
+                int l = sprintf(tmp, "%f,", *ptr++);
                 if(c == SL_ML_FRONTEND_FILTERBANK_N_CHANNELS-1)
                 {
                     tmp[l-1] = '\n';

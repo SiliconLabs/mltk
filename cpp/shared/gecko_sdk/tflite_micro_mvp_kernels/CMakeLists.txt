@@ -88,6 +88,7 @@ endif()
 list(APPEND tflm_mvp_kernels_sources
 mvp_driver/src/sl_mvp_math.cc
 mvp_driver/src/sl_mvp_util.cc
+mvp_driver/src/sl_mvp_program_area.cc
 mvp_driver/src/sl_mvp_ml_add.cc
 mvp_driver/src/sl_mvp_ml_conv2d.cc
 mvp_driver/src/sl_mvp_ml_fully_connected.cc

@@ -24,7 +24,6 @@ PRIVATE
     src/em_acmp.c
     src/em_adc.c
     src/em_aes.c
-    src/em_assert.c
     src/em_burtc.c
     src/em_can.c
     src/em_core.c

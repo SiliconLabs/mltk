@@ -11,11 +11,17 @@ include(${CMAKE_CURRENT_LIST_DIR}/tflite_micro_options.cmake)
 
 
 mltk_info("Processing Tensorflow-Lite Micro repository (this may take awhile) ...")
-set(_tflm_cache_version "mar18_2022")
+
+# NOTE: When updating the TFLM version, be sure to also update the Simplicity Studio files:
+# <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_tflite_micro.slcc
+# <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_tflite_micro_cmsis_kernels.slcc
+# <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_tflite_micro_reference_kernels.slcc
+# (Also be sure to update the TFLITE_MICRO_VERSION_STR define in the mltk_tflite_micro.slcc)
+set(_tflm_cache_version "jun8_2022")
 CPMAddPackage(
 NAME Tensorflow
   GITHUB_REPOSITORY tensorflow/tflite-micro
-  GIT_TAG 7bc153abb01d070d5a0a6b2a8f1fcd202d2a0ebe # latest master as of March 18, 2021
+  GIT_TAG b13b48cd3dd8e1b7420e0738384d8c4c5286eb9a # latest master as of June 8, 2022
   DOWNLOAD_ONLY ON
   CACHE_SUBDIR tflite_micro
   CACHE_VERSION ${_tflm_cache_version}
@@ -23,6 +29,9 @@ NAME Tensorflow
 
 set(Tensorflow_SOURCE_DIR ${Tensorflow_SOURCE_DIR} CACHE INTERNAL "")
 set(Tensorflow_SOURCE_BASE_DIR "tensorflow/${_tflm_cache_version}")
+
+mltk_git_version(${Tensorflow_SOURCE_DIR} TFLITE_MICRO_VERSION)
+mltk_info("TFLITE_MICRO_VERSION: ${TFLITE_MICRO_VERSION}")
 
 
 find_package(mltk_gemmlowp REQUIRED)
@@ -66,7 +75,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/mltk_tflite_micro_cmsis_kernels.cmake)
 
 
 set(tflm_sources 
-tensorflow/lite/c/common.c
+tensorflow/lite/c/common.cc
 tensorflow/lite/core/api/flatbuffer_conversions.cc
 tensorflow/lite/core/api/op_resolver.cc
 tensorflow/lite/core/api/tensor_utils.cc
@@ -74,6 +83,10 @@ tensorflow/lite/core/api/error_reporter.cc
 tensorflow/lite/schema/schema_utils.cc
 tensorflow/lite/kernels/internal/quantization_util.cc
 tensorflow/lite/kernels/kernel_util.cc 
+tensorflow/lite/micro/arena_allocator/non_persistent_arena_buffer_allocator.cc
+tensorflow/lite/micro/arena_allocator/persistent_arena_buffer_allocator.cc
+tensorflow/lite/micro/arena_allocator/recording_simple_memory_allocator.cc
+tensorflow/lite/micro/arena_allocator/simple_memory_allocator.cc
 tensorflow/lite/micro/all_ops_resolver.cc 
 tensorflow/lite/micro/debug_log.cc 
 tensorflow/lite/micro/fake_micro_context.cc
@@ -86,17 +99,15 @@ tensorflow/lite/micro/micro_error_reporter.cc
 #tensorflow/lite/micro/micro_graph.cc # This is overridden to enable recording and profiling
 tensorflow/lite/micro/micro_interpreter.cc
 tensorflow/lite/micro/micro_profiler.cc
+tensorflow/lite/micro/micro_resource_variable.cc
 tensorflow/lite/micro/micro_string.cc
 tensorflow/lite/micro/micro_time.cc
 tensorflow/lite/micro/micro_utils.cc
-tensorflow/lite/micro/micro_resource_variable.cc
 tensorflow/lite/micro/mock_micro_graph.cc
+tensorflow/lite/micro/test_helpers.cc
 tensorflow/lite/micro/kernels/kernel_runner.cc 
 tensorflow/lite/micro/memory_planner/greedy_memory_planner.cc
 tensorflow/lite/micro/memory_planner/linear_memory_planner.cc
-#tensorflow/lite/micro/simple_memory_allocator.cc # This is overridden so we can return the maximum number of bytes used including temp allocates
-tensorflow/lite/micro/test_helpers.cc
-tensorflow/lite/micro/test_helper_custom_ops.cc
 tensorflow/lite/micro/kernels/kernel_util.cc
 tensorflow/lite/micro/kernels/activations.cc
 tensorflow/lite/micro/kernels/activations_common.cc
@@ -163,6 +174,7 @@ tensorflow/lite/micro/kernels/prelu_common.cc
 tensorflow/lite/micro/kernels/quantize.cc
 tensorflow/lite/micro/kernels/quantize_common.cc
 tensorflow/lite/micro/kernels/read_variable.cc
+tensorflow/lite/micro/kernels/reduce_common.cc
 tensorflow/lite/micro/kernels/reduce.cc
 tensorflow/lite/micro/kernels/reshape.cc
 tensorflow/lite/micro/kernels/resize_bilinear.cc
@@ -220,7 +232,6 @@ PRIVATE
     ${tflm_sources}
     ${tflm_overidden_kernels}
     micro_graph.cc
-    simple_memory_allocator.cc
     mltk_calculate_op_metrics.cc
     mltk_tflite_micro_helper.cc
     mltk_tflite_micro_internal.cc
@@ -231,7 +242,10 @@ PRIVATE
 target_compile_definitions(${PROJECT_NAME} 
 PUBLIC 
   TF_LITE_USE_GLOBAL_ROUND
+  TFLITE_SINGLE_ROUNDING
   TF_LITE_STATIC_MEMORY
+PRIVATE
+  TFLITE_MICRO_VERSION_STR="${TFLITE_MICRO_VERSION}"
 )
 
 if(TFLITE_MICRO_ACCELERATOR)
@@ -290,12 +304,8 @@ if(TFLITE_MICRO_SIMULATOR_ENABLED)
 endif()
 
 mltk_get(TFLITE_MICRO_OVERRIDE_QUANTIZED_MULTIPLIER_API)
-if(TFLITE_MICRO_OVERRIDE_QUANTIZED_MULTIPLIER_API)
-  mltk_info("TFLITE_MICRO_OVERRIDE_QUANTIZED_MULTIPLIER_API=ON (e.g. TFLITE_SINGLE_ROUNDING)")
-  target_compile_definitions(${PROJECT_NAME} 
-  PUBLIC 
-    TFLITE_SINGLE_ROUNDING
-  )
+if(DEFINED TFLITE_MICRO_OVERRIDE_QUANTIZED_MULTIPLIER_API)
+  mltk_warn("TFLITE_MICRO_OVERRIDE_QUANTIZED_MULTIPLIER_API is deprecated as this option is now always enabled")
 endif()
 
 mltk_get(MLTK_LOG_LEVEL)

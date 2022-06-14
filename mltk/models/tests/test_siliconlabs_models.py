@@ -17,3 +17,7 @@ def test_keyword_spotting_with_transfer_learning(op, tflite, build):
 @pytest.mark.parametrize(*generate_run_model_params())
 def test_rock_paper_scissors(op, tflite, build):
     run_model_operation('rock_paper_scissors-test', op, tflite, build)
+
+@pytest.mark.parametrize(*generate_run_model_params(train=False, evaluate=False, quantize=False, build=False))
+def test_fingerprint_signature_generator(op, tflite, build):
+    run_model_operation('fingerprint_signature_generator', op, tflite, build)

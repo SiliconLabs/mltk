@@ -10,6 +10,37 @@ include(${CMAKE_CURRENT_LIST_DIR}/../../../cmake/utilities.cmake)
 
 string(REGEX REPLACE "/CMakeFiles/CMakeTmp$" "" _bin_dir ${CMAKE_BINARY_DIR})
 
+mltk_info("CMAKE_SOURCE_DIR=${CMAKE_SOURCE_DIR}")
+if(NOT MLTK_USER_OPTIONS)
+  set(MLTK_USER_OPTIONS ${CMAKE_SOURCE_DIR}/user_options.cmake)
+endif()
+
+if(EXISTS "${MLTK_USER_OPTIONS}" AND NOT MLTK_NO_USER_OPTIONS)
+  mltk_info("MLTK_USER_OPTIONS=${MLTK_USER_OPTIONS}")
+  include("${MLTK_USER_OPTIONS}")
+endif()
+
+
+mltk_get(MLTK_PLATFORM_NAME)
+if(MLTK_PLATFORM_NAME AND MLTK_PREVIOUS_PLATFORM_NAME)
+    if(NOT "${MLTK_PLATFORM_NAME}" STREQUAL "${MLTK_PREVIOUS_PLATFORM_NAME}")
+        message(NOTICE "\n*************************************************************************************************************\n")
+        message(NOTICE "Current MLTK_PLATFORM_NAME=${MLTK_PLATFORM_NAME} and MLTK_PREVIOUS_PLATFORM_NAME=${MLTK_PREVIOUS_PLATFORM_NAME}")
+        message(NOTICE "Cleaning build directory: ${_bin_dir}")
+        message(NOTICE "\nYou must re-configure your CMake project to continue!!")
+        message(NOTICE "\n************************************************************************************************************\n\n")
+
+        file(REMOVE_RECURSE "${_bin_dir}")
+        get_cmake_property(_variableNames VARIABLES)
+        foreach (_variableName ${_variableNames})
+            unset(${_variableName} CACHE)
+        endforeach()
+
+        return()
+    endif()
+endif()
+
+
 
 if(NOT TOOLCHAIN_DIR)
     set(gcc_path_file "${_bin_dir}/gcc_path.txt")
@@ -25,7 +56,10 @@ if(NOT TOOLCHAIN_DIR)
                     string(REPLACE ";" "\n" _err_msg ${_err_msg})
                 endif()
             endif()
-            message(FATAL_ERROR "${_err_msg}\nFailed to download GCC ARM toolchain, see: ${CMAKE_CURRENT_LIST_DIR}/download.log\n\n")
+            unset(PYTHON_EXECUTABLE CACHE)
+            file(REMOVE "${_bin_dir}/CMakeCache.txt")
+            file(REMOVE_RECURSE "${_bin_dir}/CMakeFiles")
+            message(FATAL_ERROR "${_err_msg}\nFailed to download GCC ARM toolchain, see: ${CMAKE_CURRENT_LIST_DIR}/download.log\nAlso see: https://siliconlabs.github.io/mltk/docs/cpp_development/index.html\n\n")
         endif()
 
         list(GET output 0 TOOLCHAIN_DIR)

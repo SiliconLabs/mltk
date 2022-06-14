@@ -17,14 +17,15 @@ public:
     AudioFeatureGeneratorWrapper(const py::dict& settings);
     ~AudioFeatureGeneratorWrapper();
     void process_sample(const py::array_t<int16_t>& input, py::array& output);
+    bool activity_was_detected();
 
-private:
     FrontendState _frontend_state;
     int _sample_length;
     int _n_channels;
     int _n_features;
     int _window_step;
     int _window_size;
+    int _dynamic_quantize_range;
 };
 
 

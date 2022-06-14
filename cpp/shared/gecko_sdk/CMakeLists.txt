@@ -19,8 +19,8 @@ set(ENV{GIT_LFS_SKIP_SMUDGE} 1)
 CPMAddPackage(
   NAME gecko_sdk
   GITHUB_REPOSITORY SiliconLabs/gecko_sdk
-  GIT_TAG 2e82050dc8823c9fe0e8908c1b2666fb83056230 # Gecko SDK v4.0.2
-  CACHE_VERSION v4.0.2
+  GIT_TAG 310814a9016b60a8012d50c62cc168a783ac102b # Gecko SDK v4.1.0
+  CACHE_VERSION v4.1.0
   DOWNLOAD_ONLY ON
 )
 
@@ -85,6 +85,5 @@ INTERFACE
   ${gecko_sdk_SOURCE_DIR}/platform/service/system/inc
   ${gecko_sdk_SOURCE_DIR}/platform/service/sleeptimer/inc
   ${gecko_sdk_SOURCE_DIR}/platform/service/udelay/inc
-  ${gecko_sdk_SOURCE_DIR}/util/third_party/tensorflow_extra/inc
 )
 

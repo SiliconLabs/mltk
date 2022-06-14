@@ -97,27 +97,38 @@ The `samplewise_norm.*` parameters are specified in [ParallelAudioDataGenerator]
 
 
 
-- __fe.sample_rate_hz__       - The sample rate of the audio in Hz
-- __fe.sample_length_ms__     - The length of an audio sample in milliseconds
-- __fe.window_size_ms__       - Length of desired time frames in ms
-- __fe.window_step_ms__       - Length of step size for the next frame in ms
-- __fe.filterbank_n_channels__- The number of filterbank channels to use.
-- __fe.filterbank_upper_band_limit__ - The highest frequency included in the filterbanks
-- __fe.filterbank_lower_band_limit__ - The lowest frequency included in the filterbanks
-- __fe.noise_reduction_enable__- Enable/disable noise reduction module
-- __fe.noise_reduction_smoothing_bits__ - Scale up signal by 2^(smoothing_bits) before reduction
-- __fe.noise_reduction_even_smoothing__ - Smoothing coefficient for even-numbered channels
-- __fe.noise_reduction_odd_smoothing__ - Smoothing coefficient for odd-numbered channels
+- __fe.sample_rate_hz__                     - The sample rate of the audio in Hz
+- __fe.sample_length_ms__                   - The length of an audio sample in milliseconds
+- __fe.window_size_ms__                     - Length of desired time frames in ms
+- __fe.window_step_ms__                     - Length of step size for the next frame in ms
+- __fe.filterbank_n_channels__              - The number of filterbank channels to use.
+- __fe.filterbank_upper_band_limit__        - The highest frequency included in the filterbanks
+- __fe.filterbank_lower_band_limit__        - The lowest frequency included in the filterbanks
+- __fe.noise_reduction_enable__             - Enable/disable noise reduction module
+- __fe.noise_reduction_smoothing_bits__     - Scale up signal by 2^(smoothing_bits) before reduction
+- __fe.noise_reduction_even_smoothing__     - Smoothing coefficient for even-numbered channels
+- __fe.noise_reduction_odd_smoothing__      - Smoothing coefficient for odd-numbered channels
 - __fe.noise_reduction_min_signal_remaining__ - Fraction of signal to preserve in smoothing
-- __fe.pcan_enable__          - Enable PCAN auto gain control
-- __fe.pcan_strength__        - Gain normalization exponent
-- __fe.pcan_offset__          - Positive value added in the normalization denominator
-- __fe.pcan_gain_bits__       - Number of fractional bits in the gain
-- __fe.log_scale_enable__     - Enable logarithmic scaling of filterbanks
-- __fe.log_scale_shift__      - Scale filterbanks by 2^(scale_shift)
-- __fe.fft_length__           - This is required FFT length which is the smallest power of 2 that is larger than the window size
-- __samplewise_norm.rescale__ - Value to scale each element of the sample
-- __samplewise_norm.mean_and_std__ - Normalize the sample by the mean and standard deviation
+- __fe.pcan_enable__                        - Enable PCAN auto gain control
+- __fe.pcan_strength__                      - Gain normalization exponent
+- __fe.pcan_offset__                        - Positive value added in the normalization denominator
+- __fe.pcan_gain_bits__                     - Number of fractional bits in the gain
+- __fe.log_scale_enable__                   - Enable logarithmic scaling of filterbanks
+- __fe.log_scale_shift__                    - Scale filterbanks by 2^(scale_shift)
+- __fe.fft_length__                         - This is required FFT length which is the smallest power of 2 that is larger than the window size
+- __fe.activity_detection_enable__          - Enable the activity detection block. This indicates when activity, such as a speech command, is detected in the audio stream
+- __fe.activity_detection_alpha_a__         - The activity detection "fast filter" coefficient. The filter is a 1-real pole IIR filter: `computes out = (1-k)*in + k*out`
+- __fe.activity_detection_alpha_b__         - The activity detection "slow filter" coefficient. The filter is a 1-real pole IIR filter: `computes out = (1-k)*in + k*out`
+- __fe.activity_detection_arm_threshold__   - The threshold for when there should be considered possible activity in the audio stream
+- __fe.activity_detection_trip_threshold__  - The threshold for when activity is considered detected in the audio stream
+- __fe.dc_notch_filter_enable__             - Enable the DC notch filter. This will help negate any DC components in the audio signal
+- __fe.dc_notch_filter_coefficient__        - The coefficient used by the DC notch filter, DC notch filter coefficient k in Q(16,15) format, `H(z) = (1 - z^-1)/(1 - k*z^-1)`
+- __fe.quantize_dynamic_scale_enable__      - Enable dynamic quantization of the generated audio spectrogram. With this, the max spectrogram value is mapped to +127, 
+                                              and the max spectrogram minus `fe.quantize_dynamic_scale_range_db` is mapped to -128. 
+                                              Anything below max spectrogram minus `fe.quantize_dynamic_scale_range_db` is mapped to -128.
+- __fe.quantize_dynamic_scale_range_db__    - The dynamic range in dB used by the dynamic quantization
+- __samplewise_norm.rescale__               - Value to scale each element of the sample:  `norm_sample = sample * <scaler>`. The model input dtype should be a float32
+- __samplewise_norm.mean_and_std__          - Normalize the sample by the mean and standard deviation: `norm_sample = (sample - mean(sample)) / std(sample)`. The model input dtype should be a float32
 
 
 ### ImageDatasetMixin
@@ -126,8 +137,8 @@ The [ImageDatasetMixin](mltk.core.ImageDatasetMixin) adds the following paramete
 The `samplewise_norm.*` parameters are specified in [ParallelImageDataGenerator](mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator).
 
 
-- __samplewise_norm.rescale__ - Value to scale each element of the sample
-- __samplewise_norm.mean_and_std__ - Normalize the sample by the mean and standard deviation
+- __samplewise_norm.rescale__ - Value to scale each element of the sample: `norm_img = img * <scaler>`
+- __samplewise_norm.mean_and_std__ - Normalize the sample by the mean and standard deviation: `norm_img = (img - mean(img)) / std(img)`
 
 
 ## Custom Parameters

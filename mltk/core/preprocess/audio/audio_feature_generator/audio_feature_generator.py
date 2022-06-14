@@ -57,3 +57,7 @@ class AudioFeatureGenerator:
         self._wrapper.process_sample(sample, spectrogram)
         return spectrogram
 
+
+    def activity_was_detected(self) -> bool:
+        """Return if activity was detected in the previously processed sample"""
+        return self._wrapper.activity_was_detected()

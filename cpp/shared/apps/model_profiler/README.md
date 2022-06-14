@@ -7,23 +7,38 @@ If a hardware simulator is used, then only accelerator cycles are profiled.
 If an embedded platform is used, then accelerator cycles and CPU cycles are profiled.
 
 
-__NOTE:__ This application is able to be built for Windows/Linux _or_ a supported embedded target.
+__NOTES:__  
+- This application is able to be built for Windows/Linux _or_ a supported embedded target.
+- Rather than build this C++ application, you may also profile models using:  
+  - [Command Line](https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html) - Profile a .tflite model using the `mltk profile` command line
+  - [Model Profiler Utility](https://siliconlabs.github.io/mltk/docs/guides/model_profiler_utility.html) - Profile a .tflite using a standalone utility with a webpage interface
 
 
-__NOTE:__ Rather than build this C++ application, you may also profile models using:  
-- [Command Line](https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html) - Profile a .tflite model using the `mltk profile` command line
-- [Model Profiler Utility](https://siliconlabs.github.io/mltk/docs/guides/model_profiler_utility.html) - Profile a .tflite using a standalone utility with a webpage interface
+## Quick Links
+
+- [GitHub Source](https://github.com/SiliconLabs/mltk/tree/master/cpp/shared/apps/model_profiler) - View this example's source code on Github
+- [Online documentation](https://siliconlabs.github.io/mltk/docs/cpp_development/examples/model_profiler.html) - View this example's online documentation
+- [Model Profiler Command Line](https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html) - View the MLTK's model profiler documentation
+- [Model Profiler Utility](https://siliconlabs.github.io/mltk/docs/guides/model_profiler_utility.html) - View the MTLK's model profiler stand-alone utility's documentation
+
 
 
 ## Build, Run, Debug
 
-See the online documentation for how to build and run this application:  
-[https://siliconlabs.github.io/mltk/docs/cpp_development/index.html](https://siliconlabs.github.io/mltk/docs/cpp_development/index.html)
+See the [online documentation](https://siliconlabs.github.io/mltk/docs/cpp_development/index.html) for how to build and run this application:
 
 
-If using [Visual Studio Code](https://siliconlabs.github.io/mltk/docs/cpp_development/vscode.html) 
-or the [Command Line](https://siliconlabs.github.io/mltk/docs/cpp_development/command_line.html) select the `mltk_model_profiler` CMake target.  
+### Simplicity Studio
+
 If using [Simplicity Studio](https://siliconlabs.github.io/mltk/docs/cpp_development/simplicity_studio.html) select the `MLTK - Model Profiler` Project.
+
+### Visual Studio Code
+If using [Visual Studio Code](https://siliconlabs.github.io/mltk/docs/cpp_development/vscode.html) select the `mltk_model_profiler` CMake target.
+
+### Command-line
+
+If using the [Command Line](https://siliconlabs.github.io/mltk/docs/cpp_development/command_line.html) select the `mltk_model_profiler` CMake target.  
+
 
 
 ## Updating the model
@@ -65,7 +80,7 @@ With this variable set, when the model profiler application is built the
 specified model will be built into the application.
 
 
-### via `update_params` command
+### via update_params command
 
 When building for an embedded target, this application supports overriding the default model built into the application.
 When the application starts, it checks the end of flash memory for a `.tflite` model file. If found, the model

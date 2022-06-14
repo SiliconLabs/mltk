@@ -207,7 +207,7 @@ autodoc_member_order = 'bysource'
 #autoclass_content = "class"
 autosectionlabel_prefix_document = True
 #autosectionlabel_maxdepth = 1
-
+myst_heading_anchors = 3
 language = "en"
 html_last_updated_fmt = ""
 
@@ -234,7 +234,9 @@ for fn in recursive_listdir(docs_src_dir, return_relative_paths=True):
         continue
 
     src_path = f'{docs_src_dir}/{fn}'
-
+    dst_path = f'{docs_dst_dir}/{fn}'
+    os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+    
     # First check if the file contains:
     # ```{include} <path>
     #
@@ -264,8 +266,6 @@ for fn in recursive_listdir(docs_src_dir, return_relative_paths=True):
                     line = line.replace(match.group(1), 'https://github.com/siliconlabs/mltk/tree/master/mltk/core/')
             data += line
 
-    dst_path = f'{docs_dst_dir}/{fn}'
-    os.makedirs(os.path.dirname(dst_path), exist_ok=True)
     with open(dst_path, 'w') as f:
         f.write(data)
 
@@ -299,6 +299,13 @@ tutorials_src_dir = f'{curdir}/../../../mltk/tutorials'
 tutorials_dst_dir = f'{curdir}/mltk/tutorials'
 os.makedirs(tutorials_dst_dir, exist_ok=True)
 
+url_re = re.compile(r'.*\((https:\/\/siliconlabs\.github\.io\/mltk\/).*', re.I)
+url_re2 = re.compile(r'.*\((https:\/\/siliconlabs\.github\.io\/mltk\/).*(\.html).*', re.I)
+# If the line contains something like:
+# (https://siliconlabs.github.io/mltk/docs/python_api/core/mltk_model.html#mltk.core.TrainMixin.tflite_converter)
+# Then we cannot convert it to it's corresponding relative markdown URL, so it's not supported
+not_supported_url_re = re.compile(r'.*\(https:\/\/siliconlabs\.github\.io\/mltk\/.*\.html#.*[\.\-].*\)', re.I)
+
 for src_dir, dst_dir in zip((examples_src_dir, tutorials_src_dir), (examples_dst_dir, tutorials_dst_dir)):
     for fn in os.listdir(src_dir):
         if not fn.endswith('.ipynb'):
@@ -310,15 +317,19 @@ for src_dir, dst_dir in zip((examples_src_dir, tutorials_src_dir), (examples_dst
                 # The notebooks use full URLs.
                 # Convert the URLs to a relative path when we're generating
                 # so we can generate HTML with relative links
-                if '(https://siliconlabs.github.io/mltk/' in line:
-                    line = line.replace('(https://siliconlabs.github.io/mltk/', '(../../')
-                    if '.html)' in line:
-                        line = line.replace('.html)', '.md)')
+                match = url_re.match(line)
+                not_supported_match = not_supported_url_re.match(line)
+                if not_supported_match is None and match:
+                    match2 = url_re2.match(line)
+                    line = line.replace(match.group(1), '../../')
+                    if match2:
+                        line = line.replace(match2.group(2), '.md')
 
                 data += line + '\n'
 
         with open(f'{dst_dir}/{fn}', 'w', encoding='utf-8') as fp:
             fp.write(data)
+
 
 
 # Copy the <mltk root>/mltk/core/tflite_model_parameters/schema/dictionary.fbs

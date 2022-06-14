@@ -37,30 +37,30 @@ Performance (quantized tflite model)
 Commands
 --------------
 
-.. code-block:: console
+.. code-block:: shell
 
    # Do a "dry run" test training of the model
-   > mltk train tflite_micro_speech-test
+   mltk train tflite_micro_speech-test
 
    # Train the model
-   > mltk train tflite_micro_speech
+   mltk train tflite_micro_speech
 
    # Evaluate the trained model .tflite model
-   > mltk evaluate tflite_micro_speech --tflite
+   mltk evaluate tflite_micro_speech --tflite
 
    # Profile the model in the MVP hardware accelerator simulator
-   > mltk profile tflite_micro_speech --accelerator MVP
+   mltk profile tflite_micro_speech --accelerator MVP
 
    # Profile the model on a physical development board
-   > mltk profile tflite_micro_speech --accelerator MVP --device
+   mltk profile tflite_micro_speech --accelerator MVP --device
 
 
 Model Summary
 --------------
 
-.. code-block:: console
+.. code-block:: shell
     
-    > mltk summarize tflite_micro_speech --tflite
+    mltk summarize tflite_micro_speech --tflite
     
     +-------+-----------------+----------------+----------------+-----------------------------------------+
     | Index | OpCode          | Input(s)       | Output(s)      | Config                                  |
@@ -115,12 +115,53 @@ Model Summary
     .tflite file size: 21.6kB
 
 
+Model Profiling Report
+-----------------------
+
+.. code-block:: shell
+   
+   # Profile on physical EFR32xG24 using MVP accelerator
+   mltk profile tflite_micro_speech --device --accelerator MVP
+
+    Profiling Summary
+    Name: tflite_micro_speech
+    Accelerator: MVP
+    Input Shape: 1x49x40x1
+    Input Data Type: int8
+    Output Shape: 1x4
+    Output Data Type: int8
+    Flash, Model File Size (bytes): 21.6k
+    RAM, Runtime Memory Size (bytes): 9.0k
+    Operation Count: 684.0k
+    Multiply-Accumulate Count: 336.0k
+    Layer Count: 4
+    Unsupported Layer Count: 1
+    Accelerator Cycle Count: 902.0k
+    CPU Cycle Count: 113.8k
+    CPU Utilization (%): 12.0
+    Clock Rate (hz): 80.0M
+    Time (s): 11.8m
+    Ops/s: 57.7M
+    MACs/s: 28.4M
+    Inference/s: 84.4
+
+    Model Layers
+    +-------+-----------------+--------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------+------------+--------------------------------+
+    | Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape          | Output Shape | Options                                 | Supported? | Error Msg                      |
+    +-------+-----------------+--------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------+------------+--------------------------------+
+    | 0     | conv_2d         | 652.0k | 320.0k | 877.9k     | 84.4k      | 11.2m    | 1x49x40x1,8x10x8x1,8 | 1x25x20x8    | Padding:same stride:2x2 activation:relu | True       |                                |
+    | 1     | reshape         | 0      | 0      | 0          | 20.4k      | 240.0u   | 1x25x20x8,2          | 1x4000       | Type=none                               | True       |                                |
+    | 2     | fully_connected | 32.0k  | 16.0k  | 24.1k      | 4.6k       | 360.0u   | 1x4000,4x4000,4      | 1x4          | Activation:none                         | False      | weights_shape[1] (4000) > 2048 |
+    | 3     | softmax         | 20.0   | 0      | 0          | 4.3k       | 60.0u    | 1x4                  | 1x4          | Type=softmaxoptions                     | True       |                                |
+    +-------+-----------------+--------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------+------------+--------------------------------+
+
+
 Model Diagram
 ------------------
 
-.. code-block:: console
+.. code-block:: shell
    
-   > mltk view tflite_micro_speech --tflite
+   mltk view tflite_micro_speech --tflite
 
 .. raw:: html
 

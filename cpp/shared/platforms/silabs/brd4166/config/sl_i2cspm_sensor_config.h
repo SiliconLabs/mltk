@@ -41,18 +41,18 @@
 // <<< sl:start pin_tool >>>
 // <i2c signal=SCL,SDA> SL_I2CSPM_SENSOR
 // $[I2C_SL_I2CSPM_SENSOR]
-#define SL_I2CSPM_SENSOR_PERIPHERAL              I2C1
-#define SL_I2CSPM_SENSOR_PERIPHERAL_NO           1
+#define SL_I2CSPM_SENSOR_PERIPHERAL              I2C0
+#define SL_I2CSPM_SENSOR_PERIPHERAL_NO           0
 
 // I2C1 SCL on PC5
 #define SL_I2CSPM_SENSOR_SCL_PORT                gpioPortC
-#define SL_I2CSPM_SENSOR_SCL_PIN                 5
-#define SL_I2CSPM_SENSOR_SCL_LOC                 17
+#define SL_I2CSPM_SENSOR_SCL_PIN                 11
+#define SL_I2CSPM_SENSOR_SCL_LOC                 15
 
 // I2C1 SDA on PC4
 #define SL_I2CSPM_SENSOR_SDA_PORT                gpioPortC
-#define SL_I2CSPM_SENSOR_SDA_PIN                 4
-#define SL_I2CSPM_SENSOR_SDA_LOC                 17
+#define SL_I2CSPM_SENSOR_SDA_PIN                 10
+#define SL_I2CSPM_SENSOR_SDA_LOC                 15
 
 // [I2C_SL_I2CSPM_SENSOR]$
 // <<< sl:end pin_tool >>>

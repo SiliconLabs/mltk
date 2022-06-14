@@ -32,14 +32,14 @@ These parts work together as follows:
 3. The [Model Specification](../guides/model_specification.md) file is used to train the model
    - The `mltk train` command  is used to train the model
    - Internally, the [AudioFeatureGenerator](../cpp_development/wrappers/audio_feature_generator_wrapper.md) C++ Python wrapper is used to dynamically generate spectrograms from the audio dataset
-4. At the end of training, the MLTK embeds the [spectrogram settings](../guides/model_parameters.html#audiodatasetmixin) into the generated `.tflite` model file
+4. At the end of training, the MLTK embeds the [spectrogram settings](../guides/model_parameters.md#audiodatasetmixin) into the generated `.tflite` model file
 5. The generated `.tflite` model file is copied to a Gecko SDK project
 6. The Gecko SDK project generator parses the spectrogram settings embedded in the `.tflite` and generates the corresponding C header files with the settings
 7. The Gecko SDK project is built and the firmware image is loaded onto the embedded target. The firmware image contains:
    - Trained `.tflite` model file
    - [Tensorflow-Lite Micro](https://github.com/tensorflow/tflite-micro) interpreter
    - [AudioFeatureGenerator](https://docs.silabs.com/gecko-platform/latest/machine-learning/api/group-ml-audio-feature-generation) software library
-   - AudioFeatureGenerator [settings](../guides/model_parameters.html#audiodatasetmixin) used to train the model
+   - AudioFeatureGenerator [settings](../guides/model_parameters.md#audiodatasetmixin) used to train the model
 8. On the embedded target at runtime:  
    a. Read streaming audio from the microphone  
    b. The microphone audio is sent to the AudioFeatureGenerator where spectrograms are generated using the _exact_ same settings and algorithms that were used during model training  
@@ -53,7 +53,7 @@ The benefits of using the AudioFeatureGenerator are:
 
 - The _exact_ same algorithms and settings used to generate the spectrograms during model training are also used by the embedded target
   - This ensures the ML model "sees" the same type of spectrograms at runtime that it was trained to see which should allow for better performance
-- The [spectrogram settings](../guides/model_parameters.html#audiodatasetmixin) are automatically embedded into the `.tflite` model file
+- The [spectrogram settings](../guides/model_parameters.md#audiodatasetmixin) are automatically embedded into the `.tflite` model file
   - This ensures the settings are in lock-step with the trained model
   - The ML model designer only needs to distribute a single file 
 - The Gecko SDK will automatically generate the necessary source code
@@ -164,7 +164,7 @@ my_model.datagen = ParallelAudioDataGenerator(
 During model [training](../guides/model_training.md), spectrograms will be dynamically generated from the dataset's audio samples using the 
 [AudioFeatureGenerator](https://docs.silabs.com/gecko-platform/latest/machine-learning/api/group-ml-audio-feature-generation) via [C++ Python wrapper](../cpp_development/wrappers/audio_feature_generator_wrapper.md).
 
-At the end of training, the [spectrogram settings](../guides/model_parameters.html#audiodatasetmixin) are automatically embedded into the generated `.tflite` model file.
+At the end of training, the [spectrogram settings](../guides/model_parameters.md#audiodatasetmixin) are automatically embedded into the generated `.tflite` model file.
 
 
 

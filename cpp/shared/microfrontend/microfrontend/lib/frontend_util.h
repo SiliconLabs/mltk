@@ -24,6 +24,9 @@ This file has been modified by Silicon Labs.
 #include "microfrontend/lib/noise_reduction_util.h"
 #include "microfrontend/lib/pcan_gain_control_util.h"
 #include "microfrontend/lib/window_util.h"
+#include "microfrontend/lib/activity_detection_util.h"
+#include "microfrontend/lib/dc_notch_filter_util.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -35,6 +38,8 @@ struct FrontendConfig {
   struct NoiseReductionConfig noise_reduction;
   struct PcanGainControlConfig pcan_gain_control;
   struct LogScaleConfig log_scale;
+  struct ActivityDetectionConfig activity_detection;
+  struct DcNotchFilterConfig dc_notch_filter;
 };
 
 // Fills the frontendConfig with "sane" defaults.

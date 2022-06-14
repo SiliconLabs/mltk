@@ -3,20 +3,22 @@
 This application uses TensorFlow Lite for Microcontrollers to run audio
 classification machine learning models to classify words from audio data
 recorded from a microphone. The detection is visualized using the LED's on the
-board and the classification results are written to the VCOM serialport.
-
-See the online documentation for how to build and run this application:  
-[https://siliconlabs.github.io/mltk/docs/cpp_development/index.html](https://siliconlabs.github.io/mltk/docs/cpp_development/index.html)
-
-If using [Visual Studio Code](https://siliconlabs.github.io/mltk/docs/cpp_development/vscode.html) 
-or the [Command Line](https://siliconlabs.github.io/mltk/docs/cpp_development/command_line.html) select the `mltk_audio_classifier` CMake target.  
-If using [Simplicity Studio](https://siliconlabs.github.io/mltk/docs/cpp_development/simplicity_studio.html) select the `MLTK - Audio Classifier` Project.
+board and the classification results are written to the VCOM serial port.
 
 
-__NOTE:__ This application is able to be built for Windows/Linux _or_ a supported embedded target.
-
-__NOTE:__ This application is designed to be used with the MLTK command:
+__NOTES:__   
+- This application is able to be built for Windows/Linux _or_ a supported embedded target.
+- This application is designed to be used with the MLTK command:
 [mltk classify_audio](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility)
+
+
+## Quick Links
+
+- [GitHub Source](https://github.com/SiliconLabs/mltk/tree/master/cpp/shared/apps/audio_classifier) - View this example's source code on Github
+- [Online documentation](https://siliconlabs.github.io/mltk/docs/cpp_development/examples/audio_classifier.html) - View this example's online documentation
+- [Keyword Spotting Tutorial](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_on_off.html) - View this example's associated tutorial
+- [Audio classifier utility](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility) - View the audio classifier utility's documentation
+
 
 
 ## Behavior
@@ -40,21 +42,18 @@ sensitivity threshold, then the activity LED (red) will blink for about 500 ms.
 The activity LED indicates that audio has been detected on the input and the
 model output is changing, but no clear classification was made.
 
-In audio classification it is common to have some results that map to silence or
+In audio classification, it is common to have some results that map to silence or
 unknown. These results are something that we usually want to ignore. This is
 being filtered out in the audio classifier application based on the label text.
-By default any labels that start with an underscore are ignored when processing
+By default, any labels that start with an underscore are ignored when processing
 results. This behavior can be disabled in the application configuration file.
 
-## Model  
+## Updating the model  
 
-The default model used in this application is called `keyword_spotting_on_off.tflite`
-and is able to classify audio into 4 different classes labeled "on", "off",
-"_unknown_", "_silence_". The source for the model can be found here: 
-[https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off.py)
+The default model used in this application is called `keyword_spotting_on_off_v2.tflite`
+and is able to classify audio into 3 different classes labeled "on", "off", "_unknown_". The source for the model can be found here: 
+[https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v2.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v2.py)
 
-
-### Updating the model
 
 The application is designed to work with an audio classification model created
 using the Silicon Labs Machine Learning Toolkit
@@ -62,8 +61,7 @@ using the Silicon Labs Machine Learning Toolkit
 Use the MLTK to train a new audio classifier model and replace the model inside this example with the new audio
 classification model. 
 
-
-#### via Simplicity Studio
+### via Simplicity Studio
 
 To replace the default model, rename your `.tflite` file to
 `1_<your model named>.tflite` and copy it into the config/tflite folder of the Simplicity Studio
@@ -76,9 +74,9 @@ to convert a .tflite file into a c file which is added to the project.
 Refer to the online [documentation](https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/guide-replace-model#updating-or-replacing-the--tflite-file-in-a-project) for more details.
 
 
-#### via `classify_audio` Command
+### via classify_audio Command
 
-Alternatively, using the [mltk classify_audio <model path> --app none --device](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility)
+Alternatively, using the `mltk classify_audio <model path> --app none --device`
 command program the `.tflite` model to the end of the device's flash.
 On startup, the application will detect the new model and use that instead
 of the model built into the firmware.
@@ -86,8 +84,11 @@ of the model built into the firmware.
 __NOTE:__ The `--app none` option tells the command to _not_ update the audio_classifier application
 and only program the model file.
 
+See the [Audio classifier utility](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility)
+documentation for more details.
 
-#### via CMake
+
+### via CMake
 
 The model can also be updated when building this application from [Visual Studio Code](https://siliconlabs.github.io/mltk/docs/cpp_development/vscode.html)
 or the CMake [Command Line](https://siliconlabs.github.io/mltk/docs/command_line.html).
@@ -106,6 +107,61 @@ With this variable set, when the audio_classifier application is built the
 specified model will be built into the application.
 
 
+## Build, Run, Debug
+
+See the [online documentation](https://siliconlabs.github.io/mltk/docs/cpp_development/index.html) for how to build and run this application:
+
+
+### Simplicity Studio
+
+If using [Simplicity Studio](https://siliconlabs.github.io/mltk/docs/cpp_development/simplicity_studio.html) select the `MLTK - Audio Classifier` Project.
+
+### Visual Studio Code
+If using [Visual Studio Code](https://siliconlabs.github.io/mltk/docs/cpp_development/vscode.html) select the `mltk_audio_classifier` CMake target.
+
+### Command-line
+
+If using the [Command Line](https://siliconlabs.github.io/mltk/docs/cpp_development/command_line.html) select the `mltk_audio_classifier` CMake target.  
+
+
+## Dumping audio & spectrograms to PC
+
+This application works with the MLTK command:
+
+```shell
+mltk classify_audio --help
+```
+
+Using this command, you can dump spectrograms and recorded audio to the local PC.
+
+For example:
+
+```shell
+# Dump spectrograms generated on the embedded device to the local PC
+mltk classify_audio keyword_spotting_on_off_v2 --device --dump-spectrograms
+```
+
+
+```shell
+# Dump audio recorded by the embedded device to the local PC
+mltk classify_audio keyword_spotting_on_off_v2 --device --dump-audio
+```
+
+See the [Audio classifier utility](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility)
+documentation for more details.
+
+
+
+## Model Parameters
+
+In order for the audio classification to work correctly, we need to use the same
+audio feature generator configuration parameters for inference as is used when
+training the model. When using the MLTK to train an audio classification model
+the model [parameters](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html#audiodatasetmixin) 
+will be embedded in the metadata section of the `.tflite`
+file. The model parameters are extracted from the `.tflite` at runtime.
+
+
 ## Modifications
 
 The application was originally taken from the 
@@ -122,21 +178,7 @@ It has been modified as follows:
 5. Updated embedded microphone driver to support dynamic sample lengths
 
 
-
-### Model Parameters
-
-In order for the audio classification to work correctly we need to use the same
-audio feature generator configuration parameters for inference as is used when
-training the model. When using the MLTK to train an audio classification model
-the model [parameters](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html#audiodatasetmixin) 
-will be embedded in the metadata section of the `.tflite`
-file. The model parameters are extracted from the `.tflite` at runtime.
-
-
-## References
-
-The example is based on TensorFlow's example called **[micro speech](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/micro_speech)**
-and audio is processed using the **[audio feature generator](https://siliconlabs.github.io/mltk/docs/audio/audio_feature_generator.html)**.
+## Additional Reading
 
 - [MLTK Documentation](https://siliconlabs.github.io/mltk)
 - [Audio Feature Generator](https://siliconlabs.github.io/mltk/docs/audio/audio_feature_generator.html)

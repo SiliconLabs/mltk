@@ -11,7 +11,7 @@ PUBLIC
 target_sources(${NAME}  
 PRIVATE 
     Source/system_efm32gg11b.c
-    Source/GCC/startup_efm32gg11b.c
+    Source/startup_efm32gg11b.c
 )
 
 mltk_get(SILABS_PART_NUMBER)
@@ -21,7 +21,7 @@ endif()
 
 target_compile_definitions(${NAME} 
 PUBLIC 
-    __STARTUP_CLEAR_BSS
-    __PROGRAM_START=_start
+    __START=_start
+    __PROGRAM_START=_dummy
     ${SILABS_PART_NUMBER}
 )

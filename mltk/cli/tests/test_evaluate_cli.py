@@ -12,13 +12,13 @@ test_autoencoder_model_archive_path = f'{MLTK_DIR}/utils/test_helper/test_autoen
 def test_eval_train_image_model():
     if os.path.exists(test_image_model_archive_path):
         os.remove(test_image_model_archive_path)
-    run_mltk_command('train', 'test_image_model', '--clean', '-v', update_model_path=True)
+    run_mltk_command('train', 'test_image_model', '--clean', '-v', '--no-evaluate', update_model_path=True)
 
 @pytest.mark.dependency()
 def test_eval_train_ae_model():
     if os.path.exists(test_autoencoder_model_archive_path):
         os.remove(test_autoencoder_model_archive_path)
-    run_mltk_command('train', 'test_autoencoder_model', '--clean', '-v', update_model_path=True)
+    run_mltk_command('train', 'test_autoencoder_model', '--clean', '-v', '--no-evaluate', update_model_path=True)
 
 
 def test_eval_help():

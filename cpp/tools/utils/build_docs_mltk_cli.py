@@ -1,8 +1,10 @@
 import os
 import sys 
 import webbrowser
+import re
 import shutil
 import typer
+import logging
 
 from mltk import cli
 
@@ -29,6 +31,9 @@ def build_docs_command(
     clean: bool = typer.Option(True,
         help='Clean the build directory before building'
     ),
+    revert_only: bool = typer.Option(False,
+        help='Only reset the generated docs (i.e. do a git revert on the docs directory)'
+    ),
 ):
     """Build the MLTK online documentation
     
@@ -37,15 +42,21 @@ def build_docs_command(
     """
     logger = cli.get_logger(verbose=True)
 
+    if revert_only:
+        _revert_docs_dir(logger)
+        return
+
+
 
     install_pip_package('sphinx==4.2.0', logger=logger)
-    install_pip_package('myst-parser', 'myst_parser', logger=logger)
-    install_pip_package('myst-nb', 'myst_nb', logger=logger)
-    install_pip_package('numpydoc', logger=logger)
-    install_pip_package('sphinx_autodoc_typehints', logger=logger)
-    install_pip_package('sphinx-markdown-tables', 'sphinx_markdown_tables', logger=logger)
-    install_pip_package('sphinx-copybutton', 'sphinx_copybutton', logger=logger)
-    install_pip_package('sphinx-panels', 'sphinx_panels', logger=logger)
+    install_pip_package('myst-parser==0.17.2', 'myst_parser', logger=logger)
+    install_pip_package('myst-nb==0.15.0', 'myst_nb', logger=logger)
+    install_pip_package('numpydoc==1.3.1', logger=logger)
+    install_pip_package('sphinx_autodoc_typehints==1.18.2', logger=logger)
+    install_pip_package('sphinx-markdown-tables==0.0.15', 'sphinx_markdown_tables', logger=logger)
+    install_pip_package('sphinx-copybutton==0.5.0', 'sphinx_copybutton', logger=logger)
+    install_pip_package('sphinx-panels==0.6.0', 'sphinx_panels', logger=logger)
+    install_pip_package('nbclient==0.5.13', 'nbclient', logger=logger)
     
     install_pip_package('git+https://github.com/linkchecker/linkchecker.git', 'linkcheck', logger=logger)
     install_pip_package('git+https://github.com/bashtage/sphinx-material.git', 'sphinx_material', logger=logger)
@@ -74,6 +85,7 @@ def build_docs_command(
         '_modules',
         '_sources',
         '_static',
+        '_downloads',
         'docs',
         'mltk',
     ]
@@ -141,19 +153,35 @@ def build_docs_command(
 
 
 def _copy_file(src, dst, repo_name=None):
+    url_re = re.compile(r'.*="(https:\/\/siliconlabs\.github\.io\/mltk\/).*\..*".*', re.I)
+
     if not src.endswith(('.html', '.txt')):
         shutil.copy(src, dst)
         return 
 
+    # Ensure all absolute docs URLs are relative
+    is_html = src.endswith('.html')
+    dst_dir = os.path.dirname(dst)
+    docs_base_dir = f'{MLTK_ROOT_DIR}/docs'
     with open(src, 'r', encoding='utf-8') as f:
-        data = f.read()
+        data = ''
+        for line in f:
+            if is_html:
+                match = url_re.match(line)
+                if match:
+                    relpath = os.path.relpath(docs_base_dir, dst_dir).replace('\\', '/')
+                    line = line.replace(match.group(1), relpath + '/')
+            data += line 
 
     # If a testing repo name was given
     # then update any URLs found in the html docs files
     if repo_name:
         data = data.replace('siliconlabs.github.io/mltk', f'{repo_name}.github.io/mltk')
+        data = data.replace('SiliconLabs.github.io/mltk', f'{repo_name}.github.io/mltk')
         data = data.replace('github/siliconlabs/mltk', f'github/{repo_name}/mltk')
+        data = data.replace('github/SiliconLabs/mltk', f'github/{repo_name}/mltk')
         data = data.replace('github.com/siliconlabs/mltk', f'github.com/{repo_name}/mltk')
+        data = data.replace('github.com/SiliconLabs/mltk', f'github.com/{repo_name}/mltk')
 
     with open(dst, 'w', encoding='utf-8') as f:
         f.write(data)
@@ -168,3 +196,38 @@ def _copy_directory(src, dst, repo_name=None):
             _copy_directory(s, d, repo_name=repo_name)
         else:
             _copy_file(s, d, repo_name=repo_name)
+
+def _revert_docs_dir(logger:logging.Logger):
+    logger.warning('Reverting all generated docs')
+
+    def _clean_dir(path:str):
+        run_shell_cmd(
+            ['git', 'restore', '--source=HEAD', '--staged', '--worktree', '--', '.'],
+            cwd=f'{MLTK_ROOT_DIR}/docs/{path}',
+            logger=logger
+        )
+        run_shell_cmd(
+            ['git', 'clean', '-fd', '.'],
+             cwd=f'{MLTK_ROOT_DIR}/docs/{path}',
+            logger=logger
+        )
+
+    _clean_dir('docs')
+    _clean_dir('mltk')
+    _clean_dir('_images')
+    _clean_dir('_modules')
+    _clean_dir('_sources')
+    _clean_dir('_static')
+    _clean_dir('_downloads')
+
+    run_shell_cmd(
+        ['git', 'checkout', 'HEAD', '*.html'],
+        cwd=f'{MLTK_ROOT_DIR}/docs',
+        logger=logger
+    )
+
+    run_shell_cmd(
+        ['git', 'checkout', 'HEAD', '*.js'],
+        cwd=f'{MLTK_ROOT_DIR}/docs',
+        logger=logger
+    )

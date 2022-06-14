@@ -54,13 +54,14 @@
 <script>
     window.gTrackingId = 'G-HZ5MW943WF';
 </script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.preprocess.audio.parallel_generator.parallel_generator &#8212; MLTK 0.6.0 documentation</title>
+    <title>mltk.core.preprocess.audio.parallel_generator.parallel_generator &#8212; MLTK 0.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/material.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
@@ -103,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../../index.html" title="MLTK 0.6.0 documentation"
+        <a href="../../../../../../index.html" title="MLTK 0.7.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../../_static/logo.png"
-                   alt="MLTK 0.6.0 documentation logo">
+                   alt="MLTK 0.7.0 documentation logo">
           
         </a>
       </div>
@@ -198,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../../index.html" title="MLTK 0.7.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../../index.html"
-       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.7.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -294,7 +295,28 @@
     <li class="md-nav__item">
     
     
+      <a href="../../../../../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../../../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="../../../../../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../../../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
       
     
     </li>
@@ -593,7 +615,9 @@
 
 <span class="sd">        speed_range:  Tuple (min, max) for randomly augmenting audio's speed, &lt; 1.0 slow down, &gt; 1.0 speed up</span>
 
-<span class="sd">        pitch_range: Tuple (min, max) for randomly augmenting audio's pitch, &lt; 1.0 lower pitch, &gt; 1.0 higher pitch</span>
+<span class="sd">        pitch_range: Tuple (min, max) for randomly augmenting audio's pitch, &lt; 0 lower pitch, &gt; 0 higher pitch</span>
+<span class="sd">            This can either be an integer or float. An integer represents the number of semitone steps.</span>
+<span class="sd">            A float is converted to semitone steps &lt;float&gt;*12, so for example, a range of (-.5,.5) is converted to (-6,6)</span>
 
 <span class="sd">        vtlp_range: Tuple (min, max) for randomly augmenting audio's vocal tract length perturbation</span>
 
@@ -905,7 +929,7 @@
             <span class="s1">'bg_noise'</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
             <span class="s1">'bg_noise_factor'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
             <span class="s1">'speed_factor'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
-            <span class="s1">'pitch_factor'</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+            <span class="s1">'pitch_factor'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
             <span class="s1">'vtlp_factor'</span><span class="p">:</span> <span class="mf">1.0</span>
         <span class="p">})</span>
     
@@ -955,7 +979,13 @@
             <span class="n">xform_params</span><span class="p">[</span><span class="s1">'speed_factor'</span><span class="p">]</span> <span class="o">=</span> <span class="n">speeds</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">speeds</span><span class="p">))]</span>
     
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch_range</span><span class="p">:</span>
-            <span class="n">xform_params</span><span class="p">[</span><span class="s1">'pitch_factor'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pitch_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">def</span> <span class="nf">_convert_range</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">12</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">v</span>
+            <span class="n">lower</span> <span class="o">=</span> <span class="n">_convert_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pitch_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">upper</span> <span class="o">=</span> <span class="n">_convert_range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pitch_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">xform_params</span><span class="p">[</span><span class="s1">'pitch_factor'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">lower</span><span class="p">,</span> <span class="n">upper</span><span class="p">)</span>
     
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">vtlp_range</span><span class="p">:</span>
             <span class="n">xform_params</span><span class="p">[</span><span class="s1">'vtlp_factor'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vtlp_range</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">vtlp_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -1006,7 +1036,7 @@
             <span class="n">rate</span> <span class="o">=</span>  <span class="n">params</span><span class="p">[</span><span class="s1">'speed_factor'</span><span class="p">]</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">effects</span><span class="o">.</span><span class="n">time_stretch</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">rate</span><span class="o">=</span><span class="n">rate</span><span class="p">)</span>
             
-        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">'pitch_factor'</span><span class="p">]</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s1">'pitch_factor'</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">'pitch_factor'</span><span class="p">]</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s1">'pitch_factor'</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">effects</span><span class="o">.</span><span class="n">pitch_shift</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">sr</span><span class="o">=</span><span class="n">orignal_sr</span><span class="p">,</span> <span class="n">n_steps</span><span class="o">=</span><span class="n">params</span><span class="p">[</span><span class="s1">'pitch_factor'</span><span class="p">])</span>
         
         <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">'vtlp_factor'</span><span class="p">]</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s1">'vtlp_factor'</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
@@ -1217,7 +1247,7 @@
               
           </div>
             Last updated on
-              Apr 26, 2022.
+              Jun 14, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

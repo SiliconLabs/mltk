@@ -79,20 +79,35 @@ function(tflite_micro_link_python_wrapper target lib_dir)
     # So first generate a .def from the .dll (which has a .pyd extension)
     # then, generate a .a from the .def and .pyd
     string(REGEX REPLACE "\.pyd$" "" fullname_no_ext ${TFLITE_MICRO_WRAPPER_FULLNAME})
+   
+    # FIXME: If the generated .a does not go in the correct directory,
+    # then the generated .pyd may not import the shared symbols properly
+    # at runtime. This seems to be dependent on the build directory but
+    # it is not obvious what the path should to properly link...
+    #if("${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}" STREQUAL "37")
+    #  get_filename_component(mltk_build_dir "${MLTK_DIR}/../build" ABSOLUTE)
+    #  file(MAKE_DIRECTORY ${mltk_build_dir})
+    #  set(tflite_micro_archive_path "${mltk_build_dir}/${fullname_no_ext}.a")
+    #else()
+    set(tflite_micro_archive_path "${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.a")
+    #endif()
+    mltk_info("tflite_micro_archive_path: ${tflite_micro_archive_path}")
+    mltk_info("${CMAKE_GENDEF} ${TFLITE_MICRO_WRAPPER_PATH}")
+    mltk_info("${CMAKE_DLLTOOL} -k -d ${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.def -l ${tflite_micro_archive_path}")
     add_custom_command( 
       COMMAND ${CMAKE_GENDEF} ${TFLITE_MICRO_WRAPPER_PATH}
-      COMMAND ${CMAKE_DLLTOOL} -k -d ${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.def -l ${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.a
-      OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.a
-      COMMENT "Generating ${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.a"
+      COMMAND ${CMAKE_DLLTOOL} -k -d ${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.def -l ${tflite_micro_archive_path}
+      OUTPUT ${tflite_micro_archive_path}
+      COMMENT "Generating ${tflite_micro_archive_path}"
     )
     add_custom_target(
       tflite_micro_python_wrapper_shared_generate ALL 
-      DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.a
+      DEPENDS ${tflite_micro_archive_path}
     )
     add_library(tflite_micro_python_wrapper_shared STATIC IMPORTED)
     set_target_properties(tflite_micro_python_wrapper_shared
     PROPERTIES 
-      IMPORTED_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.a"
+      IMPORTED_LOCATION "${tflite_micro_archive_path}"
     )
     add_dependencies(tflite_micro_python_wrapper_shared tflite_micro_python_wrapper_shared_generate)
     

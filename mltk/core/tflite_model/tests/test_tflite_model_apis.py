@@ -1,6 +1,5 @@
 
 import os
-import tempfile
 import pytest
 import numpy as np
 
@@ -12,8 +11,9 @@ from mltk.core import (
     TfliteOpCode,
     TfliteConv2dLayer,
 )
-from mltk.core.tflite_model.tflite_layer import TfliteLayerOptionsConv2D
+from mltk.core.tflite_model.tflite_layer import TfliteConv2DLayerOptions
 from mltk.utils.test_helper.data import IMAGE_CLASSIFICATION_TFLITE_PATH
+from mltk.utils.path import create_tempdir
 
 
 def test_load_flatbuffer_file():
@@ -46,7 +46,7 @@ def test_description_with_save_api():
     tflite_model.description = 'test description'
     assert tflite_model.description == 'test description'
 
-    tmp_tflite_path = f'{tempfile.gettempdir()}/cifar10_resnet_v1.tflite'
+    tmp_tflite_path = f'{create_tempdir()}/cifar10_resnet_v1.tflite'
     tflite_model.save(tmp_tflite_path)
 
     try:
@@ -144,18 +144,18 @@ def test_layer_api():
     assert layer_0.opcode == TfliteOpCode.CONV_2D
     assert layer_0.opcode_str == 'conv_2d'
     options = layer_0.options 
-    assert isinstance(options, TfliteLayerOptionsConv2D)
+    assert isinstance(options, TfliteConv2DLayerOptions)
     assert len(layer_0.inputs) == 3
     assert layer_0.n_inputs == 3
     assert len(layer_0.outputs) == 1
     assert layer_0.n_outputs == 1
     input_0_tensor = layer_0.get_input_tensor(0)
     assert input_0_tensor.shape == (1,32,32,3)
-    input_0 = layer_0.get_input(0)
+    input_0 = layer_0.get_input_data(0)
     assert input_0.shape == (1,32,32,3)
     output_0_tensor = layer_0.get_output_tensor(0)
     assert output_0_tensor.shape == (1,32,32,16)
-    output_0 = layer_0.get_output(0)
+    output_0 = layer_0.get_output_data(0)
     assert output_0.shape == (1,32,32,16)
 
 def test_summary_api():
@@ -185,9 +185,9 @@ def test_get_input_tensor_api():
     t = tflite_model.get_input_tensor(0)
     assert isinstance(t, TfliteTensor)
 
-def test_get_input_api():
+def test_get_input_data_api():
     tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
-    t = tflite_model.get_input(0)
+    t = tflite_model.get_input_data(0)
     assert isinstance(t, np.ndarray)
 
 def test_get_output_tensor_api():
@@ -195,9 +195,9 @@ def test_get_output_tensor_api():
     t = tflite_model.get_output_tensor(0)
     assert isinstance(t, TfliteTensor)
 
-def test_get_output_api():
+def test_get_output_data_api():
     tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
-    t = tflite_model.get_output(0)
+    t = tflite_model.get_output_data(0)
     assert isinstance(t, np.ndarray)
 
 def test_all_metadata_api():
@@ -227,7 +227,7 @@ def test_add_metadata_with_save_api():
     metadata = tflite_model.get_metadata('test')
     assert metadata == test_data
 
-    tmp_tflite_path = f'{tempfile.gettempdir()}/cifar10_resnet_v1.tflite'
+    tmp_tflite_path = f'{create_tempdir()}/cifar10_resnet_v1.tflite'
     tflite_model.save(tmp_tflite_path)
 
     try:
@@ -237,6 +237,44 @@ def test_add_metadata_with_save_api():
     finally:
         os.remove(tmp_tflite_path)
 
+
+def test_remove_metadata_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    test_data = 'test data'.encode('utf-8')
+    tflite_model.add_metadata('test', test_data)
+    metadata = tflite_model.get_metadata('test')
+    assert metadata == test_data
+
+    assert tflite_model.remove_metadata('test')
+
+def test_remove_metadata_with_save_api():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    test_data = 'test data'.encode('utf-8')
+    tflite_model.add_metadata('test', test_data)
+    metadata = tflite_model.get_metadata('test')
+    assert metadata == test_data
+
+    tmp_tflite_path = f'{create_tempdir()}/cifar10_resnet_v1.tflite'
+    tflite_model.save(tmp_tflite_path)
+
+    try:
+        tflite_model = TfliteModel.load_flatbuffer_file(tmp_tflite_path)
+        metadata = tflite_model.get_metadata('test')
+        assert metadata is not None
+
+        assert tflite_model.remove_metadata('test')
+
+        tmp_tflite_path = f'{create_tempdir()}/cifar10_resnet_v1.tflite'
+        tflite_model.save(tmp_tflite_path)
+
+        tflite_model = TfliteModel.load_flatbuffer_file(tmp_tflite_path)
+        metadata = tflite_model.get_metadata('test')
+        assert metadata is None
+
+    finally:
+        os.remove(tmp_tflite_path)
 
 def test_replace_metadata_api():
     tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
@@ -265,7 +303,7 @@ def test_replace_metadata_with_save_api():
     metadata = tflite_model.get_metadata('test')
     assert metadata == replaced_data
 
-    tmp_tflite_path = f'{tempfile.gettempdir()}/cifar10_resnet_v1.tflite'
+    tmp_tflite_path = f'{create_tempdir()}/cifar10_resnet_v1.tflite'
     tflite_model.save(tmp_tflite_path)
 
     try:
@@ -467,3 +505,36 @@ def test_load_corrupt_tflite():
         return 
 
     assert False, 'Failed to detect corrupt tflite file'
+
+
+def test_set_tensor_data():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    conv2d_layer:TfliteConv2dLayer = tflite_model.layers[0]
+    older_filters_data = conv2d_layer.filters_data
+    new_filters_data = np.random.randint(0, 127, size=older_filters_data.shape, dtype=older_filters_data.dtype)
+
+    conv2d_layer.filters_tensor.data = new_filters_data
+
+    conv2d_layer:TfliteConv2dLayer = tflite_model.layers[0]
+    assert np.array_equal(new_filters_data, conv2d_layer.filters_data)
+
+
+def test_set_tensor_data_with_save():
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    conv2d_layer:TfliteConv2dLayer = tflite_model.layers[0]
+    older_filters_data = conv2d_layer.filters_data
+    new_filters_data = np.random.randint(0, 127, size=older_filters_data.shape, dtype=older_filters_data.dtype)
+
+    conv2d_layer.filters_tensor.data = new_filters_data
+
+    tmp_tflite_path = f'{create_tempdir()}/cifar10_resnet_v1.tflite'
+    tflite_model.save(tmp_tflite_path)
+
+    try:
+        loaded_tflite_model = TfliteModel.load_flatbuffer_file(tmp_tflite_path)
+        loaded_conv2d_layer:TfliteConv2dLayer = loaded_tflite_model.layers[0]
+        assert np.array_equal(new_filters_data, loaded_conv2d_layer.filters_data)
+    finally:
+        os.remove(tmp_tflite_path)

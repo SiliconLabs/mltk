@@ -50,8 +50,10 @@ class EvaluateAutoEncoderMixin(EvaluateClassifierMixin):
         from mltk.core.keras.losses import (
             Correlation, 
             MeanSquaredError, 
+            MeanAbsoluteError,
             mse_loss_func, 
-            corr_loss_func
+            corr_loss_func,
+            mae_loss_func
         )
 
         if self.scoring_function is not None:
@@ -60,11 +62,12 @@ class EvaluateAutoEncoderMixin(EvaluateClassifierMixin):
         loss = self.loss 
         if loss in ('mse', 'mean_squared_error') or isinstance(loss, MeanSquaredError):
             return mse_loss_func
+        elif loss in ('mae', 'mean_absolute_error') or isinstance(loss, MeanAbsoluteError):
+            return mae_loss_func
         elif loss in ('corr', 'correlation') or isinstance(loss, Correlation):
             return corr_loss_func
-
         else:
-            raise Exception('Only model loss functions: "mse" and "corr" are supported by default.\n'
+            raise Exception('Only model loss functions: "mse", "mae", "corr" are supported by default.\n'
                            'You must specify mltk_model.scoring_function for your model')
 
 

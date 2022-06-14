@@ -7,7 +7,7 @@ import struct
 from mltk.core.tflite_model import TfliteModel
 from mltk.cli import  is_command_active
 from mltk.utils import commander
-from mltk.utils.system import iso_time_str
+from mltk.utils.string_formatting import iso_time_str
 from mltk.utils.path import create_tempdir
 from mltk.utils.archive_downloader import download_verify_extract
 
@@ -109,7 +109,8 @@ def program_image_with_model(
     logger: logging.Logger,
     platform:str=None,
     halt:bool = False,
-    firmware_image_path:str = None
+    firmware_image_path:str = None,
+    model_offset:int=0
 ):
     """Program a FW image + .tflite model to an embedded device"""
     platform = platform or commander.query_platform()
@@ -147,7 +148,8 @@ def program_image_with_model(
         tflite_model=tflite_model,
         logger=logger,
         halt=halt,
-        firmwage_image_length=firmwage_image_length
+        firmwage_image_length=firmwage_image_length,
+        offset=model_offset
     )
 
 
@@ -155,7 +157,8 @@ def program_model(
     tflite_model:TfliteModel,
     logger: logging.Logger,
     halt:bool = False,
-    firmwage_image_length:int=-1
+    firmwage_image_length:int=-1,
+    offset:int=0
 ):
     """Program the .tflite model to the end of the device's flash"""
 
@@ -173,7 +176,7 @@ def program_model(
 
     flash_size = device_info.flash_size
 
-    if firmwage_image_length + len(bin_data) > flash_size:
+    if firmwage_image_length + len(bin_data) + offset > flash_size:
         raise RuntimeError(f'Flash overflow, the .tflite model size ({len(bin_data)}) + app size ({firmwage_image_length}) exceeds the flash size ({flash_size})')
 
 
@@ -182,7 +185,7 @@ def program_model(
         show_progress = logger.verbose
 
     flash_end_address = device_info.flash_base_address + flash_size
-    flash_program_address = flash_end_address - len(bin_data)
+    flash_program_address = flash_end_address - len(bin_data) - offset
     logger.info(f'Programming .tflite to flash address: 0x{flash_program_address:08X}')
     commander.program_flash(
         tmp_tflite_path, 

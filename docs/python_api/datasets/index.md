@@ -22,6 +22,18 @@ The source code for these datasets may be found on Github: [https://github.com/s
 ```{eval-rst}
 .. automodule:: mltk.datasets.image.rock_paper_scissors_v1
 ```
+```{eval-rst}
+.. automodule:: mltk.datasets.image.rock_paper_scissors_v2
+```
+```{eval-rst}
+.. automodule:: mltk.datasets.image.mnist
+```
+```{eval-rst}
+.. automodule:: mltk.datasets.image.cifar10
+```
+```{eval-rst}
+.. automodule:: mltk.datasets.image.fashion_mnist
+```
 
 
 ## Accelerometer Datasets

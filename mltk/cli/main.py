@@ -87,7 +87,7 @@ def discover_and_import_commands(root_cli):
     from mltk import (MLTK_DIR, MLTK_ROOT_DIR)
     from mltk import cli 
     from mltk.utils.python import as_list
-    from mltk.utils.path import (fullpath, get_user_setting)
+    from mltk.utils.path import (fullpath, get_user_setting, recursive_listdir)
     
     # This works around an issue with mltk_cli.py 
     # modules that only have one command
@@ -116,6 +116,19 @@ def discover_and_import_commands(root_cli):
     cpp_cli_path = f'{MLTK_ROOT_DIR}/cpp/tools/utils'
     if os.path.exists(cpp_cli_path):
         search_paths.append(cpp_cli_path)
+
+    # Also all any apps directories that define an mltk_cli.py script
+    cpp_apps_path = f'{MLTK_ROOT_DIR}/cpp/shared/apps'
+    if os.path.exists(cpp_apps_path):
+        app_cli_paths = []
+        def _include_app_dir(p: str) -> bool:
+            app_dir = os.path.dirname(p)
+            if app_dir not in app_cli_paths and p.endswith('_mltk_cli.py'):
+                app_cli_paths.append(app_dir)
+            return False
+
+        recursive_listdir(cpp_apps_path, regex=_include_app_dir)
+        search_paths.extend(app_cli_paths)
 
     # Find all *_mltk_cli.py files in the search paths
     # If we find a command that matches the one provided on the command line

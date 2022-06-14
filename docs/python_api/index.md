@@ -21,7 +21,6 @@ The source code for these APIs may be found on Github at [https://github.com/sil
 ./operations
 ./core/types
 ./core/utilities
+./core/dictionary.fbs
 ./data_preprocessing/index
-./models/index
-./datasets/index
 ```

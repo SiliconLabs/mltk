@@ -21,27 +21,11 @@ bool FingerprintAuthenticator::init()
 /*************************************************************************************************/
 bool FingerprintAuthenticator::load_model(const void* flatbuffer)
 {
-    TfliteModelParameters model_parameters;
-
     // Register the accelerator if the TFLM lib was built with one
     mltk_tflite_micro_register_accelerator();
 
 
-    if(!TfliteModelParameters::load_from_tflite_flatbuffer(flatbuffer, model_parameters))
-    {
-        MLTK_ERROR("Failed to get model parameters from .tflite");
-        return false;
-    }
-
-    uint32_t runtime_memory_size = get_tensor_arena_size(flatbuffer, &get_logger());
-    _tensor_arena = (uint8_t*)malloc(runtime_memory_size);
-    if(_tensor_arena == nullptr)
-    {
-        MLTK_ERROR("Failed to alloc tensor arena of size: %d", runtime_memory_size);
-        return false;
-    }
-
-    if(!model.load(flatbuffer, _op_resolver, _tensor_arena, runtime_memory_size))
+    if(!model.load(flatbuffer, _op_resolver))
     {
         MLTK_ERROR("Failed to load .tflite");
         return false;
@@ -56,10 +40,11 @@ bool FingerprintAuthenticator::load_model(const void* flatbuffer)
     const uint16_t input_width = input_shape[1];
     const uint16_t input_height = input_shape[2];
 
-    model_parameters.get("threshold", _auth_threshold);
+    model.parameters.get("disable_inference", _disabled);
+    model.parameters.get("threshold", _auth_threshold);
     MLTK_INFO("Signature threshold: %.3f", _auth_threshold);
 
-    if(!_data_preprocessor.load(model_parameters, input_width, input_height))
+    if(!_data_preprocessor.load(model.parameters, input_width, input_height))
     {
         MLTK_ERROR("Failed to load data preprocessor");
         return false;
@@ -88,6 +73,14 @@ bool FingerprintAuthenticator::generate_signature(
     bool &fingerprint_image_valid
 )
 {
+    // If inference is disabled,
+    // then just return
+    if(_disabled)
+    {
+        fingerprint_image_valid = false;
+        return true;
+    }
+
     fingerprint_image_valid = true;
     int8_t* processed_image_buffer = _input_tensor->data.int8;
     const uint32_t processed_image_size = _input_tensor->shape().flat_size();
@@ -155,8 +148,8 @@ bool FingerprintAuthenticator::authenticate_signature(
         float sum = 0;
         for(int i = 0; i < sig_length; ++i)
         {
-            const float s1 = quantized_value(context.q_params, context.signature.data[i]);
-            const float s2 = quantized_value(context.q_params, sig->data[i]);
+            const float s1 = dequantized_value(context.q_params, context.signature.data[i]);
+            const float s2 = dequantized_value(context.q_params, sig->data[i]);
             const float diff = s1 - s2;
             sum += diff*diff;
         }

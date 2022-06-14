@@ -19,7 +19,7 @@ using namespace mltk;
 
 
 static bool load_model(TfliteMicroModel &model, logging::Logger& logger);
-static void print_recorded_data(logging::Logger& logger);
+static void print_recorded_data(TfliteMicroModel &model, logging::Logger& logger);
 
 
 tflite::AllOpsResolver op_resolver;
@@ -39,6 +39,7 @@ extern "C" int main(void)
 
     if(!load_model(model, logger))
     {
+        logger.error("Error while loading model");
         return -1;
     }
 
@@ -49,12 +50,12 @@ extern "C" int main(void)
 
     if(!model.invoke())
     {
-        logger.error("Failed to run inference");
+        logger.error("Error while running inference");
         return -1;
     }
 
     profiling::print_stats(profiler, &logger);
-    print_recorded_data(logger);
+    print_recorded_data(model, logger);
     
     logger.info("done");
 
@@ -82,7 +83,7 @@ static bool load_model(TfliteMicroModel &model, logging::Logger& logger)
 
 #ifdef MLTK_RUN_MODEL_FROM_RAM
     uint8_t* tflite_ram_buffer = (uint8_t*)malloc(tflite_flatbuffer_length);
-    if(tflite_buffer == nullptr)
+    if(tflite_ram_buffer == nullptr)
     {
         logger.error("Cannot load .tflite into RAM. Failed to allocate %d bytes for buffer", tflite_flatbuffer_length);
         return -1;
@@ -103,20 +104,14 @@ static bool load_model(TfliteMicroModel &model, logging::Logger& logger)
     // Attempt to load the model using the arena size specified in the .tflite
     if(!model.load(tflite_flatbuffer, op_resolver))
     {
-        const uint32_t arena_size = 184*1024;
-        // If this failed, then try again by specifying an arbitrarily large arena size
-        logger.info("Attempting to load model again with tensor arena size of %d", arena_size);
-        if(!model.load(tflite_flatbuffer, op_resolver, nullptr, arena_size))
-        {
-            // If it still fails then just return the error
-            return false;
-        }
+        logger.info("Failed to load model");
+        return false;
     }
 
     return true;
 }
 
-static void print_recorded_data(logging::Logger& logger)
+static void print_recorded_data(TfliteMicroModel &model, logging::Logger& logger)
 {
 #ifdef TFLITE_MICRO_RECORDER_ENABLED
     logger.info("Recording results:");

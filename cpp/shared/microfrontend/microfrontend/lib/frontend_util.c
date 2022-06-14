@@ -27,6 +27,8 @@ void FrontendFillConfigWithDefaults(struct FrontendConfig* config) {
   NoiseReductionFillConfigWithDefaults(&config->noise_reduction);
   PcanGainControlFillConfigWithDefaults(&config->pcan_gain_control);
   LogScaleFillConfigWithDefaults(&config->log_scale);
+  ActivityDetectionFillConfigWithDefaults(&config->activity_detection);
+  DcNotchFilterFillConfigWithDefaults(&config->dc_notch_filter);
 }
 
 int FrontendPopulateState(const struct FrontendConfig* config,
@@ -62,6 +64,9 @@ int FrontendPopulateState(const struct FrontendConfig* config,
     fprintf(stderr, "Failed to populate noise reduction state\n");
     return 0;
   }
+
+  ActivityDetectionConfig(&config->activity_detection, config->filterbank.num_channels, &state->activity_detection);
+  DcNotchFilterConfig(&config->dc_notch_filter, &state->dc_notch_filter);
 
   int input_correction_bits =
       MostSignificantBit32(state->fft.fft_size) - 1 - (kFilterbankBits / 2);

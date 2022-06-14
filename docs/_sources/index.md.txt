@@ -21,7 +21,10 @@
 /docs/tutorials
 /docs/examples
 /docs/python_api/index
+/docs/python_api/models/index
+/docs/python_api/datasets/index
 /docs/cpp_development/index
+/docs/cpp_development/examples/index
 ```
 
 

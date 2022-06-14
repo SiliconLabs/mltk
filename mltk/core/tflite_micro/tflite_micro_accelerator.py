@@ -1,5 +1,7 @@
 from typing import Dict,List
+import logging
 from mltk.core.profiling_results import ProfilingModelResults
+from mltk.core.tflite_model import TfliteModel
 
 
 class TfliteMicroAccelerator:
@@ -36,6 +38,12 @@ class TfliteMicroAccelerator:
         """
         return self._accelerator_wrapper.get_accelerator_wrapper()
 
+
+    @property
+    def supports_model_compilation(self) -> bool:
+        """Return if this accelerator supports model compilation"""
+        return type(self).compile_model != TfliteMicroAccelerator.compile_model
+
     
     def estimate_profiling_results(
         self, 
@@ -62,3 +70,17 @@ class TfliteMicroAccelerator:
             list entry is None
         """
         return self._accelerator_wrapper.get_recorded_data()
+
+
+    def compile_model(
+        self, 
+        model:TfliteModel,
+        logger:logging.Logger=None,
+        report_path:str=None,
+        **kwargs
+    ) -> TfliteModel:
+        """Compile the given .tflite model and return a new TfliteModel instance with the compiled data
+        
+        NOTE: The accelerator must support model compilation to use this API
+        """
+        raise NotImplementedError(f'The accelerator: {self.name} does not support model compilation')

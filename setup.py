@@ -68,6 +68,7 @@ freely, subject to the following restrictions:
 import os
 import sys
 import time
+import subprocess
 from setuptools import setup, find_packages
 from setuptools.command.build_py import build_py
 
@@ -126,9 +127,15 @@ except:
 
 
 additional_install_dependencies = []
-if python_version == '37':
-    additional_install_dependencies.append('pickle5')
 
+# If we're running Python3.7 then we also need to install pickle5
+if python_version == '37':
+    print('Adding pickle5 to install dependencies')
+    additional_install_dependencies.append('pickle5')
+# Other ensure pickle5 is NOT installed as that will break other dependencies
+else:
+    print('Uninstalling pickle5 (if necessary)')
+    subprocess.run([sys.executable, '-m', 'pip', 'uninstall', 'pickle5'])
 
 setup(
     name='silabs-mltk',
@@ -157,11 +164,13 @@ setup(
         'pyaml<22.0',
         'tensorflow>2.3,<3.0',
         'tensorflow_probability>=0.12.2',
-        'tflite-support==0.2.0',
+        'tflite-support',
+        'protobuf>=3.18,<3.20', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
+        'onnx',
+        'onnxruntime',
         'flatbuffers<2.0',
-        'numpy<1.22', # The MLTK does not have a dependency on the numpy API version. A package used by TF, Numba, currently expects 1.21
+        'numpy',
         'scipy<2.0',
-        'scikit-learn==1.0.1', # This version is required by the profiling estimators
         'matplotlib<4.0',
         'tqdm<5.0',
         'pillow<9.0',
@@ -184,9 +193,12 @@ setup(
         'mltk.models.examples': [
             'audio_example1.mltk.zip', 
             'image_example1.mltk.zip', 
+            'autoencoder_example.mltk.zip',
         ],
         'mltk.models.siliconlabs': [
+            'fingerprint_signature_generator.mltk.zip',
             'keyword_spotting_on_off.mltk.zip',
+            'keyword_spotting_on_off_v2.mltk.zip',
             'keyword_spotting_mobilenetv2.mltk.zip',
             'keyword_spotting_with_transfer_learning.mltk.zip',
             'rock_paper_scissors.mltk.zip'

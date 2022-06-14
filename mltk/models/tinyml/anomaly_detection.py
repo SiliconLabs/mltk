@@ -47,30 +47,30 @@ Performance (quantized tflite model)
 Commands
 --------------
 
-.. code-block:: console
+.. code-block:: shell
 
    # Do a "dry run" test training of the model
-   > mltk train anomaly_detection-test
+   mltk train anomaly_detection-test
 
    # Train the model
-   > mltk train anomaly_detection
+   mltk train anomaly_detection
 
    # Evaluate the trained model .tflite model
-   > mltk evaluate anomaly_detection --tflite
+   mltk evaluate anomaly_detection --tflite
 
    # Profile the model in the MVP hardware accelerator simulator
-   > mltk profile anomaly_detection --accelerator MVP
+   mltk profile anomaly_detection --accelerator MVP
 
    # Profile the model on a physical development board
-   > mltk profile anomaly_detection --accelerator MVP --device
+   mltk profile anomaly_detection --accelerator MVP --device
 
 
 Model Summary
 --------------
 
-.. code-block:: console
+.. code-block:: shell
     
-    > mltk summarize anomaly_detection --tflite
+    mltk summarize anomaly_detection --tflite
     
     +-------+-----------------+-------------------+-------------------+-----------------------+
     | Index | OpCode          | Input(s)          | Output(s)         | Config                |
@@ -135,12 +135,66 @@ Model Summary
     .tflite file size: 280.3kB
 
 
+Model Profiling Report
+-----------------------
+
+.. code-block:: shell
+   
+   # Profile on physical EFR32xG24 using MVP accelerator
+   mltk profile anomaly_detection --device --accelerator MVP
+
+    Profiling Summary
+    Name: anomaly_detection
+    Accelerator: MVP
+    Input Shape: 1x5x128x1
+    Input Data Type: float32
+    Output Shape: 1x5x128x1
+    Output Data Type: float32
+    Flash, Model File Size (bytes): 280.3k
+    RAM, Runtime Memory Size (bytes): 9.6k
+    Operation Count: 535.9k
+    Multiply-Accumulate Count: 264.2k
+    Layer Count: 17
+    Unsupported Layer Count: 0
+    Accelerator Cycle Count: 406.5k
+    CPU Cycle Count: 145.7k
+    CPU Utilization (%): 27.1
+    Clock Rate (hz): 80.0M
+    Time (s): 6.7m
+    Ops/s: 79.8M
+    MACs/s: 39.3M
+    Inference/s: 148.8
+
+    Model Layers
+    +-------+-----------------+--------+--------+------------+------------+----------+-------------------+--------------+--------------------------+
+    | Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape       | Output Shape | Options                  |
+    +-------+-----------------+--------+--------+------------+------------+----------+-------------------+--------------+--------------------------+
+    | 0     | quantize        | 2.6k   | 0      | 0          | 23.9k      | 300.0u   | 1x5x128x1         | 1x5x128x1    | Type=none                |
+    | 1     | reshape         | 0      | 0      | 0          | 3.6k       | 60.0u    | 1x5x128x1,2       | 1x640        | Type=none                |
+    | 2     | fully_connected | 164.2k | 81.9k  | 123.7k     | 2.2k       | 1.5m     | 1x640,128x640,128 | 1x128        | Activation:relu          |
+    | 3     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 4     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 5     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 6     | fully_connected | 2.1k   | 1.0k   | 1.6k       | 1.8k       | 30.0u    | 1x128,8x128,8     | 1x8          | Activation:relu          |
+    | 7     | fully_connected | 2.4k   | 1.0k   | 2.3k       | 1.8k       | 60.0u    | 1x8,128x8,128     | 1x128        | Activation:relu          |
+    | 8     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 9     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 10    | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 11    | fully_connected | 164.5k | 81.9k  | 126.7k     | 1.8k       | 1.6m     | 1x128,640x128,640 | 1x640        | Activation:none          |
+    | 12    | shape           | 0      | 0      | 0          | 356.0      | 0        | 1x640             | 2            | Type=shapeoptions        |
+    | 13    | strided_slice   | 0      | 0      | 0          | 1.7k       | 0        | 2,1,1,1           | 0            | Type=stridedsliceoptions |
+    | 14    | pack            | 0      | 0      | 0          | 910.0      | 30.0u    | 0,0,0,0           | 4            | Type=packoptions         |
+    | 15    | reshape         | 0      | 0      | 0          | 3.6k       | 30.0u    | 1x640,4           | 1x5x128x1    | Type=none                |
+    | 16    | dequantize      | 1.3k   | 0      | 0          | 92.8k      | 1.1m     | 1x5x128x1         | 1x5x128x1    | Type=none                |
+    +-------+-----------------+--------+--------+------------+------------+----------+-------------------+--------------+--------------------------+
+
+
 Model Diagram
 ------------------
 
-.. code-block:: console
+.. code-block:: shell
    
-   > mltk view anomaly_detection --tflite
+   mltk view anomaly_detection --tflite
 
 .. raw:: html
 

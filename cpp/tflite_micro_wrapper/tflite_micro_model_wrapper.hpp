@@ -23,7 +23,8 @@ public:
         void* accelerator,
         bool enable_profiler,
         bool enable_recorder,
-        bool force_buffer_overlap
+        bool force_buffer_overlap,
+        int runtime_memory_size
     );
 
     bool invoke() const;
@@ -36,7 +37,7 @@ public:
 private:
     const void* _accelerator_wrapper;
     std::string _flatbuffer_data;
-    std::string _runtime_buffer;
+    std::string _runtime_memory;
 };
 
 

@@ -54,13 +54,14 @@
 <script>
     window.gTrackingId = 'G-HZ5MW943WF';
 </script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.tflite_micro.tflite_micro_accelerator &#8212; MLTK 0.6.0 documentation</title>
+    <title>mltk.core.tflite_micro.tflite_micro_accelerator &#8212; MLTK 0.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
@@ -103,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.6.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.7.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.6.0 documentation logo">
+                   alt="MLTK 0.7.0 documentation logo">
           
         </a>
       </div>
@@ -198,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.7.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.7.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -294,7 +295,28 @@
     <li class="md-nav__item">
     
     
+      <a href="../../../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="../../../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
       
     
     </li>
@@ -403,7 +425,9 @@
             
   <h1 id="modules-mltk-core-tflite-micro-tflite-micro-accelerator--page-root">Source code for mltk.core.tflite_micro.tflite_micro_accelerator</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span><span class="n">List</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">mltk.core.profiling_results</span> <span class="kn">import</span> <span class="n">ProfilingModelResults</span>
+<span class="kn">from</span> <span class="nn">mltk.core.tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
 
 
 <div class="viewcode-block" id="TfliteMicroAccelerator"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_micro_model.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator">[docs]</a><span class="k">class</span> <span class="nc">TfliteMicroAccelerator</span><span class="p">:</span>
@@ -440,6 +464,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="o">.</span><span class="n">get_accelerator_wrapper</span><span class="p">()</span>
 
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">supports_model_compilation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">"""Return if this accelerator supports model compilation"""</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">compile_model</span> <span class="o">!=</span> <span class="n">TfliteMicroAccelerator</span><span class="o">.</span><span class="n">compile_model</span>
+
     
 <div class="viewcode-block" id="TfliteMicroAccelerator.estimate_profiling_results"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_micro_model.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.estimate_profiling_results">[docs]</a>    <span class="k">def</span> <span class="nf">estimate_profiling_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
@@ -465,7 +495,21 @@
 <span class="sd">            the hardware accelerator. If a layer was not accelerated then the</span>
 <span class="sd">            list entry is None</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="o">.</span><span class="n">get_recorded_data</span><span class="p">()</span></div></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="o">.</span><span class="n">get_recorded_data</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TfliteMicroAccelerator.compile_model"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_micro_model.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.compile_model">[docs]</a>    <span class="k">def</span> <span class="nf">compile_model</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">model</span><span class="p">:</span><span class="n">TfliteModel</span><span class="p">,</span>
+        <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">report_path</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteModel</span><span class="p">:</span>
+        <span class="sd">"""Compile the given .tflite model and return a new TfliteModel instance with the compiled data</span>
+<span class="sd">        </span>
+<span class="sd">        NOTE: The accelerator must support model compilation to use this API</span>
+<span class="sd">        """</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'The accelerator: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> does not support model compilation'</span><span class="p">)</span></div></div>
 </pre></div>
 
           </article>
@@ -490,7 +534,7 @@
               
           </div>
             Last updated on
-              Apr 26, 2022.
+              Jun 14, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

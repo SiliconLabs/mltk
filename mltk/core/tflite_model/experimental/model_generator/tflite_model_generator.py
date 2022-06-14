@@ -78,59 +78,33 @@ class TfliteModelGenerator:
                 
                 opcodes.append(opcode)
 
-            operator.builtinOptionsType, operator.builtinOptions = layer.generate_options()
-
+            operator.builtinOptionsType = layer.options.options_type
+            operator.builtinOptions = layer.options
+            
             operator.inputs = []
             operator.outputs = []
-            for layer_input in layer.inputs:
+            for tensor in layer.inputs:
                 tensor_index = len(tensors)
 
-                tensor = tflite_fb.TensorT()
-                tensor.name = layer_input.name
-                tensor.shape = layer_input.shape
-                tensor.type = layer_input.tflite_type
-
-                if layer_input.data is None or layer_input.is_model_input:
+                if tensor.data is None or tensor.is_model_input:
                     # FIX ME: currently, each layer's data input is an input to the model
                     # So basically, each layer is parallel, they don't connect to each other as a sequence
                     model_inputs.append(tensor_index)
                     tensor.buffer = 0
                 else:
                     buffer = tflite_fb.BufferT()
-                    buffer.data = layer_input.data.tobytes()
+                    buffer.data = tensor.data.tobytes()
                     tensor.buffer = len(buffers)
                     buffers.append(buffer)
 
-                quantization = tflite_fb.QuantizationParametersT()
-                quantization.zeroPoint = layer_input.quantization.zeropoint
-                quantization.scale = layer_input.quantization.scale
-                quantization.quantizedDimension = layer_input.quantization.quantization_dimension
-                quantization.min = []
-                quantization.max = []
                 self.detailsType = 1
-                tensor.quantization = quantization
-    
                 operator.inputs.append(tensor_index)
                 tensors.append(tensor)
 
-            for layer_output in layer.outputs:
+            for tensor in layer.outputs:
                 tensor_index = len(tensors)
-
-                tensor = tflite_fb.TensorT()
-                tensor.name = layer_output.name
-                tensor.shape = layer_output.shape
-                tensor.type = layer_output.tflite_type
                 tensor.buffer = 0
-
-                quantization = tflite_fb.QuantizationParametersT()
-                quantization.zeroPoint = layer_output.quantization.zeropoint
-                quantization.scale = layer_output.quantization.scale
-                quantization.quantizedDimension = layer_output.quantization.quantization_dimension
-                quantization.min = []
-                quantization.max = []
                 self.detailsType = 1
-                tensor.quantization = quantization
-    
                 operator.outputs.append(tensor_index)
                 # FIX ME: currently, each layer's output is an output to the model
                 model_outputs.append(tensor_index)

@@ -28,6 +28,7 @@
  *
  ******************************************************************************/
 #include <stdlib.h>
+#include <math.h>
 #include "sl_status.h"
 #include "microfrontend/lib/frontend.h"
 #include "microfrontend/lib/frontend_util.h"
@@ -41,9 +42,16 @@
 #define FEATURE_BUFFER_SLICE_COUNT  (1 + ((SL_ML_FRONTEND_SAMPLE_LENGTH_MS - SL_ML_FRONTEND_WINDOW_SIZE_MS) / SL_ML_FRONTEND_WINDOW_STEP_MS)) 
 #define FEATURE_BUFFER_SIZE         (SL_ML_FRONTEND_FILTERBANK_N_CHANNELS * FEATURE_BUFFER_SLICE_COUNT)                    
 
-// Feature range min and max, used for determining valid range to quantize from
-#define SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MIN      0
-#define SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MAX      666     
+
+#define max(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a > _b ? _a : _b; })
+#define min(a,b) \
+   ({ __typeof__ (a) _a = (a); \
+       __typeof__ (b) _b = (b); \
+     _a < _b ? _a : _b; })
+
 
 /*******************************************************************************
  ***************************  LOCAL VARIABLES   ********************************
@@ -67,13 +75,16 @@ static size_t num_unfetched_slices = 0;
 // Optional audio volume scaling factor
 static int audio_volume_scaler;
 
+static int quantize_dynamic_scale_range;
+
 // Frontend State
 struct FrontendState frontend_state;
 
 extern void register_dump_streams();
 extern void dump_audio(const int16_t* buffer, int length);
 extern void dump_raw_spectrogram(const uint16_t* buffer, int length);
-extern void dump_quantized_spectrogram(const int8_t* buffer, int length);
+extern void dump_int8_spectrogram(const int8_t* buffer, int length);
+extern void dump_float_spectrogram(const float* buffer, int length);
 
 
 /*******************************************************************************
@@ -112,6 +123,8 @@ sl_status_t sl_ml_audio_feature_generation_frontend_init()
 
   struct FrontendConfig config;
 
+  FrontendFillConfigWithDefaults(&config);
+
   // Window settings
   config.window.size_ms = SL_ML_FRONTEND_WINDOW_SIZE_MS;
   config.window.step_size_ms = SL_ML_FRONTEND_WINDOW_STEP_MS;
@@ -140,6 +153,25 @@ sl_status_t sl_ml_audio_feature_generation_frontend_init()
   // Log scale settings
   config.log_scale.enable_log = SL_ML_FRONTEND_LOG_SCALE_ENABLE;
   config.log_scale.scale_shift = SL_ML_FRONTEND_LOG_SCALE_SHIFT;
+
+  // Activity detection settings
+  config.activity_detection.enable_activation_detection = SL_ML_FRONTEND_ACTIVITY_DETECTION_ENABLE;
+  config.activity_detection.alpha_a = SL_ML_FRONTEND_ACTIVITY_DETECTION_ALPHA_A;
+  config.activity_detection.alpha_b = SL_ML_FRONTEND_ACTIVITY_DETECTION_ALPHA_B;
+  config.activity_detection.arm_threshold = SL_ML_FRONTEND_ACTIVITY_DETECTION_ARM_THRESHOLD;
+  config.activity_detection.trip_threshold = SL_ML_FRONTEND_ACTIVITY_DETECTION_TRIP_THRESHOLD;
+
+  // DC notch filter settings
+  config.dc_notch_filter.enable_dc_notch_filter = SL_ML_FRONTEND_DC_NOTCH_FILTER_ENABLE;
+  config.dc_notch_filter.coefficient = SL_ML_FRONTEND_DC_NOTCH_FILTER_COEFFICIENT;
+
+  if(SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_DYNAMIC_SCALE_ENABLE)
+  {
+    // dynamic_range = SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_DYNAMIC_SCALE_RANGE_DB*(2^log_scale_shift)*ln(10)/20
+    #define LN10_DIV_20 0.11512925465
+    quantize_dynamic_scale_range = (int)(SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_DYNAMIC_SCALE_RANGE_DB * (float)(1 << SL_ML_FRONTEND_LOG_SCALE_SHIFT) * LN10_DIV_20);
+  }
+
 
   if (!FrontendPopulateState(&config, &frontend_state, SL_ML_FRONTEND_SAMPLE_RATE_HZ)) {
     return SL_STATUS_FAIL;
@@ -251,6 +283,24 @@ sl_status_t sl_ml_audio_feature_generation_get_features_raw(uint16_t *buffer, si
 }
 
 /***************************************************************************//**
+ *  Retrieves the features as type float and copies them to the provided buffer.
+ ******************************************************************************/
+sl_status_t sl_ml_audio_feature_generation_get_features_raw_float32(float *buffer, size_t num_elements)
+{
+  if (num_elements != FEATURE_BUFFER_SIZE) {
+    return SL_STATUS_INVALID_PARAMETER;
+  }
+
+  for (int i = 0; i < FEATURE_BUFFER_SIZE; i++) {
+    const uint32_t capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
+    buffer[i] = (float)feature_buffer[capture_index];
+  }
+
+  num_unfetched_slices = 0;
+  return SL_STATUS_OK;
+}
+
+/***************************************************************************//**
  * @brief
  *    Retrieves the features quantized to signed integer numbers in the range
  *    -128 to 127 (int8) and copies them to the provided buffer.
@@ -287,7 +337,121 @@ sl_status_t sli_ml_audio_feature_generation_get_features_quantized(int8_t *buffe
     buffer[i] = (int8_t)value;
   }
 
-  dump_quantized_spectrogram(buffer, num_elements);
+  num_unfetched_slices = 0;
+  return SL_STATUS_OK;
+}
+
+
+/***************************************************************************//**
+ * @brief
+ *     This converts the uint16 spectrograms to int8 using dynamic scaling
+ *
+ *    @ref dynamic_range the dynamic range of uint16 spectrogram to be mapped to int8
+ *    dynamic_range = DYNAMIC_RANGE_DB*(2^log_scale_shift)*ln(10)/20
+ *    300 corresponds to a DYNAMIC_RANGE_DB of 40 dB
+ ******************************************************************************/
+sl_status_t sli_ml_audio_feature_generation_get_features_dynamically_quantized(int8_t *buffer,
+                                                                               size_t num_elements,
+                                                                               uint16_t dynamic_range)
+{
+  if (num_elements != FEATURE_BUFFER_SIZE) {
+    return SL_STATUS_INVALID_PARAMETER;
+  }
+
+  if (dynamic_range == 0) {
+    return SL_STATUS_INVALID_PARAMETER;
+  }
+
+  // Find the maximum value in the uint16 spectrogram
+  int32_t maxval = 0;
+  for (int i = 0; i < FEATURE_BUFFER_SIZE; i++) {
+    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
+    const int32_t value = (int32_t)feature_buffer[capture_index];
+    maxval = max(value, maxval);
+  }
+
+  const int32_t minval = max(maxval - dynamic_range, 0);
+  const int32_t val_range = max(maxval - minval, 1);
+
+  // Scaling the uint16 spectrogram between -128 and +127 using the given range
+  for (int i = 0; i < FEATURE_BUFFER_SIZE; i++) {
+    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
+    int32_t value = (int32_t)feature_buffer[capture_index];
+    value -= minval;
+    value *= 255;
+    value /= val_range;
+    value -= 128;
+    value = min(max(value, -128), 127);
+    buffer[i] = (int8_t)value;
+  }
+
+  num_unfetched_slices = 0;
+  return SL_STATUS_OK;
+}
+
+/***************************************************************************//**
+ * buffer = (float)uint16_features_data / scaler
+ ******************************************************************************/
+sl_status_t sl_ml_audio_feature_generation_get_features_scaled(float *buffer, size_t num_elements, float scaler)
+{
+  if (num_elements != FEATURE_BUFFER_SIZE) {
+    return SL_STATUS_INVALID_PARAMETER;
+  }
+
+  if (scaler == 0) {
+    return SL_STATUS_INVALID_PARAMETER;
+  }
+
+  for (int i = 0; i < FEATURE_BUFFER_SIZE; i++) {
+    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
+    const float value = (float)feature_buffer[capture_index];
+    buffer[i] = value * scaler;
+  }
+  num_unfetched_slices = 0;
+  return SL_STATUS_OK;
+}
+
+/***************************************************************************//**
+ *  buffer = ((float)uint16_features_data - mean(uint16_features_data)) / std(uint16_features_data)
+ ******************************************************************************/
+sl_status_t sl_ml_audio_feature_generation_get_features_mean_std_normalized(float *buffer, size_t num_elements)
+{
+  if (num_elements != FEATURE_BUFFER_SIZE) {
+    return SL_STATUS_INVALID_PARAMETER;
+  }
+
+  float mean = 0.0f;
+  float count = 0.0f;
+  float m2 = 0.0f;
+
+  // Calculate the STD and mean
+  for(int i = FEATURE_BUFFER_SIZE; i > 0; --i)
+  {
+    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
+    const float value = (float)feature_buffer[capture_index];
+
+    count += 1;
+
+    const float delta = value - mean;
+    mean += delta / count;
+    const float delta2 = value - mean;
+    m2 += delta * delta2;
+  }
+
+  const float variance = m2 / count;
+  const float std = sqrtf(variance);
+  const float std_recip = 1.0f / std; // multiplication is faster than division
+
+  // Subtract the mean and divide by the STD
+  float* dst = buffer;
+  for(int i = FEATURE_BUFFER_SIZE; i > 0; --i)
+  {
+    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
+    const float value = (float)feature_buffer[capture_index];
+    const float x = value - mean;
+
+    *dst++ = x * std_recip;
+  }
 
   num_unfetched_slices = 0;
   return SL_STATUS_OK;
@@ -300,10 +464,37 @@ sl_status_t sl_ml_audio_feature_generation_fill_tensor(TfLiteTensor *input_tenso
 {
   sl_status_t status = SL_STATUS_OK;
   if (input_tensor->type == kTfLiteInt8) {
-    status = sli_ml_audio_feature_generation_get_features_quantized(input_tensor->data.int8,
-                                                                   input_tensor->bytes, 
-                                                                   SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MIN, 
-                                                                   SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MAX);
+    if(SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_DYNAMIC_SCALE_ENABLE) {
+      status = sli_ml_audio_feature_generation_get_features_dynamically_quantized(input_tensor->data.int8,
+                                                                                  input_tensor->bytes, 
+                                                                                  quantize_dynamic_scale_range);
+    } else {
+      status = sli_ml_audio_feature_generation_get_features_quantized(input_tensor->data.int8,
+                                                                    input_tensor->bytes, 
+                                                                    SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MIN, 
+                                                                    SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MAX);
+    }
+
+     dump_int8_spectrogram(input_tensor->data.int8, input_tensor->bytes);
+
+  } else if(input_tensor -> type == kTfLiteUInt16) {
+    status = sl_ml_audio_feature_generation_get_features_raw(input_tensor->data.ui16, input_tensor->bytes / sizeof(uint16_t));
+
+  } else if(input_tensor -> type == kTfLiteFloat32) {
+    if(SL_ML_AUDIO_FEATURE_GENERATION_SAMPLEWISE_NORM_RESCALE != 0) {
+      status = sl_ml_audio_feature_generation_get_features_scaled(input_tensor->data.f,
+                                                                  input_tensor->bytes / sizeof(float), 
+                                                                  SL_ML_AUDIO_FEATURE_GENERATION_SAMPLEWISE_NORM_RESCALE);
+    } else if(SL_ML_AUDIO_FEATURE_GENERATION_SAMPLEWISE_NORM_MEAN_AND_STD) {
+      status = sl_ml_audio_feature_generation_get_features_mean_std_normalized(input_tensor->data.f,
+                                                                               input_tensor->bytes / sizeof(float));
+    } else {
+      status = sl_ml_audio_feature_generation_get_features_raw_float32(input_tensor->data.f,
+                                                                       input_tensor->bytes / sizeof(float));
+    }
+
+    dump_float_spectrogram(input_tensor->data.f, input_tensor->bytes / sizeof(float));
+
   } else {
     status = SL_STATUS_INVALID_PARAMETER;
   }
@@ -348,6 +539,18 @@ void sl_ml_audio_feature_generation_reset()
 int sl_ml_audio_feature_generation_get_feature_buffer_size()
 {
   return FEATURE_BUFFER_SIZE;
+}
+
+/***************************************************************************//**
+ *   Return if the activity detection block detected activity in the audio stream.
+ ******************************************************************************/
+sl_status_t sl_ml_audio_feature_generation_activity_detected()
+{
+  if(!SL_ML_FRONTEND_ACTIVITY_DETECTION_ENABLE) {
+    return SL_STATUS_NOT_AVAILABLE;
+  }
+
+  return ActivityDetectionTripped(&frontend_state.activity_detection) ? SL_STATUS_OK : SL_STATUS_IN_PROGRESS;
 }
 
 /*******************************************************************************

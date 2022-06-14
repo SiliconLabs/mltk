@@ -38,25 +38,30 @@ def extract_archive(
         else:
             path.remove_directory(dest_dir)
 
-    if extract_nested or remove_root_dir:
-        _extractnested_archive(
-            archive_path, 
-            dest_dir, 
-            extract_nested=extract_nested,
-            remove_root_dir=remove_root_dir
-        )
-    
-    elif archive_path.endswith('.zip'):
-        _extractall_zipfile(archive_path, dest_dir)
-    
-    elif archive_path.endswith('.tar.gz'):
-        _extractall_tarfile(archive_path, dest_dir)
+    try:
+        if extract_nested or remove_root_dir:
+            _extractnested_archive(
+                archive_path, 
+                dest_dir, 
+                extract_nested=extract_nested,
+                remove_root_dir=remove_root_dir
+            )
+        
+        elif archive_path.endswith('.zip'):
+            _extractall_zipfile(archive_path, dest_dir)
+        
+        elif archive_path.endswith('.tar.gz'):
+            _extractall_tarfile(archive_path, dest_dir)
 
-    elif archive_path.endswith('.gz'):
-        _extractall_gzfile(archive_path, dest_dir)
-    
-    else:
-        _extractall_patool(archive_path, dest_dir)
+        elif archive_path.endswith('.gz'):
+            _extractall_gzfile(archive_path, dest_dir)
+        
+        else:
+            _extractall_patool(archive_path, dest_dir)
+    except Exception as e:
+        prepend_exception_msg(e, f'Failed to extract {archive_path} to {dest_dir}')
+        raise
+
 
 
 def gzip_file(src_path : str, dst_path: str=None) -> str:

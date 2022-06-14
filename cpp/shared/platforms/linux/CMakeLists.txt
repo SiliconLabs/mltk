@@ -72,3 +72,8 @@ INTERFACE
     platform_linux_clib_override
     mltk::gecko_sdk::emulation
 )
+
+target_compile_definitions(${PROJECT_NAME}
+INTERFACE 
+    __PROGRAM_START=_dummy # This is required to work-aroud build errors in cmsis_gcc.h
+)

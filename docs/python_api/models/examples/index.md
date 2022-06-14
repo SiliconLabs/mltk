@@ -12,6 +12,7 @@ The source code for these models may be found on Github: [https://github.com/sil
 ./image_example1
 ./conv1d_example
 ./binary_classification
+./autoencoder_example
 ./siamese_contrastive
 ```
 

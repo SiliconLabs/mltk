@@ -1,5 +1,6 @@
 
 import os
+from distutils.sysconfig import get_python_lib
 import logging
 import importlib
 import copy
@@ -124,6 +125,7 @@ class TfliteMicro:
         enable_profiler=False,
         enable_recorder=False,
         force_buffer_overlap=False,
+        runtime_buffer_size=0,
         **kwargs
     ) -> TfliteMicroModel:
         """Load the TF-Lite Micro interpreter with the given .tflite model
@@ -136,12 +138,9 @@ class TfliteMicro:
         wrapper = TfliteMicro._load_wrapper()
 
         if accelerator:
-            norm_accelerator = TfliteMicro.normalize_accelerator_name(accelerator)
-            if norm_accelerator is None:
-                raise ValueError(f'Unknown accelerator: {accelerator}')
-            tflm_accelerator = TfliteMicro._accelerators[norm_accelerator]
+            tflm_accelerator = TfliteMicro.get_accelerator(accelerator)
         else:
-            tflm_accelerator = None 
+            tflm_accelerator = None
 
         TfliteMicro._model_lock.acquire()
         tflite_model = _load_tflite_model(model)
@@ -151,7 +150,8 @@ class TfliteMicro:
             flatbuffer_data=tflite_model.flatbuffer_data,
             enable_profiler=enable_profiler,
             enable_recorder=enable_recorder,
-            force_buffer_overlap=force_buffer_overlap
+            force_buffer_overlap=force_buffer_overlap,
+            runtime_buffer_size=runtime_buffer_size,
         )
 
         return tflm_model
@@ -179,7 +179,8 @@ class TfliteMicro:
         tflm_model = TfliteMicro.load_tflite_model(
             model=tflite_model,
             accelerator=accelerator,
-            enable_profiler=True
+            enable_profiler=True,
+            runtime_buffer_size=16*1024*1024 # 16MB
         )
         try:
             renable_simulator_backend = False
@@ -287,7 +288,8 @@ class TfliteMicro:
             model=tflite_model,
             accelerator=accelerator,
             enable_recorder=True,
-            enable_profiler=False
+            enable_profiler=False,
+            runtime_buffer_size=16*1024*1024 # 16MB
         )
 
         reenable_simulator_backend = False
@@ -386,6 +388,15 @@ class TfliteMicro:
 
 
     @staticmethod
+    def get_accelerator(name:str) -> TfliteMicroAccelerator:
+        """Return an instance to the specified accelerator"""
+        norm_accelerator = TfliteMicro.normalize_accelerator_name(name)
+        if norm_accelerator is None:
+            raise ValueError(f'Unknown accelerator: {name}. Known accelerators are: {", ".join(TfliteMicro.get_supported_accelerators())}')
+        return TfliteMicro._accelerators[norm_accelerator]
+
+
+    @staticmethod
     def _load_wrapper():
         """Load the TFLM C++ wrapper and return a refernce to the loaded module"""
         if TfliteMicro._wrapper is not None:
@@ -433,6 +444,24 @@ class TfliteMicro:
         search_paths.extend(TfliteMicro._accelerator_paths)
         search_paths.extend(as_list(get_user_setting('accelerator_paths')))
         search_paths.append(f'{curdir}/accelerators/mvp')
+
+        # Check if any "<accelerator name>_mltk_accelerator.pth" files are found in the Python Libs directory
+        python_libs_dir = get_python_lib()
+        for fn in os.listdir(python_libs_dir):
+            if not fn.endswith('_mltk_accelerator.pth'):
+                continue
+            pth_path = f'{python_libs_dir}/{fn}'
+            with open(pth_path, 'r') as f:
+                accelerator_package_base_dir = f.readline().strip()
+            accelerator_name = fn[:-len('_mltk_accelerator.pth')]
+            accelerator_dir = f'{accelerator_package_base_dir}/{accelerator_name}'
+
+            # If the file does exist, 
+            # then add its path to the accelerator search path
+            if os.path.exists(accelerator_dir):
+                search_paths.append(accelerator_dir)
+            elif os.path.exists(f'{accelerator_dir}_wrapper'):
+                search_paths.append(f'{accelerator_dir}_wrapper')
 
         for search_path in search_paths:
             search_path = fullpath(search_path)

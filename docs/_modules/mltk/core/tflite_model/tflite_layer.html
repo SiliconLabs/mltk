@@ -54,13 +54,14 @@
 <script>
     window.gTrackingId = 'G-HZ5MW943WF';
 </script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.tflite_model.tflite_layer &#8212; MLTK 0.6.0 documentation</title>
+    <title>mltk.core.tflite_model.tflite_layer &#8212; MLTK 0.7.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
@@ -103,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.6.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.7.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.6.0 documentation logo">
+                   alt="MLTK 0.7.0 documentation logo">
           
         </a>
       </div>
@@ -198,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.6.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.7.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.6.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.7.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -294,7 +295,28 @@
     <li class="md-nav__item">
     
     
+      <a href="../../../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="../../../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
       
     
     </li>
@@ -402,29 +424,33 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-tflite-model-tflite-layer--page-root">Source code for mltk.core.tflite_model.tflite_layer</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">TypeVar</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tensorflow_lite_support.metadata.schema_py_generated</span> <span class="k">as</span> <span class="nn">_tflite_schema_fb</span>
 <span class="kn">from</span> <span class="nn">tensorflow_lite_support.metadata.schema_py_generated</span> <span class="kn">import</span> <span class="n">BuiltinOperator</span> <span class="k">as</span> <span class="n">TfliteOpCode</span>
 <span class="kn">from</span> <span class="nn">.tflite_tensor</span> <span class="kn">import</span> <span class="n">TfliteTensor</span>
 
 
-<span class="k">class</span> <span class="nc">TfliteLayerOptions</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="k">pass</span>
+<span class="n">TfliteModel</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'TfliteModel'</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TfliteLayer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteLayer">[docs]</a><span class="k">class</span> <span class="nc">TfliteLayer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+<div class="viewcode-block" id="TfliteLayer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteLayer">[docs]</a><span class="k">class</span> <span class="nc">TfliteLayer</span><span class="p">:</span>
     <span class="sd">"""Wrapper for TFLite flatbuffer layer"""</span>
 
-<div class="viewcode-block" id="TfliteLayer.from_model"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteLayer.from_model">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">from_model</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">fb_operation</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteLayer.from_flatbuffer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteLayer.from_flatbuffer">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">from_flatbuffer</span><span class="p">(</span>
+        <span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> 
+        <span class="n">model</span><span class="p">:</span><span class="n">TfliteModel</span><span class="p">,</span> 
+        <span class="n">fb_operation</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">OperatorT</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteLayer</span><span class="p">:</span>
         <span class="sd">"""Instantiate a TfliteLayer from then given TfliteModel flatbuffer operation"""</span>
-        <span class="n">fb_opcode</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">flatbuffer_model</span><span class="o">.</span><span class="n">OperatorCodes</span><span class="p">(</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">OpcodeIndex</span><span class="p">())</span>
+        <span class="n">fb_opcode</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">flatbuffer_model</span><span class="o">.</span><span class="n">operatorCodes</span><span class="p">[</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">opcodeIndex</span><span class="p">]</span>
         <span class="c1"># See: https://github.com/tensorflow/community/pull/285/files</span>
         <span class="c1"># for why we return the max(DeprecatedBuiltinCode, BuiltinCode)</span>
-        <span class="n">opcode</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">fb_opcode</span><span class="o">.</span><span class="n">DeprecatedBuiltinCode</span><span class="p">(),</span> <span class="n">fb_opcode</span><span class="o">.</span><span class="n">BuiltinCode</span><span class="p">())</span>
-        <span class="n">opcode_version</span> <span class="o">=</span> <span class="n">fb_opcode</span><span class="o">.</span><span class="n">Version</span><span class="p">()</span>
+        <span class="n">opcode</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">fb_opcode</span><span class="o">.</span><span class="n">deprecatedBuiltinCode</span><span class="p">,</span> <span class="n">fb_opcode</span><span class="o">.</span><span class="n">builtinCode</span><span class="p">)</span>
+        <span class="n">opcode_version</span> <span class="o">=</span> <span class="n">fb_opcode</span><span class="o">.</span><span class="n">version</span>
 
         <span class="k">if</span> <span class="n">opcode</span> <span class="o">==</span> <span class="n">TfliteOpCode</span><span class="o">.</span><span class="n">ADD</span><span class="p">:</span>
             <span class="n">layer_cls</span> <span class="o">=</span> <span class="n">TfliteAddLayer</span>
@@ -464,30 +490,34 @@
         <span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> 
         <span class="n">opcode</span><span class="p">:</span><span class="n">TfliteOpCode</span><span class="p">,</span> 
         <span class="n">opcode_version</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> 
-        <span class="n">model</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Model</span><span class="p">,</span> 
-        <span class="n">fb_operation</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Operator</span>
+        <span class="n">model</span><span class="p">:</span><span class="n">TfliteModel</span><span class="p">,</span> 
+        <span class="n">fb_operation</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">OperatorT</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_index</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="n">index</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span><span class="n">TfliteModel</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_opcode</span><span class="p">:</span><span class="n">TfliteOpCode</span> <span class="o">=</span> <span class="n">opcode</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_opcode_version</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="n">opcode_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_opcode_str</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="n">_convert_object_value_to_string</span><span class="p">(</span><span class="n">TfliteOpCode</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">opcode</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">TfliteLayerOptions</span><span class="p">(</span>
+            <span class="n">fb_object</span><span class="o">=</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">builtinOptions</span><span class="p">,</span> 
+            <span class="nb">type</span><span class="o">=</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">builtinOptionsType</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span> <span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteTensor</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span> <span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteTensor</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">fb_operation</span><span class="o">.</span><span class="n">InputsAsNumpy</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">fb_operation</span><span class="o">.</span><span class="n">inputs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_tensor</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">fb_operation</span><span class="o">.</span><span class="n">OutputsAsNumpy</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">fb_operation</span><span class="o">.</span><span class="n">outputs</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">get_tensor</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="p">:</span><span class="n">TfliteLayerOptions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_options</span><span class="p">(</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">BuiltinOptionsType</span><span class="p">(),</span> <span class="n">fb_operation</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -513,6 +543,11 @@
     <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteLayerOptions</span><span class="p">:</span>
         <span class="sd">"""Layer-specific options/config"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> 
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteModel</span><span class="p">:</span>
+        <span class="sd">"""Reference to associated TfliteModel"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
 
     <span class="nd">@property</span> 
     <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">object</span><span class="p">]:</span>
@@ -549,7 +584,7 @@
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Index overflow (</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1"> &gt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span> 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="TfliteLayer.get_input"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteLayer.get_input">[docs]</a>    <span class="k">def</span> <span class="nf">get_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteLayer.get_input_data"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteLayer.get_input_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Get layer input tensor as np.ndarray"""</span>
         <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Index overflow (</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1"> &gt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span> 
@@ -561,62 +596,104 @@
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Index overflow (</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1"> &gt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span> 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
-<div class="viewcode-block" id="TfliteLayer.get_output"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteLayer.get_output">[docs]</a>    <span class="k">def</span> <span class="nf">get_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteLayer.get_output_data"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteLayer.get_output_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Layer output tensor as np.ndarray"""</span>
         <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Index overflow (</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1"> &gt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span> 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">data</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span><span class="o">.</span><span class="n">data</span></div></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_options</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts_type</span><span class="p">,</span> <span class="n">opts_buf</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">opts_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">Conv2DOptions</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TfliteLayerOptionsConv2D</span><span class="p">(</span><span class="n">opts_buf</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">opts_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">TransposeConvOptions</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TfliteLayerOptionsTransposeConv</span><span class="p">(</span><span class="n">opts_buf</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">opts_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">DepthwiseConv2DOptions</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TfliteLayerOptionsDepthwiseConv2D</span><span class="p">(</span><span class="n">opts_buf</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">opts_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">Pool2DOptions</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TfliteLayerOptionsPool2D</span><span class="p">(</span><span class="n">opts_buf</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">opts_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">FullyConnectedOptions</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TfliteLayerOptionsFullyConnected</span><span class="p">(</span><span class="n">opts_buf</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">opts_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">AddOptions</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TfliteLayerOptionsAdd</span><span class="p">(</span><span class="n">opts_buf</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">opts_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">MulOptions</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TfliteLayerOptionsMul</span><span class="p">(</span><span class="n">opts_buf</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TfliteLayerOptionsUnsupported</span><span class="p">(</span><span class="n">opts_type</span><span class="p">)</span></div>
-        
-    
+<span class="k">class</span> <span class="nc">TfliteLayerOptions</span><span class="p">:</span>
+    <span class="sd">"""Generic layer options object"""</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_object</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_type</span> <span class="o">=</span> <span class="nb">type</span>
+        <span class="k">if</span> <span class="n">fb_object</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">fb_object</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fb_object</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">options_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">options_type_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_convert_object_value_to_string</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">options_type_str</span><span class="si">}</span><span class="s1">'</span>
+
+
+
         
 <div class="viewcode-block" id="TfliteAddLayer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteAddLayer">[docs]</a><span class="k">class</span> <span class="nc">TfliteAddLayer</span><span class="p">(</span><span class="n">TfliteLayer</span><span class="p">):</span>
     <span class="sd">"""ADD operation TfliteLayer"""</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">OperatorT</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="o">=</span><span class="n">fb_operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">TfliteAddLayerOptions</span><span class="p">(</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">builtinOptions</span><span class="p">)</span>
+
+    <span class="nd">@property</span> 
+    <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteAddLayerOptions</span><span class="p">:</span>
+        <span class="sd">"""Layer-specific options/config"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Fused activation"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation_str</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input1_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""First input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input1_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""First input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input1_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input2_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Second input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input2_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Second input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input2_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Output tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Output tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<span class="k">class</span> <span class="nc">TfliteAddLayerOptions</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">AddOptionsT</span><span class="p">,</span> <span class="n">TfliteLayerOptions</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">AddOptionsT</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">AddOptions</span>
+        <span class="p">)</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_fused_activation_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span><span class="p">)</span>
+    <span class="nd">@activation_str</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span> <span class="o">=</span> <span class="n">_get_fused_activation_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> 
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_str</span><span class="si">}</span><span class="s1">'</span>
 
 
 <div class="viewcode-block" id="TfliteConv2dLayer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteConv2dLayer">[docs]</a><span class="k">class</span> <span class="nc">TfliteConv2dLayer</span><span class="p">(</span><span class="n">TfliteLayer</span><span class="p">):</span>
     <span class="sd">"""CONV_2D operation TfliteLayer"""</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">filters_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">OperatorT</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="o">=</span><span class="n">fb_operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">TfliteConv2DLayerOptions</span><span class="p">(</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">builtinOptions</span><span class="p">)</span>
+        <span class="n">filters_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters_tensor</span><span class="o">.</span><span class="n">shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_kernel_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">filters_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">filters_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span> <span class="o">=</span> <span class="n">filters_shape</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
 
+    <span class="nd">@property</span> 
+    <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteConv2DLayerOptions</span><span class="p">:</span>
+        <span class="sd">"""Layer-specific options/config"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">"""The number of filters"""</span>
@@ -632,42 +709,99 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">padding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Kernel padding"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">padding</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">padding_str</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Fused activation"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation_str</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">use_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">"""Return if the layer uses a bias"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filters_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Filters tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filters_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Filters tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bias_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Bias tensor data (None if no bias used)"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">bias_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Bias tensor data (None if no bias used)"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_tensor</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Output tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Output tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<span class="k">class</span> <span class="nc">TfliteConv2DLayerOptions</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Conv2DOptionsT</span><span class="p">,</span> <span class="n">TfliteLayerOptions</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Conv2DOptionsT</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span> 
+            <span class="nb">type</span><span class="o">=</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">Conv2DOptions</span>
+        <span class="p">)</span>
+       
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stride_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strideW</span>
+    <span class="nd">@stride_width</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">stride_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strideW</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stride_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strideH</span>
+    <span class="nd">@stride_height</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">stride_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strideH</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">padding_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_padding_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
+    <span class="nd">@padding_str</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">padding_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">_get_padding_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_fused_activation_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span><span class="p">)</span>
+    <span class="nd">@activation_str</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span> <span class="o">=</span> <span class="n">_get_fused_activation_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Padding:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">padding_str</span><span class="si">}</span><span class="s1"> stride:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span><span class="si">}</span><span class="s1"> activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_str</span><span class="si">}</span><span class="s1">'</span>
 
 
 <span class="k">class</span> <span class="nc">TfliteTransposeConvLayer</span><span class="p">(</span><span class="n">TfliteLayer</span><span class="p">):</span>
     <span class="sd">"""TRANSPOSE_CONV operation TfliteLayer"""</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">filters_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">OperatorT</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="o">=</span><span class="n">fb_operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">TfliteTransposeConvLayerOptions</span><span class="p">(</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">builtinOptions</span><span class="p">)</span>
+        <span class="n">filters_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters_tensor</span><span class="o">.</span><span class="n">shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_kernel_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">filters_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">filters_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_filters</span> <span class="o">=</span> <span class="n">filters_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">4</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
 
+    <span class="nd">@property</span> 
+    <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTransposeConvLayerOptions</span><span class="p">:</span>
+        <span class="sd">"""Layer-specific options/config"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">"""The number of filters"""</span>
@@ -683,77 +817,162 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">padding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Kernel padding"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">padding</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">padding_str</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">use_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">"""Return if the layer uses a bias"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filters_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Filters tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filters_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Filters tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bias_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Bias tensor data (None if no bias used)"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">bias_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Bias tensor data (None if no bias used)"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_tensor</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Output tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Output tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">data</span>
+
+
+<span class="k">class</span> <span class="nc">TfliteTransposeConvLayerOptions</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TransposeConvOptionsT</span><span class="p">,</span> <span class="n">TfliteLayerOptions</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TransposeConvOptionsT</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">TransposeConvOptions</span>
+        <span class="p">)</span>
+        
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stride_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strideW</span>
+    <span class="nd">@stride_width</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">stride_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strideW</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stride_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strideH</span>
+    <span class="nd">@stride_height</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">stride_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strideH</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">padding_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_padding_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
+    <span class="nd">@padding_str</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">padding_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">_get_padding_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> 
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Padding:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">padding_str</span><span class="si">}</span><span class="s1"> stride:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span><span class="si">}</span><span class="s1">'</span>
 
 
 <div class="viewcode-block" id="TfliteFullyConnectedLayer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteFullyConnectedLayer">[docs]</a><span class="k">class</span> <span class="nc">TfliteFullyConnectedLayer</span><span class="p">(</span><span class="n">TfliteLayer</span><span class="p">):</span>
     <span class="sd">"""FULLY_CONNECT operation TfliteLayer"""</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">OperatorT</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="o">=</span><span class="n">fb_operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">TfliteFullyConnectedLayerOptions</span><span class="p">(</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">builtinOptions</span><span class="p">)</span>
 
+    <span class="nd">@property</span> 
+    <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteFullyConnectedLayerOptions</span><span class="p">:</span>
+        <span class="sd">"""Layer-specific options/config"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">accumulator_depth</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">"""Number of weights to accumulate"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">units</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">"""Number of neurons"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Fused activation"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation_str</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">use_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">"""Return if the layer uses a bias"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">weights_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Weights tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">weights_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Weights tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bias_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Bias tensor data (None if no bias used)"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">bias_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Bias tensor data (None if no bias used)"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_tensor</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Output tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Output tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<span class="k">class</span> <span class="nc">TfliteFullyConnectedLayerOptions</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">FullyConnectedOptionsT</span><span class="p">,</span> <span class="n">TfliteLayerOptions</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">FullyConnectedOptionsT</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">FullyConnectedOptions</span>
+        <span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_fused_activation_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span><span class="p">)</span> 
+    <span class="nd">@activation_str</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span> <span class="o">=</span> <span class="n">_get_fused_activation_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> 
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_str</span><span class="si">}</span><span class="s1">'</span>
 
 
 <div class="viewcode-block" id="TfliteDepthwiseConv2dLayer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteDepthwiseConv2dLayer">[docs]</a><span class="k">class</span> <span class="nc">TfliteDepthwiseConv2dLayer</span><span class="p">(</span><span class="n">TfliteLayer</span><span class="p">):</span>
     <span class="sd">"""DEPTHWISE_CONV_2D operation TfliteLayer"""</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">filters_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">OperatorT</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="o">=</span><span class="n">fb_operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">TfliteDepthwiseConv2DLayerOptions</span><span class="p">(</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">builtinOptions</span><span class="p">)</span>
+        <span class="n">filters_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters_tensor</span><span class="o">.</span><span class="n">shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_kernel_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">filters_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">filters_shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
 
+    <span class="nd">@property</span> 
+    <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteDepthwiseConv2DLayerOptions</span><span class="p">:</span>
+        <span class="sd">"""Layer-specific options/config"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">multiplier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">"""Depth multiplier"""</span>
@@ -769,38 +988,100 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">padding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Kernel padding"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">padding</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">padding_str</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Fused activation"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation_str</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">use_bias</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="sd">"""Return if the layer uses a bias"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filters_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Filters tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">filters_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Filters tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filters_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">bias_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Bias tensor data (None if no bias used)"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="k">else</span> <span class="kc">None</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">bias_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Bias tensor data (None if no bias used)"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bias_data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_tensor</span><span class="o">.</span><span class="n">data</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Output tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Output tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<span class="k">class</span> <span class="nc">TfliteDepthwiseConv2DLayerOptions</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">DepthwiseConv2DOptionsT</span><span class="p">,</span> <span class="n">TfliteLayerOptions</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">DepthwiseConv2DOptionsT</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">DepthwiseConv2DOptions</span>
+        <span class="p">)</span>
+       
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stride_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strideW</span>
+    <span class="nd">@stride_width</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">stride_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strideW</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stride_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strideH</span>
+    <span class="nd">@stride_height</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">stride_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strideH</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">multiplier</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">depthMultiplier</span>
+    <span class="nd">@multiplier</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">multiplier</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">depthMultiplier</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">padding_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_padding_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
+    <span class="nd">@padding_str</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">padding_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">_get_padding_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_fused_activation_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span><span class="p">)</span>
+    <span class="nd">@activation_str</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span> <span class="o">=</span> <span class="n">_get_fused_activation_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Multiplier:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="si">}</span><span class="s1"> padding:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">padding_str</span><span class="si">}</span><span class="s1"> stride:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span><span class="si">}</span><span class="s1"> activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_str</span><span class="si">}</span><span class="s1">'</span>
 
 
 <div class="viewcode-block" id="TflitePooling2dLayer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TflitePooling2dLayer">[docs]</a><span class="k">class</span> <span class="nc">TflitePooling2dLayer</span><span class="p">(</span><span class="n">TfliteLayer</span><span class="p">):</span>
     <span class="sd">"""AVERAGE_POOL_2D or MAX_POOL_2D operation TfliteLayer"""</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">OperatorT</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="o">=</span><span class="n">fb_operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">TflitePool2DLayerOptions</span><span class="p">(</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">builtinOptions</span><span class="p">)</span>
  
+    <span class="nd">@property</span> 
+    <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TflitePool2DLayerOptions</span><span class="p">:</span>
+        <span class="sd">"""Layer-specific options/config"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">pool_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">int</span><span class="p">]:</span>
         <span class="sd">"""Kernel size as height x width"""</span>
@@ -812,19 +1093,76 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">padding</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Kernel padding"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">padding</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">padding_str</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Fused activation"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation_str</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Output tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Output tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">data</span></div>
+
+
+<span class="k">class</span> <span class="nc">TflitePool2DLayerOptions</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Pool2DOptionsT</span><span class="p">,</span> <span class="n">TfliteLayerOptions</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Pool2DOptionsT</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">Pool2DOptions</span>
+        <span class="p">)</span>
+       
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stride_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strideW</span>
+    <span class="nd">@stride_width</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">stride_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strideW</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">stride_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">strideH</span>
+    <span class="nd">@stride_height</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">stride_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strideH</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filter_width</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterWidth</span>
+    <span class="nd">@filter_width</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">filter_width</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filterWidth</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">filter_height</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">filterHeight</span>
+    <span class="nd">@filter_height</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">filter_height</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">filterHeight</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">padding_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_padding_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
+    <span class="nd">@padding_str</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">padding_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">_get_padding_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_fused_activation_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span><span class="p">)</span>
+    <span class="nd">@activation_str</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span> <span class="o">=</span> <span class="n">_get_fused_activation_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Padding:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">padding_str</span><span class="si">}</span><span class="s1"> stride:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span><span class="si">}</span><span class="s1"> filter:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_height</span><span class="si">}</span><span class="s1"> activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_str</span><span class="si">}</span><span class="s1">'</span>
+
+
 
 
 <div class="viewcode-block" id="TfliteReshapeLayer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteReshapeLayer">[docs]</a><span class="k">class</span> <span class="nc">TfliteReshapeLayer</span><span class="p">(</span><span class="n">TfliteLayer</span><span class="p">):</span>
@@ -833,13 +1171,21 @@
         <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Output tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Output tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">data</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">requires_copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -855,167 +1201,129 @@
 <div class="viewcode-block" id="TfliteDequantizeLayer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteDequantizeLayer">[docs]</a><span class="k">class</span> <span class="nc">TfliteDequantizeLayer</span><span class="p">(</span><span class="n">TfliteLayer</span><span class="p">):</span>
     <span class="sd">"""DEQUANTIZE operation TfliteLayer"""</span>
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Output tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Output tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">data</span></div>
 
 
 <div class="viewcode-block" id="TfliteQuantizeLayer"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteQuantizeLayer">[docs]</a><span class="k">class</span> <span class="nc">TfliteQuantizeLayer</span><span class="p">(</span><span class="n">TfliteLayer</span><span class="p">):</span>
     <span class="sd">"""QUANTIZE operation TfliteLayer"""</span>
     <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Output tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Output tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">data</span></div>
 
 
 <span class="k">class</span> <span class="nc">TfliteMulLayer</span><span class="p">(</span><span class="n">TfliteLayer</span><span class="p">):</span>
     <span class="sd">"""MUL operation TfliteLayer"""</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">OperatorT</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">TfliteLayer</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_operation</span><span class="o">=</span><span class="n">fb_operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_options</span> <span class="o">=</span> <span class="n">TfliteMulLayerOptions</span><span class="p">(</span><span class="n">fb_operation</span><span class="o">.</span><span class="n">builtinOptions</span><span class="p">)</span>
+
+    <span class="nd">@property</span> 
+    <span class="k">def</span> <span class="nf">options</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteMulLayerOptions</span><span class="p">:</span>
+        <span class="sd">"""Layer-specific options/config"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">activation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Fused activation"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_options</span><span class="o">.</span><span class="n">activation_str</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input1_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""First input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input1_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""First input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input1_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">input2_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Second input tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input2_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Second input tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_inputs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input2_tensor</span><span class="o">.</span><span class="n">data</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+        <span class="sd">"""Output tensor data"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="sd">"""Output tensor data"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">data</span>
 
 
-<span class="k">class</span> <span class="nc">TfliteLayerOptionsUnsupported</span><span class="p">(</span><span class="n">TfliteLayerOptions</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts_type</span><span class="p">):</span>
-        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">opts_type</span> <span class="o">=</span> <span class="n">opts_type</span>
-
+<span class="k">class</span> <span class="nc">TfliteMulLayerOptions</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">MulOptionsT</span><span class="p">,</span> <span class="n">TfliteLayerOptions</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">MulOptionsT</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts</span><span class="p">,</span>
+            <span class="nb">type</span><span class="o">=</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BuiltinOptions</span><span class="o">.</span><span class="n">MulOptions</span>
+        <span class="p">)</span>
+       
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_get_fused_activation_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span><span class="p">)</span>
+    <span class="nd">@activation_str</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">activation_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fusedActivationFunction</span> <span class="o">=</span> <span class="n">_get_fused_activation_int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'BuiltinOptionsType=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">opts_type</span><span class="si">}</span><span class="s1">'</span>
-
-        
-<span class="k">class</span> <span class="nc">TfliteLayerOptionsConv2D</span><span class="p">(</span><span class="n">TfliteLayerOptions</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts_buf</span><span class="p">):</span>
-        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    
-        <span class="n">opts</span> <span class="o">=</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Conv2DOptions</span><span class="p">()</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">Init</span><span class="p">(</span><span class="n">opts_buf</span><span class="o">.</span><span class="n">Bytes</span><span class="p">,</span> <span class="n">opts_buf</span><span class="o">.</span><span class="n">Pos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">StrideW</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">StrideH</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">_get_padding</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Padding</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">_get_fused_activation</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">FusedActivationFunction</span><span class="p">())</span>
-        
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Padding:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="si">}</span><span class="s1"> stride:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span><span class="si">}</span><span class="s1"> activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="si">}</span><span class="s1">'</span>
-
-        
-<span class="k">class</span> <span class="nc">TfliteLayerOptionsTransposeConv</span><span class="p">(</span><span class="n">TfliteLayerOptions</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts_buf</span><span class="p">):</span>
-        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    
-        <span class="n">opts</span> <span class="o">=</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TransposeConvOptions</span><span class="p">()</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">Init</span><span class="p">(</span><span class="n">opts_buf</span><span class="o">.</span><span class="n">Bytes</span><span class="p">,</span> <span class="n">opts_buf</span><span class="o">.</span><span class="n">Pos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">StrideW</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">StrideH</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">_get_padding</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Padding</span><span class="p">())</span>
-
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Padding:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="si">}</span><span class="s1"> stride:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation_str</span><span class="si">}</span><span class="s1">'</span>
 
 
-<span class="k">class</span> <span class="nc">TfliteLayerOptionsDepthwiseConv2D</span><span class="p">(</span><span class="n">TfliteLayerOptions</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts_buf</span><span class="p">):</span>
-        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    
-        <span class="n">opts</span> <span class="o">=</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">DepthwiseConv2DOptions</span><span class="p">()</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">Init</span><span class="p">(</span><span class="n">opts_buf</span><span class="o">.</span><span class="n">Bytes</span><span class="p">,</span> <span class="n">opts_buf</span><span class="o">.</span><span class="n">Pos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">StrideW</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">StrideH</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">DepthMultiplier</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">_get_padding</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Padding</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">_get_fused_activation</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">FusedActivationFunction</span><span class="p">())</span>
-        
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Multipler:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">multiplier</span><span class="si">}</span><span class="s1"> padding:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="si">}</span><span class="s1"> stride:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span><span class="si">}</span><span class="s1"> activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="si">}</span><span class="s1">'</span>
 
 
-<span class="k">class</span> <span class="nc">TfliteLayerOptionsPool2D</span><span class="p">(</span><span class="n">TfliteLayerOptions</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts_buf</span><span class="p">):</span>
-        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    
-        <span class="n">opts</span> <span class="o">=</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Pool2DOptions</span><span class="p">()</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">Init</span><span class="p">(</span><span class="n">opts_buf</span><span class="o">.</span><span class="n">Bytes</span><span class="p">,</span> <span class="n">opts_buf</span><span class="o">.</span><span class="n">Pos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">StrideW</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">StrideH</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filter_width</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">FilterWidth</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">filter_height</span> <span class="o">=</span> <span class="n">opts</span><span class="o">.</span><span class="n">FilterHeight</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">_get_padding</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">Padding</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">_get_fused_activation</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">FusedActivationFunction</span><span class="p">())</span>
-        
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Padding:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">padding</span><span class="si">}</span><span class="s1"> stride:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">stride_height</span><span class="si">}</span><span class="s1"> filter:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filter_height</span><span class="si">}</span><span class="s1"> activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="si">}</span><span class="s1">'</span>
 
 
-<span class="k">class</span> <span class="nc">TfliteLayerOptionsFullyConnected</span><span class="p">(</span><span class="n">TfliteLayerOptions</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts_buf</span><span class="p">):</span>
-        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    
-        <span class="n">opts</span> <span class="o">=</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">FullyConnectedOptions</span><span class="p">()</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">Init</span><span class="p">(</span><span class="n">opts_buf</span><span class="o">.</span><span class="n">Bytes</span><span class="p">,</span> <span class="n">opts_buf</span><span class="o">.</span><span class="n">Pos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">_get_fused_activation</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">FusedActivationFunction</span><span class="p">())</span>
-        
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="si">}</span><span class="s1">'</span>
-
-
-<span class="k">class</span> <span class="nc">TfliteLayerOptionsAdd</span><span class="p">(</span><span class="n">TfliteLayerOptions</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts_buf</span><span class="p">):</span>
-        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    
-        <span class="n">opts</span> <span class="o">=</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">AddOptions</span><span class="p">()</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">Init</span><span class="p">(</span><span class="n">opts_buf</span><span class="o">.</span><span class="n">Bytes</span><span class="p">,</span> <span class="n">opts_buf</span><span class="o">.</span><span class="n">Pos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">_get_fused_activation</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">FusedActivationFunction</span><span class="p">())</span>
-        
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="si">}</span><span class="s1">'</span>
-
-
-<span class="k">class</span> <span class="nc">TfliteLayerOptionsMul</span><span class="p">(</span><span class="n">TfliteLayerOptions</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">opts_buf</span><span class="p">):</span>
-        <span class="n">TfliteLayerOptions</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-    
-        <span class="n">opts</span> <span class="o">=</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">MulOptions</span><span class="p">()</span>
-        <span class="n">opts</span><span class="o">.</span><span class="n">Init</span><span class="p">(</span><span class="n">opts_buf</span><span class="o">.</span><span class="n">Bytes</span><span class="p">,</span> <span class="n">opts_buf</span><span class="o">.</span><span class="n">Pos</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">_get_fused_activation</span><span class="p">(</span><span class="n">opts</span><span class="o">.</span><span class="n">FusedActivationFunction</span><span class="p">())</span>
-        
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s1">'Activation:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="si">}</span><span class="s1">'</span>
-
-
-<span class="k">def</span> <span class="nf">_get_padding</span><span class="p">(</span><span class="n">padding</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_get_padding_str</span><span class="p">(</span><span class="n">padding</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">_convert_object_value_to_string</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Padding</span><span class="p">(),</span> <span class="n">padding</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_get_padding_int</span><span class="p">(</span><span class="n">padding</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">_convert_object_value_to_int</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Padding</span><span class="p">(),</span> <span class="n">padding</span><span class="p">)</span>
     
-<span class="k">def</span> <span class="nf">_get_fused_activation</span><span class="p">(</span><span class="n">act</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<span class="k">def</span> <span class="nf">_get_fused_activation_str</span><span class="p">(</span><span class="n">act</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">_convert_object_value_to_string</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">ActivationFunctionType</span><span class="p">(),</span> <span class="n">act</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">_get_fused_activation_int</span><span class="p">(</span><span class="n">act</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">_convert_object_value_to_int</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">ActivationFunctionType</span><span class="p">(),</span> <span class="n">act</span><span class="p">)</span>
     
-<span class="k">def</span> <span class="nf">_convert_object_value_to_string</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">needle</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+
+<span class="k">def</span> <span class="nf">_convert_object_value_to_string</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">needle</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span> <span class="o">==</span> <span class="n">needle</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         
     <span class="k">return</span> <span class="s1">'None'</span>
 
+<span class="k">def</span> <span class="nf">_convert_object_value_to_int</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">needle</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="n">needle</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+            <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 </pre></div>
 
           </article>
@@ -1040,7 +1348,7 @@
               
           </div>
             Last updated on
-              Apr 26, 2022.
+              Jun 14, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

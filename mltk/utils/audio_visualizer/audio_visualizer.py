@@ -2,7 +2,6 @@ from typing import Callable
 import os
 import copy
 import logging
-import tempfile
 import threading
 import time
 import warnings
@@ -16,6 +15,7 @@ import matplotlib.cbook
 warnings.filterwarnings("ignore",category=matplotlib.cbook.mplDeprecation)
 
 from mltk.utils.logger import get_logger
+from mltk.utils.path import create_tempdir
 from mltk.core import load_mltk_model
 from mltk.core.preprocess.audio.parallel_generator import ParallelAudioDataGenerator
 from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings
@@ -108,7 +108,7 @@ class AudioVisualizer(object):
                 sr = self.original_sample_rate
 
                 audio = self._apply_transform(audio, sr)
-                tmp_path = os.path.join(tempfile.gettempdir(), 'visualizer_audio.wav')
+                tmp_path = os.path.join(create_tempdir(), 'visualizer_audio.wav')
                 sf.write(tmp_path, audio, int(self.settings.get('general.sample_rate')))
                 self.stop_playing_callback = playsound(tmp_path, block=False)
             except Exception as e:

@@ -1,14 +1,11 @@
 
 import gzip
 import os
-import sys 
+import numpy as np
 from urllib.parse import urlparse
 import yaml
-
-if sys.version_info[0] == 3 and sys.version_info[1] == 7:
-    import pickle5 as pickle
-else:
-    import pickle
+import onnx
+import onnxruntime.backend as backend
 
 from mltk.core.utils import get_mltk_logger
 from mltk.utils.archive_downloader import download_verify_extract
@@ -26,14 +23,22 @@ class _DataList(list):
             self.columns.append(key)
         self.append(row)
 
+    def tonumpy(self) -> np.ndarray:
+        return np.asarray(self, dtype=np.int64)
+
 
 class MetricBaseEstimator(object):
-    def __init__(self, estimator):
-        self.estimator = estimator 
+    def __init__(self, onnx_model_file):
+        onnx_model = onnx.load(onnx_model_file)
+        self.onnx_model_backend = backend.prepare(onnx_model, 'CPU')
+        meta = onnx_model.metadata_props[0]
+        self.feature_names = meta.value.split(',')
+
 
     def predict(self, **kwargs):
         X = _DataList(kwargs)  
-        return self.estimator.predict(X)[0]
+        y = self.onnx_model_backend.run(X.tonumpy())
+        return float(y[0])
 
 
 
@@ -69,7 +74,7 @@ def download_estimators() -> str:
 def load_model(name:str, accelerator:str, metric:str) -> MetricBaseEstimator:
     logger = get_mltk_logger()
 
-    estimator_name = f'{name}.{accelerator}.{metric}.gz'
+    estimator_name = f'{name}.{accelerator}.{metric}.onnx.gz'
 
      # First see if the estimator archive exists in the local "generated" directory
     curdir = os.path.dirname(os.path.abspath(__file__))
@@ -90,7 +95,7 @@ def load_model(name:str, accelerator:str, metric:str) -> MetricBaseEstimator:
     try:
         if os.path.exists(estimator_path):
             with gzip.open(estimator_path, 'rb') as fp:
-                return MetricBaseEstimator(pickle.load(fp))
+                return MetricBaseEstimator(fp)
     except Exception as e:
         logger.warning(f'Failed to load profiling estimator: {estimator_path}, err: {e}')
 

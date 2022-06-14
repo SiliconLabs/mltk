@@ -11,4 +11,5 @@
    ./why_does_eval_not_work_with_tflite
    ./how_to_reduce_model_size
    ./linux_why_is_gpu_not_working
+   ./windows_tensorflow_dll_error
 ```
