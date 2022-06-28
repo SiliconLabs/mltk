@@ -80,17 +80,7 @@ function(tflite_micro_link_python_wrapper target lib_dir)
     # then, generate a .a from the .def and .pyd
     string(REGEX REPLACE "\.pyd$" "" fullname_no_ext ${TFLITE_MICRO_WRAPPER_FULLNAME})
    
-    # FIXME: If the generated .a does not go in the correct directory,
-    # then the generated .pyd may not import the shared symbols properly
-    # at runtime. This seems to be dependent on the build directory but
-    # it is not obvious what the path should to properly link...
-    #if("${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}" STREQUAL "37")
-    #  get_filename_component(mltk_build_dir "${MLTK_DIR}/../build" ABSOLUTE)
-    #  file(MAKE_DIRECTORY ${mltk_build_dir})
-    #  set(tflite_micro_archive_path "${mltk_build_dir}/${fullname_no_ext}.a")
-    #else()
     set(tflite_micro_archive_path "${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.a")
-    #endif()
     mltk_info("tflite_micro_archive_path: ${tflite_micro_archive_path}")
     mltk_info("${CMAKE_GENDEF} ${TFLITE_MICRO_WRAPPER_PATH}")
     mltk_info("${CMAKE_DLLTOOL} -k -d ${CMAKE_CURRENT_BINARY_DIR}/${fullname_no_ext}.def -l ${tflite_micro_archive_path}")
@@ -104,12 +94,12 @@ function(tflite_micro_link_python_wrapper target lib_dir)
       tflite_micro_python_wrapper_shared_generate ALL 
       DEPENDS ${tflite_micro_archive_path}
     )
-    add_library(tflite_micro_python_wrapper_shared STATIC IMPORTED)
-    set_target_properties(tflite_micro_python_wrapper_shared
-    PROPERTIES 
-      IMPORTED_LOCATION "${tflite_micro_archive_path}"
+    target_link_options(${target}
+    PUBLIC 
+        -Wl,--whole-archive ${tflite_micro_archive_path} -Wl,--no-whole-archive
     )
-    add_dependencies(tflite_micro_python_wrapper_shared tflite_micro_python_wrapper_shared_generate)
+
+    add_dependencies(${target} tflite_micro_python_wrapper_shared_generate)
     
   else()
     add_library(tflite_micro_python_wrapper_shared INTERFACE)
@@ -126,12 +116,12 @@ function(tflite_micro_link_python_wrapper target lib_dir)
       "-Wl,-L${TFLITE_MICRO_WRAPPER_DIR}"
       "-Wl,-l:${TFLITE_MICRO_WRAPPER_FULLNAME}"
     )
-  endif()
 
-  target_link_libraries(${target}
-  PUBLIC 
-    tflite_micro_python_wrapper_shared
-  )
+    target_link_libraries(${target}
+    PUBLIC 
+      tflite_micro_python_wrapper_shared
+    )
+  endif()
 
   target_include_directories(${target}
   PRIVATE 

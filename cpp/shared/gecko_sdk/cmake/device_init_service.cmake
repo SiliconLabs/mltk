@@ -39,6 +39,8 @@ if(NOT GECKO_SDK_DEVICE_INIT_SERVICE_SOURCES)
             sl_device_init_hfxo_s2.c 
             sl_device_init_hfrco.c 
             sl_device_init_lfxo_s2.c 
+            sl_device_init_dpll_s2.c 
+            sl_device_init_nvic.c
         )
     else()
         mltk_error("GECKO_SDK_BOARD_SERIES=${GECKO_SDK_BOARD_SERIES} not supported")

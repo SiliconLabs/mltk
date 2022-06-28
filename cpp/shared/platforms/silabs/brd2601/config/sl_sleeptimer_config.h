@@ -48,7 +48,7 @@
 //   <SL_SLEEPTIMER_PERIPHERAL_SYSRTC=> SYSRTC
 //   <SL_SLEEPTIMER_PERIPHERAL_BURTC=> Back-Up RTC (BURTC)
 // <i> Selection of the Timer Peripheral Used by the Sleeptimer
-#define SL_SLEEPTIMER_PERIPHERAL  SL_SLEEPTIMER_PERIPHERAL_BURTC
+#define SL_SLEEPTIMER_PERIPHERAL  SL_SLEEPTIMER_PERIPHERAL_DEFAULT
 
 // <q SL_SLEEPTIMER_WALLCLOCK_CONFIG> Enable wallclock functionality
 // <i> Enable or disable wallclock functionalities (get_time, get_date, etc).

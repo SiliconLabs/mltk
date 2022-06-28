@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.evaluate_classifier &#8212; MLTK 0.7.0 documentation</title>
+    <title>mltk.core.evaluate_classifier &#8212; MLTK 0.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.7.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.8.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.7.0 documentation logo">
+                   alt="MLTK 0.8.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.7.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.8.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.7.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.8.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -362,6 +362,13 @@
     
     
       <a href="../../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../docs/other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
       
     
     </li>
@@ -609,7 +616,8 @@
     <span class="n">classes</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">verbose</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">show</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">callbacks</span><span class="p">:</span><span class="nb">list</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">callbacks</span><span class="p">:</span><span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">update_archive</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ClassifierEvaluationResults</span><span class="p">:</span>
     <span class="sd">"""Evaluate a trained classification model</span>
 <span class="sd">    </span>
@@ -622,6 +630,7 @@
 <span class="sd">        verbose: Enable verbose log messages</span>
 <span class="sd">        show: Show the evaluation results diagrams</span>
 <span class="sd">        callbacks: Optional callbacks to invoke while evaluating</span>
+<span class="sd">        update_archive: Update the model archive with the eval results</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        Dictionary containing evaluation results</span>
@@ -638,7 +647,8 @@
     <span class="n">eval_dir</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">create_log_dir</span><span class="p">(</span><span class="n">subdir</span><span class="p">,</span> <span class="n">delete_existing</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">create_logger</span><span class="p">(</span><span class="s1">'eval'</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">get_mltk_logger</span><span class="p">())</span>
 
-    <span class="n">update_archive</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">check_archive_file_is_writable</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">update_archive</span><span class="p">:</span>
+        <span class="n">update_archive</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">check_archive_file_is_writable</span><span class="p">()</span>
     <span class="n">gpu</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
 
     <span class="c1"># Build the MLTK model's corresponding as a Keras model or .tflite</span>
@@ -1196,7 +1206,7 @@
               
           </div>
             Last updated on
-              Jun 14, 2022.
+              Jun 28, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

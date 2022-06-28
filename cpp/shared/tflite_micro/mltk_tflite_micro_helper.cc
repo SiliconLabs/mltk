@@ -11,6 +11,7 @@ namespace mltk
 static Logger *mltk_logger =  nullptr;
 bool model_profiler_enabled = false;
 bool model_recorder_enabled = false;
+ bool model_error_reporter_enabled = true;
 
 #ifdef TFLITE_MICRO_VERSION_STR
 const char* TFLITE_MICRO_VERSION = TFLITE_MICRO_VERSION_STR;
@@ -34,7 +35,7 @@ TfLiteStatus allocate_scratch_buffer(TfLiteContext *ctx, unsigned size_bytes, in
 #ifndef MLTK_DLL_IMPORT 
 extern "C" void issue_unsupported_kernel_message(const char* fmt, ...)
 {
-  if(_current_kernel_index == -1 || _issued_unsupported_msg)
+  if(_current_kernel_index == -1 || _issued_unsupported_msg || !model_error_reporter_enabled)
   {
     return;
   }
@@ -171,7 +172,7 @@ const void* get_metadata_from_tflite_flatbuffer(const void* tflite_flatbuffer, c
 /*************************************************************************************************/
 int TfliteMicroErrorReporter::Report(const char* format, va_list args)
 {
-    if(enabled)
+    if(model_error_reporter_enabled)
     {
         auto& logger = get_logger();
         const auto orig_flags = logger.flags();

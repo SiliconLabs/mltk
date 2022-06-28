@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+	
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+		<title>Silicon Labs - ML Pac-Man</title>
+		<meta name="description" content="Play Pac-Man using keywords: Left, Right, Up, Down detected using machine learning on Silicon Labs EFR32xG24" />
+		<meta name="keywords" content="bluetooth, ble, ai, ml, machine learning, embedded, tinyml, game, pacman" />
+
+		<link rel="stylesheet" type="text/css" href="css/pacman.css" />
+		<link rel="stylesheet" type="text/css" href="css/pacman-home.css" />
+		<link rel="icon" type="image/x-icon" href="img/favicon.ico">
+	
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<!--<script type="text/javascript" src="js/jquery-mobile.js"></script>-->
+		<script type="text/javascript" src="js/jquery-buzz.js"></script>
+		
+		<script type="text/javascript" src="js/controls.js"></script>
+		<script type="text/javascript" src="js/game.js"></script>
+		<script type="text/javascript" src="js/tools.js"></script>
+		<script type="text/javascript" src="js/board.js"></script>
+		<script type="text/javascript" src="js/paths.js"></script>
+		<script type="text/javascript" src="js/bubbles.js"></script>
+		<script type="text/javascript" src="js/fruits.js"></script>
+		<script type="text/javascript" src="js/pacman.js"></script>
+		<script type="text/javascript" src="js/ghosts.js"></script>
+		<script type="text/javascript" src="js/home.js"></script>
+		<script type="text/javascript" src="js/sound.js"></script>
+		<script src="https://unpkg.com/p5ble@0.0.4/dist/p5.ble.js" type="text/javascript"></script>
+		<script type="text/javascript" src="js/bluetooth.js"></script>
+
+		
+		<script type="text/javascript">		
+
+
+			function closeInstallDialog() {
+				$('#install').fadeOut("slow");
+				$(".buttons").show();
+				simulateKeydown(13);
+			}
+
+			$(document).ready(function() { 
+				if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+					alert("WARNING: This webpage works best on desktop browsers");
+				}
+
+
+				//$.mobile.loading().hide();
+				loadAllSound();
+				
+				HELP_TIMER = setInterval('blinkButtons()', HELP_DELAY);
+				
+				initHome();
+				bluetoothInit();
+				
+				$(".sound").click(function(e) { 
+					e.stopPropagation();
+					
+					var sound = $(this).attr("data-sound");
+					if ( sound === "on" ) { 
+						$(".sound").attr("data-sound", "off");
+						$(".sound").find("img").attr("src", "img/sound-off.png");
+						GROUP_SOUND.mute();
+					} else { 
+						$(".sound").attr("data-sound", "on");
+						$(".sound").find("img").attr("src", "img/sound-on.png");
+						GROUP_SOUND.unmute();
+					}
+				});
+
+				$("#bluetooth-msg").click(function(e) { 
+					e.stopPropagation();
+					bluetoothTryConnect();
+				});
+				
+				$("#help-button").click(function(e) { 
+					e.stopPropagation();
+					if ( $('#help').css("display") === "none") { 
+						$('#help').fadeIn("slow");
+						$(".buttons").hide();
+						if ( $("#panel").css("display") !== "none") { 
+							pauseGame();
+						}
+					} else { 
+						$('#help').fadeOut("slow");
+						$(".buttons").show();
+					}
+				});
+
+				$("#help-close").click(function(e) { 
+					e.stopPropagation();
+					$('#help').fadeOut("slow");
+					$(".buttons").show();
+				});
+
+				$("#install-button").click(function(e) { 
+					e.stopPropagation();
+					if ( $('#install').css("display") === "none") { 
+						$('#install').fadeIn("slow");
+						$(".buttons").hide();
+						if ( $("#panel").css("display") !== "none") { 
+							pauseGame();
+						}
+					} else { 
+						$('#install').fadeOut("slow");
+						$(".buttons").show();
+					}
+				});
+
+
+				$("#install-close").click(function(e) { 
+					e.stopPropagation();
+					closeInstallDialog();
+				});
+
+				$("#docs-button").click(function(e) { 
+					e.stopPropagation();
+				});
+				
+				
+				$("#home").on("click touchstart", function(e) { 
+					if ( $('#help').css("display") === "none" && $('#install').css("display") === "none") { 
+						e.preventDefault();
+						simulateKeydown(13);
+					}
+				});
+				$("#control-up, #control-up-second, #control-up-big").on("mousedown touchstart", function(e) { 
+					e.preventDefault();
+					simulateArrowUp();
+				});
+				$("#control-down, #control-down-second, #control-down-big").on("mousedown touchstart", function(e) { 
+					e.preventDefault();
+					simulateArrowDown();
+				});
+				$("#control-left, #control-left-big").on("mousedown touchstart", function(e) { 
+					e.preventDefault();
+					simulateKeyLeft();
+				});
+				$("#control-right, #control-right-big").on("mousedown touchstart", function(e) { 
+					e.preventDefault();
+					simulateArrowRight();
+				});
+
+				
+				$("body").keyup(function(e) { 
+					KEYDOWN = false;
+				});
+				
+				$("body").keydown(function(e) { 
+				
+					if(!bluetoothIsReady()) {
+						bluetoothTryConnect();
+						return;
+					}
+
+					if (HOME) { 
+						$("#bluetooth-msg").fadeOut('slow');
+						initGame(true);
+						
+					} else { 				
+						//if (!KEYDOWN) { 
+							KEYDOWN = true;
+							if (PACMAN_DEAD && !LOCK) { 
+								erasePacman();
+								resetPacman();
+								drawPacman();
+								
+								eraseGhosts();
+								resetGhosts();
+								drawGhosts();
+								moveGhosts();
+								
+								blinkSuperBubbles();
+								
+							} else if (e.keyCode >= 37 && e.keyCode <= 40 && !PAUSE && !PACMAN_DEAD && !LOCK) { 
+								if ( e.keyCode === 39 ) { 
+									movePacman(1);
+								} else if ( e.keyCode === 40 ) { 
+									movePacman(2);
+								} else if ( e.keyCode === 37 ) { 
+									movePacman(3);
+								} else if ( e.keyCode === 38 ) { 
+									movePacman(4);
+								}
+							} else if (e.keyCode === 68 && !PAUSE) { 
+								/*if ( $("#canvas-paths").css("display") === "none" ) { 
+									$("#canvas-paths").show();
+								} else { 
+									$("#canvas-paths").hide();
+								}*/
+							} else if ((e.keyCode === 80 || e.keyCode === 13) && !PACMAN_DEAD && !LOCK) { 
+								if (PAUSE) { 
+									resumeGame();
+								} else { 
+									pauseGame();
+								}
+							} else if (GAMEOVER) { 
+								initHome();
+								$("#bluetooth-msg").fadeIn('slow');
+							}
+						//}
+					}
+				});
+			});
+		</script>
+	
+		
+	</head>
+		
+	<body>
+		<a href="https://siliconlabs.github.io/mltk/" target="_blank"><img class="logo" src="img/logo.png" /></a>
+		<div id="sound"></div>
+		<div id="bluetooth-msg">Press any key to connect to Bluetooth</div>
+	
+		<div class="dialog" id="install">
+			<div id="install-close" class="dialog-close-button">X</div>
+			<h2>Installation</h2>
+			<ol>
+				<li>Obtain a BRD2601 development board from <a href="https://www.silabs.com/development-tools/wireless/efr32xg24-dev-kit" target="_blank">HERE</a> and connect to your computer</li>
+				<li>Install the JLink driver by installing <a href="https://www.silabs.com/developers/simplicity-studio" target="_blank">Simplicity Studio</a> OR <a href="https://www.segger.com/downloads/jlink/#J-LinkSoftwareAndDocumentationPack" target="_blank">Segger JLink</a></li>
+				<li>Download the BRD2601 firmware image from <a href="https://www.dropbox.com/s/z2te8bp60ed4hg3/mltk_ble_audio_classifier-pacman.s37?dl=1" target="_blank">HERE</a></li>
+				<li>Download the Silicon Labs Commander utility from <a href="https://community.silabs.com/s/article/simplicity-commander" target="_blank">HERE</a></li>
+				<li>Use Commander to program the firmware image to the development board</li>
+				<li>Click <a href="javascript:closeInstallDialog();">HERE</a> to open a bluetooth connection to development board</li>
+				<li>Play Pac-Man using the keywords: Left, Right, Up, Down</li>
+			</ol>
+
+			<p>See the MLTK <a target="_blank" href="https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_pacman.html">documentation</a> for more details</p>
+		</div>
+
+
+		<div class="dialog" id="help">
+			<div id="help-close" class="dialog-close-button">X</div>
+			<h2>Help</h2>
+			<table align="center" border="0" cellPadding="2" cellSpacing="0">
+				<tbody>
+					<tr><td>Say "Left" : </td><td>Move Left</td></tr>
+					<tr><td>Say "Right" : </td><td>Move Right</td></tr>
+					<tr><td>Say "Down" : </td><td>Move Down</td></tr>
+					<tr><td>Say "Up" : </td><td>Move Up</td></tr>
+					<tr><td colspan="2">&nbsp;</td></tr>
+					<tr><td>Say "Stop" : </td><td>PAUSE</td></tr>
+					<tr><td>Say "Go" : </td><td>RESUME</td></tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div id="home">
+			<div class="title-silabs">Silicon Lab's</div>
+			<div class="title-ml">Machine Learning</div>
+			<h1>pac-man</h1>
+			<canvas id="canvas-home-title-pacman"></canvas>
+			<div id="presentation">
+				<div id="presentation-titles">character &nbsp;/&nbsp; nickname</div>
+				<canvas id="canvas-presentation-blinky"></canvas><div id="presentation-character-blinky">- shadow</div><div id="presentation-name-blinky">"blinky"</div>
+				<canvas id="canvas-presentation-pinky"></canvas><div id="presentation-character-pinky">- speedy</div><div id="presentation-name-pinky">"pinky"</div>
+				<canvas id="canvas-presentation-inky"></canvas><div id="presentation-character-inky">- bashful</div><div id="presentation-name-inky">"inky"</div>
+				<canvas id="canvas-presentation-clyde"></canvas><div id="presentation-character-clyde">- pokey</div><div id="presentation-name-clyde">"clyde"</div>
+			</div>
+			<canvas id="trailer"></canvas>
+
+			<div class="bottom-info">
+				<div id="copyright">
+					This was adapted from a game created by Lucio Panpinto<br />View original source code on <a target="_blank" href="https://github.com/luciopanepinto/pacman">GitHub</a>
+				</div>
+			</div>
+
+		</div>
+	
+		<div id="panel">
+			<div class="title">
+				<div>Silicon Lab's</div><em>ML</em><h1>pac-man</h1>
+			    <canvas id="canvas-panel-title-pacman"></canvas>
+			</div>
+			<div id="score"><h2>1UP</h2><span>00</span></div>
+			<div id="highscore"><h2>High Score</h2><span>00</span></div>
+			<div id="board">
+				<canvas id="canvas-board"></canvas>
+				<canvas id="canvas-paths"></canvas>
+				<canvas id="canvas-bubbles"></canvas>
+				<canvas id="canvas-fruits"></canvas>
+				<canvas id="canvas-pacman"></canvas>
+				<canvas id="canvas-ghost-blinky"></canvas>
+				<canvas id="canvas-ghost-pinky"></canvas>
+				<canvas id="canvas-ghost-inky"></canvas>
+				<canvas id="canvas-ghost-clyde"></canvas>
+			</div>
+			<canvas id="canvas-lifes"></canvas>
+			<canvas id="canvas-level-fruits"></canvas>
+			<div id="message"></div>
+		</div>
+
+		<div class="buttons">
+			<div id="install-button">install</div>|
+			<div id="help-button">help</div>|
+			<div id="docs-button"><a href="https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_pacman.html" target="_blank">docs</a></div>
+			<a class="sound" href="javascript:void(0);" data-sound="on"><img src="img/sound-on.png" alt="" border="0"></a>
+		</div>
+
+		<div class="dialog" id="command-log-dialog">
+			<h2>Command Log</h2>
+			<div class="name">Name</div><div class="confidence">Confidence</div>
+			<textarea id="command-log" readonly="1">
+
+			</textarea>
+		</div>
+	</body>
+	
+</html>

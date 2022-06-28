@@ -11,3 +11,7 @@ mltk_define(GECKO_SDK_INCLUDE_EMLIB
 mltk_define(GECKO_SDK_IO_STREAM_SERVICE_SOURCES
 "List of service source files to include in the silabs_gecko_sdk_iostream_service component"
 )
+
+mltk_define(GECKO_SDK_ENABLE_FREERTOS
+"Enable the FreeRTOS component"
+)

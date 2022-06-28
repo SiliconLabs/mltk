@@ -7,10 +7,8 @@ extern const uint32_t __init_array_end;
 extern const uint8_t __HeapBase;
 extern const uint8_t __HeapLimit;
 
-
 extern int main(void);
 extern void heap_set_buffer(void* buffer, uint32_t length);
-
 
 static char mltk_stack[MLTK_STACK_SIZE] __attribute__ ((aligned(8), used, section(".stack")));
 

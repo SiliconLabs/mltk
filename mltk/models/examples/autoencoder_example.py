@@ -95,34 +95,34 @@ Model Profiling Report
     Input Data Type: float32
     Output Shape: 1x140
     Output Data Type: float32
-    Flash, Model File Size (bytes): 15.8k
+    Flash, Model File Size (bytes): 15.7k
     RAM, Runtime Memory Size (bytes): 3.4k
     Operation Count: 21.8k
     Multiply-Accumulate Count: 10.2k
     Layer Count: 9
     Unsupported Layer Count: 0
     Accelerator Cycle Count: 16.9k
-    CPU Cycle Count: 135.2k
-    CPU Utilization (%): 92.4
-    Clock Rate (hz): 80.0M
-    Time (s): 1.8m
-    Ops/s: 11.9M
-    MACs/s: 5.6M
-    Inference/s: 546.4
+    CPU Cycle Count: 131.5k
+    CPU Utilization (%): 89.2
+    Clock Rate (hz): 78.0M
+    Time (s): 1.9m
+    Ops/s: 11.5M
+    MACs/s: 5.4M
+    Inference/s: 529.1
 
     Model Layers
     +-------+-----------------+-------+--------+------------+------------+----------+-----------------+--------------+-----------------+
     | Index | OpCode          | # Ops | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape     | Output Shape | Options         |
     +-------+-----------------+-------+--------+------------+------------+----------+-----------------+--------------+-----------------+
-    | 0     | quantize        | 560.0 | 0      | 0          | 5.8k       | 90.0u    | 1x140           | 1x140        | Type=none       |
-    | 1     | fully_connected | 9.1k  | 4.5k   | 6.9k       | 2.2k       | 90.0u    | 1x140,32x140,32 | 1x32         | Activation:relu |
-    | 2     | fully_connected | 1.1k  | 512.0  | 880.0      | 1.8k       | 60.0u    | 1x32,16x32,16   | 1x16         | Activation:relu |
-    | 3     | fully_connected | 280.0 | 128.0  | 258.0      | 1.8k       | 0        | 1x16,8x16,8     | 1x8          | Activation:relu |
-    | 4     | fully_connected | 304.0 | 128.0  | 304.0      | 1.8k       | 0        | 1x8,16x8,16     | 1x16         | Activation:relu |
-    | 5     | fully_connected | 1.1k  | 512.0  | 978.0      | 1.8k       | 30.0u    | 1x16,32x16,32   | 1x32         | Activation:relu |
-    | 6     | fully_connected | 9.1k  | 4.5k   | 7.6k       | 1.8k       | 120.0u   | 1x32,140x32,140 | 1x140        | Activation:none |
-    | 7     | logistic        | 0     | 0      | 0          | 100.4k     | 1.2m     | 1x140           | 1x140        | Type=none       |
-    | 8     | dequantize      | 280.0 | 0      | 0          | 17.7k      | 210.0u   | 1x140           | 1x140        | Type=none       |
+    | 0     | quantize        | 560.0 | 0      | 0          | 5.5k       | 90.0u    | 1x140           | 1x140        | Type=none       |
+    | 1     | fully_connected | 9.1k  | 4.5k   | 6.9k       | 2.3k       | 120.0u   | 1x140,32x140,32 | 1x32         | Activation:relu |
+    | 2     | fully_connected | 1.1k  | 512.0  | 878.0      | 1.9k       | 30.0u    | 1x32,16x32,16   | 1x16         | Activation:relu |
+    | 3     | fully_connected | 280.0 | 128.0  | 254.0      | 1.9k       | 30.0u    | 1x16,8x16,8     | 1x8          | Activation:relu |
+    | 4     | fully_connected | 304.0 | 128.0  | 302.0      | 1.9k       | 30.0u    | 1x8,16x8,16     | 1x16         | Activation:relu |
+    | 5     | fully_connected | 1.1k  | 512.0  | 974.0      | 1.9k       | 30.0u    | 1x16,32x16,32   | 1x32         | Activation:relu |
+    | 6     | fully_connected | 9.1k  | 4.5k   | 7.6k       | 1.9k       | 120.0u   | 1x32,140x32,140 | 1x140        | Activation:none |
+    | 7     | logistic        | 0     | 0      | 0          | 96.0k      | 1.2m     | 1x140           | 1x140        | Type=none       |
+    | 8     | dequantize      | 280.0 | 0      | 0          | 18.0k      | 210.0u   | 1x140           | 1x140        | Type=none       |
     +-------+-----------------+-------+--------+------------+------------+----------+-----------------+--------------+-----------------+
 
 

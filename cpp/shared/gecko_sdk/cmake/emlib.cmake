@@ -65,3 +65,11 @@ target_link_libraries(${NAME}
 PRIVATE
     ${GECKO_SDK_BOARD_TARGET}
 )
+
+mltk_get(GECKO_SDK_SECURE_ELEMENT_ENABLED)
+if(GECKO_SDK_SECURE_ELEMENT_ENABLED)
+    target_sources(${NAME}  
+    PRIVATE 
+        src/em_se.c
+    )
+endif()

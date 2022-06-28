@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.model.mixins.image_dataset_mixin &#8212; MLTK 0.7.0 documentation</title>
+    <title>mltk.core.model.mixins.image_dataset_mixin &#8212; MLTK 0.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../index.html" title="MLTK 0.7.0 documentation"
+        <a href="../../../../../index.html" title="MLTK 0.8.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../_static/logo.png"
-                   alt="MLTK 0.7.0 documentation logo">
+                   alt="MLTK 0.8.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../index.html" title="MLTK 0.7.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../index.html" title="MLTK 0.8.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../index.html"
-       title="MLTK 0.7.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.8.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -362,6 +362,13 @@
     
     
       <a href="../../../../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../../../docs/other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
       
     
     </li>
@@ -814,8 +821,12 @@
             <span class="n">validation_labels</span> <span class="o">=</span> <span class="p">[]</span>
             <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">batch_y</span> <span class="ow">in</span> <span class="n">validation_datagen</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_mode</span> <span class="o">==</span> <span class="s1">'categorical'</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch_y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'The model must have only 1 output when my_model.class_mode=categorical, update the class_mode to something else for multiple output models'</span><span class="p">)</span>
+                    
                     <span class="n">batch_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">batch_y</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
                 <span class="n">validation_labels</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">batch_y</span><span class="p">)</span>
+
             <span class="n">validation_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">validation_labels</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
@@ -1014,7 +1025,7 @@
               
           </div>
             Last updated on
-              Jun 14, 2022.
+              Jun 28, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

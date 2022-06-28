@@ -139,31 +139,31 @@ Model Profiling Report
     Output Shape: 1x4
     Output Data Type: int8
     Flash, Model File Size (bytes): 15.3k
-    RAM, Runtime Memory Size (bytes): 7.1k
+    RAM, Runtime Memory Size (bytes): 13.4k
     Operation Count: 574.5k
     Multiply-Accumulate Count: 278.1k
     Layer Count: 7
     Unsupported Layer Count: 0
-    Accelerator Cycle Count: 440.0k
-    CPU Cycle Count: 92.6k
-    CPU Utilization (%): 19.0
-    Clock Rate (hz): 80.0M
-    Time (s): 6.1m
-    Ops/s: 94.3M
-    MACs/s: 45.7M
-    Inference/s: 164.2
+    Accelerator Cycle Count: 224.3k
+    CPU Cycle Count: 98.9k
+    CPU Utilization (%): 34.6
+    Clock Rate (hz): 78.0M
+    Time (s): 3.7m
+    Ops/s: 157.0M
+    MACs/s: 76.0M
+    Inference/s: 273.2
 
     Model Layers
     +-------+-----------------+--------+--------+------------+------------+----------+------------------------+--------------+-----------------------------------------------------+
     | Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape            | Output Shape | Options                                             |
     +-------+-----------------+--------+--------+------------+------------+----------+------------------------+--------------+-----------------------------------------------------+
-    | 0     | conv_2d         | 67.2k  | 28.8k  | 98.5k      | 19.1k      | 1.3m     | 1x49x32x1,8x3x3x1,8    | 1x25x16x8    | Padding:same stride:2x2 activation:relu             |
-    | 1     | conv_2d         | 244.6k | 119.8k | 173.6k     | 18.8k      | 2.2m     | 1x25x16x8,16x3x3x8,16  | 1x13x8x16    | Padding:same stride:2x2 activation:relu             |
-    | 2     | conv_2d         | 260.7k | 129.0k | 166.3k     | 18.9k      | 2.1m     | 1x13x8x16,32x3x3x16,32 | 1x7x4x32     | Padding:same stride:2x2 activation:relu             |
-    | 3     | max_pool_2d     | 896.0  | 0      | 800.0      | 28.3k      | 330.0u   | 1x7x4x32               | 1x1x4x32     | Padding:valid stride:1x7 filter:1x7 activation:none |
+    | 0     | conv_2d         | 67.2k  | 28.8k  | 46.7k      | 20.6k      | 720.0u   | 1x49x32x1,8x3x3x1,8    | 1x25x16x8    | Padding:same stride:2x2 activation:relu             |
+    | 1     | conv_2d         | 244.6k | 119.8k | 90.8k      | 20.7k      | 1.3m     | 1x25x16x8,16x3x3x8,16  | 1x13x8x16    | Padding:same stride:2x2 activation:relu             |
+    | 2     | conv_2d         | 260.7k | 129.0k | 85.2k      | 20.2k      | 1.2m     | 1x13x8x16,32x3x3x16,32 | 1x7x4x32     | Padding:same stride:2x2 activation:relu             |
+    | 3     | max_pool_2d     | 896.0  | 0      | 800.0      | 30.0k      | 390.0u   | 1x7x4x32               | 1x1x4x32     | Padding:valid stride:1x7 filter:1x7 activation:none |
     | 4     | reshape         | 0      | 0      | 0          | 1.1k       | 30.0u    | 1x1x4x32,2             | 1x128        | Type=none                                           |
-    | 5     | fully_connected | 1.0k   | 512.0  | 815.0      | 2.1k       | 30.0u    | 1x128,4x128,4          | 1x4          | Activation:none                                     |
-    | 6     | softmax         | 20.0   | 0      | 0          | 4.3k       | 60.0u    | 1x4                    | 1x4          | Type=softmaxoptions                                 |
+    | 5     | fully_connected | 1.0k   | 512.0  | 809.0      | 2.2k       | 30.0u    | 1x128,4x128,4          | 1x4          | Activation:none                                     |
+    | 6     | softmax         | 20.0   | 0      | 0          | 4.1k       | 60.0u    | 1x4                    | 1x4          | Type=softmaxoptions                                 |
     +-------+-----------------+--------+--------+------------+------------+----------+------------------------+--------------+-----------------------------------------------------+
 
 

@@ -40,14 +40,14 @@ def main():
         context_settings=dict(
             max_content_width=100
         ),
-        add_completion=True
+        add_completion=False
     )
 
     cli.build_cli = typer.Typer(
         context_settings=dict(
             max_content_width=100
         ),
-        add_completion=True
+        add_completion=False
     )
     cli.root_cli.add_typer(cli.build_cli, name='build', short_help='MLTK build commands')
 
@@ -59,6 +59,16 @@ def main():
             show_default=False,
             callback=_version_callback,
             is_eager=True
+        ),
+        gpu: bool = typer.Option(True, 
+            help='''\b
+Disable usage of the GPU. 
+This does the same as defining the environment variable: CUDA_VISIBLE_DEVICES=-1
+Example:
+mltk --no-gpu train image_example1
+''',
+            show_default=False,
+            callback=_disable_gpu_callback
         ),
     ):
         """Silicon Labs Machine Learning Toolkit
@@ -217,6 +227,17 @@ def _version_callback(value: bool):
         import mltk
         typer.echo(mltk.__version__)
         raise typer.Exit()
+
+
+def _disable_gpu_callback(value: bool):
+    """Disable usage of the GPU
+    This does the same thing as defining the environment variable: CUDA_VISIBLE_DEVICES=-1
+    """
+    if not value:
+        from mltk import cli 
+        cli.print_warning('Disabling GPU')
+        os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
 
 
 def _check_disable_tensorflow():

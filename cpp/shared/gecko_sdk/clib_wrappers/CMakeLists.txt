@@ -14,10 +14,11 @@ PRIVATE
 )
 target_link_libraries(mltk_gecko_sdk_clib_wrappers
 PRIVATE 
-    ${MLTK_PLATFORM}
     mltk::cpputils
     mltk::gecko_sdk::platform_common
+    ${MLTK_PLATFORM}
 )
+
 
 target_link_options(mltk_gecko_sdk_clib_wrappers
 INTERFACE 

@@ -17,6 +17,8 @@ float SL_TFLITE_MODEL_SENSITIVITY;
 int SL_TFLITE_MODEL_VERBOSE_MODEL_OUTPUT_LOGS;
 int SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS;
 mltk::StringList SL_TFLITE_MODEL_CLASSES;
+mltk::Int32List SL_TFLITE_DETECTION_THRESHOLD_LIST;
+
 
 
 bool mltk_app_settings_load_parameters(const void* tflite_flatbuffer)
@@ -46,6 +48,16 @@ bool mltk_app_settings_load_parameters(const void* tflite_flatbuffer)
     {
         model_parameters.get("detection_threshold", SL_TFLITE_MODEL_DETECTION_THRESHOLD);
     }
+
+    if(model_parameters.get("detection_threshold_list", SL_TFLITE_DETECTION_THRESHOLD_LIST))
+    {
+        if(SL_TFLITE_DETECTION_THRESHOLD_LIST.size() != SL_TFLITE_MODEL_CLASSES.size())
+        {
+            printf("The number of entries in the model parameter: 'detection_threshold_list' must match the number of classes\n");
+            return false;
+        }
+    }
+
 
     SL_TFLITE_MODEL_SUPPRESSION_MS = cli_opts.suppression_ms;
     if(!cli_opts.suppression_ms_provided)
@@ -78,11 +90,10 @@ bool mltk_app_settings_load_parameters(const void* tflite_flatbuffer)
     }
 
 #ifndef __arm__
-    // If no loop interval is set, then force it to be 25ms
-    // on Windows/Linux
-    if(SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS == 0) 
+    // Ensure the loop interval is at least 10ms on Windows/Linux
+    if(SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS < 10) 
     {
-        SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS = 25;
+        SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS = 10;
     }
 #endif
 
@@ -119,6 +130,13 @@ bool mltk_app_settings_load_parameters(const void* tflite_flatbuffer)
         model_parameters.get("volume_gain", SL_ML_AUDIO_FEATURE_GENERATION_AUDIO_GAIN);
     }
 
+#ifdef __arm__
+    if(SL_ML_AUDIO_FEATURE_GENERATION_DUMP_AUDIO)
+    {
+        // Force the infernece loop to 100ms when dumping audio
+        SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS = 100;
+    }
+#endif
 
     printf("Application settings:\n");
     printf("average_window_duration_ms=%d\n", SL_TFLITE_MODEL_AVERAGE_WINDOW_DURATION_MS);

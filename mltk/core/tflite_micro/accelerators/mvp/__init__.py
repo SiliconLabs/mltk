@@ -35,10 +35,11 @@ class MVPTfliteMicroAccelerator(TfliteMicroAccelerator):
         """Update the given ProfilingModelResults with estimated model metrics"""
         from .estimator import get_estimates
 
-        # If not clock rate was given, then just default to 80MHz
+        # If not clock rate was given, then just default to 78MHz
+        # as that's the max rate that can be used with the radio
         if results.cpu_clock_rate == 0:
             # pylint: disable=protected-access
-            results._cpu_clock_rate = int(80e6)
+            results._cpu_clock_rate = int(78e6)
 
         for layer in results.layers:
             try:

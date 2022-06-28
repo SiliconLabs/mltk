@@ -2,6 +2,7 @@
 from typing import Union, List, Tuple
 import re
 import os
+import copy
 
 
 
@@ -14,6 +15,7 @@ from .tflite_model import TfliteModel
 from .profiling_results import ProfilingModelResults, ProfilingLayerResult
 from .utils import (get_mltk_logger, ArchiveFileNotFoundError)
 from .tflite_micro import TfliteMicro, TfliteMicroLayerError
+from .tflite_model_parameters import TfliteModelParameters
 
 
 def profile_model(
@@ -126,6 +128,15 @@ def profile_model_on_device(
 
     logger = get_mltk_logger()
     accelerator = TfliteMicro.normalize_accelerator_name(accelerator)
+    tflite_model = copy.deepcopy(tflite_model)
+    try:
+        tflite_model_params = TfliteModelParameters.load_from_tflite_model(tflite_model)
+        if 'runtime_memory_size' in tflite_model_params:
+            del tflite_model_params['runtime_memory_size'] # Ensure the memory size is -1 so it is calculated at runtime
+        tflite_model_params.add_to_tflite_model(tflite_model)
+    except:
+        # If the model doesn't have params then just ignore the error
+        pass
 
     logger.error('Programming ML model to device ...')
     firmware_apps.program_image_with_model(
@@ -158,8 +169,8 @@ def profile_model_on_device(
         stop_regex=[re.compile(r'.*done.*', re.IGNORECASE)],
         fail_regex=[
             re.compile(r'.*hardfault.*', re.IGNORECASE), 
-            re.compile(r'.*assert.*', re.IGNORECASE), 
-            re.compile(r'.*error.*', re.IGNORECASE)
+            re.compile(r'.*error.*', re.IGNORECASE),
+            re.compile(r'.*failed to alloc memory.*', re.IGNORECASE)
         ]
     ) as serial_reader:
         # Reset the board to start the profiling firmware

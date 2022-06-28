@@ -91,6 +91,7 @@ PRIVATE
     mltk_platform_silabs_simple_bootloader
   
 PUBLIC 
+    mltk::gecko_sdk::clib_wrappers
     mltk::platform::common
     mltk::cmsis 
     ${PROJECT_NAME}_api
@@ -99,17 +100,17 @@ PUBLIC
     mltk::gecko_sdk::system_service
     mltk::gecko_sdk::power_manager_service
     mltk::gecko_sdk::sleeptimer_service
-    mltk::gecko_sdk::udelay_service
     mltk::gecko_sdk::dmadrv
     mltk::gecko_sdk::ledrv
     mltk::gecko_sdk::nvm3
     mltk::gecko_sdk::button
     mltk::gecko_sdk::gpiointerrupt
     mltk::gecko_sdk::emlib
-    mltk::gecko_sdk::clib_wrappers
     mltk::gecko_sdk::platform_common
+    mltk::gecko_sdk::platform_peripheral
     mltk::gecko_sdk::hardware_board
     mltk::gecko_sdk::device_efm32gg11b
+    mltk::gecko_sdk::udelay_service
     mltk::jlink_stream
 )
 

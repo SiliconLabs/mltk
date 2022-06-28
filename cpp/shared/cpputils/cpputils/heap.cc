@@ -91,7 +91,7 @@ extern "C" void heap_free(void* ptr)
 {
     if(ptr == nullptr)
     {
-         assert(!"Attempting to free a null pointer");
+        //assert(!"Attempting to free a null pointer");
     }
     else
     {

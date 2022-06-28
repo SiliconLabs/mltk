@@ -30,7 +30,8 @@ def evaluate_model(
     dump: bool=False,
     show: bool=False,
     verbose: bool=None,
-    callbacks:List=None
+    callbacks:List=None,
+    update_archive:bool=True,
 ) -> EvaluationResults:
     """Evaluate a trained model
 
@@ -69,6 +70,7 @@ def evaluate_model(
         show: Display the generated performance diagrams
         verbose: Enable verbose console logs
         callbacks: List of Keras callbacks to use for evaluation
+        update_archive: Update the model archive with the evaluation results
 
     Returns:
         Dictionary of evaluation results
@@ -100,7 +102,8 @@ def evaluate_model(
             dump=dump,
             show=show,
             verbose=verbose,
-            callbacks=callbacks
+            callbacks=callbacks,
+            update_archive=update_archive
         )
 
     elif isinstance(mltk_model, EvaluateClassifierMixin):
@@ -113,6 +116,7 @@ def evaluate_model(
             show=show,
             verbose=verbose,
             callbacks=callbacks,
+            update_archive=update_archive
         )
 
     elif isinstance(mltk_model, EvaluateMixin):
@@ -122,7 +126,8 @@ def evaluate_model(
             weights=weights,
             verbose=verbose,
             callbacks=callbacks,
-            show=show
+            show=show,
+            update_archive=update_archive
         )
 
     raise RuntimeError('MltkModel instance must inherit EvaluateMixin, EvaluateClassifierMixin or EvaluateAutoEncoderMixin')
@@ -136,6 +141,7 @@ def evaluate_custom(
     callbacks:list=None,
     verbose:bool=False,
     show:bool=False,
+    update_archive:bool=True
 ) -> EvaluationResults:
     """Evaluate a trained model based on the model's implementation
     
@@ -145,6 +151,7 @@ def evaluate_custom(
         weights: Optional weights to load before evaluating (only valid for a keras model)
         verbose: Enable verbose log messages
         callbacks: Optional callbacks to invoke while evaluating
+        update_archive: Update the model archive with the eval results
 
     Returns:
         Dictionary containing evaluation results
@@ -162,7 +169,8 @@ def evaluate_custom(
     eval_dir = mltk_model.create_log_dir(subdir, delete_existing=True)
     logger = mltk_model.create_logger('eval', parent=get_mltk_logger())
 
-    update_archive = mltk_model.check_archive_file_is_writable()
+    if update_archive:
+        update_archive = mltk_model.check_archive_file_is_writable()
     gpu.initialize(logger=logger)
 
     # Build the MLTK model's corresponding as a Keras model or .tflite

@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.tflite_micro.tflite_micro &#8212; MLTK 0.7.0 documentation</title>
+    <title>mltk.core.tflite_micro.tflite_micro &#8212; MLTK 0.8.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.7.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.8.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.7.0 documentation logo">
+                   alt="MLTK 0.8.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.7.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.8.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.7.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.8.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -362,6 +362,13 @@
     
     
       <a href="../../../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../../../docs/other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
       
     
     </li>
@@ -606,7 +613,7 @@
             <span class="n">model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
             <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">,</span>
             <span class="n">enable_profiler</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">runtime_buffer_size</span><span class="o">=</span><span class="mi">16</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span> <span class="c1"># 16MB</span>
+            <span class="n">runtime_buffer_size</span><span class="o">=-</span><span class="mi">1</span> <span class="c1"># Determine the optimal memory size</span>
         <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">renable_simulator_backend</span> <span class="o">=</span> <span class="kc">False</span>
@@ -873,21 +880,22 @@
 
         <span class="c1"># Check if any "&lt;accelerator name&gt;_mltk_accelerator.pth" files are found in the Python Libs directory</span>
         <span class="n">python_libs_dir</span> <span class="o">=</span> <span class="n">get_python_lib</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">python_libs_dir</span><span class="p">):</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'_mltk_accelerator.pth'</span><span class="p">):</span>
-                <span class="k">continue</span>
-            <span class="n">pth_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">python_libs_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1">'</span>
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pth_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-                <span class="n">accelerator_package_base_dir</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
-            <span class="n">accelerator_name</span> <span class="o">=</span> <span class="n">fn</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'_mltk_accelerator.pth'</span><span class="p">)]</span>
-            <span class="n">accelerator_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">accelerator_package_base_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">accelerator_name</span><span class="si">}</span><span class="s1">'</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">python_libs_dir</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">python_libs_dir</span><span class="p">):</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'_mltk_accelerator.pth'</span><span class="p">):</span>
+                    <span class="k">continue</span>
+                <span class="n">pth_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">python_libs_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1">'</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">pth_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">accelerator_package_base_dir</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="n">accelerator_name</span> <span class="o">=</span> <span class="n">fn</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'_mltk_accelerator.pth'</span><span class="p">)]</span>
+                <span class="n">accelerator_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">accelerator_package_base_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">accelerator_name</span><span class="si">}</span><span class="s1">'</span>
 
-            <span class="c1"># If the file does exist, </span>
-            <span class="c1"># then add its path to the accelerator search path</span>
-            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">accelerator_dir</span><span class="p">):</span>
-                <span class="n">search_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accelerator_dir</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">accelerator_dir</span><span class="si">}</span><span class="s1">_wrapper'</span><span class="p">):</span>
-                <span class="n">search_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">accelerator_dir</span><span class="si">}</span><span class="s1">_wrapper'</span><span class="p">)</span>
+                <span class="c1"># If the file does exist, </span>
+                <span class="c1"># then add its path to the accelerator search path</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">accelerator_dir</span><span class="p">):</span>
+                    <span class="n">search_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">accelerator_dir</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">accelerator_dir</span><span class="si">}</span><span class="s1">_wrapper'</span><span class="p">):</span>
+                    <span class="n">search_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">accelerator_dir</span><span class="si">}</span><span class="s1">_wrapper'</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">search_path</span> <span class="ow">in</span> <span class="n">search_paths</span><span class="p">:</span>
             <span class="n">search_path</span> <span class="o">=</span> <span class="n">fullpath</span><span class="p">(</span><span class="n">search_path</span><span class="p">)</span>
@@ -1007,7 +1015,7 @@
               
           </div>
             Last updated on
-              Jun 14, 2022.
+              Jun 28, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

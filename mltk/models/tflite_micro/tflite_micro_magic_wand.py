@@ -90,34 +90,34 @@ Model Profiling Report
     Output Shape: 1x4
     Output Data Type: float32
     Flash, Model File Size (bytes): 10.2k
-    RAM, Runtime Memory Size (bytes): 5.7k
+    RAM, Runtime Memory Size (bytes): 6.4k
     Operation Count: 140.6k
     Multiply-Accumulate Count: 62.0k
     Layer Count: 10
     Unsupported Layer Count: 0
-    Accelerator Cycle Count: 144.7k
-    CPU Cycle Count: 90.1k
-    CPU Utilization (%): 40.8
-    Clock Rate (hz): 80.0M
-    Time (s): 2.8m
-    Ops/s: 50.9M
-    MACs/s: 22.5M
-    Inference/s: 362.3
+    Accelerator Cycle Count: 72.9k
+    CPU Cycle Count: 94.6k
+    CPU Utilization (%): 62.2
+    Clock Rate (hz): 78.0M
+    Time (s): 2.0m
+    Ops/s: 72.1M
+    MACs/s: 31.8M
+    Inference/s: 512.8
 
     Model Layers
     +-------+-----------------+-------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------------------+
     | Index | OpCode          | # Ops | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape          | Output Shape | Options                                             |
     +-------+-----------------+-------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------------------+
-    | 0     | quantize        | 1.5k  | 0      | 0          | 14.7k      | 180.0u   | 1x128x3x1            | 1x128x3x1    | Type=none                                           |
-    | 1     | conv_2d         | 82.9k | 36.9k  | 100.8k     | 30.7k      | 1.5m     | 1x128x3x1,8x4x3x1,8  | 1x128x3x8    | Padding:same stride:1x1 activation:relu             |
-    | 2     | max_pool_2d     | 3.0k  | 0      | 1.9k       | 8.1k       | 90.0u    | 1x128x3x8            | 1x42x1x8     | Padding:valid stride:3x3 filter:3x3 activation:none |
-    | 3     | conv_2d         | 45.0k | 21.5k  | 35.7k      | 11.0k      | 540.0u   | 1x42x1x8,16x4x1x8,16 | 1x42x1x16    | Padding:same stride:1x1 activation:relu             |
-    | 4     | max_pool_2d     | 672.0 | 0      | 672.0      | 14.7k      | 180.0u   | 1x42x1x16            | 1x14x1x16    | Padding:same stride:1x3 filter:1x3 activation:none  |
-    | 5     | reshape         | 0     | 0      | 0          | 1.6k       | 30.0u    | 1x14x1x16,2          | 1x224        | Type=none                                           |
-    | 6     | fully_connected | 7.2k  | 3.6k   | 5.5k       | 2.1k       | 90.0u    | 1x224,16x224,16      | 1x16         | Activation:relu                                     |
-    | 7     | fully_connected | 132.0 | 64.0   | 135.0      | 1.8k       | 30.0u    | 1x16,4x16,4          | 1x4          | Activation:none                                     |
-    | 8     | softmax         | 20.0  | 0      | 0          | 4.3k       | 60.0u    | 1x4                  | 1x4          | Type=softmaxoptions                                 |
-    | 9     | dequantize      | 8.0   | 0      | 0          | 1.1k       | 30.0u    | 1x4                  | 1x4          | Type=none                                           |
+    | 0     | quantize        | 1.5k  | 0      | 0          | 13.9k      | 180.0u   | 1x128x3x1            | 1x128x3x1    | Type=none                                           |
+    | 1     | conv_2d         | 82.9k | 36.9k  | 46.4k      | 32.4k      | 900.0u   | 1x128x3x1,8x4x3x1,8  | 1x128x3x8    | Padding:same stride:1x1 activation:relu             |
+    | 2     | max_pool_2d     | 3.0k  | 0      | 1.9k       | 8.5k       | 120.0u   | 1x128x3x8            | 1x42x1x8     | Padding:valid stride:3x3 filter:3x3 activation:none |
+    | 3     | conv_2d         | 45.0k | 21.5k  | 18.4k      | 13.2k      | 360.0u   | 1x42x1x8,16x4x1x8,16 | 1x42x1x16    | Padding:same stride:1x1 activation:relu             |
+    | 4     | max_pool_2d     | 672.0 | 0      | 672.0      | 15.6k      | 210.0u   | 1x42x1x16            | 1x14x1x16    | Padding:same stride:1x3 filter:1x3 activation:none  |
+    | 5     | reshape         | 0     | 0      | 0          | 1.6k       | 0        | 1x14x1x16,2          | 1x224        | Type=none                                           |
+    | 6     | fully_connected | 7.2k  | 3.6k   | 5.5k       | 2.2k       | 120.0u   | 1x224,16x224,16      | 1x16         | Activation:relu                                     |
+    | 7     | fully_connected | 132.0 | 64.0   | 135.0      | 1.9k       | 30.0u    | 1x16,4x16,4          | 1x4          | Activation:none                                     |
+    | 8     | softmax         | 20.0  | 0      | 0          | 4.1k       | 30.0u    | 1x4                  | 1x4          | Type=softmaxoptions                                 |
+    | 9     | dequantize      | 8.0   | 0      | 0          | 1.2k       | 0        | 1x4                  | 1x4          | Type=none                                           |
     +-------+-----------------+-------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------------------+
 
 

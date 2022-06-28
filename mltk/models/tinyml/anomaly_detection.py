@@ -150,42 +150,42 @@ Model Profiling Report
     Input Data Type: float32
     Output Shape: 1x5x128x1
     Output Data Type: float32
-    Flash, Model File Size (bytes): 280.3k
+    Flash, Model File Size (bytes): 280.2k
     RAM, Runtime Memory Size (bytes): 9.6k
     Operation Count: 535.9k
     Multiply-Accumulate Count: 264.2k
     Layer Count: 17
     Unsupported Layer Count: 0
-    Accelerator Cycle Count: 406.5k
-    CPU Cycle Count: 145.7k
-    CPU Utilization (%): 27.1
-    Clock Rate (hz): 80.0M
-    Time (s): 6.7m
-    Ops/s: 79.8M
-    MACs/s: 39.3M
-    Inference/s: 148.8
+    Accelerator Cycle Count: 406.4k
+    CPU Cycle Count: 147.0k
+    CPU Utilization (%): 27.2
+    Clock Rate (hz): 78.0M
+    Time (s): 6.9m
+    Ops/s: 77.3M
+    MACs/s: 38.1M
+    Inference/s: 144.3
 
     Model Layers
     +-------+-----------------+--------+--------+------------+------------+----------+-------------------+--------------+--------------------------+
     | Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape       | Output Shape | Options                  |
     +-------+-----------------+--------+--------+------------+------------+----------+-------------------+--------------+--------------------------+
-    | 0     | quantize        | 2.6k   | 0      | 0          | 23.9k      | 300.0u   | 1x5x128x1         | 1x5x128x1    | Type=none                |
-    | 1     | reshape         | 0      | 0      | 0          | 3.6k       | 60.0u    | 1x5x128x1,2       | 1x640        | Type=none                |
-    | 2     | fully_connected | 164.2k | 81.9k  | 123.7k     | 2.2k       | 1.5m     | 1x640,128x640,128 | 1x128        | Activation:relu          |
-    | 3     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
-    | 4     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
-    | 5     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
-    | 6     | fully_connected | 2.1k   | 1.0k   | 1.6k       | 1.8k       | 30.0u    | 1x128,8x128,8     | 1x8          | Activation:relu          |
-    | 7     | fully_connected | 2.4k   | 1.0k   | 2.3k       | 1.8k       | 60.0u    | 1x8,128x8,128     | 1x128        | Activation:relu          |
-    | 8     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
-    | 9     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
-    | 10    | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.8k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
-    | 11    | fully_connected | 164.5k | 81.9k  | 126.7k     | 1.8k       | 1.6m     | 1x128,640x128,640 | 1x640        | Activation:none          |
-    | 12    | shape           | 0      | 0      | 0          | 356.0      | 0        | 1x640             | 2            | Type=shapeoptions        |
+    | 0     | quantize        | 2.6k   | 0      | 0          | 22.6k      | 300.0u   | 1x5x128x1         | 1x5x128x1    | Type=none                |
+    | 1     | reshape         | 0      | 0      | 0          | 3.6k       | 30.0u    | 1x5x128x1,2       | 1x640        | Type=none                |
+    | 2     | fully_connected | 164.2k | 81.9k  | 123.7k     | 2.6k       | 1.6m     | 1x640,128x640,128 | 1x128        | Activation:relu          |
+    | 3     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.9k       | 360.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 4     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.9k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 5     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.9k       | 360.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 6     | fully_connected | 2.1k   | 1.0k   | 1.6k       | 1.9k       | 30.0u    | 1x128,8x128,8     | 1x8          | Activation:relu          |
+    | 7     | fully_connected | 2.4k   | 1.0k   | 2.3k       | 1.9k       | 30.0u    | 1x8,128x8,128     | 1x128        | Activation:relu          |
+    | 8     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.9k       | 360.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 9     | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.9k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 10    | fully_connected | 33.1k  | 16.4k  | 25.4k      | 1.9k       | 330.0u   | 1x128,128x128,128 | 1x128        | Activation:relu          |
+    | 11    | fully_connected | 164.5k | 81.9k  | 126.7k     | 1.9k       | 1.6m     | 1x128,640x128,640 | 1x640        | Activation:none          |
+    | 12    | shape           | 0      | 0      | 0          | 369.0      | 0        | 1x640             | 2            | Type=shapeoptions        |
     | 13    | strided_slice   | 0      | 0      | 0          | 1.7k       | 0        | 2,1,1,1           | 0            | Type=stridedsliceoptions |
-    | 14    | pack            | 0      | 0      | 0          | 910.0      | 30.0u    | 0,0,0,0           | 4            | Type=packoptions         |
+    | 14    | pack            | 0      | 0      | 0          | 916.0      | 30.0u    | 0,0,0,0           | 4            | Type=packoptions         |
     | 15    | reshape         | 0      | 0      | 0          | 3.6k       | 30.0u    | 1x640,4           | 1x5x128x1    | Type=none                |
-    | 16    | dequantize      | 1.3k   | 0      | 0          | 92.8k      | 1.1m     | 1x5x128x1         | 1x5x128x1    | Type=none                |
+    | 16    | dequantize      | 1.3k   | 0      | 0          | 94.1k      | 1.2m     | 1x5x128x1         | 1x5x128x1    | Type=none                |
     +-------+-----------------+--------+--------+------------+------------+----------+-------------------+--------------+--------------------------+
 
 

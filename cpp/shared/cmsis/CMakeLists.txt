@@ -4,8 +4,11 @@ project(mltk_cmsis
 export (PACKAGE ${PROJECT_NAME})
 add_library(${PROJECT_NAME} INTERFACE)	 
 add_library(mltk::cmsis ALIAS ${PROJECT_NAME})
+
 add_library(mltk_cmsis_nn)	 
 add_library(mltk::cmsis_nn ALIAS mltk_cmsis_nn)
+
+
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmsis_options.cmake)
 
@@ -60,6 +63,12 @@ if(NOT CMAKE_C_FLAGS MATCHES ".*${compile_options}.*")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${compile_options}" CACHE INTERNAL "" FORCE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${compile_options}" CACHE INTERNAL "" FORCE)
 endif()
+
+
+target_include_directories(${PROJECT_NAME} 
+INTERFACE 
+    ${cmsis_SOURCE_DIR}
+)
 
 target_include_directories(mltk_cmsis_nn
 PUBLIC 
@@ -183,8 +192,10 @@ PRIVATE
 )
 
 
+
 add_library(mltk_cmsis_dsp_fft_q15)	 
 add_library(mltk::cmsis_dsp_fft_q15 ALIAS mltk_cmsis_dsp_fft_q15)
+
 target_include_directories(mltk_cmsis_dsp_fft_q15
 PUBLIC 
     ${cmsis_SOURCE_DIR}
@@ -216,6 +227,25 @@ target_compile_options(mltk_cmsis_dsp_fft_q15
 PRIVATE 
     -include stdint.h 
 )
+
+
+if(MLTK_PLATFORM_IS_EMBEDDED)
+    add_library(mltk_cmsis_rtos2)	 
+    add_library(mltk::cmsis_rtos2 ALIAS mltk_cmsis_rtos2)
+
+    target_sources(mltk_cmsis_rtos2
+    PRIVATE 
+        ${cmsis_SOURCE_DIR}/CMSIS/RTOS2/Source/os_systick.c
+    )
+    target_include_directories(mltk_cmsis_rtos2
+    PUBLIC 
+        ${cmsis_SOURCE_DIR}/CMSIS/RTOS2/Include
+    )
+    target_link_libraries(mltk_cmsis_rtos2
+    PRIVATE 
+        ${MLTK_PLATFORM}
+    )
+endif()
 
 
 mltk_load_python()

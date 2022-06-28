@@ -317,7 +317,7 @@ class TfliteModel:
 
     def get_output_tensor(self, index: int = 0) -> TfliteTensor:
         """Return a model output tensor as a TfliteTensor"""
-        if index >= self.n_inputs:
+        if index >= self.n_outputs:
             raise IndexError(f'Index overflow ({index} >= {self.n_outputs})') 
         tensor_index = self.flatbuffer_subgraph.outputs[index]
         return self.get_tensor(tensor_index)
@@ -325,7 +325,7 @@ class TfliteModel:
 
     def get_output_data(self, index: int = 0) -> np.ndarray:
         """Return a model output tensor as a np.ndarray"""
-        if index >= self.n_inputs:
+        if index >= self.n_outputs:
             raise IndexError(f'Index overflow ({index} >= {self.n_outputs})') 
         tensor_index = self.flatbuffer_subgraph.outputs[index]
         return self.get_tensor_data(tensor_index)

@@ -131,28 +131,28 @@ Model Profiling Report
     Output Shape: 1x4
     Output Data Type: int8
     Flash, Model File Size (bytes): 21.6k
-    RAM, Runtime Memory Size (bytes): 9.0k
+    RAM, Runtime Memory Size (bytes): 11.3k
     Operation Count: 684.0k
     Multiply-Accumulate Count: 336.0k
     Layer Count: 4
     Unsupported Layer Count: 1
-    Accelerator Cycle Count: 902.0k
-    CPU Cycle Count: 113.8k
-    CPU Utilization (%): 12.0
-    Clock Rate (hz): 80.0M
-    Time (s): 11.8m
-    Ops/s: 57.7M
-    MACs/s: 28.4M
-    Inference/s: 84.4
+    Accelerator Cycle Count: 404.6k
+    CPU Cycle Count: 115.0k
+    CPU Utilization (%): 24.2
+    Clock Rate (hz): 78.0M
+    Time (s): 6.1m
+    Ops/s: 112.3M
+    MACs/s: 55.2M
+    Inference/s: 164.2
 
     Model Layers
     +-------+-----------------+--------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------+------------+--------------------------------+
     | Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape          | Output Shape | Options                                 | Supported? | Error Msg                      |
     +-------+-----------------+--------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------+------------+--------------------------------+
-    | 0     | conv_2d         | 652.0k | 320.0k | 877.9k     | 84.4k      | 11.2m    | 1x49x40x1,8x10x8x1,8 | 1x25x20x8    | Padding:same stride:2x2 activation:relu | True       |                                |
-    | 1     | reshape         | 0      | 0      | 0          | 20.4k      | 240.0u   | 1x25x20x8,2          | 1x4000       | Type=none                               | True       |                                |
-    | 2     | fully_connected | 32.0k  | 16.0k  | 24.1k      | 4.6k       | 360.0u   | 1x4000,4x4000,4      | 1x4          | Activation:none                         | False      | weights_shape[1] (4000) > 2048 |
-    | 3     | softmax         | 20.0   | 0      | 0          | 4.3k       | 60.0u    | 1x4                  | 1x4          | Type=softmaxoptions                     | True       |                                |
+    | 0     | conv_2d         | 652.0k | 320.0k | 380.5k     | 85.7k      | 5.4m     | 1x49x40x1,8x10x8x1,8 | 1x25x20x8    | Padding:same stride:2x2 activation:relu | True       |                                |
+    | 1     | reshape         | 0      | 0      | 0          | 20.5k      | 270.0u   | 1x25x20x8,2          | 1x4000       | Type=none                               | True       |                                |
+    | 2     | fully_connected | 32.0k  | 16.0k  | 24.1k      | 5.1k       | 360.0u   | 1x4000,4x4000,4      | 1x4          | Activation:none                         | False      | weights_shape[1] (4000) > 2048 |
+    | 3     | softmax         | 20.0   | 0      | 0          | 3.7k       | 60.0u    | 1x4                  | 1x4          | Type=softmaxoptions                     | True       |                                |
     +-------+-----------------+--------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------+------------+--------------------------------+
 
 

@@ -122,32 +122,32 @@ Model Profiling Report
     Output Shape: 1x6
     Output Data Type: int8
     Flash, Model File Size (bytes): 16.0k
-    RAM, Runtime Memory Size (bytes): 12.3k
+    RAM, Runtime Memory Size (bytes): 24.3k
     Operation Count: 1.4M
     Multiply-Accumulate Count: 671.2k
     Layer Count: 8
     Unsupported Layer Count: 0
-    Accelerator Cycle Count: 1.0M
-    CPU Cycle Count: 350.9k
-    CPU Utilization (%): 28.4
-    Clock Rate (hz): 80.0M
-    Time (s): 15.4m
-    Ops/s: 89.2M
-    MACs/s: 43.4M
-    Inference/s: 64.7
+    Accelerator Cycle Count: 738.0k
+    CPU Cycle Count: 353.1k
+    CPU Utilization (%): 37.2
+    Clock Rate (hz): 78.0M
+    Time (s): 12.2m
+    Ops/s: 113.1M
+    MACs/s: 55.1M
+    Inference/s: 82.1
 
     Model Layers
     +-------+-------------------+--------+--------+------------+------------+----------+-----------------------+--------------+------------------------------------------------------+
     | Index | OpCode            | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape           | Output Shape | Options                                              |
     +-------+-------------------+--------+--------+------------+------------+----------+-----------------------+--------------+------------------------------------------------------+
-    | 0     | depthwise_conv_2d | 606.0k | 294.0k | 434.5k     | 287.5k     | 7.5m     | 1x59x49x1,1x7x7x8,8   | 1x30x25x8    | Multiplier:8 padding:same stride:2x2 activation:relu |
-    | 1     | conv_2d           | 592.7k | 290.3k | 459.7k     | 6.6k       | 5.7m     | 1x30x25x8,24x3x3x8,24 | 1x14x12x24   | Padding:valid stride:2x2 activation:relu             |
-    | 2     | max_pool_2d       | 4.0k   | 0      | 3.2k       | 21.6k      | 270.0u   | 1x14x12x24            | 1x7x6x24     | Padding:valid stride:2x2 filter:2x2 activation:none  |
-    | 3     | conv_2d           | 174.0k | 86.4k  | 132.2k     | 8.6k       | 1.7m     | 1x7x6x24,20x3x3x24,20 | 1x5x4x20     | Padding:valid stride:1x1 activation:relu             |
-    | 4     | max_pool_2d       | 320.0  | 0      | 380.0      | 18.0k      | 210.0u   | 1x5x4x20              | 1x2x2x20     | Padding:valid stride:2x2 filter:2x2 activation:none  |
-    | 5     | reshape           | 0      | 0      | 0          | 878.0      | 30.0u    | 1x2x2x20,2            | 1x80         | Type=none                                            |
-    | 6     | fully_connected   | 966.0  | 480.0  | 776.0      | 2.1k       | 30.0u    | 1x80,6x80,6           | 1x6          | Activation:none                                      |
-    | 7     | softmax           | 30.0   | 0      | 0          | 5.7k       | 60.0u    | 1x6                   | 1x6          | Type=softmaxoptions                                  |
+    | 0     | depthwise_conv_2d | 606.0k | 294.0k | 433.1k     | 284.0k     | 7.7m     | 1x59x49x1,1x7x7x8,8   | 1x30x25x8    | Multiplier:8 padding:same stride:2x2 activation:relu |
+    | 1     | conv_2d           | 592.7k | 290.3k | 233.5k     | 8.3k       | 3.0m     | 1x30x25x8,24x3x3x8,24 | 1x14x12x24   | Padding:valid stride:2x2 activation:relu             |
+    | 2     | max_pool_2d       | 4.0k   | 0      | 3.2k       | 22.8k      | 270.0u   | 1x14x12x24            | 1x7x6x24     | Padding:valid stride:2x2 filter:2x2 activation:none  |
+    | 3     | conv_2d           | 174.0k | 86.4k  | 67.1k      | 10.3k      | 930.0u   | 1x7x6x24,20x3x3x24,20 | 1x5x4x20     | Padding:valid stride:1x1 activation:relu             |
+    | 4     | max_pool_2d       | 320.0  | 0      | 380.0      | 19.1k      | 240.0u   | 1x5x4x20              | 1x2x2x20     | Padding:valid stride:2x2 filter:2x2 activation:none  |
+    | 5     | reshape           | 0      | 0      | 0          | 866.0      | 30.0u    | 1x2x2x20,2            | 1x80         | Type=none                                            |
+    | 6     | fully_connected   | 966.0  | 480.0  | 772.0      | 2.2k       | 30.0u    | 1x80,6x80,6           | 1x6          | Activation:none                                      |
+    | 7     | softmax           | 30.0   | 0      | 0          | 5.4k       | 60.0u    | 1x6                   | 1x6          | Type=softmaxoptions                                  |
     +-------+-------------------+--------+--------+------------+------------+----------+-----------------------+--------------+------------------------------------------------------+
 
 

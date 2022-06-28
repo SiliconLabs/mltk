@@ -65,6 +65,7 @@ def _add_build_params(app_name, boards):
 _add_build_params('hello_world', ALL_BOARDS)
 _add_build_params('model_profiler', ALL_BOARDS)
 _add_build_params('audio_classifier', ['brd2601b', 'brd2204a', 'brd4166a'])
+_add_build_params('ble_audio_classifier', ['brd2601b'])
 _add_build_params('image_classifier', ALL_BOARDS)
 _add_build_params('fingerprint_authenticator', ALL_BOARDS)
 

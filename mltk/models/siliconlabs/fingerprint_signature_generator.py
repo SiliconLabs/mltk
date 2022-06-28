@@ -109,30 +109,30 @@ Model Profiling Report
     Input Data Type: int8
     Output Shape: 1x16
     Output Data Type: int8
-    Flash, Model File Size (bytes): 6.5k
-    RAM, Runtime Memory Size (bytes): 95.8k
+    Flash, Model File Size (bytes): 6.4k
+    RAM, Runtime Memory Size (bytes): 143.0k
     Operation Count: 7.5M
     Multiply-Accumulate Count: 3.6M
     Layer Count: 5
     Unsupported Layer Count: 0
-    Accelerator Cycle Count: 5.7M
-    CPU Cycle Count: 6.7M
-    CPU Utilization (%): 54.8
-    Clock Rate (hz): 80.0M
-    Time (s): 151.8m
-    Ops/s: 49.4M
-    MACs/s: 23.5M
-    Inference/s: 6.6
+    Accelerator Cycle Count: 4.1M
+    CPU Cycle Count: 5.4M
+    CPU Utilization (%): 57.4
+    Clock Rate (hz): 78.0M
+    Time (s): 119.7m
+    Ops/s: 62.7M
+    MACs/s: 29.8M
+    Inference/s: 8.4
 
     Model Layers
     +-------+-------------------+-------+--------+------------+------------+----------+-----------------------+--------------+-------------------------------------------------------+
     | Index | OpCode            | # Ops | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape           | Output Shape | Options                                               |
     +-------+-------------------+-------+--------+------------+------------+----------+-----------------------+--------------+-------------------------------------------------------+
-    | 0     | depthwise_conv_2d | 3.3M  | 1.5M   | 2.5M       | 32.9k      | 30.7m    | 1x180x180x1,1x5x5x8,8 | 1x88x88x8    | Multiplier:8 padding:valid stride:2x2 activation:relu |
-    | 1     | average_pool_2d   | 77.4k | 0      | 54.3k      | 1.8M       | 23.2m    | 1x88x88x8             | 1x44x44x8    | Padding:valid stride:2x2 filter:2x2 activation:none   |
-    | 2     | conv_2d           | 4.1M  | 2.0M   | 3.2M       | 8.9k       | 39.5m    | 1x44x44x8,16x3x3x8,16 | 1x42x42x16   | Padding:valid stride:1x1 activation:relu              |
-    | 3     | mean              | 0     | 0      | 0          | 4.8M       | 58.5m    | 1x42x42x16,2          | 1x16         | Type=reduceroptions                                   |
-    | 4     | fully_connected   | 528.0 | 256.0  | 498.0      | 2.1k       | 30.0u    | 1x16,16x16,16         | 1x16         | Activation:none                                       |
+    | 0     | depthwise_conv_2d | 3.3M  | 1.5M   | 2.5M       | 33.2k      | 31.5m    | 1x180x180x1,1x5x5x8,8 | 1x88x88x8    | Multiplier:8 padding:valid stride:2x2 activation:relu |
+    | 1     | average_pool_2d   | 77.4k | 0      | 54.3k      | 1.8M       | 23.8m    | 1x88x88x8             | 1x44x44x8    | Padding:valid stride:2x2 filter:2x2 activation:none   |
+    | 2     | conv_2d           | 4.1M  | 2.0M   | 1.6M       | 10.6k      | 20.4m    | 1x44x44x8,16x3x3x8,16 | 1x42x42x16   | Padding:valid stride:1x1 activation:relu              |
+    | 3     | mean              | 0     | 0      | 0          | 3.5M       | 43.9m    | 1x42x42x16,2          | 1x16         | Type=reduceroptions                                   |
+    | 4     | fully_connected   | 528.0 | 256.0  | 496.0      | 2.2k       | 30.0u    | 1x16,16x16,16         | 1x16         | Activation:none                                       |
     +-------+-------------------+-------+--------+------------+------------+----------+-----------------------+--------------+-------------------------------------------------------+
 
 

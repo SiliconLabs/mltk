@@ -1,0 +1,93 @@
+# Silicon Labs Project Configuration Tools: slcp, v0, Component selection file.
+project_name: mltk_ble_audio_classifier
+label: MLTK - BLE Audio Classifier
+description: >
+  This application uses TensorFlow Lite for Microcontrollers to classify
+  audio data recorded on the microphone.
+  The classification is used to control a LED on the board.
+  The classification results are also transmitted to a connected BLE client.
+category: Example|Machine Learning Toolkit
+package: mltk
+quality: development
+# filter:
+#   - name: "Device Type"
+#     value: ["SoC"]
+#   - name: "MCU"
+#     value: ["32-bit MCU"]
+#   - name: "Project Difficulty"
+#     value: ["Advanced"]
+#   - name: "Capability"
+#     value: ["Machine Learning"]
+sdk_extension:
+  - id: mltk
+    version: "0.8.0"
+include:
+  - path: .
+    file_list:
+      - path: app.h
+      - path: ble_audio_classifier.h
+      - path: ble_audio_classifier_config.h
+      - path: recognize_commands.h
+source:
+  - path: main.c
+  - path: app.c
+  - path: ble_audio_classifier.cc
+  - path: ble_audio_classifier_config.cc
+  - path: bluetooth.c
+  - path: recognize_commands.cc
+component:
+- id: iostream_recommended_stream
+- id: printf
+- id: iostream_retarget_stdio
+- id: sl_system
+- id: device_init
+- id: mltk_tflite_micro_model
+  from: mltk
+- id: mltk_audio_feature_generation
+  from: mltk
+- id: simple_led
+  instance: [led0, led1]
+- id: status
+- id: power_manager
+- id: sleeptimer
+- id: bluetooth_feature_gatt_server
+- id: bluetooth_feature_legacy_advertiser
+- id: bluetooth_feature_connection
+- id: bluetooth_feature_system
+- id: gatt_configuration
+- id: freertos
+- id: bluetooth_stack
+- id: rail_util_pti
+- id: device_init_dpll
+- id: component_catalog
+requires:
+- name: cpp_support
+provides:
+- name: mltk_tflite_micro_profiling_enabled
+toolchain_settings:
+  - option: gcc_linker_option
+    value: "-u _printf_float"
+configuration:
+- name: SL_BOARD_ENABLE_VCOM
+  value: '1'
+- name: SL_BOARD_ENABLE_SENSOR_MICROPHONE
+  value: "1"
+- name: SL_MVP_POWER_MODE
+  value: '0'
+config_file: 
+  - path: "config/tflite/keyword_spotting_pacman.tflite"
+    directory: "tflite"
+    file_id: flatbuffer_file_id
+  - override:
+      component: gatt_configuration
+      file_id: gatt_configuration_file_id
+    path: config/btconf/gatt_configuration.btconf
+    directory: btconf
+readme:
+  - path: README.md
+tag:
+  - hardware:component:led:2+
+  - hardware:component:microphone
+  - hardware:device:ram:128
+  - hardware:device:flash:130
+  - hardware:rf:band:2400

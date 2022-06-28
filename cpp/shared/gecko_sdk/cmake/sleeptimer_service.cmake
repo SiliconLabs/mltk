@@ -20,6 +20,7 @@ PRIVATE
     src/sl_sleeptimer_hal_burtc.c 
     src/sl_sleeptimer_hal_rtc.c 
     src/sl_sleeptimer_hal_rtcc.c 
+    src/sl_sleeptimer_hal_sysrtc.c 
 )
 
 target_link_libraries(${NAME}

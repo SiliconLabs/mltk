@@ -1,9 +1,12 @@
-#include "sl_mvp_power.h"
-#include "sl_mvp_config.h"
+
+
 #include "em_emu.h"
+#include "em_cmu.h"
 #if defined(SL_COMPONENT_CATALOG_PRESENT)
 #include "sl_component_catalog.h"
 #endif
+#include "sl_mvp_config.h"
+#include "sl_mvp_power.h"
 #if defined(SL_CATALOG_KERNEL_PRESENT)
 #include "cmsis_os2.h"
 #endif

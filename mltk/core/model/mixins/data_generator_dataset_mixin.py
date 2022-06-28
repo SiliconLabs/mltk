@@ -77,14 +77,18 @@ class DataGeneratorContext(object):
 
 
     def _get_datagen_summary(self, name, labels):
-        if self.class_mode == 'categorical':
-            _, class_counts = np.unique(labels, return_counts=True)
-            s = f'{name.title()} dataset: Found {len(labels)} samples belonging to {len(self.classes)} classes:\n'
-            for i, count in enumerate(class_counts):
-                class_label = self.classes[i]
-                s += f'{class_label.rjust(10, " ")} = {count}\n'
-        else:
-            s = f'{name.title()} dataset: Found {len(labels)} samples belonging to {len(self.classes)} classes\n'
+        try:
+            if self.class_mode == 'categorical':
+                _, class_counts = np.unique(labels, return_counts=True)
+                s = f'{name.title()} dataset: Found {len(labels)} samples belonging to {len(self.classes)} classes:\n'
+                for i, count in enumerate(class_counts):
+                    class_label = self.classes[i]
+                    s += f'{class_label.rjust(10, " ")} = {count}\n'
+            else:
+                s = f'{name.title()} dataset: Found {len(labels)} samples belonging to {len(self.classes)} classes\n'
+        except:
+            # If something fails, then silently ignore the error
+            s = ''
 
         return s
 

@@ -83,6 +83,8 @@ static sl_status_t process_output(const bool did_run_inference);
  ******************************************************************************/
 void audio_classifier_init(void)
 {
+  sl_status_t status;
+
   printf("Audio Classifier\n");
 
 #ifdef __arm__
@@ -142,7 +144,13 @@ void audio_classifier_init(void)
   category_labels = CATEGORY_LABELS;
   category_label_count = CATEGORY_LABELS.size();
 
-  sl_ml_audio_feature_generation_init();
+  status = sl_ml_audio_feature_generation_init();
+  if(status != SL_STATUS_OK)
+  {
+    printf("ERROR: Failed to init audio feature generator\n");
+    while(1)
+      ;
+  }
 
   // Instantiate CommandRecognizer  
   static RecognizeCommands static_recognizer(model.error_reporter(), SMOOTHING_WINDOW_DURATION_MS,
@@ -187,6 +195,15 @@ void audio_classifier_init(void)
   sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM1);
 
 
+#ifdef __arm__
+    if(SL_ML_AUDIO_FEATURE_GENERATION_DUMP_AUDIO)
+    {
+        printf("WARNING: Not running inference since dumping audio\n");
+    }
+#endif
+
+
+
 #ifdef SL_CATALOG_KERNEL_PRESENT
   RTOS_ERR err;
 
@@ -211,7 +228,7 @@ void audio_classifier_init(void)
 #else 
   // The device will go to sleep after each loop.
   // This timer will wake it up to execute another loop every INFERENCE_INTERVAL_MS
-  sl_status_t status = sl_sleeptimer_start_periodic_timer_ms(&inference_timer, INFERENCE_INTERVAL_MS, nullptr, nullptr, 0, 0);
+  status = sl_sleeptimer_start_periodic_timer_ms(&inference_timer, INFERENCE_INTERVAL_MS, nullptr, nullptr, 0, 0);
   if(status != SL_STATUS_OK)
   {
     printf("ERROR: Failed to start periodic inference timer\n");
@@ -265,6 +282,15 @@ extern "C" void app_process_action()
 
     // Process the audio buffer
     sl_ml_audio_feature_generation_update_features();
+
+#ifdef __arm__
+    // For embedded builds, if we're dumping audio then do NOT run inference
+    // as this can cause issues with the audio stream
+    if(SL_ML_AUDIO_FEATURE_GENERATION_DUMP_AUDIO)
+    {
+      return;
+    }
+#endif
   
     // Determine if we should run inference
     // If the activity detection block is disabled, then always run inference
@@ -418,7 +444,7 @@ static void handle_results(int32_t current_time, int result, uint8_t score, bool
     previous_score = score;
     previous_score_timestamp = current_time;
 
-    if (diff >= SENSITIVITY || (previous_result != result)) {
+    if (diff >= SENSITIVITY || (previous_result != result && score > 255/2)) {
       previous_result = result;
       activity_timestamp = current_time + 500;
     } else if(current_time >= activity_timestamp) {

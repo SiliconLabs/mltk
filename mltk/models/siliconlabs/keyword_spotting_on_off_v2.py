@@ -167,38 +167,38 @@ Model Profiling Report
     Input Data Type: int8
     Output Shape: 1x3
     Output Data Type: int8
-    Flash, Model File Size (bytes): 39.6k
-    RAM, Runtime Memory Size (bytes): 42.5k
+    Flash, Model File Size (bytes): 39.5k
+    RAM, Runtime Memory Size (bytes): 46.4k
     Operation Count: 6.4M
     Multiply-Accumulate Count: 3.1M
     Layer Count: 13
     Unsupported Layer Count: 0
-    Accelerator Cycle Count: 5.0M
-    CPU Cycle Count: 254.3k
-    CPU Utilization (%): 5.0
-    Clock Rate (hz): 80.0M
-    Time (s): 63.5m
-    Ops/s: 101.5M
-    MACs/s: 48.9M
-    Inference/s: 15.7
+    Accelerator Cycle Count: 2.5M
+    CPU Cycle Count: 267.5k
+    CPU Utilization (%): 10.2
+    Clock Rate (hz): 78.0M
+    Time (s): 33.7m
+    Ops/s: 191.4M
+    MACs/s: 92.3M
+    Inference/s: 29.7
 
     Model Layers
     +-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
     | Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape             | Output Shape | Options                                             |
     +-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
-    | 0     | conv_2d         | 655.9k | 281.1k | 981.7k     | 28.8k      | 12.2m    | 1x61x64x1,8x3x3x1,8     | 1x61x64x8    | Padding:same stride:1x1 activation:relu             |
-    | 1     | max_pool_2d     | 30.7k  | 0      | 23.1k      | 8.2k       | 330.0u   | 1x61x64x8               | 1x30x32x8    | Padding:valid stride:2x2 filter:2x2 activation:none |
-    | 2     | conv_2d         | 2.2M   | 1.1M   | 1.7M       | 28.8k      | 20.8m    | 1x30x32x8,16x3x3x8,16   | 1x30x32x16   | Padding:same stride:1x1 activation:relu             |
-    | 3     | max_pool_2d     | 15.4k  | 0      | 11.6k      | 15.0k      | 210.0u   | 1x30x32x16              | 1x15x16x16   | Padding:valid stride:2x2 filter:2x2 activation:none |
-    | 4     | conv_2d         | 2.2M   | 1.1M   | 1.6M       | 29.2k      | 19.3m    | 1x15x16x16,32x3x3x16,32 | 1x15x16x32   | Padding:same stride:1x1 activation:relu             |
-    | 5     | max_pool_2d     | 7.2k   | 0      | 5.6k       | 28.2k      | 360.0u   | 1x15x16x32              | 1x7x8x32     | Padding:valid stride:2x2 filter:2x2 activation:none |
-    | 6     | conv_2d         | 1.0M   | 516.1k | 652.8k     | 29.2k      | 8.1m     | 1x7x8x32,32x3x3x32,32   | 1x7x8x32     | Padding:same stride:1x1 activation:relu             |
-    | 7     | max_pool_2d     | 1.5k   | 0      | 1.4k       | 28.1k      | 330.0u   | 1x7x8x32                | 1x3x4x32     | Padding:valid stride:2x2 filter:2x2 activation:none |
-    | 8     | conv_2d         | 222.3k | 110.6k | 109.8k     | 24.1k      | 1.5m     | 1x3x4x32,32x3x3x32,32   | 1x3x4x32     | Padding:same stride:1x1 activation:relu             |
-    | 9     | max_pool_2d     | 256.0  | 0      | 416.0      | 28.1k      | 330.0u   | 1x3x4x32                | 1x1x2x32     | Padding:valid stride:2x2 filter:2x2 activation:none |
-    | 10    | reshape         | 0      | 0      | 0          | 799.0      | 30.0u    | 1x1x2x32,2              | 1x64         | Type=none                                           |
-    | 11    | fully_connected | 387.0  | 192.0  | 328.0      | 2.1k       | 30.0u    | 1x64,3x64,3             | 1x3          | Activation:none                                     |
-    | 12    | softmax         | 15.0   | 0      | 0          | 3.7k       | 30.0u    | 1x3                     | 1x3          | Type=softmaxoptions                                 |
+    | 0     | conv_2d         | 655.9k | 281.1k | 447.1k     | 30.6k      | 5.8m     | 1x61x64x1,8x3x3x1,8     | 1x61x64x8    | Padding:same stride:1x1 activation:relu             |
+    | 1     | max_pool_2d     | 30.7k  | 0      | 23.1k      | 8.6k       | 360.0u   | 1x61x64x8               | 1x30x32x8    | Padding:valid stride:2x2 filter:2x2 activation:none |
+    | 2     | conv_2d         | 2.2M   | 1.1M   | 844.9k     | 30.2k      | 10.8m    | 1x30x32x8,16x3x3x8,16   | 1x30x32x16   | Padding:same stride:1x1 activation:relu             |
+    | 3     | max_pool_2d     | 15.4k  | 0      | 11.6k      | 15.8k      | 240.0u   | 1x30x32x16              | 1x15x16x16   | Padding:valid stride:2x2 filter:2x2 activation:none |
+    | 4     | conv_2d         | 2.2M   | 1.1M   | 789.9k     | 30.3k      | 10.1m    | 1x15x16x16,32x3x3x16,32 | 1x15x16x32   | Padding:same stride:1x1 activation:relu             |
+    | 5     | max_pool_2d     | 7.2k   | 0      | 5.6k       | 30.0k      | 390.0u   | 1x15x16x32              | 1x7x8x32     | Padding:valid stride:2x2 filter:2x2 activation:none |
+    | 6     | conv_2d         | 1.0M   | 516.1k | 329.1k     | 30.3k      | 4.3m     | 1x7x8x32,32x3x3x32,32   | 1x7x8x32     | Padding:same stride:1x1 activation:relu             |
+    | 7     | max_pool_2d     | 1.5k   | 0      | 1.4k       | 29.9k      | 390.0u   | 1x7x8x32                | 1x3x4x32     | Padding:valid stride:2x2 filter:2x2 activation:none |
+    | 8     | conv_2d         | 222.3k | 110.6k | 57.3k      | 25.5k      | 840.0u   | 1x3x4x32,32x3x3x32,32   | 1x3x4x32     | Padding:same stride:1x1 activation:relu             |
+    | 9     | max_pool_2d     | 256.0  | 0      | 416.0      | 29.9k      | 360.0u   | 1x3x4x32                | 1x1x2x32     | Padding:valid stride:2x2 filter:2x2 activation:none |
+    | 10    | reshape         | 0      | 0      | 0          | 786.0      | 30.0u    | 1x1x2x32,2              | 1x64         | Type=none                                           |
+    | 11    | fully_connected | 387.0  | 192.0  | 324.0      | 2.2k       | 30.0u    | 1x64,3x64,3             | 1x3          | Activation:none                                     |
+    | 12    | softmax         | 15.0   | 0      | 0          | 3.5k       | 30.0u    | 1x3                     | 1x3          | Type=softmaxoptions                                 |
     +-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
 
 

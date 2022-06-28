@@ -53,16 +53,16 @@ bool TfliteMicroModel::load(
 
     load_model_parameters(flatbuffer);
 
-
     // If no runtime buffer was specified,
     // then we need to allocate one now
     if(runtime_buffer == nullptr)
     {
         // Attempt to retrieve the runtime size from the model flatbuffer parameters
         // NOTE: If the runtime_buffer_size != 0 then we skip this an just search for the optimal size 
-        if(runtime_buffer_size == 0 && parameters.get("runtime_memory_size", runtime_buffer_size) && runtime_buffer_size > 256)
+        int model_runtime_size;
+        if(runtime_buffer_size == 0 && parameters.get("runtime_memory_size", model_runtime_size) && model_runtime_size > 256)
         {
-            uint32_t buffer_size = runtime_buffer_size;
+            uint32_t buffer_size = model_runtime_size;
 
             MLTK_INFO("Runtime memory size from .tflite model: %d", buffer_size);
 #if INTPTR_MAX == INT64_MAX
@@ -85,6 +85,7 @@ bool TfliteMicroModel::load(
             {
                 // If we successfully loaded the model with the runtime memory size from the flatbuffer
                 // then we're done
+                runtime_buffer_size = model_runtime_size;
             }
             else 
             {
@@ -494,13 +495,14 @@ bool TfliteMicroModel::find_optimal_buffer_size(
     MLTK_INFO("Searching for optimal runtime memory size ...");
 
     // Don't print error while find the optimal size
-    _error_reporter.enabled = false;
+    model_error_reporter_enabled = false;
 
     // Try to get the optimal buffer size to within 128 bytes
     while((upper_limit - lower_limit) > 128)
     {
         // Get the midpoint between the update and lower limits
-        const int buffer_size = (upper_limit + lower_limit) / 2;
+        int buffer_size = (upper_limit + lower_limit) / 2;
+        buffer_size = ((buffer_size + 16 - 1) / 16) * 16; // align to 16-bytes
 
         // Allocate the buffer
         uint8_t* buffer = static_cast<uint8_t*>(malloc(buffer_size));
@@ -539,7 +541,7 @@ bool TfliteMicroModel::find_optimal_buffer_size(
         free(buffer);
     }
 
-    _error_reporter.enabled = true;
+    model_error_reporter_enabled = true;
 
     if(last_working_buffer_size == -1)
     {

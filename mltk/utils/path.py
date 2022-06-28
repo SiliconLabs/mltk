@@ -16,7 +16,7 @@ from .system import get_username
 # This is the base directory used for temporary files
 # It includes the the current user's name in the path
 # to separate temp files for different user's that use the same tempdir
-TEMP_BASE_DIR = f'{tempfile.gettempdir()}/mltk/{get_username()}'
+TEMP_BASE_DIR = f'{tempfile.gettempdir()}/{get_username()}/mltk'
 
 
 def fullpath(path : str) -> str:

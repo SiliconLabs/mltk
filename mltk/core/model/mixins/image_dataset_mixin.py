@@ -388,8 +388,12 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
             validation_labels = []
             for _, batch_y in validation_datagen:
                 if self.class_mode == 'categorical':
+                    if len(batch_y.shape) != 2:
+                        raise RuntimeError('The model must have only 1 output when my_model.class_mode=categorical, update the class_mode to something else for multiple output models')
+                    
                     batch_y = np.argmax(batch_y, -1)
                 validation_labels.extend(batch_y)
+
             validation_labels = np.asarray(validation_labels, dtype=np.int32)
 
             try:

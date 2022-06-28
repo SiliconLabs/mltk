@@ -171,7 +171,6 @@ This camera must be connected to the SPI and I2C peripheral of the embedded targ
 
 The following default pin mappings are used by:  
 -  __BRD2601__
--  __BRD4166__
 
 | ArduCAM Pin | Board Expansion Header Pin |
 | ----------- | -------------------------- |

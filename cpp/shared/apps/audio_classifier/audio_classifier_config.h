@@ -32,6 +32,7 @@ extern float SL_TFLITE_MODEL_SENSITIVITY;
 extern int SL_TFLITE_MODEL_VERBOSE_MODEL_OUTPUT_LOGS;
 extern int SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS;
 extern mltk::StringList SL_TFLITE_MODEL_CLASSES;
+extern mltk::Int32List SL_TFLITE_DETECTION_THRESHOLD_LIST;
 
 // <<< Use Configuration Wizard in Context Menu >>>
 // <h> Audio Classification configuration

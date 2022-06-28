@@ -20,7 +20,6 @@ PRIVATE
     src/sl_slist.c 
 )
 
-
 target_link_libraries(${NAME}
 PRIVATE 
     ${GECKO_SDK_BOARD_TARGET}

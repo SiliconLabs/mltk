@@ -17,6 +17,7 @@ target_sources(${NAME}
 PRIVATE 
     src/sl_system_init.c
     src/sl_system_process_action.c
+    src/sl_system_kernel.c
 )
 
 target_link_libraries(${NAME}

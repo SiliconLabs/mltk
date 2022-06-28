@@ -47,7 +47,7 @@
 // <i> If Enabled and if HFXO fails to startup due to a sleepy crystal, HFXO Manager will retry the startup with more aggressive settings
 // <i> before falling back to the configured settings.
 // <i> Default: 1
-#define SL_HFXO_MANAGER_SLEEPY_CRYSTAL_SUPPORT  1
+#define SL_HFXO_MANAGER_SLEEPY_CRYSTAL_SUPPORT  0
 
 // </h>
 

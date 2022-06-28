@@ -2,13 +2,13 @@
 #include <stdio.h>
 
 
-extern int _write(int file, const char *ptr, int len);
+extern void _asset_write(const char *s);
 
 
 void HardFault_Handler   (void)
 {
 #define msg "\n\nHardfault triggered!\n\n"
-    _write(0, msg, sizeof(msg)-1);
+    _asset_write(msg);
 
     __asm( "MRS R0, MSP" );
     __asm( "MRS R1, PSP" );

@@ -45,6 +45,7 @@
 
 /docs/faq/index
 /docs/other/quick_reference
+/docs/other/supported_hardware
 /docs/guides/notebook_examples_guide
 /docs/other/settings_file
 /docs/other/environment_variables

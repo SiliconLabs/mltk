@@ -1,0 +1,1191 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, machine-learning, machinelearning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tensorflow-lite-micro, keras-tensorflow, keras, tflite, embedded, embedded-systems, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HZ5MW943WF"></script>
+<script>
+    window.gTrackingId = 'G-HZ5MW943WF';
+</script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
+  
+  
+    <title>Keyword Spotting - Pac-Man &#8212; MLTK 0.8.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Image Classification - Rock, Paper, Scissors" href="image_classification.html" />
+    <link rel="prev" title="Keyword Spotting - On/Off" href="keyword_spotting_on_off.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/tutorials/keyword_spotting_pacman" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.8.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.8.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Keyword Spotting - Pac-Man </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.8.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.8.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_on_off.html" class="md-nav__link">Keyword Spotting - On/Off</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Keyword Spotting - Pac-Man </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Keyword Spotting - Pac-Man</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-keyword-spotting-pacman--page-root" class="md-nav__link">Keyword Spotting - Pac-Man</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#live-demo" class="md-nav__link">Live Demo</a>
+        </li>
+        <li class="md-nav__item"><a href="#quick-links" class="md-nav__link">Quick Links</a>
+        </li>
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#objectives" class="md-nav__link">Objectives</a>
+        </li>
+        <li class="md-nav__item"><a href="#content" class="md-nav__link">Content</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-a-notebook" class="md-nav__link">Running this tutorial from a notebook</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-the-command-line" class="md-nav__link">Running this tutorial from the command-line</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#required-hardware" class="md-nav__link">Required Hardware</a>
+        </li>
+        <li class="md-nav__item"><a href="#install-mltk-python-package" class="md-nav__link">Install MLTK Python Package</a>
+        </li>
+        <li class="md-nav__item"><a href="#prerequisite-reading" class="md-nav__link">Prerequisite Reading</a>
+        </li>
+        <li class="md-nav__item"><a href="#creating-the-machine-learning-model" class="md-nav__link">Creating the Machine Learning Model</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#model-parameter-tradeoffs" class="md-nav__link">Model Parameter Tradeoffs</a>
+        </li>
+        <li class="md-nav__item"><a href="#audio-feature-generator-settings" class="md-nav__link">Audio Feature Generator Settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#module-architecture" class="md-nav__link">Module Architecture</a>
+        </li>
+        <li class="md-nav__item"><a href="#audio-data-generator" class="md-nav__link">Audio Data Generator</a>
+        </li>
+        <li class="md-nav__item"><a href="#profiling-the-model" class="md-nav__link">Profiling the model</a>
+        </li>
+        <li class="md-nav__item"><a href="#training-the-model" class="md-nav__link">Training the model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#creating-the-firmware-application" class="md-nav__link">Creating the Firmware Application</a>
+        </li>
+        <li class="md-nav__item"><a href="#creating-the-pac-man-webpage" class="md-nav__link">Creating the Pac-Man Webpage</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-the-demo" class="md-nav__link">Running the Demo</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#build-firmware-application-from-source" class="md-nav__link">Build firmware application from source</a>
+        </li>
+        <li class="md-nav__item"><a href="#run-webpage-locally" class="md-nav__link">Run webpage locally</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/keyword_spotting_pacman.ipynb.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="image_classification.html" class="md-nav__link">Image Classification - Rock, Paper, Scissors</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_optimization.html" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_with_transfer_learning.html" class="md-nav__link">Keyword Spotting with Transfer Learning</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="fingerprint_authentication.html" class="md-nav__link">Fingerprint Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="onnx_to_tflite.html" class="md-nav__link">ONNX to TF-Lite Model Conversion</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-keyword-spotting-pacman--page-root" class="md-nav__link">Keyword Spotting - Pac-Man</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#live-demo" class="md-nav__link">Live Demo</a>
+        </li>
+        <li class="md-nav__item"><a href="#quick-links" class="md-nav__link">Quick Links</a>
+        </li>
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#objectives" class="md-nav__link">Objectives</a>
+        </li>
+        <li class="md-nav__item"><a href="#content" class="md-nav__link">Content</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-a-notebook" class="md-nav__link">Running this tutorial from a notebook</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-this-tutorial-from-the-command-line" class="md-nav__link">Running this tutorial from the command-line</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#required-hardware" class="md-nav__link">Required Hardware</a>
+        </li>
+        <li class="md-nav__item"><a href="#install-mltk-python-package" class="md-nav__link">Install MLTK Python Package</a>
+        </li>
+        <li class="md-nav__item"><a href="#prerequisite-reading" class="md-nav__link">Prerequisite Reading</a>
+        </li>
+        <li class="md-nav__item"><a href="#creating-the-machine-learning-model" class="md-nav__link">Creating the Machine Learning Model</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#model-parameter-tradeoffs" class="md-nav__link">Model Parameter Tradeoffs</a>
+        </li>
+        <li class="md-nav__item"><a href="#audio-feature-generator-settings" class="md-nav__link">Audio Feature Generator Settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#module-architecture" class="md-nav__link">Module Architecture</a>
+        </li>
+        <li class="md-nav__item"><a href="#audio-data-generator" class="md-nav__link">Audio Data Generator</a>
+        </li>
+        <li class="md-nav__item"><a href="#profiling-the-model" class="md-nav__link">Profiling the model</a>
+        </li>
+        <li class="md-nav__item"><a href="#training-the-model" class="md-nav__link">Training the model</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#creating-the-firmware-application" class="md-nav__link">Creating the Firmware Application</a>
+        </li>
+        <li class="md-nav__item"><a href="#creating-the-pac-man-webpage" class="md-nav__link">Creating the Pac-Man Webpage</a>
+        </li>
+        <li class="md-nav__item"><a href="#running-the-demo" class="md-nav__link">Running the Demo</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#build-firmware-application-from-source" class="md-nav__link">Build firmware application from source</a>
+        </li>
+        <li class="md-nav__item"><a href="#run-webpage-locally" class="md-nav__link">Run webpage locally</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/keyword_spotting_pacman.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li class="active"><a href="../../docs/tutorials.html" accesskey="U">Tutorials</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="keyword-spotting-pac-man">
+<h1 id="mltk-tutorials-keyword-spotting-pacman--page-root">Keyword Spotting - Pac-Man<a class="headerlink" href="#mltk-tutorials-keyword-spotting-pacman--page-root" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial describes how to use the MLTK to develop a “Pac-Man” keyword spotting demo.</p>
+<p>The basic setup for this demo is as follows:<br/>
+<img alt="" src="../../_images/pacman_demo_overview.png"/></p>
+<p>In the demo, embedded machine learning is used to detect the keywords:</p>
+<ul class="simple">
+<li><p><strong>Left</strong></p></li>
+<li><p><strong>Right</strong></p></li>
+<li><p><strong>Up</strong></p></li>
+<li><p><strong>Down</strong></p></li>
+<li><p><strong>Stop</strong></p></li>
+<li><p><strong>Go</strong></p></li>
+</ul>
+<p>When a keyword is detected, its corresponding ID is sent to a webpage via Bluetooth Low-Energy. The webpage uses Javascript to process keyword ID to move the Pac-Man accordingly.</p>
+<section id="live-demo">
+<h2 id="live-demo">Live Demo<a class="headerlink" href="#live-demo" title="Permalink to this headline">¶</a></h2>
+<p>A live demo for this tutorial is available online:<br/>
+<a class="reference external" href="https://mltk-pacman.web.app">https://mltk-pacman.web.app</a></p>
+<p><strong>NOTE:</strong> To use this demo, you must have a <a class="reference internal" href="../../docs/other/supported_hardware.html#brd2601"><span class="std std-doc">BRD2601</span></a> development board.</p>
+</section>
+<section id="quick-links">
+<h2 id="quick-links">Quick Links<a class="headerlink" href="#quick-links" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/SiliconLabs/mltk/blob/master/mltk/tutorials/keyword_spotting_pacman.ipynb">GitHub Source</a> - View this tutorial on Github</p></li>
+<li><p><a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/tutorials/keyword_spotting_pacman.ipynb">Run on Colab</a> - Run this tutorial on Google Colab</p></li>
+<li><p><a class="reference internal" href="../../docs/cpp_development/examples/ble_audio_classifier.html"><span class="doc std std-doc">C++ Example Application</span></a> - View this tutorial’s associated C++ example application</p></li>
+<li><p><a class="reference external" href="https://github.com/SiliconLabs/mltk/blob/master/cpp/shared/apps/ble_audio_classifier/web/pacman">Pac-Man Webpage Source</a> - View the Pac-Man webpage’s source code on Github</p></li>
+<li><p><a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_pacman.html"><span class="doc std std-doc">Machine Learning Model</span></a> - View this tutorial’s associated machine learning model</p></li>
+<li><p><a class="reference external" href="https://mltk-pacman.web.app">Live Demo</a> - Play Pac-Man using the keywords: Left, Right, Up, Down</p></li>
+</ul>
+</section>
+<section id="overview">
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<section id="objectives">
+<h3 id="objectives">Objectives<a class="headerlink" href="#objectives" title="Permalink to this headline">¶</a></h3>
+<p>After completing this tutorial, you will have:</p>
+<ol class="arabic simple">
+<li><p>A better understanding of how audio classification machine learning models work</p></li>
+<li><p>All of the tools needed to develop your own keyword spotting model</p></li>
+<li><p>A better understanding of how to issue commands to a webpage from an embedded MCU via Bluetooth Low Energy</p></li>
+<li><p>A working demo to play the game Pac-Man using the keywords: “Left”, “Right”, “Up”, “Down”, “Stop”, “Go”</p></li>
+</ol>
+</section>
+<section id="content">
+<h3 id="content">Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h3>
+<p>This tutorial is divided into the following sections:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#prerequisite-reading"><span class="std std-doc">Prerequisite reading</span></a></p></li>
+<li><p><a class="reference internal" href="#creating-the-machine-learning-model"><span class="std std-doc">Creating the machine learning model</span></a></p></li>
+<li><p><a class="reference internal" href="#creating-the-firmware-application"><span class="std std-doc">Creating the firmware application</span></a></p></li>
+<li><p><a class="reference internal" href="#creating-the-pac-man-webpage"><span class="std std-doc">Creating the Pac-Man webpage</span></a></p></li>
+<li><p><a class="reference internal" href="#running-the-demo"><span class="std std-doc">Running the demo</span></a></p></li>
+</ul>
+</section>
+<section id="running-this-tutorial-from-a-notebook">
+<h3 id="running-this-tutorial-from-a-notebook">Running this tutorial from a notebook<a class="headerlink" href="#running-this-tutorial-from-a-notebook" title="Permalink to this headline">¶</a></h3>
+<p>For documentation purposes, this tutorial was designed to run within a <a class="reference external" href="https://jupyter.org">Jupyter Notebook</a>.
+The notebook can either run locally on your PC <em>or</em> on a remote server like <a class="reference external" href="https://colab.research.google.com/notebooks/welcome.ipynb">Google Colab</a>.</p>
+<ul class="simple">
+<li><p>Refer to the <a class="reference internal" href="../../docs/guides/notebook_examples_guide.html"><span class="doc std std-doc">Notebook Examples Guide</span></a> for more details</p></li>
+<li><p>Click here: <a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/tutorials/keyword_spotting_pacman.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"/></a> to run this tutorial interactively in your browser</p></li>
+</ul>
+<p><strong>NOTE:</strong> Some of the following sections require this tutorial to be running locally with a supported embedded platform connected.</p>
+</section>
+<section id="running-this-tutorial-from-the-command-line">
+<h3 id="running-this-tutorial-from-the-command-line">Running this tutorial from the command-line<a class="headerlink" href="#running-this-tutorial-from-the-command-line" title="Permalink to this headline">¶</a></h3>
+<p>While this tutorial uses a <a class="reference external" href="https://jupyter.org">Jupyter Notebook</a>,
+the recommended approach is to use your favorite text editor and standard command terminal, no Jupyter Notebook required.</p>
+<p>See the <a class="reference external" href="../../docs/installation.html#standard-python-package">Standard Python Package Installation</a> guide for more details on how to enable the <code class="docutils literal notranslate"><span class="pre">mltk</span></code> command in your local terminal.</p>
+<p>In this mode, when you encounter a <code class="docutils literal notranslate"><span class="pre">!mltk</span></code> command in this tutorial, the command should actually run in your local terminal (excluding the <code class="docutils literal notranslate"><span class="pre">!</span></code>)</p>
+</section>
+</section>
+<section id="required-hardware">
+<h2 id="required-hardware">Required Hardware<a class="headerlink" href="#required-hardware" title="Permalink to this headline">¶</a></h2>
+<p>To play this tutorial’s game using machine learning + keyword spotting, the <a class="reference internal" href="../../docs/other/supported_hardware.html#brd2601"><span class="std std-doc">BRD2601</span></a> development board is required.</p>
+</section>
+<section id="install-mltk-python-package">
+<h2 id="install-mltk-python-package">Install MLTK Python Package<a class="headerlink" href="#install-mltk-python-package" title="Permalink to this headline">¶</a></h2>
+<p>Before using the MLTK, it must first be installed.<br/>
+See the <a class="reference internal" href="../../docs/installation.html"><span class="doc std std-doc">Installation Guide</span></a> for more details.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>pip install --upgrade silabs-mltk
+</pre></div>
+</div>
+</div>
+</div>
+<p>All MLTK modeling operations are accessible via the <code class="docutils literal notranslate"><span class="pre">mltk</span></code> command.<br/>
+Run the command <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">--help</span></code> to ensure it is working.<br/>
+<strong>NOTE:</strong> The exclamation point <code class="docutils literal notranslate"><span class="pre">!</span></code> tells the Notebook to run a shell command, it is not required in a <a class="reference external" href="../../docs/installation.html#standard-python-package">standard terminal</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk --help
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Usage: mltk [OPTIONS] COMMAND [ARGS]...
+
+  Silicon Labs Machine Learning Toolkit
+
+  This is a Python package with command-line utilities and scripts to aid the
+  development of machine learning models for Silicon Lab's embedded platforms.
+
+Options:
+  --version         Display the version of this mltk package and exit
+  --gpu / --no-gpu  Disable usage of the GPU. 
+                    This does the same as defining the environment variable: CUDA_VISIBLE_DEVICES=-1
+                    Example:
+                    mltk --no-gpu train image_example1
+  --help            Show this message and exit.
+
+Commands:
+  build               MLTK build commands
+  classify_audio      Classify keywords/events detected in a microphone's...
+  classify_image      Classify images detected by a camera connected to...
+  commander           Silab's Commander Utility
+  compile             Compile a model for the specified accelerator
+  custom              Custom Model Operations
+  evaluate            Evaluate a trained ML model
+  fingerprint_reader  View/save fingerprints captured by the fingerprint...
+  profile             Profile a model
+  quantize            Quantize a model into a .tflite file
+  summarize           Generate a summary of a model
+  train               Train an ML model
+  update_params       Update the parameters of a previously trained model
+  utest               Run the all unit tests
+  view                View an interactive graph of the given model in a...
+  view_audio          View the spectrograms generated by the...
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="prerequisite-reading">
+<h2 id="prerequisite-reading">Prerequisite Reading<a class="headerlink" href="#prerequisite-reading" title="Permalink to this headline">¶</a></h2>
+<p>Before continuing with this tutorial, it is recommended to review the following documentation:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/audio/keyword_spotting_overview.html"><span class="doc std std-doc">Keyword Spotting Overview</span></a> - Provides overview of how embedded keyword spotting works</p></li>
+<li><p><a class="reference internal" href="keyword_spotting_on_off.html"><span class="doc std std-doc">Keyword Spotting Tutorial</span></a> - Provides an in-depth tutorial on how to create a keyword spotting model</p></li>
+</ul>
+</section>
+<section id="creating-the-machine-learning-model">
+<h2 id="creating-the-machine-learning-model">Creating the Machine Learning Model<a class="headerlink" href="#creating-the-machine-learning-model" title="Permalink to this headline">¶</a></h2>
+<p>The pre-defined <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">Model Specification</span></a> used by the tutorial may be found on <a class="reference external" href="https://github.com/SiliconLabs/mltk/tree/master/mltk/models/siliconlabs/keyword_spotting_pacman.py">Github</a>.</p>
+<p>This model is a standard audio classification model designed to detect the classes:</p>
+<ul class="simple">
+<li><p>Left</p></li>
+<li><p>Right</p></li>
+<li><p>Up</p></li>
+<li><p>Down</p></li>
+<li><p>Stop</p></li>
+<li><p>Go</p></li>
+<li><p><em>silence</em></p></li>
+</ul>
+<p>Additionally, this model augments the training samples by adding audio recorded while playing the Pac-Man game. In this way, the model can be more robust to the background noise generated while playing the game.</p>
+<p>Refer to the comments in the <a class="reference external" href="https://github.com/SiliconLabs/mltk/tree/master/mltk/models/siliconlabs/keyword_spotting_pacman.py">keyword_spotting_pacman.py</a> for more details.</p>
+<section id="model-parameter-tradeoffs">
+<h3 id="model-parameter-tradeoffs">Model Parameter Tradeoffs<a class="headerlink" href="#model-parameter-tradeoffs" title="Permalink to this headline">¶</a></h3>
+<p>We have two main requirements when choosing the model parameters:</p>
+<ul class="simple">
+<li><p>We want the spectrogram resolution and convolutional filters to be as high as possible so that the model can make accurate predictions</p></li>
+<li><p>We want the model’s computational complexity to be as small as possible so that inference latency is small and keywords are quickly detected while playing the game</p></li>
+</ul>
+<p>Note that the larger the spectrogram resolution, the larger the model’s input size and thus the larger the model’s computational complexity. Likewise, more convolution filters also increases the model’s computational complexity. As such, we need to find a middle ground for these parameters.</p>
+<p>The MLTK offers two tools that can help when choosing these parameters:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">Model Profiler</span></a> - This allows for profiling the model on the embedded device and determining the inference latency <strong>before</strong> fully training the model</p></li>
+<li><p><a class="reference external" href="../../docs/audio/audio_feature_generator.html#audio-visualizer-utility">Audio Visualizer Utility</a> - This allows for visualizing the generated spectrograms in real-time</p></li>
+</ul>
+</section>
+<section id="audio-feature-generator-settings">
+<h3 id="audio-feature-generator-settings">Audio Feature Generator Settings<a class="headerlink" href="#audio-feature-generator-settings" title="Permalink to this headline">¶</a></h3>
+<p>This model uses the following <a class="reference internal" href="../../docs/audio/audio_feature_generator.html"><span class="doc std std-doc">Audio Feature Generator</span></a> settings:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
+
+<span class="n">frontend_settings</span> <span class="o">=</span> <span class="n">AudioFeatureGeneratorSettings</span><span class="p">()</span>
+
+<span class="c1"># The sample rate, sample length, window size and window step</span>
+<span class="c1"># control the width of the generated spectrogram</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="mi">16000</span>  <span class="c1"># This can also be 16k for slightly better performance at the cost of more RAM</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="mi">700</span> <span class="c1"># 0.7s sample size</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_size_ms</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_step_ms</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_n_channels</span> <span class="o">=</span> <span class="mi">70</span> <span class="c1"># The number of frequency bins. This controls the height of the spectrogram</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_upper_band_limit</span> <span class="o">=</span> <span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">//</span> <span class="mi">2</span> <span class="c1"># 8kHz</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_lower_band_limit</span> <span class="o">=</span> <span class="mi">150</span> <span class="c1"># The dev board mic seems to have a lot of noise at lower frequencies</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_enable</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># Disable the noise reduction block</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_enable</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># Disable the PCAN block</span>
+
+
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">dc_notch_filter_enable</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># Enable the DC notch filter</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">dc_notch_filter_coefficient</span> <span class="o">=</span> <span class="mf">0.95</span>
+
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">quantize_dynamic_scale_enable</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># Enable dynamic quantization</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">quantize_dynamic_scale_range_db</span> <span class="o">=</span> <span class="mf">40.0</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This uses a 16kHz sample rate which was found to give better performance at the expense of more RAM.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="mi">16000</span>
+</pre></div>
+</div>
+<p>To help reduce the model computational complexity, only a 700ms sample length is used (typically the length is 1s).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="mi">700</span>
+</pre></div>
+</div>
+<p>The idea here is that it only takes ~700ms to say any of the keywords (i.e. the audio buffer needs to be large enough to hold the entire keyword but no larger).</p>
+<p>This model uses a window size of 20ms and a step of 10ms.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_size_ms</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_step_ms</span> <span class="o">=</span> <span class="mi">10</span>
+</pre></div>
+</div>
+<p>These values were found experimentally using the <a class="reference external" href="../../docs/audio/audio_feature_generator.html#audio-visualizer-utility">Audio Visualizer Utility</a>.</p>
+<p>70 frequency bins are used to generate the spectrogram:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_n_channels</span> <span class="o">=</span> <span class="mi">70</span>
+</pre></div>
+</div>
+<p>Increasing this value improves the resolution of spectrogram at the cost of model computational complexity (i.e. inference latency).</p>
+<p>The noise reduction and PCAN blocks were disabled to help reduce spectrogram generation latency:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_enable</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_enable</span> <span class="o">=</span> <span class="kc">False</span>
+</pre></div>
+</div>
+<p>The DC notch filter was enabled to help remove the DC component from the development board’s microphone:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">dc_notch_filter_enable</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># Enable the DC notch filter</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">dc_notch_filter_coefficient</span> <span class="o">=</span> <span class="mf">0.95</span>
+</pre></div>
+</div>
+<p>Dynamic quantization was enabled to convert the generated spectrogram from uint16 to int8</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">quantize_dynamic_scale_enable</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># Enable dynamic quantization</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">quantize_dynamic_scale_range_db</span> <span class="o">=</span> <span class="mf">40.0</span>
+</pre></div>
+</div>
+</section>
+<section id="module-architecture">
+<h3 id="module-architecture">Module Architecture<a class="headerlink" href="#module-architecture" title="Permalink to this headline">¶</a></h3>
+<p>A generic Convolutional Neural Network (CNN) is used as the model architecture:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+    <span class="n">weight_decay</span> <span class="o">=</span> <span class="mf">1e-4</span>
+    <span class="n">regularizer</span> <span class="o">=</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">l2</span><span class="p">(</span><span class="n">weight_decay</span><span class="p">)</span>
+    <span class="n">input_shape</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">input_shape</span>
+    <span class="n">filters</span> <span class="o">=</span> <span class="mi">7</span> 
+ 
+    <span class="n">keras_model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">layers</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">Conv2D</span><span class="p">(</span><span class="n">filters</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'same'</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">),</span>
+        <span class="n">BatchNormalization</span><span class="p">(),</span>
+        <span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">),</span>
+        <span class="n">MaxPooling2D</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+
+        <span class="n">Conv2D</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">filters</span><span class="p">,(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'same'</span><span class="p">),</span> 
+        <span class="n">BatchNormalization</span><span class="p">(),</span>
+        <span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">),</span>
+        <span class="n">MaxPooling2D</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+
+        <span class="n">Conv2D</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">filters</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'same'</span><span class="p">),</span>
+        <span class="n">BatchNormalization</span><span class="p">(),</span>
+        <span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">),</span>
+        <span class="n">MaxPooling2D</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+    
+        <span class="n">Conv2D</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">filters</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'same'</span><span class="p">),</span>
+        <span class="n">BatchNormalization</span><span class="p">(),</span>
+        <span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">),</span>
+        <span class="n">MaxPooling2D</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+
+        <span class="n">Conv2D</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">filters</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'same'</span><span class="p">),</span>
+        <span class="n">BatchNormalization</span><span class="p">(),</span>
+        <span class="n">Activation</span><span class="p">(</span><span class="s1">'relu'</span><span class="p">),</span>
+        <span class="n">MaxPooling2D</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span>
+
+        <span class="c1">#Dropout(0.5),</span>
+
+        <span class="n">Flatten</span><span class="p">(),</span>
+        <span class="n">Dense</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">'softmax'</span><span class="p">)</span>
+    <span class="p">])</span>
+
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span> 
+        <span class="n">optimizer</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">metrics</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">keras_model</span>
+
+<span class="n">my_model</span><span class="o">.</span><span class="n">build_model_function</span> <span class="o">=</span> <span class="n">my_model_builder</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The main parameter to modify is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">filters</span> <span class="o">=</span> <span class="mi">7</span>
+</pre></div>
+</div>
+<p>which controls the number of filters to use in each Conv2D layer.
+The larger this value is, the more trainable parameters the model will have which should allow for it to have better accuracy. However, increasing this value also increases the model’s computational complexity which increases the model inference latency.</p>
+</section>
+<section id="audio-data-generator">
+<h3 id="audio-data-generator">Audio Data Generator<a class="headerlink" href="#audio-data-generator" title="Permalink to this headline">¶</a></h3>
+<p>This model has an additional requirement that the keywords need to be said while the Pac-Man video game noises are generated in the background. As such, the model is trained by taking each keyword sample and adding a snippet of background noise to the sample. In this way, the model learns to pick out the keywords from the Pac-Man video game’s noises.</p>
+<p>The Pac-Man game audio was acquired by recording during game play (using the arrows on the keyboard). Recording was done using the MLTK command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mltk</span> <span class="n">classify_audio</span> <span class="n">keyword_spotting_pacman</span> <span class="o">--</span><span class="n">dump</span><span class="o">-</span><span class="n">audio</span> <span class="o">--</span><span class="n">device</span>
+</pre></div>
+</div>
+<p>This command uses the microphone on the development board to record the video game’s generated audio. The recorded audio is saved to the local PC as a <code class="docutils literal notranslate"><span class="pre">.wav</span></code> file.</p>
+<p>After recording, a custom callback was added to the <a class="reference external" href="https://github.com/SiliconLabs/mltk/tree/master/mltk/models/siliconlabs/keyword_spotting_pacman.py">model specification</a> file:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_batches_samples</span><span class="p">(</span>
+    <span class="n">batch_index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> 
+    <span class="n">filenames</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> 
+    <span class="n">classes</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> 
+    <span class="n">params</span><span class="p">:</span><span class="n">ParallelProcessParams</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+    <span class="sd">"""This slightly modified from the standard function that comes with the MLTK:</span>
+<span class="sd">    https://github.com/siliconlabs/mltk/blob/master/mltk/core/preprocess/audio/parallel_generator/iterator.py#L241</span>
+<span class="sd">    </span>
+<span class="sd">    80% of the time it adds a snippet of the Pac-Man background noise to the sample.</span>
+<span class="sd">     </span>
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="s1">'game'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">audio_data_generator</span><span class="o">.</span><span class="n">bg_noises</span><span class="p">:</span>
+        <span class="n">PACMAN_BACKGROUND_NOISE</span><span class="p">,</span> <span class="n">orignal_sr</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">PACMAN_BACKGROUND_NOISE_PATH</span><span class="p">,</span> <span class="n">sr</span><span class="o">=</span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span><span class="p">,</span> <span class="n">mono</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">'float32'</span><span class="p">)</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">audio_data_generator</span><span class="o">.</span><span class="n">bg_noises</span><span class="p">[</span><span class="s1">'game'</span><span class="p">]</span> <span class="o">=</span> <span class="n">PACMAN_BACKGROUND_NOISE</span>
+   
+
+    <span class="n">batch_shape</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">),)</span> <span class="o">+</span> <span class="n">params</span><span class="o">.</span><span class="n">sample_shape</span>
+    <span class="n">batch_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">batch_shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">class_id</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="n">classes</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">orignal_sr</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="n">sr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mono</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">'float32'</span><span class="p">)</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">orignal_sr</span> <span class="o">=</span> <span class="mi">16000</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">orignal_sr</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">'float32'</span><span class="p">)</span>
+
+        <span class="n">transform_params</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">audio_data_generator</span><span class="o">.</span><span class="n">get_random_transform</span><span class="p">()</span>
+        <span class="n">add_game_background_noise</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">.8</span>  <span class="c1"># Add the game background noise 80% of the time</span>
+        <span class="k">if</span> <span class="n">add_game_background_noise</span><span class="p">:</span> 
+            <span class="n">transform_params</span><span class="p">[</span><span class="s1">'noise_color'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">transform_params</span><span class="p">[</span><span class="s1">'bg_noise'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'game'</span>
+
+        <span class="c1"># Apply any audio augmentations</span>
+        <span class="c1"># NOTE: If transform_params =  default_transform</span>
+        <span class="c1">#       Then the audio sample is simply cropped/padded to fit the expected sample length</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">audio_data_generator</span><span class="o">.</span><span class="n">apply_transform</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">orignal_sr</span><span class="p">,</span> <span class="n">transform_params</span><span class="p">)</span>
+
+        <span class="c1"># After point through the frontend, </span>
+        <span class="c1"># x = [height, width] dtype=self.dtype</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">params</span><span class="o">.</span><span class="n">audio_data_generator</span><span class="o">.</span><span class="n">apply_frontend</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="c1"># Convert the sample's shape from [height, width]</span>
+        <span class="c1"># to [height, width, 1]</span>
+        <span class="n">batch_x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+
+    <span class="n">batch_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">batch_x</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">class_indices</span><span class="p">)),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">class_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">classes</span><span class="p">):</span>
+        <span class="n">batch_y</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">class_id</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.</span>
+    
+    <span class="k">return</span> <span class="n">batch_index</span><span class="p">,</span> <span class="p">(</span><span class="n">batch_x</span><span class="p">,</span> <span class="n">batch_y</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Which takes random snippets of the recorded audio and applies it to 80% of the training samples.</p>
+</section>
+<section id="profiling-the-model">
+<h3 id="profiling-the-model">Profiling the model<a class="headerlink" href="#profiling-the-model" title="Permalink to this headline">¶</a></h3>
+<p>Before training a machine learning model, it is important to know how efficiently the model will execute on the embedded target. This is especially true when using keyword spotting to control a Pac-Man (a keyword that takes &gt; 1s to detect will not be useful when trying to avoid the ghosts).</p>
+<p>If the model inference takes too long to execute on the embedded target, then the model parameters need to be decreased to reduce the model’s computational complexity. The desired model parameters should be known before the model is fully trained.</p>
+<p>To help determine the best model parameters, the MLTK features a <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">Model Profiler</span></a> command:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk profile keyword_spotting_pacman --device --build --accelerator MVP
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op while saving (showing 5 of 5). These functions will not be directly callable after loading.
+C:\Users\reed\workspace\silabs\mltk\.venv\lib\site-packages\tensorflow\lite\python\convert.py:766: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.
+  warnings.warn("Statistics for quantized inputs were expected, but not "
+Programming ML model to device ...
+Profiling ML model on device ...
+
+Profiling Summary
+Name: keyword_spotting_pacman
+Accelerator: MVP
+Input Shape: 1x69x70x1
+Input Data Type: int8
+Output Shape: 1x7
+Output Data Type: int8
+Flash, Model File Size (bytes): 32.8k
+RAM, Runtime Memory Size (bytes): 51.8k
+Operation Count: 6.1M
+Multiply-Accumulate Count: 2.9M
+Layer Count: 13
+Unsupported Layer Count: 0
+Accelerator Cycle Count: 3.0M
+CPU Cycle Count: 265.0k
+CPU Utilization (%): 8.6
+Clock Rate (hz): 78.0M
+Time (s): 39.3m
+Ops/s: 155.4M
+MACs/s: 74.3M
+Inference/s: 25.4
+
+Model Layers
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape             | Output Shape | Options                                             |
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+| 0     | conv_2d         | 710.0k | 304.3k | 482.4k     | 30.6k      | 6.3m     | 1x69x70x1,7x3x3x1,7     | 1x69x70x7    | Padding:same stride:1x1 activation:relu             |
+| 1     | max_pool_2d     | 33.3k  | 0      | 50.1k      | 14.0k      | 720.0u   | 1x69x70x7               | 1x34x35x7    | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 2     | conv_2d         | 2.1M   | 1.0M   | 1.3M       | 29.6k      | 16.8m    | 1x34x35x7,14x3x3x7,14   | 1x34x35x14   | Padding:same stride:1x1 activation:relu             |
+| 3     | max_pool_2d     | 16.2k  | 0      | 12.2k      | 13.9k      | 240.0u   | 1x34x35x14              | 1x17x17x14   | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 4     | conv_2d         | 2.1M   | 1.0M   | 738.3k     | 30.2k      | 9.4m     | 1x17x17x14,28x3x3x14,28 | 1x17x17x28   | Padding:same stride:1x1 activation:relu             |
+| 5     | max_pool_2d     | 7.2k   | 0      | 5.6k       | 26.4k      | 330.0u   | 1x17x17x28              | 1x8x8x28     | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 6     | conv_2d         | 908.5k | 451.6k | 293.2k     | 30.3k      | 3.8m     | 1x8x8x28,28x3x3x28,28   | 1x8x8x28     | Padding:same stride:1x1 activation:relu             |
+| 7     | max_pool_2d     | 1.8k   | 0      | 1.5k       | 26.3k      | 330.0u   | 1x8x8x28                | 1x4x4x28     | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 8     | conv_2d         | 227.1k | 112.9k | 62.1k      | 27.9k      | 900.0u   | 1x4x4x28,28x3x3x28,28   | 1x4x4x28     | Padding:same stride:1x1 activation:relu             |
+| 9     | max_pool_2d     | 448.0  | 0      | 532.0      | 26.3k      | 330.0u   | 1x4x4x28                | 1x2x2x28     | Padding:valid stride:2x2 filter:2x2 activation:none |
+| 10    | reshape         | 0      | 0      | 0          | 1.0k       | 0        | 1x2x2x28,2              | 1x112        | Type=none                                           |
+| 11    | fully_connected | 1.6k   | 784.0  | 1.2k       | 2.2k       | 60.0u    | 1x112,7x112,7           | 1x7          | Activation:none                                     |
+| 12    | softmax         | 35.0   | 0      | 0          | 6.1k       | 60.0u    | 1x7                     | 1x7          | Type=softmaxoptions                                 |
++-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+
+Generating profiling report at C:/Users/reed/.mltk/models/keyword_spotting_pacman-test/profiling
+Profiling time: 55.241210 seconds
+</pre></div>
+</div>
+</div>
+</div>
+<p>This command builds the model then profiles it on the development board using the <a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/mvp-accelerator">MVP</a> hardware accelerator.</p>
+</section>
+<section id="training-the-model">
+<h3 id="training-the-model">Training the model<a class="headerlink" href="#training-the-model" title="Permalink to this headline">¶</a></h3>
+<p>Once the <a class="reference external" href="https://github.com/SiliconLabs/mltk/tree/master/mltk/models/siliconlabs/keyword_spotting_pacman.py">model specification</a> is ready, it can be <a class="reference internal" href="../../docs/guides/model_training.html"><span class="doc std std-doc">trained</span></a> with the command:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">!</span>mltk train keyword_spotting_pacman
+</pre></div>
+</div>
+</div>
+</div>
+<p>After training completes, a <a class="reference external" href="https://github.com/SiliconLabs/mltk/tree/master/mltk/models/siliconlabs/keyword_spotting_pacman.mltk.zip">model archive</a> file is generated containing the quantized <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file. This is the file that is built into the firmware application.</p>
+</section>
+</section>
+<section id="creating-the-firmware-application">
+<h2 id="creating-the-firmware-application">Creating the Firmware Application<a class="headerlink" href="#creating-the-firmware-application" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="../../docs/cpp_development/examples/ble_audio_classifier.html"><span class="doc std std-doc">BLE Audio Classifier</span></a> C++ example application may be used with the train model.</p>
+<p>The application uses the <a class="reference external" href="../../docs/audio/audio_feature_generator.html#gecko-sdk-component">Audio Feature Generator</a> library to generate spectrograms from the streaming microphone audio.
+The spectrograms are then passed to the <a class="reference external" href="https://github.com/tensorflow/tflite-micro">Tensorflow-Lite Micro</a> inference engine which uses the trained model from above to make predictions on if a keyword is found in the spectrogram.
+If a keyword is detected, a connected BLE client is sent a notification containing the detected class ID of the keyword and prediction probability.</p>
+</section>
+<section id="creating-the-pac-man-webpage">
+<h2 id="creating-the-pac-man-webpage">Creating the Pac-Man Webpage<a class="headerlink" href="#creating-the-pac-man-webpage" title="Permalink to this headline">¶</a></h2>
+<p>A <a class="reference external" href="https://github.com/SiliconLabs/mltk/blob/master/cpp/shared/apps/ble_audio_classifier/web/pacman">Pac-Man Webpage</a> is available that allows for playing the game “Pac-Man” using
+the keywords detected by the firmware application described above.</p>
+<p>This webpage was adapted from a game created by Lucio Panpinto, view original source code on <a class="reference external" href="https://github.com/luciopanepinto/pacman">GitHub</a>.</p>
+<p>The webpage was modified to use the <a class="reference external" href="https://itpnyu.github.io/p5ble-website/">p5.ble.js</a> library for communicating with the firmware application via Bluetooth Low Energy.</p>
+</section>
+<section id="running-the-demo">
+<h2 id="running-the-demo">Running the Demo<a class="headerlink" href="#running-the-demo" title="Permalink to this headline">¶</a></h2>
+<p>With the following components complete:</p>
+<ul class="simple">
+<li><p>Keyword spotting machine learning model</p></li>
+<li><p>Firmware application with Audio Feature Generator, Tensorflow-Lite Micro, and Bluetooth libraries</p></li>
+<li><p>Pac-Man webpage with Bluetooth</p></li>
+</ul>
+<p>We can now run the demo.</p>
+<p>A live demo may be found at: <a class="reference external" href="https://mltk-pacman.web.app">https://mltk-pacman.web.app</a>.</p>
+<p>Alternatively, you can build the firmware application from source and run the webpage locally:</p>
+<section id="build-firmware-application-from-source">
+<h3 id="build-firmware-application-from-source">Build firmware application from source<a class="headerlink" href="#build-firmware-application-from-source" title="Permalink to this headline">¶</a></h3>
+<p>The MLTK supports building <a class="reference internal" href="../../docs/cpp_development/index.html"><span class="doc std std-doc">C++ Applications</span></a>.</p>
+<p>It also features a <a class="reference internal" href="../../docs/cpp_development/examples/ble_audio_classifier.html"><span class="doc std std-doc">ble_audio_classifier</span></a> C++ application
+which can be built using:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/cpp_development/vscode.html"><span class="doc std std-doc">Visual Studio Code</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/cpp_development/simplicity_studio.html"><span class="doc std std-doc">Simplicity Studio</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/cpp_development/command_line.html"><span class="doc std std-doc">Command Line</span></a></p></li>
+</ul>
+<p>Refer to the <a class="reference internal" href="../../docs/cpp_development/examples/ble_audio_classifier.html"><span class="doc std std-doc">ble_audio_classifier</span></a> application’s documentation
+for how include your model into the built application.</p>
+</section>
+<section id="run-webpage-locally">
+<h3 id="run-webpage-locally">Run webpage locally<a class="headerlink" href="#run-webpage-locally" title="Permalink to this headline">¶</a></h3>
+<p>The demo’s webpage uses “vanilla” javascript+css+html. No special build systems are required.</p>
+<p>To run the webpage locally, simply open <a class="reference external" href="https://github.com/SiliconLabs/mltk/blob/master/cpp/shared/apps/ble_audio_classifier/web/pacman/index.html">index.html</a> in your web browser (NOTE: double-click the <strong>locally cloned</strong> <code class="docutils literal notranslate"><span class="pre">index.html</span></code> on your PC, not the one on Github).</p>
+<p>When the webpage starts, follow the instructions but do <em>not</em> program the <code class="docutils literal notranslate"><span class="pre">.s37</span></code>. The locally built firmware application should have already been programmed as described in the the previous section.</p>
+</section>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="keyword_spotting_on_off.html" title="Keyword Spotting - On/Off"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Keyword Spotting - On/Off </span>
+              </div>
+            </a>
+          
+          
+            <a href="image_classification.html" title="Image Classification - Rock, Paper, Scissors"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> Image Classification - Rock, Paper, Scissors </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Jun 28, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

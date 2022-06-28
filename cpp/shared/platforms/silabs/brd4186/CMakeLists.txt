@@ -24,8 +24,8 @@ mltk_set(GECKO_SDK_INCLUDE_EMLIB ON)
 mltk_set(GECKO_SDK_INCLUDE_IOSTREAM_SERVICE ON)
 
 mltk_set(SILABS_PART_NUMBER EFR32MG24B210F1536IM48=1)
-# Default clock rate is 80MHz
-mltk_set(MLTK_CPU_CLOCK 80000000 DEFAULT)
+# Default clock rate is 78MHz
+mltk_set(MLTK_CPU_CLOCK 78000000 DEFAULT)
 # Default stack size
 mltk_set(MLTK_STACK_SIZE 5120 DEFAULT)
 
@@ -90,6 +90,7 @@ PRIVATE
     mltk::cpputils
 
 PUBLIC 
+    mltk::gecko_sdk::clib_wrappers
     mltk::platform::common
     mltk::cmsis 
     ${PROJECT_NAME}_api
@@ -98,17 +99,17 @@ PUBLIC
     mltk::gecko_sdk::system_service
     mltk::gecko_sdk::power_manager_service
     mltk::gecko_sdk::sleeptimer_service
-    mltk::gecko_sdk::udelay_service
     mltk::gecko_sdk::dmadrv
     mltk::gecko_sdk::ledrv
     mltk::gecko_sdk::nvm3
     mltk::gecko_sdk::button
     mltk::gecko_sdk::gpiointerrupt
     mltk::gecko_sdk::emlib
-    mltk::gecko_sdk::clib_wrappers
     mltk::gecko_sdk::platform_common
+    mltk::gecko_sdk::platform_peripheral
     mltk::gecko_sdk::hardware_board
     mltk::gecko_sdk::device_efr32mg24
+    mltk::gecko_sdk::udelay_service
     mltk::jlink_stream
 )
 

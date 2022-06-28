@@ -52,6 +52,9 @@ This option places an upper limit on the number of samples per class that are us
     verbose: bool = typer.Option(False, '--verbose', '-v', 
         help='Enable verbose console logs'
     ),
+    update_archive: bool = typer.Option(True,
+        help='Update the model archive with the evaluation results'
+    ),
     test: bool = typer.Option(False,
         help='Use the model created by the test training. This does the same thing as: mltk evaluate my_model-test'
     ),
@@ -124,6 +127,7 @@ This option places an upper limit on the number of samples per class that are us
             dump=dump,
             show=show,
             verbose=True,
+            update_archive=update_archive,
        )
     except Exception as e:
         cli.handle_exception('Failed to evaluate model', e)

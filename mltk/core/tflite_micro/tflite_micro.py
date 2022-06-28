@@ -180,7 +180,7 @@ class TfliteMicro:
             model=tflite_model,
             accelerator=accelerator,
             enable_profiler=True,
-            runtime_buffer_size=16*1024*1024 # 16MB
+            runtime_buffer_size=-1 # Determine the optimal memory size
         )
         try:
             renable_simulator_backend = False
@@ -447,21 +447,22 @@ class TfliteMicro:
 
         # Check if any "<accelerator name>_mltk_accelerator.pth" files are found in the Python Libs directory
         python_libs_dir = get_python_lib()
-        for fn in os.listdir(python_libs_dir):
-            if not fn.endswith('_mltk_accelerator.pth'):
-                continue
-            pth_path = f'{python_libs_dir}/{fn}'
-            with open(pth_path, 'r') as f:
-                accelerator_package_base_dir = f.readline().strip()
-            accelerator_name = fn[:-len('_mltk_accelerator.pth')]
-            accelerator_dir = f'{accelerator_package_base_dir}/{accelerator_name}'
+        if os.path.exists(python_libs_dir):
+            for fn in os.listdir(python_libs_dir):
+                if not fn.endswith('_mltk_accelerator.pth'):
+                    continue
+                pth_path = f'{python_libs_dir}/{fn}'
+                with open(pth_path, 'r') as f:
+                    accelerator_package_base_dir = f.readline().strip()
+                accelerator_name = fn[:-len('_mltk_accelerator.pth')]
+                accelerator_dir = f'{accelerator_package_base_dir}/{accelerator_name}'
 
-            # If the file does exist, 
-            # then add its path to the accelerator search path
-            if os.path.exists(accelerator_dir):
-                search_paths.append(accelerator_dir)
-            elif os.path.exists(f'{accelerator_dir}_wrapper'):
-                search_paths.append(f'{accelerator_dir}_wrapper')
+                # If the file does exist, 
+                # then add its path to the accelerator search path
+                if os.path.exists(accelerator_dir):
+                    search_paths.append(accelerator_dir)
+                elif os.path.exists(f'{accelerator_dir}_wrapper'):
+                    search_paths.append(f'{accelerator_dir}_wrapper')
 
         for search_path in search_paths:
             search_path = fullpath(search_path)

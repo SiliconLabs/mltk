@@ -97,7 +97,7 @@ else()
   find_package(mltk_audio_classifier)
   find_package(mltk_image_classifier)
   find_package(mltk_fingerprint_authenticator)
-
+  find_package(mltk_ble_audio_classifier)
 
 endif()
 

@@ -167,7 +167,7 @@ setup(
         'tflite-support',
         'protobuf>=3.18,<3.20', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
         'onnx',
-        'onnxruntime',
+        'onnxruntime<1.11',
         'flatbuffers<2.0',
         'numpy',
         'scipy<2.0',
@@ -201,6 +201,7 @@ setup(
             'keyword_spotting_on_off_v2.mltk.zip',
             'keyword_spotting_mobilenetv2.mltk.zip',
             'keyword_spotting_with_transfer_learning.mltk.zip',
+            'keyword_spotting_pacman.mltk.zip',
             'rock_paper_scissors.mltk.zip'
         ],
         'mltk.models.tflite_micro': [

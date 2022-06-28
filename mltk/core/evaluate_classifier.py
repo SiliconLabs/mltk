@@ -183,7 +183,8 @@ def evaluate_classifier(
     classes:List[str]=None,
     verbose:bool=False,
     show:bool=False,
-    callbacks:list=None
+    callbacks:list=None,
+    update_archive:bool=True
 ) -> ClassifierEvaluationResults:
     """Evaluate a trained classification model
     
@@ -196,6 +197,7 @@ def evaluate_classifier(
         verbose: Enable verbose log messages
         show: Show the evaluation results diagrams
         callbacks: Optional callbacks to invoke while evaluating
+        update_archive: Update the model archive with the eval results
 
     Returns:
         Dictionary containing evaluation results
@@ -212,7 +214,8 @@ def evaluate_classifier(
     eval_dir = mltk_model.create_log_dir(subdir, delete_existing=True)
     logger = mltk_model.create_logger('eval', parent=get_mltk_logger())
 
-    update_archive = mltk_model.check_archive_file_is_writable()
+    if update_archive:
+        update_archive = mltk_model.check_archive_file_is_writable()
     gpu.initialize(logger=logger)
 
     # Build the MLTK model's corresponding as a Keras model or .tflite

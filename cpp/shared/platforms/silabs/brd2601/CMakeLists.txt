@@ -22,10 +22,11 @@ mltk_set(GECKO_SDK_BOARD_SERIES 2)
 mltk_set(GECKO_SDK_BOARD_TARGET ${PROJECT_NAME})
 mltk_set(GECKO_SDK_INCLUDE_EMLIB ON)
 mltk_set(GECKO_SDK_INCLUDE_IOSTREAM_SERVICE ON)
+mltk_set(GECKO_SDK_SECURE_ELEMENT_ENABLED ON)
 
 mltk_set(SILABS_PART_NUMBER EFR32MG24B210F1536IM48=1)
-# Default clock rate is 80MHz
-mltk_set(MLTK_CPU_CLOCK 80000000 DEFAULT)
+# Default clock rate is 78MHz
+mltk_set(MLTK_CPU_CLOCK 78000000 DEFAULT)
 # Default stack size
 mltk_set(MLTK_STACK_SIZE 5120 DEFAULT)
 
@@ -74,6 +75,7 @@ PRIVATE
     -Wno-implicit-function-declaration
 )
 
+
 set(GECKO_SDK_IO_STREAM_SERVICE_SOURCES
     sl_iostream_retarget_stdio.c 
     sl_iostream_uart.c 
@@ -86,11 +88,11 @@ mltk_set(GECKO_SDK_IO_STREAM_SERVICE_SOURCES "${GECKO_SDK_IO_STREAM_SERVICE_SOUR
 
 
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(${PROJECT_NAME} 
 PRIVATE 
-    mltk::cpputils
-
+    mltk::cpputils 
 PUBLIC 
+    mltk::gecko_sdk::clib_wrappers
     mltk::platform::common
     mltk::cmsis 
     ${PROJECT_NAME}_api
@@ -99,16 +101,17 @@ PUBLIC
     mltk::gecko_sdk::system_service
     mltk::gecko_sdk::power_manager_service
     mltk::gecko_sdk::sleeptimer_service
-    mltk::gecko_sdk::udelay_service
     mltk::gecko_sdk::dmadrv
     mltk::gecko_sdk::ledrv
     mltk::gecko_sdk::nvm3
     mltk::gecko_sdk::button
     mltk::gecko_sdk::gpiointerrupt
     mltk::gecko_sdk::emlib
-    mltk::gecko_sdk::clib_wrappers
     mltk::gecko_sdk::platform_common
+    mltk::gecko_sdk::platform_peripheral
     mltk::gecko_sdk::hardware_board
+    mltk::gecko_sdk::mx25_flash_shutdown_eusart
+    mltk::gecko_sdk::udelay_service
     mltk::gecko_sdk::device_efr32mg24
     mltk::jlink_stream
 )
@@ -123,6 +126,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_LI
 
 target_compile_definitions(${PROJECT_NAME}
 PUBLIC 
+    SL_COMPONENT_CATALOG_PRESENT
     MLTK_CPU_CLOCK=${MLTK_CPU_CLOCK}
 PRIVATE 
     MLTK_STACK_SIZE=${MLTK_STACK_SIZE}
@@ -150,7 +154,7 @@ PRIVATE
 ###########################################################
 # mltk_platform_add_exe_targets
 #
-# Adds a target to download the appplication binary to the embedded device
+# Adds a target to download the application binary to the embedded device
 #
 macro(mltk_platform_add_exe_targets exe_target)
   mltk_commander_add_download_target(${exe_target})
@@ -169,5 +173,42 @@ find_package(mltk_commander REQUIRED)
 find_package(mltk_gecko_sdk REQUIRED)
 find_package(mltk_jlink_stream REQUIRED)
 
+
+
+#############################################
+# Enable additional GSDK components
+
+mltk_get(GECKO_SDK_ENABLE_BLUETOOTH)
+if(GECKO_SDK_ENABLE_BLUETOOTH)
+    mltk_info("Enabling Gecko SDK Bluetooth component")
+    mltk_set(GECKO_SDK_ENABLE_FREERTOS ON) # Bluetooth requires the FreeRTOS component
+
+    target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+        mltk::gecko_sdk::bluetooth_efr32mg24
+    )
+    target_compile_definitions(${PROJECT_NAME}
+    PUBLIC 
+        SL_CATALOG_BLUETOOTH_PRESENT
+    )
+
+    target_sources(${PROJECT_NAME}_autogen
+    PRIVATE 
+        autogen/sl_bluetooth.c
+    )
+endif()
+
+mltk_get(GECKO_SDK_ENABLE_FREERTOS)
+if(GECKO_SDK_ENABLE_FREERTOS)
+    mltk_info("Enabling Gecko SDK FreeRTOS component")
+    target_link_libraries(${PROJECT_NAME}
+    PUBLIC
+        mltk::gecko_sdk::freertos
+    )
+    target_compile_definitions(${PROJECT_NAME}
+    PUBLIC 
+        SL_CATALOG_FREERTOS_KERNEL_PRESENT
+    )
+endif()
 
 

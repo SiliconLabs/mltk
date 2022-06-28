@@ -155,7 +155,8 @@ def evaluate_autoencoder(
     dump: bool=False,
     verbose: bool=None,
     show: bool=False,
-    callbacks:list=None
+    callbacks:list=None,
+    update_archive:bool=True
 ) -> AutoEncoderEvaluationResults:
     """Evaluate a trained auto-encoder model
     
@@ -169,6 +170,7 @@ def evaluate_autoencoder(
         verbose: Enable verbose log messages
         show: Show the evaluation results diagrams
         callbacks: Optional callbacks to invoke while evaluating
+        update_archive: Update the model archive with the eval results
 
     Returns:
         Dictionary containing evaluation results
@@ -187,7 +189,8 @@ def evaluate_autoencoder(
     logger = mltk_model.create_logger('eval', parent=get_mltk_logger())
 
     gpu.initialize(logger=logger)
-    update_archive = mltk_model.check_archive_file_is_writable()
+    if update_archive:
+        update_archive = mltk_model.check_archive_file_is_writable()
 
     scoring_function = mltk_model.get_scoring_function()
     classes = classes or mltk_model.eval_classes

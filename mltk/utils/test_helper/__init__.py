@@ -55,62 +55,82 @@ def run_mltk_command(*args, update_model_path=False, logger=None) -> str:
 
 def generate_run_model_params(
     train=True,
-    evaluate=True,
+    evaluate=None,
     profile=True,
-    summarize=True,
-    quantize=True,
-    view=True,
+    summarize=None,
+    quantize=None,
+    view=None,
     build=None,
     tflite=None
 ):
+    use_basic_model_params = os.environ.get('MLTK_UTEST_BASIC_MODEL_PARAMS', '0') == '1'
+    if use_basic_model_params:
+        evaluate = evaluate if evaluate is not None else False 
+        summarize = summarize if summarize is not None else False 
+        quantize = quantize if quantize is not None else False 
+        view = view if view is not None else False 
+        build = build if build is not None else False
+    else:
+        evaluate = evaluate if evaluate is not None else True 
+        summarize = summarize if summarize is not None else True 
+        quantize = quantize if quantize is not None else True 
+        view = view if view is not None else True 
+
+
     names = ['op', 'tflite', 'build']
     params = []
+    tflite_str = 'tflite' if tflite else 'no_tflite'
+    build_str = 'build' if build else 'no_build'
 
     if train:
-        params.append(('train', False, False))
+        params.append(('train', 'na', 'na'))
 
     if evaluate:
-        params.append(('evaluate', False, False))
+        if tflite is None:
+            params.append(('evaluate', 'no_tflite', 'na'))
+            params.append(('evaluate', 'tflite',    'na'))
+        else:
+            params.append(('evaluate', tflite_str, 'na'))
 
     if profile:
         if build is None:
-            params.append(('profile', False, False))
-            params.append(('profile', False, True))
+            params.append(('profile', 'na', 'no_build'))
+            params.append(('profile', 'na', 'build'))
         else:
-            params.append(('profile', False, build))
+            params.append(('profile', 'na', build_str))
         
     if summarize:
         if build is None and tflite is None:
-            params.append(('summarize', False, False))
-            params.append(('summarize', False, True))
-            params.append(('summarize', True, False))
-            params.append(('summarize', True, True))
+            params.append(('summarize', 'no_tflite', 'no_build'))
+            params.append(('summarize', 'no_tflite', 'build'))
+            params.append(('summarize', 'tflite',    'no_build'))
+            params.append(('summarize', 'tflite',    'build'))
         elif build is not None and tflite is None: 
-            params.append(('summarize', False, build))
-            params.append(('summarize', True, build))
+            params.append(('summarize', 'no_tflite', build_str))
+            params.append(('summarize', 'tflite',   build_str))
         elif build is None and tflite is not None: 
-            params.append(('summarize', tflite, False))
-            params.append(('summarize', tflite, True))
+            params.append(('summarize', tflite_str, 'no_build'))
+            params.append(('summarize', tflite_str, 'build'))
         else:
-            params.append(('summarize', tflite, build))
+            params.append(('summarize', tflite_str, build_str))
         
     if quantize:
-        params.append(('quantize', False, False))
+        params.append(('quantize', 'na', 'na'))
 
     if view:
         if build is None and tflite is None:
-            params.append(('view', False, False))
-            params.append(('view', False, True))
-            params.append(('view', True, False))
-            params.append(('view', True, True))
+            params.append(('view', 'no_tflite', 'no_build'))
+            params.append(('view', 'no_tflite', 'build'))
+            params.append(('view', 'tflite',    'no_build'))
+            params.append(('view', 'tflite',    'build'))
         elif build is not None and tflite is None: 
-            params.append(('view', False, build))
-            params.append(('view', True, build))
+            params.append(('view', 'no_tflite', build_str))
+            params.append(('view', 'tflite',   build_str))
         elif build is None and tflite is not None: 
-            params.append(('view', tflite, False))
-            params.append(('view', tflite, True))
+            params.append(('view', tflite_str, 'no_build'))
+            params.append(('view', tflite_str, 'build'))
         else:
-            params.append(('view', tflite, build))
+            params.append(('view', tflite_str, build_str))
 
     return names, params
 
@@ -118,49 +138,58 @@ def generate_run_model_params(
 def run_model_operation(
     name_or_archive:str, 
     op:str,
-    tflite=False,
-    build=False
+    tflite=None,
+    build=None
 ):
+    if tflite == 'tflite':
+        tflite = True 
+    elif tflite == 'no_tflite' or tflite == 'na':
+        tflite = False
+    if build == 'build':
+        build = True 
+    elif build == 'no_build' or build == 'na':
+        build = False
+
+
     logger = get_logger('model_operation_tests')
     logger.info(f'Testing {name_or_archive}, op={op}, tflite={tflite}, build={build}')
+    name_no_test = name_or_archive.replace('-test', '')
+    update_archive_arg = '--update-archive' if name_or_archive.endswith('-test') else '--no-update-archive'
 
     if op == 'train':
-        run_mltk_command('train', name_or_archive, '--clean', '--verbose', logger=logger)
+        run_mltk_command('train', name_or_archive, '--clean', '--verbose', '--test', logger=logger)
     
     elif op == 'evaluate':
-        run_mltk_command('evaluate', name_or_archive, '--verbose', logger=logger)
+        run_mltk_command('evaluate', name_or_archive, '--verbose', update_archive_arg, logger=logger)
     
     elif op == 'profile':
         if build:
-            name_no_test = name_or_archive.replace('-test', '')
-            run_mltk_command('profile', name_no_test, '--build', '--verbose', logger=logger)
-        else:
+            run_mltk_command('profile', name_or_archive, '--build', '--verbose', logger=logger)
+        elif not name_or_archive.endswith('-test'):
             run_mltk_command('profile', name_or_archive, '--verbose', logger=logger)
         
     elif op == 'summarize':
         if build:
-            name_no_test = name_or_archive.replace('-test', '')
             if tflite:
                 run_mltk_command('summarize', name_no_test, '--tflite', '--build', '--verbose', logger=logger)
             else:
                 run_mltk_command('summarize', name_no_test, '--build', '--verbose', logger=logger)
-        else:
+        elif not name_or_archive.endswith('-test'):
             if tflite:
                 run_mltk_command('summarize', name_or_archive, '--tflite', '--verbose', logger=logger)
             else:
                 run_mltk_command('summarize', name_or_archive, '--verbose', logger=logger)
 
     elif op == 'quantize':
-        run_mltk_command('quantize', name_or_archive, '--verbose', logger=logger)
+        run_mltk_command('quantize', name_or_archive, '--verbose', update_archive_arg, logger=logger)
 
     elif op == 'view':
         if build:
-            name_no_test = name_or_archive.replace('-test', '')
             if tflite:
                 run_mltk_command('view', name_no_test, '--tflite', '--build', '--verbose', logger=logger)
             else:
                 run_mltk_command('view', name_no_test, '--build', '--verbose', logger=logger)
-        else:           
+        elif not name_or_archive.endswith('-test'):     
             if tflite:
                 run_mltk_command('view', name_or_archive, '--tflite', '--verbose', logger=logger)
             else:

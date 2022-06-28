@@ -101,8 +101,8 @@ static bool load_model(TfliteMicroModel &model, logging::Logger& logger)
 
     logger.info("Loading model");
 
-    // Attempt to load the model using the arena size specified in the .tflite
-    if(!model.load(tflite_flatbuffer, op_resolver))
+    // Attempt to load the model by finding the optimal tensor arena size
+    if(!model.load(tflite_flatbuffer, op_resolver, nullptr, -1))
     {
         logger.info("Failed to load model");
         return false;

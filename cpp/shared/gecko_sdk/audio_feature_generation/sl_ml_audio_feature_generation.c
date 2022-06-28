@@ -221,6 +221,12 @@ sl_status_t sl_ml_audio_feature_generation_update_features()
 
   register_dump_streams();
 
+  // Ensure audio has been written before we start processing
+  if(audio_buffer_read_index == audio_buffer_write_index)
+  {
+    return SL_STATUS_EMPTY;
+  }
+ 
   int new_data_length = (audio_buffer_read_index < audio_buffer_write_index) ? 
     (audio_buffer_write_index - audio_buffer_read_index) : 
     ((AUDIO_BUFFER_SIZE - audio_buffer_read_index) + audio_buffer_write_index);

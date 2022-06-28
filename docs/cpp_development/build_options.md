@@ -27,7 +27,7 @@ mltk_set(MLTK_CMAKE_LOG_LEVEL debug)
 
 Build for a supported embedded platform.
 
-The supported platforms may be found at: [__mltk__/cpp/shared/platform](../../cpp/shared/platforms)
+Refer to [Supported Hardware](../other/supported_hardware.md) for more details.
 
 __NOTE:__ If this variable is not defined, then the host operating system (e.g. `windows` or `linux`) is automatically selected.
 

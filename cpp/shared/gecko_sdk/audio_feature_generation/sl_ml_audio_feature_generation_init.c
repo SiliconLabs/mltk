@@ -71,7 +71,5 @@ sl_status_t sl_ml_audio_feature_generation_init()
     return mic_status;
   }
 
-  sl_ml_audio_feature_generation_frontend_init();
-  
-  return SL_STATUS_OK;
+  return sl_ml_audio_feature_generation_frontend_init();
 }

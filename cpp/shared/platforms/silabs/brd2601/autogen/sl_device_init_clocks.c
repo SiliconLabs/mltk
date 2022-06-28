@@ -28,18 +28,24 @@
  *
  ******************************************************************************/
 #include "sl_device_init_clocks.h"
+#include "sl_component_catalog.h"
 
 #include "em_cmu.h"
 
+
 sl_status_t sl_device_init_clocks(void)
 {
+
   CMU_ClockSelectSet(cmuClock_SYSCLK, cmuSelect_HFRCODPLL);
+  
 #if defined(_CMU_EM01GRPACLKCTRL_MASK)
   CMU_ClockSelectSet(cmuClock_EM01GRPACLK, cmuSelect_HFRCODPLL);
 #endif
 #if defined(_CMU_EM01GRPBCLKCTRL_MASK)
   CMU_ClockSelectSet(cmuClock_EM01GRPBCLK, cmuSelect_HFRCODPLL);
 #endif
+
+
   CMU_ClockSelectSet(cmuClock_EM23GRPACLK, cmuSelect_LFXO);
   CMU_ClockSelectSet(cmuClock_EM4GRPACLK, cmuSelect_LFXO);
 #if defined(RTCC_PRESENT)

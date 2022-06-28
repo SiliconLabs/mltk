@@ -26,10 +26,10 @@ void sl_platform_init(void)
   sl_device_init_nvic();
   sl_board_preinit();
   sl_device_init_dcdc();
-  sl_device_init_hfrco();
   sl_hfxo_manager_init_hardware();
   sl_device_init_hfxo();
   sl_device_init_lfxo();
+  sl_device_init_dpll();
   sl_device_init_clocks();
   sl_device_init_emu();
   sl_board_init();

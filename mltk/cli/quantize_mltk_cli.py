@@ -42,6 +42,9 @@ May be one of the following:
 ''',
     metavar='<value>'
     ),
+    update_archive: bool = typer.Option(None,
+        help='Update the model archive with the quantized model'
+    ),
 ):
     """Quantize a model into a .tflite file
 
@@ -92,7 +95,8 @@ May be one of the following:
             mltk_model, 
             output=output,
             weights=weights,
-            build=build
+            build=build,
+            update_archive=update_archive
         )
     except Exception as e:
         cli.handle_exception('Failed to quantize model', e)

@@ -6,6 +6,9 @@ The MLTK contains both Python scripts _and_ C++ Python wrappers, examples, and l
 - [Libraries](../../cpp/shared) - Implement algorithms that are used by the wrappers and examples
 
 
+__NOTE:__ Refer to [Supported Hardware](../other/supported_hardware.md) for more details which embedded platforms are supported.
+
+
 ## Development Modes
 
 The MLTK supports three modes of C++ development:  

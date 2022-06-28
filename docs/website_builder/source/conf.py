@@ -301,6 +301,7 @@ os.makedirs(tutorials_dst_dir, exist_ok=True)
 
 url_re = re.compile(r'.*\((https:\/\/siliconlabs\.github\.io\/mltk\/).*', re.I)
 url_re2 = re.compile(r'.*\((https:\/\/siliconlabs\.github\.io\/mltk\/).*(\.html).*', re.I)
+docs_img_re = re.compile(r'.*\((https:\/\/github.com\/SiliconLabs\/mltk\/raw\/master\/docs\/img\/).*', re.I)
 # If the line contains something like:
 # (https://siliconlabs.github.io/mltk/docs/python_api/core/mltk_model.html#mltk.core.TrainMixin.tflite_converter)
 # Then we cannot convert it to it's corresponding relative markdown URL, so it's not supported
@@ -324,6 +325,10 @@ for src_dir, dst_dir in zip((examples_src_dir, tutorials_src_dir), (examples_dst
                     line = line.replace(match.group(1), '../../')
                     if match2:
                         line = line.replace(match2.group(2), '.md')
+
+                match = docs_img_re.match(line)
+                if match:
+                    line = line.replace(match.group(1), '../../docs/img/')
 
                 data += line + '\n'
 

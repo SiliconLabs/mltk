@@ -5,10 +5,16 @@ import numpy as np
 from urllib.parse import urlparse
 import yaml
 import onnx
+import onnxruntime
 import onnxruntime.backend as backend
 
 from mltk.core.utils import get_mltk_logger
 from mltk.utils.archive_downloader import download_verify_extract
+
+
+onnxruntime.set_default_logger_severity(3)
+
+
 
 
 class _DataList(list):

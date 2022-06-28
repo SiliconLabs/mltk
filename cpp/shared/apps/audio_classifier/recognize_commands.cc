@@ -182,7 +182,16 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
   int64_t time_since_last_top;
   time_since_last_top = current_time_ms - previous_top_label_time_;
 
-  if ((current_top_score > detection_threshold_) && 
+
+  // If a per class, detection threshold list was given in the model parameters
+  // then use that, otherwise default to the global detection threshold
+  int detection_threshold = detection_threshold_;
+  if(SL_TFLITE_DETECTION_THRESHOLD_LIST.size() > 0)
+  {
+    detection_threshold = SL_TFLITE_DETECTION_THRESHOLD_LIST[current_top_index];
+  } 
+
+  if ((current_top_score > detection_threshold) && 
      (ignore_underscore_ && current_top_label[0] != '_') &&
      ((current_top_index != previous_top_label_index_)
       || (time_since_last_top > suppression_ms_))) {

@@ -16,7 +16,8 @@ Comma separated list of unit test types, options are:
 - all - Run all the tests, default if omitted
 - cli - Run CLI tests
 - api - Run API tests
-- model - Run reference model tests
+- model - Run reference model basic tests
+- model-full - Run reference model full tests
 - cpp - Build C++ applications tests
 - studio - Simplicity Studio project generation/building tests
 '''
@@ -43,7 +44,7 @@ Comma separated list of unit test types, options are:
     from mltk.utils.test_helper import get_logger, logger_dir
     from mltk.utils.path import create_tempdir, clean_directory
 
-    all_types = {'all', 'cli', 'api', 'model', 'cpp', 'studio'}
+    all_types = {'all', 'cli', 'api', 'model', 'model-full', 'cpp', 'studio'}
     test_type = test_type or 'all'
     test_type = set(test_type.split(','))
 
@@ -61,7 +62,9 @@ Comma separated list of unit test types, options are:
         test_dirs.append('core/tflite_model_parameters/tests')
         test_dirs.append('core/preprocess/audio/audio_feature_generator/tests')
 
-    if test_type & {'all', 'model'}:
+    if test_type & {'all', 'model', 'model-full'}:
+        if not (test_type & {'model-full'}):
+            os.environ['MLTK_UTEST_BASIC_MODEL_PARAMS'] = '1'
         test_dirs.append('models/tests')
 
     if test_type & {'all', 'cpp'}:
@@ -87,8 +90,8 @@ Comma separated list of unit test types, options are:
     else:
         logger.warning(f'NOT clearing MLTK cache, using existing cache at ~/.mltk\n')
     
-    # os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # Disable the GPU as well
-    # cli.print_info('Setting CUDA_VISIBLE_DEVICES=-1')
+    os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # Disable the GPU as well
+    cli.print_info('Disabling usage of the GPU, e.g.: CUDA_VISIBLE_DEVICES=-1')
 
     cmd = []
     cmd.append(f'--rootdir={MLTK_ROOT_DIR}')

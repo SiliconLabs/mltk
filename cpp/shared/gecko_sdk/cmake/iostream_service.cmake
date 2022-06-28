@@ -27,3 +27,12 @@ PRIVATE
     ${GECKO_SDK_BOARD_TARGET}
     mltk::gecko_sdk::platform_common
 )
+
+target_link_options(${NAME}
+PUBLIC 
+    -Wl,-u_write
+    -Wl,-u_read
+    -Wl,-u_isatty
+    -Wl,-u_lseek
+    -Wl,-u_lseek
+)
