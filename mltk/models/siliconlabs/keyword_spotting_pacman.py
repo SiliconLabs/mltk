@@ -266,7 +266,7 @@ from mltk.core.preprocess.audio.parallel_generator import ParallelAudioDataGener
 # Import the AudioFeatureGeneratorSettings which we'll configure 
 # and give to the ParallelAudioDataGenerator
 from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings
-
+from mltk.utils.archive_downloader import download_verify_extract
 
 
 # Define a custom model object with the following 'mixins':
@@ -422,7 +422,14 @@ frontend_settings.quantize_dynamic_scale_enable = True
 frontend_settings.quantize_dynamic_scale_range_db = 40.0
 
 
-PACMAN_BACKGROUND_NOISE_PATH = f'{MLTK_DIR}/datasets/audio/pacman/recorded_game_play.wav'
+PACMAN_BACKGROUND_NOISE_DIR = download_verify_extract(
+    url='https://github.com/SiliconLabs/mltk_assets/raw/master/datasets/recorded_pacman_game_play.7z',
+    dest_subdir='datasets/recorded_pacman_game_play',
+    file_hash='749F552BC2ABA11E618969D8B0F6E5BDD62AC7A2',
+    show_progress=False,
+    remove_root_dir=False
+)
+PACMAN_BACKGROUND_NOISE_PATH = f'{PACMAN_BACKGROUND_NOISE_DIR}/recorded_pacman_game_play.wav'
 
 
 def get_batches_samples(
