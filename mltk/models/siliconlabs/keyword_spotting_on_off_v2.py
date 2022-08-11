@@ -106,7 +106,7 @@ Model Summary
     Total MACs: 3.120 M
     Total OPs: 6.351 M
     Name: keyword_spotting_on_off_v2
-    Version: 2
+    Version: 3
     Description: Keyword spotting classifier to detect: "on" and "off"
     Classes: on, off, _unknown_
     hash: fc9279e225e30f02617f944515c73381
@@ -295,7 +295,7 @@ my_model = MyModel()
 
 # For better tracking, the version should be incremented any time a non-trivial change is made
 # NOTE: The version is optional and not used directly used by the MLTK
-my_model.version = 2
+my_model.version = 3
 # Provide a brief description about what this model models
 # This description goes in the "description" field of the .tflite model file
 my_model.description = 'Keyword spotting classifier to detect: "on" and "off"'
@@ -463,7 +463,7 @@ frontend_settings.quantize_dynamic_scale_range_db = 40.0
 my_model.datagen = ParallelAudioDataGenerator(
     dtype=my_model.tflite_converter['inference_input_type'],
     frontend_settings=frontend_settings,
-    cores=0.45, # Adjust this as necessary for your PC setup
+    cores=.45, # Adjust this as necessary for your PC setup
     debug=False, # Set this to true to enable debugging of the generator
     max_batches_pending=16,  # Adjust this as necessary for your PC setup (smaller -> less RAM)
     validation_split= 0.10,
@@ -476,12 +476,12 @@ my_model.datagen = ParallelAudioDataGenerator(
     offset_range=(0.0,1.0),
     trim_threshold_db=200,
     noise_colors=None,
-    loudness_range=(0.2, 1.0),
+    loudness_range=(0.9, 1.1),
     speed_range=(0.9,1.1),
     pitch_range=(-3,3),
     #vtlp_range=(0.9,1.1),
-    bg_noise_range=(0.1,0.4),
-    bg_noise_dir='_background_noise_' # This is a directory provided by the google speech commands dataset, can also provide an absolute path
+    #bg_noise_range=(0.1,0.4),
+    #bg_noise_dir='_background_noise_' # This is a directory provided by the google speech commands dataset, can also provide an absolute path
 )
 
 

@@ -39,8 +39,12 @@ public:
      * 
      * @note The provided `flatbuffer` MUST persist for the life of this model object.
      * 
-     * @note If runtime_buffer is NULL then a buffer will be automatically allocated.
-     * If runtime_buffer_size = 0 then attempt to retrieve the arena size from the .tflite parameters metadata.
+     * @note If runtime_buffer is NULL then a buffer will be automatically allocated. In this case,
+     * - If runtime_buffer_size < 0, then automatically find the optimal run-time buffer size
+     * - If runtime_buffer_size > 0, then allocate the specified size, if the size is too small then return the error
+     * - If runtime_buffer_size == 0, then attempt to retrieve the arena size from the .tflite parameters metadata,
+     *     and allocate the buffer. If the buffer is too small or was not found in the metadata, 
+     *     then automatically find the optimal run-time buffer size.
      * 
      * @param flatbuffer Model flatbuffer (.tflite) binary data
      * @param op_resolver @ref tflite::MicroOpResolver with reigstered kernels

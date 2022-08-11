@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>ONNX to TF-Lite Model Conversion &#8212; MLTK 0.8.0 documentation</title>
+    <title>ONNX to TF-Lite Model Conversion &#8212; MLTK 0.9.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -107,11 +107,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../index.html" title="MLTK 0.8.0 documentation"
+        <a href="../../index.html" title="MLTK 0.9.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../_static/logo.png"
-                   alt="MLTK 0.8.0 documentation logo">
+                   alt="MLTK 0.9.0 documentation logo">
           
         </a>
       </div>
@@ -202,13 +202,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../index.html" title="MLTK 0.8.0 documentation" class="md-nav__button md-logo">
+    <a href="../../index.html" title="MLTK 0.9.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../index.html"
-       title="MLTK 0.8.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.9.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -297,6 +297,13 @@
     
     
       <a href="image_classification.html" class="md-nav__link">Image Classification - Rock, Paper, Scissors</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="cloud_training_with_vast_ai.html" class="md-nav__link">Cloud Training with vast.ai</a>
       
     
     </li>
@@ -966,6 +973,16 @@ through it and record the model predictions.</p>
 </div>
 </div>
 <div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>c:\Users\reed\workspace\silabs\github_siliconlabs\mltk\.venv\lib\site-packages\tensorflow_addons\utils\ensure_tf_install.py:53: UserWarning: Tensorflow Addons supports using Python ops for all Tensorflow versions above or equal to 2.7.0 and strictly below 2.10.0 (nightly versions are not supported). 
+ The versions of TensorFlow you are currently using is 2.5.3 and is not supported. 
+Some things might work, some things might not.
+If you were to encounter a bug, do not file an issue.
+If you want to make sure you're using a tested and supported configuration, either change the TensorFlow version or the TensorFlow Addons's version. 
+You can find the compatibility matrix in TensorFlow Addon's readme:
+https://github.com/tensorflow/addons
+  warnings.warn(
+</pre></div>
+</div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>y_pred.shape = (1000, 10)
 Generating model predictions for each test sample using C:/Users/reed/.mltk/datasets/cifar10_matlab_model/cifar10_matlab_model.onnx
 Be patient, this may take awhile ...
@@ -980,8 +997,7 @@ done
 
 <span class="c1"># Use the MLTK to evaluate the ONNX model predictions</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">ClassifierEvaluationResults</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="n">MODEL_NAME</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">'classification'</span><span class="p">,</span> 
+    <span class="n">name</span><span class="o">=</span><span class="n">MODEL_NAME</span><span class="p">,</span> 
     <span class="n">classes</span> <span class="o">=</span> <span class="n">mapped_class_labels</span>
 <span class="p">)</span>
 
@@ -1023,11 +1039,12 @@ Class ROC AUC:
 - cat = 95.673%
 </pre></div>
 </div>
-<img alt="../../_images/337a5b337c855716fa891c465fd7bb933e353cd8c8539924d268969c4eb91ea7.png" src="../../_images/337a5b337c855716fa891c465fd7bb933e353cd8c8539924d268969c4eb91ea7.png"/>
-<img alt="../../_images/d2bcf764e2a8e989c0d1c3d0a84fadfeb3cc30d5841c618d384109f334010037.png" src="../../_images/d2bcf764e2a8e989c0d1c3d0a84fadfeb3cc30d5841c618d384109f334010037.png"/>
-<img alt="../../_images/e9503dc0bc2612f496320a0fbf01efa723bbef52c13e5c6641d012c9ddbc6503.png" src="../../_images/e9503dc0bc2612f496320a0fbf01efa723bbef52c13e5c6641d012c9ddbc6503.png"/>
-<img alt="../../_images/e8191b6a9766516c42fb7454beb8635e88c40ebcd429bf540de647ea12ce1ef4.png" src="../../_images/e8191b6a9766516c42fb7454beb8635e88c40ebcd429bf540de647ea12ce1ef4.png"/>
-<img alt="../../_images/5973e5f3ae1d75471014f6027eddad592704d69cd891ea15e0681f4201549a83.png" src="../../_images/5973e5f3ae1d75471014f6027eddad592704d69cd891ea15e0681f4201549a83.png"/>
+<img alt="../../_images/aaaee777eebd24e80901901eb1c67d69b2aa3784151a244551335e36146017a4.png" src="../../_images/aaaee777eebd24e80901901eb1c67d69b2aa3784151a244551335e36146017a4.png"/>
+<img alt="../../_images/d61a2ac6ebd5cba218cd04aab1f9424127173db0655016e7ad2c7f590274040d.png" src="../../_images/d61a2ac6ebd5cba218cd04aab1f9424127173db0655016e7ad2c7f590274040d.png"/>
+<img alt="../../_images/cf46b8e690dda71aacd3794d23c5af9c0f5af08ad3c99698675055274fc18687.png" src="../../_images/cf46b8e690dda71aacd3794d23c5af9c0f5af08ad3c99698675055274fc18687.png"/>
+<img alt="../../_images/341b81a1c02981dc39e9a03a28d5678742045b099462c556d38abde070c505be.png" src="../../_images/341b81a1c02981dc39e9a03a28d5678742045b099462c556d38abde070c505be.png"/>
+<img alt="../../_images/cee327241c504c14d27cd50cb66a2e9cf58f63ea66ce9b9df18a216dc27a377f.png" src="../../_images/cee327241c504c14d27cd50cb66a2e9cf58f63ea66ce9b9df18a216dc27a377f.png"/>
+<img alt="../../_images/c4cb1a72ebb9fc21183cbcd62d6f7043364e11aab9491b2c6821de2e34fa1754.png" src="../../_images/c4cb1a72ebb9fc21183cbcd62d6f7043364e11aab9491b2c6821de2e34fa1754.png"/>
 </div>
 </div>
 </section>
@@ -1076,7 +1093,7 @@ This is done using the tools installed by the <a class="reference external" href
 <span class="kn">import</span> <span class="nn">os</span>
 
 <span class="c1"># Import the model optimizer tool from the openvino_dev package</span>
-<span class="kn">from</span> <span class="nn">mo</span> <span class="kn">import</span> <span class="n">main</span> <span class="k">as</span> <span class="n">mo_main</span>
+<span class="kn">from</span> <span class="nn">openvino.tools.mo</span> <span class="kn">import</span> <span class="n">main</span> <span class="k">as</span> <span class="n">mo_main</span>
 <span class="kn">import</span> <span class="nn">onnx</span>
 <span class="kn">from</span> <span class="nn">onnx_tf.backend</span> <span class="kn">import</span> <span class="n">prepare</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.shell_cmd</span> <span class="kn">import</span> <span class="n">run_shell_cmd</span>
@@ -1121,22 +1138,31 @@ Common parameters:
 	- Input layers: 	Not specified, inherited from the model
 	- Output layers: 	Not specified, inherited from the model
 	- Input shapes: 	[1,3,32,32]
+	- Source layout: 	Not specified
+	- Target layout: 	Not specified
+	- Layout: 	Not specified
 	- Mean values: 	Not specified
 	- Scale values: 	Not specified
 	- Scale factor: 	Not specified
 	- Precision of IR: 	FP32
 	- Enable fusing: 	True
-	- Enable grouped convolutions fusing: 	True
-	- Move mean values to preprocess section: 	None
+	- User transformations: 	Not specified
 	- Reverse input channels: 	False
-ONNX specific parameters:
-	- Inference Engine found in: 	c:\Users\reed\Desktop\mltk_venv\lib\site-packages\openvino
-Inference Engine version: 	2021.4.2-3976-0943ed67223-refs/pull/539/head
-Model Optimizer version: 	2021.4.2-3976-0943ed67223-refs/pull/539/head
-[ SUCCESS ] Generated IR version 10 model.
+	- Enable IR generation for fixed input shape: 	False
+	- Use the transformations config file: 	None
+Advanced parameters:
+	- Force the usage of legacy Frontend of Model Optimizer for model conversion into IR: 	False
+	- Force the usage of new Frontend of Model Optimizer for model conversion into IR: 	False
+OpenVINO runtime found in: 	c:\Users\reed\workspace\silabs\github_siliconlabs\mltk\.venv\lib\site-packages\openvino
+OpenVINO runtime version: 	2022.1.0-7019-cdb9bec7210-releases/2022/1
+Model Optimizer version: 	2022.1.0-7019-cdb9bec7210-releases/2022/1
+[ SUCCESS ] Generated IR version 11 model.
 [ SUCCESS ] XML file: E:\reed\mltk\cifar10_matlab_model_onnx_to_tflite\openvino\cifar10_matlab_model.simplified.xml
 [ SUCCESS ] BIN file: E:\reed\mltk\cifar10_matlab_model_onnx_to_tflite\openvino\cifar10_matlab_model.simplified.bin
-[ SUCCESS ] Total execution time: 2.91 seconds. 
+[ SUCCESS ] Total execution time: 1.25 seconds. 
+It's been a while, check for a new version of Intel(R) Distribution of OpenVINO(TM) toolkit here https://software.intel.com/content/www/us/en/develop/tools/openvino-toolkit/download.html?cid=other&amp;source=prod&amp;campid=ww_2022_bu_IOTG_OpenVINO-2022-1&amp;content=upg_all&amp;medium=organic or on the GitHub*
+[ INFO ] The model was converted to IR v11, the latest model format that corresponds to the source DL framework input/output format. While IR v11 is backwards compatible with OpenVINO Inference Engine API v1.0, please use API v2.0 (as of 2022.1) to take advantage of the latest improvements in IR v11.
+Find more information about API v2.0 and IR v11 at https://docs.openvino.ai
 </pre></div>
 </div>
 </div>
@@ -1177,6 +1203,7 @@ The generated model file has all of its weights and tensors in the <strong>float
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Generating openvino2tensorflow model at: E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/openvino2tensorflow ...
+done
 </pre></div>
 </div>
 </div>
@@ -1246,52 +1273,97 @@ done
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Profiling model in simulator
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Profiling model in simulator ...
+Using Tensorflow-Lite Micro version: b13b48c (2022-06-08)
+Searching for optimal runtime memory size ...
 Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Determined optimal runtime memory size to be 87295
+Op2-CONV_2D not supported: Output vector stride (2048) exceeded (max=2047)
+Op3-MAX_POOL_2D not supported: Hardware limits exceeded
+Extracting: C:/Users/reed/.mltk/downloads/mvp_estimators_v0.4.zip
+to: C:/Users/reed/.mltk/accelerators/mvp/estimators/mvp_estimators_v0.4
+(This may take awhile, please be patient ...)
 Profiling Summary
-Name: E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/cifar10_matlab_model.int8
+Name: cifar10_matlab_model.int8
 Accelerator: MVP
 Input Shape: 1x32x32x3
 Input Data Type: float32
 Output Shape: 1x10
 Output Data Type: float32
-Model File Size (bytes): 288.4k
-Runtime Memory Size (bytes): 87.1k
-# Operations: 76.2M
-# Multiply-Accumulates: 37.7M
-# Layers: 15
-# Unsupported Layers: 1
-# Accelerator Cycles: 49.5M
-# CPU Cycles: 25.9M
-CPU Utilization (%): 34.4
-Clock Rate (hz): 80.0M
-Time (s): 941.0m
-Energy (J): 12.4m
-J/Op: 162.2p
-J/MAC: 327.4p
-Ops/s: 81.0M
-MACs/s: 40.1M
-Inference/s: 1.1
+Flash, Model File Size (bytes): 288.5k
+RAM, Runtime Memory Size (bytes): 86.1k
+Operation Count: 76.2M
+Multiply-Accumulate Count: 37.7M
+Layer Count: 15
+Unsupported Layer Count: 2
+Accelerator Cycle Count: 49.4M
+CPU Cycle Count: 25.6M
+CPU Utilization (%): 34.2
+Clock Rate (hz): 78.0M
+Time (s): 962.0m
+Energy (J): 12.3m
+J/Op: 161.5p
+J/MAC: 326.0p
+Ops/s: 79.2M
+MACs/s: 39.2M
+Inference/s: 1.0
 
 Model Layers
 +-------+-------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+----------------------------------------------------+------------+-------------------------------------------------+
 | Index | OpCode      | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                            | Supported? | Error Msg                                       |
 +-------+-------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+----------------------------------------------------+------------+-------------------------------------------------+
-| 0     | quantize    | 12.3k  | 0      | 0          | 111.3k     | 15.2u      | 1.4m     | 1x32x32x3               | 1x32x32x3    | BuiltinOptionsType=0                               | True       |                                                 |
-| 1     | pad         | 23.3k  | 0      | 0          | 77.1k      | 8.1u       | 963.9u   | 1x32x32x3,4x2           | 1x36x36x3    | BuiltinOptionsType=22                              | True       |                                                 |
-| 2     | conv_2d     | 10.0M  | 4.9M   | 0          | 24.2M      | 4.9m       | 302.2m   | 1x36x36x3,64x5x5x3,64   | 1x32x32x64   | Padding:valid stride:1x1 activation:relu           | False      | Output vector stride (2048) exceeded (max=2047) |
-| 3     | max_pool_2d | 147.5k | 0      | 94.3k      | 248.8k     | 52.6u      | 3.1m     | 1x32x32x64              | 1x16x16x64   | Padding:same stride:2x2 filter:3x3 activation:none | True       |                                                 |
-| 4     | pad         | 153.6k | 0      | 0          | 567.0k     | 111.6u     | 7.1m     | 1x16x16x64,4x2          | 1x20x20x64   | BuiltinOptionsType=22                              | True       |                                                 |
-| 5     | conv_2d     | 52.5M  | 26.2M  | 39.5M      | 10.4k      | 5.7m       | 493.2m   | 1x20x20x64,64x5x5x64,64 | 1x16x16x64   | Padding:valid stride:1x1 activation:relu           | True       |                                                 |
-| 6     | max_pool_2d | 36.9k  | 0      | 21.0k      | 248.8k     | 17.2u      | 3.1m     | 1x16x16x64              | 1x8x8x64     | Padding:same stride:2x2 filter:3x3 activation:none | True       |                                                 |
-| 7     | pad         | 55.3k  | 0      | 0          | 172.0k     | 29.5u      | 2.1m     | 1x8x8x64,4x2            | 1x12x12x64   | BuiltinOptionsType=22                              | True       |                                                 |
-| 8     | conv_2d     | 13.1M  | 6.6M   | 9.9M       | 10.7k      | 1.4m       | 123.3m   | 1x12x12x64,64x5x5x64,64 | 1x8x8x64     | Padding:valid stride:1x1 activation:relu           | True       |                                                 |
-| 9     | max_pool_2d | 9.2k   | 0      | 4.9k       | 248.8k     | 16.9u      | 3.1m     | 1x8x8x64                | 1x4x4x64     | Padding:same stride:2x2 filter:3x3 activation:none | True       |                                                 |
-| 10    | conv_2d     | 131.3k | 65.5k  | 98.6k      | 2.9k       | 45.7u      | 1.2m     | 1x4x4x64,64x4x4x64,64   | 1x1x1x64     | Padding:valid stride:1x1 activation:relu           | True       |                                                 |
-| 11    | conv_2d     | 1.3k   | 640.0  | 1.0k       | 2.9k       | 45.7u      | 36.8u    | 1x1x1x64,10x1x1x64,10   | 1x1x1x10     | Padding:valid stride:1x1 activation:none           | True       |                                                 |
-| 12    | reshape     | 0      | 0      | 0          | 264.9      | 0.0p       | 3.3u     | 1x1x1x10,2              | 1x10         | BuiltinOptionsType=0                               | True       |                                                 |
-| 13    | softmax     | 50.0   | 0      | 0          | 7.7k       | 16.5n      | 95.8u    | 1x10                    | 1x10         | BuiltinOptionsType=9                               | True       |                                                 |
-| 14    | dequantize  | 20.0   | 0      | 0          | 6.8k       | 159.2n     | 84.8u    | 1x10                    | 1x10         | BuiltinOptionsType=0                               | True       |                                                 |
+| 0     | quantize    | 12.3k  | 0      | 0          | 111.3k     | 15.2u      | 1.4m     | 1x32x32x3               | 1x32x32x3    | Type=none                                          | True       |                                                 |
+| 1     | pad         | 23.3k  | 0      | 0          | 77.1k      | 8.1u       | 988.6u   | 1x32x32x3,4x2           | 1x36x36x3    | Type=padoptions                                    | True       |                                                 |
+| 2     | conv_2d     | 10.0M  | 4.9M   | 0          | 24.2M      | 4.9m       | 310.0m   | 1x36x36x3,64x5x5x3,64   | 1x32x32x64   | Padding:valid stride:1x1 activation:relu           | False      | Output vector stride (2048) exceeded (max=2047) |
+| 3     | max_pool_2d | 147.5k | 0      | 0          | 0          | 0          | 0        | 1x32x32x64              | 1x16x16x64   | Padding:same stride:2x2 filter:3x3 activation:none | False      | Hardware limits exceeded                        |
+| 4     | pad         | 153.6k | 0      | 0          | 567.0k     | 111.6u     | 7.3m     | 1x16x16x64,4x2          | 1x20x20x64   | Type=padoptions                                    | True       |                                                 |
+| 5     | conv_2d     | 52.5M  | 26.2M  | 39.5M      | 10.4k      | 5.7m       | 505.8m   | 1x20x20x64,64x5x5x64,64 | 1x16x16x64   | Padding:valid stride:1x1 activation:relu           | True       |                                                 |
+| 6     | max_pool_2d | 36.9k  | 0      | 21.0k      | 248.8k     | 17.2u      | 3.2m     | 1x16x16x64              | 1x8x8x64     | Padding:same stride:2x2 filter:3x3 activation:none | True       |                                                 |
+| 7     | pad         | 55.3k  | 0      | 0          | 172.0k     | 29.5u      | 2.2m     | 1x8x8x64,4x2            | 1x12x12x64   | Type=padoptions                                    | True       |                                                 |
+| 8     | conv_2d     | 13.1M  | 6.6M   | 9.9M       | 10.7k      | 1.4m       | 126.5m   | 1x12x12x64,64x5x5x64,64 | 1x8x8x64     | Padding:valid stride:1x1 activation:relu           | True       |                                                 |
+| 9     | max_pool_2d | 9.2k   | 0      | 4.9k       | 248.8k     | 16.9u      | 3.2m     | 1x8x8x64                | 1x4x4x64     | Padding:same stride:2x2 filter:3x3 activation:none | True       |                                                 |
+| 10    | conv_2d     | 131.3k | 65.5k  | 98.6k      | 2.9k       | 45.7u      | 1.3m     | 1x4x4x64,64x4x4x64,64   | 1x1x1x64     | Padding:valid stride:1x1 activation:relu           | True       |                                                 |
+| 11    | conv_2d     | 1.3k   | 640.0  | 1.0k       | 2.9k       | 45.7u      | 37.7u    | 1x1x1x64,10x1x1x64,10   | 1x1x1x10     | Padding:valid stride:1x1 activation:none           | True       |                                                 |
+| 12    | reshape     | 0      | 0      | 0          | 264.9      | 0.0p       | 3.4u     | 1x1x1x10,2              | 1x10         | Type=none                                          | True       |                                                 |
+| 13    | softmax     | 50.0   | 0      | 0          | 7.7k       | 16.5n      | 98.3u    | 1x10                    | 1x10         | Type=softmaxoptions                                | True       |                                                 |
+| 14    | dequantize  | 20.0   | 0      | 0          | 6.8k       | 159.2n     | 87.0u    | 1x10                    | 1x10         | Type=none                                          | True       |                                                 |
 +-------+-------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+----------------------------------------------------+------------+-------------------------------------------------+
 </pre></div>
 </div>
@@ -1325,20 +1397,20 @@ Model Layers
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>+-------+-------------+-------------------+-----------------+----------------------------------------------------+
 | Index | OpCode      | Input(s)          | Output(s)       | Config                                             |
 +-------+-------------+-------------------+-----------------+----------------------------------------------------+
-| 0     | quantize    | 32x32x3 (float32) | 32x32x3 (int8)  | BuiltinOptionsType=0                               |
-| 1     | pad         | 32x32x3 (int8)    | 36x36x3 (int8)  | BuiltinOptionsType=22                              |
+| 0     | quantize    | 32x32x3 (float32) | 32x32x3 (int8)  | Type=none                                          |
+| 1     | pad         | 32x32x3 (int8)    | 36x36x3 (int8)  | Type=padoptions                                    |
 |       |             | 2 (int32)         |                 |                                                    |
 | 2     | conv_2d     | 36x36x3 (int8)    | 32x32x64 (int8) | Padding:valid stride:1x1 activation:relu           |
 |       |             | 5x5x3 (int8)      |                 |                                                    |
 |       |             | 64 (int32)        |                 |                                                    |
 | 3     | max_pool_2d | 32x32x64 (int8)   | 16x16x64 (int8) | Padding:same stride:2x2 filter:3x3 activation:none |
-| 4     | pad         | 16x16x64 (int8)   | 20x20x64 (int8) | BuiltinOptionsType=22                              |
+| 4     | pad         | 16x16x64 (int8)   | 20x20x64 (int8) | Type=padoptions                                    |
 |       |             | 2 (int32)         |                 |                                                    |
 | 5     | conv_2d     | 20x20x64 (int8)   | 16x16x64 (int8) | Padding:valid stride:1x1 activation:relu           |
 |       |             | 5x5x64 (int8)     |                 |                                                    |
 |       |             | 64 (int32)        |                 |                                                    |
 | 6     | max_pool_2d | 16x16x64 (int8)   | 8x8x64 (int8)   | Padding:same stride:2x2 filter:3x3 activation:none |
-| 7     | pad         | 8x8x64 (int8)     | 12x12x64 (int8) | BuiltinOptionsType=22                              |
+| 7     | pad         | 8x8x64 (int8)     | 12x12x64 (int8) | Type=padoptions                                    |
 |       |             | 2 (int32)         |                 |                                                    |
 | 8     | conv_2d     | 12x12x64 (int8)   | 8x8x64 (int8)   | Padding:valid stride:1x1 activation:relu           |
 |       |             | 5x5x64 (int8)     |                 |                                                    |
@@ -1350,10 +1422,10 @@ Model Layers
 | 11    | conv_2d     | 1x1x64 (int8)     | 1x1x10 (int8)   | Padding:valid stride:1x1 activation:none           |
 |       |             | 1x1x64 (int8)     |                 |                                                    |
 |       |             | 10 (int32)        |                 |                                                    |
-| 12    | reshape     | 1x1x10 (int8)     | 10 (int8)       | BuiltinOptionsType=0                               |
+| 12    | reshape     | 1x1x10 (int8)     | 10 (int8)       | Type=none                                          |
 |       |             | 2 (int32)         |                 |                                                    |
-| 13    | softmax     | 10 (int8)         | 10 (int8)       | BuiltinOptionsType=9                               |
-| 14    | dequantize  | 10 (int8)         | 10 (float32)    | BuiltinOptionsType=0                               |
+| 13    | softmax     | 10 (int8)         | 10 (int8)       | Type=softmaxoptions                                |
+| 14    | dequantize  | 10 (int8)         | 10 (float32)    | Type=none                                          |
 +-------+-------------+-------------------+-----------------+----------------------------------------------------+
 Executing 100 samples in E:/reed/mltk/cifar10_matlab_model_onnx_to_tflite/cifar10_matlab_model.int8.tflite
 done
@@ -1368,7 +1440,6 @@ done
 <span class="c1"># Use the MLTK to evaluate the ONNX model predictions</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">ClassifierEvaluationResults</span><span class="p">(</span>
     <span class="n">name</span><span class="o">=</span><span class="n">MODEL_NAME</span><span class="p">,</span>
-    <span class="n">model_type</span><span class="o">=</span><span class="s1">'classification'</span><span class="p">,</span> 
     <span class="n">classes</span> <span class="o">=</span> <span class="n">mapped_class_labels</span>
 <span class="p">)</span>
 
@@ -1410,11 +1481,12 @@ Class ROC AUC:
 - bird = 91.848%
 </pre></div>
 </div>
-<img alt="../../_images/2021c36d1490f530a6e3a72852e1273ec421165eee4be5e65bd7337845511804.png" src="../../_images/2021c36d1490f530a6e3a72852e1273ec421165eee4be5e65bd7337845511804.png"/>
-<img alt="../../_images/4e2c7c10fe6ec3277f9f724ec55c7a953d8e23057575475323dedfa589327b9e.png" src="../../_images/4e2c7c10fe6ec3277f9f724ec55c7a953d8e23057575475323dedfa589327b9e.png"/>
-<img alt="../../_images/dd5de06e992f70dbd19a7e13a2a2a89b390ed1e301912cb88374693a285cb2c3.png" src="../../_images/dd5de06e992f70dbd19a7e13a2a2a89b390ed1e301912cb88374693a285cb2c3.png"/>
-<img alt="../../_images/504ec002a8ab87bb04a4a5f63bfcbbf57714eae3b18b72b13eab1acce57eaadd.png" src="../../_images/504ec002a8ab87bb04a4a5f63bfcbbf57714eae3b18b72b13eab1acce57eaadd.png"/>
-<img alt="../../_images/fcd846201bfe3e80076782c1e11d72a58371417b6ca48e950b3fe1a6f2869fba.png" src="../../_images/fcd846201bfe3e80076782c1e11d72a58371417b6ca48e950b3fe1a6f2869fba.png"/>
+<img alt="../../_images/2eda33f14666518503f11cf14b0dfe8b8511af2f64d59c3a7263066f8456b0b5.png" src="../../_images/2eda33f14666518503f11cf14b0dfe8b8511af2f64d59c3a7263066f8456b0b5.png"/>
+<img alt="../../_images/5a631f0a24ab14f5fb063430cd7585beae0f232ffcd08d9cb1298f0684b963fd.png" src="../../_images/5a631f0a24ab14f5fb063430cd7585beae0f232ffcd08d9cb1298f0684b963fd.png"/>
+<img alt="../../_images/7a9e0c646174536eddc93a1806c6609d56490623df3d38890c10cf1130afd7b5.png" src="../../_images/7a9e0c646174536eddc93a1806c6609d56490623df3d38890c10cf1130afd7b5.png"/>
+<img alt="../../_images/50943d431eee4c8331ff85dbb0fc95973c223967f2a4ed2717308da0ce54e07f.png" src="../../_images/50943d431eee4c8331ff85dbb0fc95973c223967f2a4ed2717308da0ce54e07f.png"/>
+<img alt="../../_images/de20b909b383e193936f95f26513771cc805f03e019c45a6e5e23fb6edee8f68.png" src="../../_images/de20b909b383e193936f95f26513771cc805f03e019c45a6e5e23fb6edee8f68.png"/>
+<img alt="../../_images/3fbcc4bde50d99f052474228b1d771d9227c7060cdab80e6376667dc3bd9348c.png" src="../../_images/3fbcc4bde50d99f052474228b1d771d9227c7060cdab80e6376667dc3bd9348c.png"/>
 </div>
 </div>
 </section>
@@ -1476,7 +1548,7 @@ Class ROC AUC:
               
           </div>
             Last updated on
-              Jun 28, 2022.
+              Aug 11, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

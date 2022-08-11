@@ -1,0 +1,1283 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, machine-learning, machinelearning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tensorflow-lite-micro, keras-tensorflow, keras, tflite, embedded, embedded-systems, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HZ5MW943WF"></script>
+<script>
+    window.gTrackingId = 'G-HZ5MW943WF';
+</script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
+  
+  
+    <title>Cloud Training with vast.ai &#8212; MLTK 0.9.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Model Optimization for MVP Hardware Accelerator" href="model_optimization.html" />
+    <link rel="prev" title="Image Classification - Rock, Paper, Scissors" href="image_classification.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/tutorials/cloud_training_with_vast_ai" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.9.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.9.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Cloud Training with vast.ai </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.9.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.9.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_on_off.html" class="md-nav__link">Keyword Spotting - On/Off</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_pacman.html" class="md-nav__link">Keyword Spotting - Pac-Man</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="image_classification.html" class="md-nav__link">Image Classification - Rock, Paper, Scissors</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Cloud Training with vast.ai </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Cloud Training with vast.ai</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-cloud-training-with-vast-ai--page-root" class="md-nav__link">Cloud Training with vast.ai</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#disclaimer" class="md-nav__link">Disclaimer</a>
+        </li>
+        <li class="md-nav__item"><a href="#quick-links" class="md-nav__link">Quick Links</a>
+        </li>
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#about-vast-ai" class="md-nav__link">About vast.ai</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#what-is-vast-ai" class="md-nav__link">What is Vast.ai?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-does-it-work-in-a-nutshell" class="md-nav__link">How does it work in a nutshell?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-do-you-protect-my-data-from-other-clients" class="md-nav__link">How do you protect my data from other clients?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-do-you-protect-my-data-from-providers" class="md-nav__link">How do you protect my data from providers?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-does-billing-work" class="md-nav__link">How does billing work?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-does-pricing-work" class="md-nav__link">How does pricing work?</a>
+        </li>
+        <li class="md-nav__item"><a href="#why-should-i-trust-vast-ai-with-my-credit-card-info" class="md-nav__link">Why should I trust vast.ai with my credit card info?</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#contents" class="md-nav__link">Contents</a>
+        </li>
+        <li class="md-nav__item"><a href="#mltk-installation" class="md-nav__link">MLTK Installation</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#create-an-ssh-keypair" class="md-nav__link">Create an SSH Keypair</a>
+        </li>
+        <li class="md-nav__item"><a href="#create-a-vast-ai-account" class="md-nav__link">Create a vast.ai Account</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#create-new-account" class="md-nav__link">Create new account</a>
+        </li>
+        <li class="md-nav__item"><a href="#add-public-ssh-key-to-account" class="md-nav__link">Add public SSH key to account</a>
+        </li>
+        <li class="md-nav__item"><a href="#add-credit-to-account" class="md-nav__link">Add credit to account</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#id1" class="md-nav__link">How does billing work?</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#configure-instance-image" class="md-nav__link">Configure instance image</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#select-a-cloud-machine" class="md-nav__link">Select a Cloud Machine</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#ssh-client-login" class="md-nav__link">SSH Client Login</a>
+        </li>
+        <li class="md-nav__item"><a href="#notes-about-selecting-a-machine" class="md-nav__link">Notes about selecting a machine</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#note-about-gpu-count" class="md-nav__link">Note about GPU Count</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-cpu-count" class="md-nav__link">Note about CPU Count</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#configure-settings" class="md-nav__link">Configure Settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#develop-a-model" class="md-nav__link">Develop a Model</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#suggested-reading" class="md-nav__link">Suggested Reading</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-development-flow" class="md-nav__link">Example Development Flow</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#modify-the-model-specification" class="md-nav__link">Modify the model specification</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-custom-datasets" class="md-nav__link">Note about custom datasets</a>
+        </li>
+        <li class="md-nav__item"><a href="#test-everything-works-locally" class="md-nav__link">Test everything works locally</a>
+        </li>
+        <li class="md-nav__item"><a href="#profile-model-locally" class="md-nav__link">Profile model locally</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#train-model-in-cloud" class="md-nav__link">Train Model in Cloud</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#start-cloud-instance" class="md-nav__link">Start cloud instance</a>
+        </li>
+        <li class="md-nav__item"><a href="#start-remote-training" class="md-nav__link">Start remote training</a>
+        </li>
+        <li class="md-nav__item"><a href="#other-cli-options" class="md-nav__link">Other CLI options</a>
+        </li>
+        <li class="md-nav__item"><a href="#training-results" class="md-nav__link">Training Results</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#shutdown-cloud-instance" class="md-nav__link">Shutdown Cloud Instance</a>
+        </li>
+        <li class="md-nav__item"><a href="#next-steps" class="md-nav__link">Next Steps</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/cloud_training_with_vast_ai.ipynb.txt">Show Source</a> </li>
+
+  </ul>
+</nav>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_optimization.html" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_with_transfer_learning.html" class="md-nav__link">Keyword Spotting with Transfer Learning</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="fingerprint_authentication.html" class="md-nav__link">Fingerprint Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="onnx_to_tflite.html" class="md-nav__link">ONNX to TF-Lite Model Conversion</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="">
+        <li class="md-nav__item"><a href="#mltk-tutorials-cloud-training-with-vast-ai--page-root" class="md-nav__link">Cloud Training with vast.ai</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#disclaimer" class="md-nav__link">Disclaimer</a>
+        </li>
+        <li class="md-nav__item"><a href="#quick-links" class="md-nav__link">Quick Links</a>
+        </li>
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#about-vast-ai" class="md-nav__link">About vast.ai</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#what-is-vast-ai" class="md-nav__link">What is Vast.ai?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-does-it-work-in-a-nutshell" class="md-nav__link">How does it work in a nutshell?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-do-you-protect-my-data-from-other-clients" class="md-nav__link">How do you protect my data from other clients?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-do-you-protect-my-data-from-providers" class="md-nav__link">How do you protect my data from providers?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-does-billing-work" class="md-nav__link">How does billing work?</a>
+        </li>
+        <li class="md-nav__item"><a href="#how-does-pricing-work" class="md-nav__link">How does pricing work?</a>
+        </li>
+        <li class="md-nav__item"><a href="#why-should-i-trust-vast-ai-with-my-credit-card-info" class="md-nav__link">Why should I trust vast.ai with my credit card info?</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#contents" class="md-nav__link">Contents</a>
+        </li>
+        <li class="md-nav__item"><a href="#mltk-installation" class="md-nav__link">MLTK Installation</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#create-an-ssh-keypair" class="md-nav__link">Create an SSH Keypair</a>
+        </li>
+        <li class="md-nav__item"><a href="#create-a-vast-ai-account" class="md-nav__link">Create a vast.ai Account</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#create-new-account" class="md-nav__link">Create new account</a>
+        </li>
+        <li class="md-nav__item"><a href="#add-public-ssh-key-to-account" class="md-nav__link">Add public SSH key to account</a>
+        </li>
+        <li class="md-nav__item"><a href="#add-credit-to-account" class="md-nav__link">Add credit to account</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#id1" class="md-nav__link">How does billing work?</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#configure-instance-image" class="md-nav__link">Configure instance image</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#select-a-cloud-machine" class="md-nav__link">Select a Cloud Machine</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#ssh-client-login" class="md-nav__link">SSH Client Login</a>
+        </li>
+        <li class="md-nav__item"><a href="#notes-about-selecting-a-machine" class="md-nav__link">Notes about selecting a machine</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#note-about-gpu-count" class="md-nav__link">Note about GPU Count</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-cpu-count" class="md-nav__link">Note about CPU Count</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#configure-settings" class="md-nav__link">Configure Settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#develop-a-model" class="md-nav__link">Develop a Model</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#suggested-reading" class="md-nav__link">Suggested Reading</a>
+        </li>
+        <li class="md-nav__item"><a href="#example-development-flow" class="md-nav__link">Example Development Flow</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#modify-the-model-specification" class="md-nav__link">Modify the model specification</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-custom-datasets" class="md-nav__link">Note about custom datasets</a>
+        </li>
+        <li class="md-nav__item"><a href="#test-everything-works-locally" class="md-nav__link">Test everything works locally</a>
+        </li>
+        <li class="md-nav__item"><a href="#profile-model-locally" class="md-nav__link">Profile model locally</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#train-model-in-cloud" class="md-nav__link">Train Model in Cloud</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#start-cloud-instance" class="md-nav__link">Start cloud instance</a>
+        </li>
+        <li class="md-nav__item"><a href="#start-remote-training" class="md-nav__link">Start remote training</a>
+        </li>
+        <li class="md-nav__item"><a href="#other-cli-options" class="md-nav__link">Other CLI options</a>
+        </li>
+        <li class="md-nav__item"><a href="#training-results" class="md-nav__link">Training Results</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#shutdown-cloud-instance" class="md-nav__link">Shutdown Cloud Instance</a>
+        </li>
+        <li class="md-nav__item"><a href="#next-steps" class="md-nav__link">Next Steps</a>
+        </li></ul>
+            </nav>
+        </li>
+    
+<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/mltk/tutorials/cloud_training_with_vast_ai.ipynb.txt">Show Source</a> </li>
+
+<li id="searchbox" class="md-nav__item"></li>
+
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li class="active"><a href="../../docs/tutorials.html" accesskey="U">Tutorials</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="cloud-training-with-vast-ai">
+<h1 id="mltk-tutorials-cloud-training-with-vast-ai--page-root">Cloud Training with vast.ai<a class="headerlink" href="#mltk-tutorials-cloud-training-with-vast-ai--page-root" title="Permalink to this headline">¶</a></h1>
+<p>Training a machine learning model can be a very computationally expensive operation which can take hours (if not days) to complete on a typical laptop or desktop.
+As such, many third-parties offer solutions that allow for renting large cloud-connected machines with lots of GPUs, CPUs, and RAM which can greatly improvement model training times.</p>
+<p>One such third-party is <a class="reference external" href="https://vast.ai/">vast.ai</a>:</p>
+<blockquote>
+<div><p>Vast.ai is a cloud computing, matchmaking and aggregation service focused on lowering the price of compute-intensive workloads. Our software allows anyone to easily become a host by renting out their hardware. Our web search interface allows users to quickly find the best deals for compute according to their specific requirements.</p>
+</div></blockquote>
+<p>This tutorial describes how to use the <a class="reference internal" href="../../docs/guides/model_training_via_ssh.html"><span class="doc std std-doc">mltk ssh train</span></a> command to train a model on <a class="reference external" href="https://vast.ai/">vast.ai</a>.
+With this, you can develop your model locally then quickly and seamlessly train it in the cloud, reducing the training time by 10x or more.</p>
+<p><strong>NOTE:</strong> While this tutorial shows how to train a model using <a class="reference external" href="https://vast.ai/">vast.ai</a>, the <a class="reference internal" href="../../docs/guides/model_training_via_ssh.html"><span class="doc std std-doc">mltk ssh train</span></a> command with work with <em>any</em> Linux-based SSH server.</p>
+<section id="disclaimer">
+<h2 id="disclaimer">Disclaimer<a class="headerlink" href="#disclaimer" title="Permalink to this headline">¶</a></h2>
+<p><strong>CAUTION:</strong> <a class="reference external" href="https://vast.ai">vast.ai</a> is not free! A credit card is required. <a class="reference external" href="https://vast.ai/">vast.ai</a> is a paid, third-party service that is not affiliated with Silicon Labs. Silicon Labs is not responsible for any losses incurred while using this software. Refer to the MLTK <a class="reference external" href="https://github.com/SiliconLabs/mltk/blob/master/LICENSE.md">License</a> for the terms of use of this software.</p>
+<p>The cost of training a model is dependent on:</p>
+<ul class="simple">
+<li><p>The chosen cloud machine. Some machines can cost $0.20/hr while others may cost $9.00/hr</p></li>
+<li><p>The amount of time the machine is in use (billed by the second)</p></li>
+</ul>
+<p>Refer to the vast.ai <a class="reference external" href="https://vast.ai/faq/#Billing">FAQ</a> for more details about how billing works.</p>
+<p><strong>In this tutorial, we credit our account with $10</strong> which is more than enough to train the <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html"><span class="doc std std-doc">keyword_spotting_on_off_v2</span></a> model in less than one hour (note that on typical laptops, it can take 12hr+ to train this model).</p>
+</section>
+<section id="quick-links">
+<h2 id="quick-links">Quick Links<a class="headerlink" href="#quick-links" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/guides/model_training_via_ssh.html"><span class="doc std std-doc">Model Training via SSH Guide</span></a> - Guide for using the <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">ssh</span></code> command-line</p></li>
+<li><p><a class="reference external" href="https://vast.ai/faq/">vast.ai FAQ</a> - vast.ai frequently asked questions</p></li>
+<li><p><a class="reference external" href="../../docs/installation.html#standard-python-package">MLTK Installation</a> - Install the MLTK</p></li>
+</ul>
+</section>
+<section id="overview">
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>The basic flow for training a model in the cloud is as as follows:<br/>
+<img alt="" src="../../_images/model_training_via_ssh.png"/></p>
+<ol class="arabic simple">
+<li><p>Create a <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> on a local machine</p></li>
+<li><p>Invoke the command: <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">ssh</span> <span class="pre">train</span> <span class="pre">my_model</span></code>, which will:<br/>
+a. Open a secure connection to a remote machine<br/>
+b. Upload all necessary files to the remote machine</p></li>
+<li><p>Invoke the <a class="reference internal" href="../../docs/guides/model_training.html"><span class="doc std std-doc">train</span></a> command on the remote machine</p></li>
+<li><p>After training completes on the remote machine, the <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">model archive</span></a> and any other training files are downloaded to the local machine</p></li>
+</ol>
+<p>So basically, develop the model on the local machine, quickly train it on a cloud machine, and all training results appear on the local machine as if the model had been trained locally.</p>
+<section id="about-vast-ai">
+<h3 id="about-vast-ai">About vast.ai<a class="headerlink" href="#about-vast-ai" title="Permalink to this headline">¶</a></h3>
+<p>From the <a class="reference external" href="https://vast.ai/faq/">FAQ</a>:</p>
+<section id="what-is-vast-ai">
+<h4 id="what-is-vast-ai">What is Vast.ai?<a class="headerlink" href="#what-is-vast-ai" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Vast.ai is a cloud computing, matchmaking and aggregation service focused on lowering the price of compute-intensive workloads. Our software allows anyone to easily become a host by renting out their hardware. Our web search interface allows users to quickly find the best deals for compute according to their specific requirements.</p>
+</div></blockquote>
+</section>
+<section id="how-does-it-work-in-a-nutshell">
+<h4 id="how-does-it-work-in-a-nutshell">How does it work in a nutshell?<a class="headerlink" href="#how-does-it-work-in-a-nutshell" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Hosts download and run our management software, list their machines, configure prices and set any default jobs.
+Clients then find suitable machines using our flexible search interface, rent their desired machines, and finally run commands or start SSH sessions with a few clicks.</p>
+</div></blockquote>
+</section>
+<section id="how-do-you-protect-my-data-from-other-clients">
+<h4 id="how-do-you-protect-my-data-from-other-clients">How do you protect my data from other clients?<a class="headerlink" href="#how-do-you-protect-my-data-from-other-clients" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Clients are isolated to unprivileged docker containers and only have access to their own data.</p>
+</div></blockquote>
+</section>
+<section id="how-do-you-protect-my-data-from-providers">
+<h4 id="how-do-you-protect-my-data-from-providers">How do you protect my data from providers?<a class="headerlink" href="#how-do-you-protect-my-data-from-providers" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>There are many providers on Vast.ai, ranging from tier 4 datacenters with extensive physical and operational security down to individual hobbyists renting out a few machines in their home.
+Our vetted datacenter partners can provide data security similar to other large cloud providers. If data security is important for your use case, you may want to rent only from our datacenter partners.</p>
+<p>Even though our smaller community providers generally do not have datacenter level physical or operational security, they have little to gain and much to lose from stealing customer data.
+It can take months for providers to accumulate trust and verified status on Vast. These verified providers are thus incentivized to maintain their reputational standing just like larger cloud providers.
+Hosts generally have many different clients and there are significant costs to identifying, saving, copying, and exploiting any interesting datasets, let alone any particular client’s data. You can also roughly see the relative age of a provider by their ID.</p>
+</div></blockquote>
+</section>
+<section id="how-does-billing-work">
+<h4 id="how-does-billing-work">How does billing work?<a class="headerlink" href="#how-does-billing-work" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>Once you enter a credit card and an email address and both are verified, you will receive a small amount of free test credit.
+Then you can increase your credit balance using one time payments with the add credit button. Whenver your credit balance hits zero or below, your instances will be stopped automatically, but not destroyed.</p>
+<p>You are still charged storage costs for stopped instances, so it is important to destroy instances when you are done using them.</p>
+<p>Your credit card will be automatically charged periodically to pay off any outstanding negative balance.</p>
+</div></blockquote>
+</section>
+<section id="how-does-pricing-work">
+<h4 id="how-does-pricing-work">How does pricing work?<a class="headerlink" href="#how-does-pricing-work" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>There are seperate prices and charges for 1.) base active rental costs, 2.) storage costs, and 3.) bandwidth costs. You are charged the base active rental cost for every second your instance is in the active/connected state. You are charged the storage cost (which depends on the size of your storage allocation) for every single second your instance exists, regardless of what state it is in: whether it is active or inactive, online or offline, functional or broken. Stopping an instance does not avoid storage costs. You are charged bandwidth prices for every byte sent or received to or from the instance, regardless of what state it is in. The prices for base rental, storage, and bandwidth vary considerably from machine to machine, so make sure to check them.</p>
+</div></blockquote>
+</section>
+<section id="why-should-i-trust-vast-ai-with-my-credit-card-info">
+<h4 id="why-should-i-trust-vast-ai-with-my-credit-card-info">Why should I trust vast.ai with my credit card info?<a class="headerlink" href="#why-should-i-trust-vast-ai-with-my-credit-card-info" title="Permalink to this headline">¶</a></h4>
+<blockquote>
+<div><p>You don’t need to: Vast.ai does not see, store or process your credit card numbers, they are passed directly to <a class="reference external" href="https://stripe.com/">Stripe</a></p>
+</div></blockquote>
+</section>
+</section>
+<section id="contents">
+<h3 id="contents">Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h3>
+<p>This tutorial is divided into the following sections:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#create-an-ssh-keypair"><span class="std std-doc">Create an SSH keypair</span></a></p></li>
+<li><p><a class="reference internal" href="#create-a-vast-ai-account"><span class="std std-doc">Create a vast.ai account</span></a></p></li>
+<li><p><a class="reference internal" href="#select-a-cloud-machine"><span class="std std-doc">Select a cloud machine</span></a></p></li>
+<li><p><a class="reference internal" href="#configure-settings"><span class="std std-doc">Configure settings</span></a></p></li>
+<li><p><a class="reference internal" href="#develop-a-model"><span class="std std-doc">Develop the model</span></a></p></li>
+<li><p><a class="reference internal" href="#train-model-in-cloud"><span class="std std-doc">Train the model in the cloud</span></a></p></li>
+<li><p><a class="reference internal" href="#shutdown-cloud-instance"><span class="std std-doc">Shutdown cloud machine</span></a></p></li>
+<li><p><a class="reference internal" href="#next-steps"><span class="std std-doc">Next steps after training the model</span></a></p></li>
+</ol>
+</section>
+<section id="mltk-installation">
+<h3 id="mltk-installation">MLTK Installation<a class="headerlink" href="#mltk-installation" title="Permalink to this headline">¶</a></h3>
+<p>To use this tutorial, the latest MLTK must be installed on your local machine.</p>
+<p>Refer to the “Standard Python Package” <a class="reference external" href="../../docs/installation.html#standard-python-package">Installation Guide</a> for more details.</p>
+<p>After installing the MLTK, the <code class="docutils literal notranslate"><span class="pre">mltk</span></code> command should be able on your local command prompt. You may confirm this by issuing the command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk --help
+</pre></div>
+</div>
+</section>
+</section>
+<section id="create-an-ssh-keypair">
+<h2 id="create-an-ssh-keypair">Create an SSH Keypair<a class="headerlink" href="#create-an-ssh-keypair" title="Permalink to this headline">¶</a></h2>
+<p>To securely log into the remote server, we first need to generate an SSH <a class="reference external" href="https://wiki.archlinux.org/title/SSH_keys">keypair</a>.</p>
+<p>The details of creating and distributing the keypair are out-of-scope for this document, however, it is important to note the following:</p>
+<ul class="simple">
+<li><p>A keypair consists of one <strong>private key</strong> and one <strong>public key</strong></p></li>
+<li><p>The <strong>private key</strong> resides on the <strong>local machine</strong>, its contents must be securely stored (i.e. do not share it with others)</p></li>
+<li><p>The <strong>public key</strong> resides on the <strong>remote machine</strong>, its contents need not be secure (i.e. it can be copied &amp; pasted anywhere)</p></li>
+</ul>
+<p>Use the following MLTK command to generate an <a class="reference external" href="https://ed25519.cr.yp.to/">Ed25519</a> SSH keypair:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk ssh-keygen vast_ai
+</pre></div>
+</div>
+<p>This will generate the public/private keys on your local machine at:</p>
+<ul class="simple">
+<li><p>~/.ssh/id_vast_ai</p></li>
+<li><p>~/.ssh/id_vast_ai.pub</p></li>
+</ul>
+<p>It will also print the contents of the public key. Note the public key’s contents as we’ll need it in the <a class="reference internal" href="#cloud-training-with-vast-ai"><span class="std std-doc">next section</span></a>.</p>
+<p><strong>NOTE:</strong> <code class="docutils literal notranslate"><span class="pre">~</span></code> is your user “home” directory. On Windows, this typically points to: <code class="docutils literal notranslate"><span class="pre">C:\Users\&lt;user</span> <span class="pre">name&gt;</span></code> where <code class="docutils literal notranslate"><span class="pre">&lt;user</span> <span class="pre">name&gt;</span></code> is your Windows user name.</p>
+</section>
+<section id="create-a-vast-ai-account">
+<h2 id="create-a-vast-ai-account">Create a vast.ai Account<a class="headerlink" href="#create-a-vast-ai-account" title="Permalink to this headline">¶</a></h2>
+<p>To create a <a class="reference external" href="https://vast.ai/">vast.ai</a> account you will need the following:</p>
+<ol class="arabic simple">
+<li><p>Email address</p></li>
+<li><p>SSH public key (see previous section <a class="reference internal" href="#create-an-ssh-keypair"><span class="std std-doc">Create an SSH Keypair</span></a>)</p></li>
+<li><p>Credit card</p></li>
+</ol>
+<section id="create-new-account">
+<h3 id="create-new-account">Create new account<a class="headerlink" href="#create-new-account" title="Permalink to this headline">¶</a></h3>
+<p>First, we need to create a new <a class="reference external" href="https://vast.ai/console/account/">vast.ai</a> account.</p>
+<p><img alt="" src="../../_images/vastai_create_account.gif"/></p>
+<ol class="arabic simple">
+<li><p>Open your web-browser to: <a class="reference external" href="https://vast.ai/console/account/">https://vast.ai/console/account/</a></p></li>
+<li><p>In the center dialog, enter you email and chose a new password, then click the <code class="docutils literal notranslate"><span class="pre">CREATE!</span></code> button</p></li>
+<li><p>Check your email and click the verification link that was sent from vast.ai (Please be patient, this may take a moment)</p></li>
+</ol>
+<p><strong>NOTE:</strong> You may need to contact the vast.ai support (black button on the bottom-right of <a class="reference external" href="https://vast.ai/console/account/">vast.ai</a>) if you do not receive an email after a couple minutes.
+Some email addresses may be automatically flagged as fraudulent and blocked. In this case, vast.ai support will have to manually send the verification link.</p>
+</section>
+<section id="add-public-ssh-key-to-account">
+<h3 id="add-public-ssh-key-to-account">Add public SSH key to account<a class="headerlink" href="#add-public-ssh-key-to-account" title="Permalink to this headline">¶</a></h3>
+<p>Next, we need to add our public key from the <a class="reference internal" href="#create-an-ssh-keypair"><span class="std std-doc">previous section</span></a> to the vast.ai account.</p>
+<p><strong>NOTE:</strong> You may obtain the public key by viewing the file: <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_vast_ai.pub</span></code> (or similar) in a text editor.
+The contents of the file should look similar to:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ssh</span><span class="o">-</span><span class="n">ed25519</span> <span class="n">AAAAC3NzaC1lZDI1NTE5AAAAIBqHiSAu</span><span class="o">/</span><span class="n">Bhj7Z6HpOQE0gx</span><span class="o">/</span><span class="n">EfjAu27AiM738c4bYOJw</span> <span class="n">vast_ai</span>
+</pre></div>
+</div>
+<p><img alt="" src="../../_images/vastai_set_ssh_key.gif"/></p>
+<ol class="arabic simple">
+<li><p>On the left sidebar of <a class="reference external" href="https://vast.ai/console/account/">vast.ai</a>, click the <code class="docutils literal notranslate"><span class="pre">Account</span></code> entry</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">Change</span> <span class="pre">SSH</span> <span class="pre">Key</span></code> section, paste your <strong>SSH public key</strong> into the text field</p></li>
+<li><p>Then click the <code class="docutils literal notranslate"><span class="pre">SET</span> <span class="pre">SSH</span> <span class="pre">KEY</span></code> button</p></li>
+</ol>
+</section>
+<section id="add-credit-to-account">
+<h3 id="add-credit-to-account">Add credit to account<a class="headerlink" href="#add-credit-to-account" title="Permalink to this headline">¶</a></h3>
+<p>Next, we need to add a credit to the account.</p>
+<p><strong>NOTE:</strong> For this tutorial, we only use <strong>$10</strong>.</p>
+<p><img alt="" src="../../_images/vastai_add_credit.gif"/></p>
+<ol class="arabic simple">
+<li><p>On the left sidebar of <a class="reference external" href="https://vast.ai/console/billing/">vast.ai</a>, click the <code class="docutils literal notranslate"><span class="pre">Billing</span></code> entry</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">Payment</span> <span class="pre">Sources</span></code> section, click the <code class="docutils literal notranslate"><span class="pre">ADD</span> <span class="pre">CARD</span></code> button</p></li>
+<li><p>Enter your credit card info in the popup dialog</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">Payment</span> <span class="pre">Sources</span></code> section, click the <code class="docutils literal notranslate"><span class="pre">ADD</span> <span class="pre">CREDIT</span></code> button</p></li>
+<li><p>Enter <code class="docutils literal notranslate"><span class="pre">10.00</span></code> for “Amount of credit to add”, then click the <code class="docutils literal notranslate"><span class="pre">ADD</span> <span class="pre">CREDIT</span> <span class="pre">ONCE</span></code> button</p></li>
+</ol>
+<p>Once complete, you should see that you have $10.00 of credit on the top-right of the vast.ai webpage.</p>
+<section id="id1">
+<h4 id="id1">How does billing work?<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<p>Per the vast.ai <a class="reference external" href="https://vast.ai/faq/#Billing">FAQ</a></p>
+<blockquote>
+<div><p>Once you enter a credit card and an email address and both are verified, you will receive a small amount of free test credit. Then you can increase your credit balance using one time payments with the add credit button. Whenver your credit balance hits zero or below, your instances will be stopped automatically, but not destroyed.</p>
+<p>You are still charged storage costs for stopped instances, so it is important to destroy instances when you are done using them.</p>
+<p>Your credit card will be automatically charged periodically to pay off any outstanding negative balance.</p>
+</div></blockquote>
+</section>
+</section>
+<section id="configure-instance-image">
+<h3 id="configure-instance-image">Configure instance image<a class="headerlink" href="#configure-instance-image" title="Permalink to this headline">¶</a></h3>
+<p>Next, we need to configure the default software that gets loaded onto the cloud machine upon startup.<br/>
+For our purposes, we need Tensorflow and the latest GPU drivers.</p>
+<p><img alt="" src="../../_images/vastai_config_image.gif"/></p>
+<ol class="arabic simple">
+<li><p>On the left sidebar of <a class="reference external" href="https://vast.ai/console/create/">vast.ai</a>, select the <code class="docutils literal notranslate"><span class="pre">Create</span></code> entry</p></li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">Instance</span> <span class="pre">Configuration</span></code> section on the top-left, click the <code class="docutils literal notranslate"><span class="pre">EDIT</span> <span class="pre">IMAGE</span> <span class="pre">&amp;</span> <span class="pre">CONFIG..</span></code> button</p></li>
+<li><p>In the dialog that appears, select the <code class="docutils literal notranslate"><span class="pre">tensorflow/tensorflow</span></code> entry</p></li>
+<li><p>Then click the <code class="docutils literal notranslate"><span class="pre">SELECT</span></code> button on the bottom of the dialog</p></li>
+</ol>
+<p>That’s it! Now, when a cloud instance is created (see the <a class="reference internal" href="#select-a-cloud-machine"><span class="std std-doc">next section</span></a>), it will automatically come with Tensorflow and the necessary GPU drivers.</p>
+</section>
+</section>
+<section id="select-a-cloud-machine">
+<h2 id="select-a-cloud-machine">Select a Cloud Machine<a class="headerlink" href="#select-a-cloud-machine" title="Permalink to this headline">¶</a></h2>
+<p>With the <a class="reference external" href="https://vast.ai/console/create/">vast.ai</a> account configured, it is now time to select which machine we want to use:</p>
+<p><img alt="" src="../../_images/vastai_select_machine.gif"/></p>
+<ol class="arabic">
+<li><p>On the left sidebar of <a class="reference external" href="https://vast.ai/console/create/">vast.ai</a>, select the <code class="docutils literal notranslate"><span class="pre">Create</span></code> entry</p></li>
+<li><p>This will list all the machines available to rent</p></li>
+<li><p>Use the sliders on the left to narrow the search (see the <a class="reference internal" href="#notes-about-selecting-a-machine"><span class="std std-doc">Notes about selecting a machine</span></a> section for more details)</p></li>
+<li><p>When you find the desired machine, click the <code class="docutils literal notranslate"><span class="pre">RENT</span></code> button, which will start an instance on the machine</p></li>
+<li><p>On the left sidebar of <a class="reference external" href="https://vast.ai/console/instances/">vast.ai</a>, select the <code class="docutils literal notranslate"><span class="pre">Instances</span></code> entry</p></li>
+<li><p>Your instance from step 4) should be visible, click the blue <code class="docutils literal notranslate"><span class="pre">&gt;_</span></code> button on the top-right<br/>
+This should display a dialog that looks something like: (The exact values will be different)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ssh</span> <span class="o">-</span><span class="n">p</span> <span class="mi">35023</span> <span class="n">root</span><span class="nd">@ssh4</span><span class="o">.</span><span class="n">vast</span><span class="o">.</span><span class="n">ai</span> <span class="o">-</span><span class="n">L</span> <span class="mi">8080</span><span class="p">:</span><span class="n">localhost</span><span class="p">:</span><span class="mi">8080</span>
+</pre></div>
+</div>
+<p>These are two things to note:</p>
+<ul class="simple">
+<li><p>The SSH port, in this example, <code class="docutils literal notranslate"><span class="pre">35023</span></code></p></li>
+<li><p>The SSH username &amp; hostname, in this example, <code class="docutils literal notranslate"><span class="pre">root@ssh4.vast.ai</span></code><br/>
+Save these values as well will need them in the <a class="reference internal" href="#configure-settings"><span class="std std-doc">next section</span></a></p></li>
+</ul>
+</li>
+<li><p><strong>Be sure to shutdown the instance when you are done training the model!</strong><br/>
+You will be charged for as long as the instance is running.<br/>
+You must manually shutdown the instance when you are finished with it.<br/>
+The instance can be shutdown by selecting the <code class="docutils literal notranslate"><span class="pre">trashcan</span></code> icon of your instance.<br/>
+<strong>NOTE:</strong> All data will be lost on the remote machine when the instance is shutdown.</p></li>
+</ol>
+<section id="ssh-client-login">
+<h3 id="ssh-client-login">SSH Client Login<a class="headerlink" href="#ssh-client-login" title="Permalink to this headline">¶</a></h3>
+<p>Assuming the remote instance is active, you should be able to log into the machine using a standard <a class="reference external" href="https://www.openssh.com/">SSH client</a>, e.g.:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssh &lt;host&gt; -p &lt;port&gt; -i ~/.ssh/id_vast_ai
+</pre></div>
+</div>
+<p>Where <code class="docutils literal notranslate"><span class="pre">&lt;port&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;host&gt;</span></code> may be determined in step 6) from above.<br/>
+And <code class="docutils literal notranslate"><span class="pre">~/.ssh/id_vast_ai</span></code> is the <strong>private key</strong> associated to the <strong>public key</strong> configured in the <a class="reference internal" href="#add-public-ssh-key-to-account"><span class="std std-doc">Add Public Key to Account</span></a> section.</p>
+<p>Once logged in, you may run any Linux command on the remote machine.<br/>
+<strong>Hint:</strong> You can also use Visual Studio Code’s <a class="reference external" href="https://code.visualstudio.com/docs/remote/ssh">Remote SSH</a> feature to directly develop on the remote machine.</p>
+</section>
+<section id="notes-about-selecting-a-machine">
+<h3 id="notes-about-selecting-a-machine">Notes about selecting a machine<a class="headerlink" href="#notes-about-selecting-a-machine" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://vast.ai/console/create/">vast.ai</a> is useful because it provides a wide range of machines for rent.<br/>
+Typically, the more resources (GPUs, CPUs, RAM) a machine has the more expensive it is.<br/>
+So, the goal is to determine the lower limit of resources you need to efficiently train your model.</p>
+<p>While <a class="reference external" href="https://vast.ai/console/create/">vast.ai</a> provides many different search criteria, usually the most important are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">$/Hour</span></code> - Determines how expensive it will be to train the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GPU</span> <span class="pre">Count</span></code> - The number of GPUs used to train the model</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">CPU</span> <span class="pre">Cores</span></code> - The number of processing cores, typically used for data preprocessing (e.g. data augmentation)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Max</span> <span class="pre">Instance</span> <span class="pre">Duration</span></code> - The maximum amount of time you may rent the machine. Typically, the smaller this value the cheaper the machine. However, it should be large enough to completely train the model.</p></li>
+</ul>
+<section id="note-about-gpu-count">
+<h4 id="note-about-gpu-count">Note about GPU Count<a class="headerlink" href="#note-about-gpu-count" title="Permalink to this headline">¶</a></h4>
+<p>Most models that are able to run on an embedded device do not have that many trainable parameters.
+Thus, 1-2 “mid-range” GPUs is all that is needed to efficiently train the model.</p>
+<p>Typically, adding more than 2 GPUs will not noticeably improve the model training time
+(again, this is largely dependent on the model that is being trained).</p>
+</section>
+<section id="note-about-cpu-count">
+<h4 id="note-about-cpu-count">Note about CPU Count<a class="headerlink" href="#note-about-cpu-count" title="Permalink to this headline">¶</a></h4>
+<p>Many times, the CPU count can be the bottleneck for the model training time.<br/>
+If the model uses extensive data augmentations, then it could take longer to generate the augmented training data than it does to train the model on the GPU(s).</p>
+<p>To help throughput, the MLTK features two python classes:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/python_api/data_preprocessing/image_data_generator.html"><span class="doc std std-doc">ParallelImageDataGenerator</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_data_generator.html"><span class="doc std std-doc">ParallelAudioDataGenerator</span></a></p></li>
+</ul>
+<p>These classes parallel process the data augmentations across the available CPUs cores.<br/>
+So, the more CPU cores there are, the faster the augmented training data is able to be generated, and thus the faster the model is able to be trained.</p>
+<p><strong>NOTE:</strong> Not all CPUs are the same! Some cores execute much faster than others. It is recommended to use <code class="docutils literal notranslate"><span class="pre">i7</span></code> or better.</p>
+</section>
+</section>
+</section>
+<section id="configure-settings">
+<h2 id="configure-settings">Configure Settings<a class="headerlink" href="#configure-settings" title="Permalink to this headline">¶</a></h2>
+<p>We need to configure the file: <a class="reference internal" href="../../docs/other/settings_file.html"><span class="doc std std-doc">~/.mltk/user_settings.yaml</span></a></p>
+<p>Create or modify the file:</p>
+<ul class="simple">
+<li><p>Windows -&gt; <code class="docutils literal notranslate"><span class="pre">C:\Users\&lt;user</span> <span class="pre">name&gt;\.mltk\user_settings.yaml</span></code></p></li>
+<li><p>Linux -&gt; <code class="docutils literal notranslate"><span class="pre">~/.mltk/user_settings.yaml</span></code></p></li>
+</ul>
+<p>To this file, add the following:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ssh</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">create_venv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span>
+<span class="w">    </span><span class="nt">startup_cmds</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install wheel silabs-mltk</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo apt-get update</span><span class="w"></span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo apt install -y p7zip-full libsndfile1</span><span class="w"></span>
+</pre></div>
+</div>
+<p>This tells the <a class="reference internal" href="../../docs/guides/model_training_via_ssh.html"><span class="doc std std-doc">mltk ssh train</span></a> command to:</p>
+<ol class="arabic simple">
+<li><p><em>Not</em> create a python virtual environment.<br/>
+By default, the command will automatically create an MLTK python virtual environment in the workspace.<br/>
+Since the cloud instance will be destroyed after training, we do not need to waste time creating a separate development environment.</p></li>
+<li><p>Install the <code class="docutils literal notranslate"><span class="pre">silabs-mltk</span></code> python package</p></li>
+<li><p>Install <a class="reference external" href="https://www.7-zip.org/">7zip</a> which is needed to extract some datasets</p></li>
+<li><p>Install <a class="reference external" href="https://github.com/libsndfile/libsndfile">libsndfile</a> which is needed to use the <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_data_generator.html"><span class="doc std std-doc">ParallelAudioDataGenerator</span></a></p></li>
+</ol>
+<p><strong>NOTE:</strong> All of the above is installed on the <strong>remote machince</strong> before invoking the <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">train</span></code> command. For more details about the startup sequence, see <a class="reference internal" href="../../docs/guides/model_training_via_ssh.html"><span class="doc std std-doc">mltk ssh train</span></a>.</p>
+</section>
+<section id="develop-a-model">
+<h2 id="develop-a-model">Develop a Model<a class="headerlink" href="#develop-a-model" title="Permalink to this headline">¶</a></h2>
+<p>Before training a model, we need to develop its <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">model specification</span></a>.</p>
+<p><strong>NOTE:</strong> Typically, you should develop the model locally <em>before</em> starting a cloud instance as you are billed by the second while the instance is active.</p>
+<section id="suggested-reading">
+<h3 id="suggested-reading">Suggested Reading<a class="headerlink" href="#suggested-reading" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Refer to the <a class="reference internal" href="../../docs/guides/model_training.html"><span class="doc std std-doc">Model Training</span></a> guide for how to develop a <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">model specification</span></a></p></li>
+<li><p>Refer to the other <a class="reference internal" href="../../docs/tutorials.html"><span class="doc std std-doc">tutorials</span></a> for an end-to-end model development tutorials</p></li>
+</ul>
+<p>In any case, instead of training your model locally using: <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">train</span> <span class="pre">my_model</span></code>, you will use <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">ssh</span> <span class="pre">train</span> <span class="pre">my_model</span></code> to train your model in the “cloud”.</p>
+</section>
+<section id="example-development-flow">
+<h3 id="example-development-flow">Example Development Flow<a class="headerlink" href="#example-development-flow" title="Permalink to this headline">¶</a></h3>
+<p>For this tutorial, we’ll train the reference model: <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html"><span class="doc std std-doc">keyword_spotting_on_off_v2</span></a>.<br/>
+Note that while this is a “Keyword Spotting” model, any other type of model will work similarly.</p>
+<p>This model uses the <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_data_generator.html"><span class="doc std std-doc">ParallelAudioDataGenerator</span></a> to dynamically augment the samples during training. The dynamic augmentations can be computationally expensive which can slow down training.<br/>
+To speed up the model training, we’ll spread the augmentations across 250 cores (in a later step we’ll rent a cloud machine with 256 cores).</p>
+<section id="modify-the-model-specification">
+<h4 id="modify-the-model-specification">Modify the model specification<a class="headerlink" href="#modify-the-model-specification" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple">
+<li><p>Download the model specification file (i.e. python script): <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v2.py">keyword_spotting_on_off_v2.py</a> to your local machine</p></li>
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">keyword_spotting_on_off_v2.py</span></code> on your local machine in a text editor</p></li>
+<li><p>Locate the line <code class="docutils literal notranslate"><span class="pre">my_model.datagen</span> <span class="pre">=</span> <span class="pre">ParallelAudioDataGenerator(</span></code><br/>
+We need to adjust two settings to take advantage of the large cloud machine:</p></li>
+<li><p>Change the line <code class="docutils literal notranslate"><span class="pre">cores=0.45,</span></code> to <code class="docutils literal notranslate"><span class="pre">cores=250,</span></code><br/>
+i.e. Instead of using 45% of the available cores, we’ll hardcode to using 250 cores.<br/>
+Note that we don’t want to use all the cores for augmentations, we’ll save 6 cores for doing other training tasks (which the system automatically manages)</p></li>
+<li><p>Change the line <code class="docutils literal notranslate"><span class="pre">max_batches_pending=16,</span></code> to <code class="docutils literal notranslate"><span class="pre">max_batches_pending=10*250</span></code><br/>
+The cloud machine we’ll rent should have lots of RAM, so we can have lots of preprocessed batches ready to go in RAM to further improve the training time</p></li>
+</ol>
+</section>
+<section id="note-about-custom-datasets">
+<h4 id="note-about-custom-datasets">Note about custom datasets<a class="headerlink" href="#note-about-custom-datasets" title="Permalink to this headline">¶</a></h4>
+<p>The model is trained on a remote machine. This means the dataset needs to be downloaded to the remote machine before training starts.
+The <a class="reference external" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html">keyword_spotting_on_off_v2</a> model uses the <a class="reference external" href="../../docs/python_api/datasets/index.html#module-mltk.datasets.audio.speech_commands.speech_commands_v2">Google Speech Commands v2</a> dataset which manages downloading the dataset.</p>
+<p>For custom datasets, you’ll need to specify your own download URL.</p>
+<p>One way of doing this is by adding something like the following to your model specification:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import helper function to download and extract dataset</span>
+<span class="kn">from</span> <span class="nn">mltk.utils.archive_downloader</span> <span class="kn">import</span> <span class="n">download_verify_extract</span>
+
+<span class="c1"># Define a custom function to download the dataset</span>
+<span class="k">def</span> <span class="nf">my_dataset_downloader</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">download_verify_extract</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="s1">'https://mydataset/dataset.tar.gz'</span><span class="p">,</span>
+        <span class="n">dest_subdir</span><span class="o">=</span><span class="s1">'datasets/mydataset/v1'</span><span class="p">,</span>
+        <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">remove_root_dir</span><span class="o">=</span><span class="kc">True</span> <span class="c1"># remove the root directory from the extracted archive</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># Assign the custom function to the model</span>
+<span class="c1"># The MLTK will automatically invoke this at the beginning of the "train" command on the remote machine</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">my_dataset_downloader</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>See <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/visual_wake_words.py">visual_wake_words.py</a> for a working example.</p></li>
+<li><p>See <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/fingerprint_signature_generator.py">fingerprint_signature_generator.py</a> for a more complex example using a custom dataset class.</p></li>
+</ul>
+</section>
+<section id="test-everything-works-locally">
+<h4 id="test-everything-works-locally">Test everything works locally<a class="headerlink" href="#test-everything-works-locally" title="Permalink to this headline">¶</a></h4>
+<p>Before training in the cloud, it is helpful to do a training “dry run” locally to ensure everything is basically working.<br/>
+This can be done with the command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;same directory as model specification .py&gt;
+mltk train keyword_spotting_on_off_v2-test
+</pre></div>
+</div>
+<p>This will train the model for a few epochs using a subset of the dataset.
+This way, you can quickly fix any errors locally before invoking the actual training on the remote cloud machine.</p>
+</section>
+<section id="profile-model-locally">
+<h4 id="profile-model-locally">Profile model locally<a class="headerlink" href="#profile-model-locally" title="Permalink to this headline">¶</a></h4>
+<p>Before spending the time and money on training a model, it is very important to know if it is even able to run on the embedded target.
+For this reason, the MLTK features a <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">model profiler</span></a>.</p>
+<p>Assuming you have a <a class="reference internal" href="../../docs/other/supported_hardware.html"><span class="doc std std-doc">supported</span></a> development board and are targeting the <a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/mvp-accelerator">MVP</a> hardware accelerator, issue the command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;same directory as model specification .py&gt;
+mltk profile keyword_spotting_on_off_v2 --build --accelerator mvp --device
+</pre></div>
+</div>
+<p>If you do not have a development board, you can still profile using the simulator:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;same directory as model specification .py&gt;
+mltk profile keyword_spotting_on_off_v2 --build --accelerator mvp
+</pre></div>
+</div>
+<p>This will profile the <em>untrained</em> model and provide statistics such as:</p>
+<ul class="simple">
+<li><p>RAM usage</p></li>
+<li><p>Flash usage</p></li>
+<li><p>Inference latency</p></li>
+</ul>
+<p>See the <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">model profiler</span></a> guide for more details.</p>
+</section>
+</section>
+</section>
+<section id="train-model-in-cloud">
+<h2 id="train-model-in-cloud">Train Model in Cloud<a class="headerlink" href="#train-model-in-cloud" title="Permalink to this headline">¶</a></h2>
+<p>Now that we have a working model specification, it’s time to train it in the cloud.</p>
+<section id="start-cloud-instance">
+<h3 id="start-cloud-instance">Start cloud instance<a class="headerlink" href="#start-cloud-instance" title="Permalink to this headline">¶</a></h3>
+<p>First, we need to start a cloud instance with:</p>
+<ul class="simple">
+<li><p>“Max instance duration” for <code class="docutils literal notranslate"><span class="pre">~3hrs</span></code>
+Machines may be cheaper if the “instance duration” is low</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">256+</span></code> CPU cores<br/>
+Ensure the CPUs are <code class="docutils literal notranslate"><span class="pre">i7</span></code> or better (AMD Threadripper or EPYC is usually a good choice; Xeon can be slow)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1+</span></code> GPUs<br/>
+The <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html"><span class="doc std std-doc">keyword_spotting_on_off_v2</span></a> model does not have that many trainable parameters, so 1 “mid-range” GPU is enough.</p></li>
+</ul>
+<p>(If you already have another cloud instance running that doesn’t have 256+ CPU cores, then shut it down first, see <a class="reference internal" href="#shutdown-cloud-instance"><span class="std std-doc">Shutdown Cloud Instance</span></a>)</p>
+<p>Be sure to note the SSH host and port which we’ll need in the next section:</p>
+<p><img alt="" src="../../_images/vastai_select_machine2.gif"/></p>
+</section>
+<section id="start-remote-training">
+<h3 id="start-remote-training">Start remote training<a class="headerlink" href="#start-remote-training" title="Permalink to this headline">¶</a></h3>
+<p>With the model specification ready and cloud instance started, it’s time to train it in the cloud.</p>
+<p>This done using the <a class="reference internal" href="../../docs/guides/model_training_via_ssh.html"><span class="doc std std-doc">mltk ssh train</span></a>, e.g.:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Navigate to the directory containing the model specification</span>
+<span class="nb">cd</span> &lt;directory where keyword_spotting_on_off_v2.py is located&gt;
+
+<span class="c1"># Train keyword_spotting_on_off_v2 model in cloud</span>
+<span class="c1"># --clean will clean all previous  training files before starting</span>
+mltk ssh -p <span class="m">39975</span> -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --clean
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Refer to step 6) of <a class="reference internal" href="#select-a-cloud-machine"><span class="std std-doc">Select a Machine</span></a> section for determining the values of the <code class="docutils literal notranslate"><span class="pre">-h</span></code> and <code class="docutils literal notranslate"><span class="pre">-p</span></code> options.</p></li>
+<li><p>Refer to the <a class="reference internal" href="#create-an-ssh-keypair"><span class="std std-doc">Create SSH Keypair</span></a> section for the value of the <code class="docutils literal notranslate"><span class="pre">-i</span></code> option.</p></li>
+</ul>
+</section>
+<section id="other-cli-options">
+<h3 id="other-cli-options">Other CLI options<a class="headerlink" href="#other-cli-options" title="Permalink to this headline">¶</a></h3>
+<p>There are some other CLI options you may use while training:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Train keyword_spotting_on_off_v2 model in cloud</span>
+<span class="c1"># --clean will clean all previous  training files before starting</span>
+<span class="c1"># Only one command may be active, --force will abort any previous commands still executing</span>
+mltk ssh -p <span class="m">39975</span> -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --clean --force
+
+<span class="c1"># If a previous command's SSH connection prematurely closed, </span>
+<span class="c1"># --resume may be used to re-connect without restarting the remote command</span>
+mltk ssh -p <span class="m">39975</span> -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --resume
+
+<span class="c1"># Use the --verbose option to see verbose logs</span>
+mltk ssh -p <span class="m">39975</span> -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --verbose
+</pre></div>
+</div>
+</section>
+<section id="training-results">
+<h3 id="training-results">Training Results<a class="headerlink" href="#training-results" title="Permalink to this headline">¶</a></h3>
+<p>Once training successfully completes, the trained <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">model archive</span></a> and any other files generated during training on the remote machine will be downloaded to the local machine.<br/>
+All of the output training files will appear on the local machine as if the model had been trained locally. i.e.:</p>
+<ul class="simple">
+<li><p>The <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">model archive</span></a> (i.e. <code class="docutils literal notranslate"><span class="pre">.mltk.zip</span></code>) will appear in the same directory as the <a class="reference internal" href="../../docs/guides/model_specification.html"><span class="doc std std-doc">model specification</span></a></p></li>
+<li><p>The training log files will appear in the model log directory, <code class="docutils literal notranslate"><span class="pre">~/.mltk/models/&lt;model</span> <span class="pre">name&gt;</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="shutdown-cloud-instance">
+<h2 id="shutdown-cloud-instance">Shutdown Cloud Instance<a class="headerlink" href="#shutdown-cloud-instance" title="Permalink to this headline">¶</a></h2>
+<p><strong>Be sure to shutdown the cloud instance when finished!</strong></p>
+<p><img alt="" src="../../_images/vastai_shutdown_instance.gif"/></p>
+<p>You will be billed by the second for as long as the instance is active.</p>
+<p>Also note that everything on the remote instance will be lost when it’s shutdown.<br/>
+So be sure you’ve downloaded all output files (like the trained <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">model archive</span></a>).</p>
+</section>
+<section id="next-steps">
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>At this point, the <a class="reference internal" href="../../docs/guides/model_archive.html"><span class="doc std std-doc">trained model files</span></a> (i.e. <code class="docutils literal notranslate"><span class="pre">.mltk.zip</span></code>) should be on the local machine the same as if it was trained locally.</p>
+<p>As such, all of the MLTK commands are fully available.</p>
+<p>See the “Model Testing” and “Deploying the Model” sections of the <a class="reference internal" href="keyword_spotting_on_off.html"><span class="doc std std-doc">Keyword Spotting On/Off</span></a> tutorial for more details.</p>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="image_classification.html" title="Image Classification - Rock, Paper, Scissors"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Image Classification - Rock, Paper, Scissors </span>
+              </div>
+            </a>
+          
+          
+            <a href="model_optimization.html" title="Model Optimization for MVP Hardware Accelerator"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> Model Optimization for MVP Hardware Accelerator </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Aug 11, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

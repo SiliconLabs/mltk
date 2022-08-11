@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.preprocess.audio.parallel_generator.iterator &#8212; MLTK 0.8.0 documentation</title>
+    <title>mltk.core.preprocess.audio.parallel_generator.iterator &#8212; MLTK 0.9.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/mystnb.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../../index.html" title="MLTK 0.8.0 documentation"
+        <a href="../../../../../../index.html" title="MLTK 0.9.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../../_static/logo.png"
-                   alt="MLTK 0.8.0 documentation logo">
+                   alt="MLTK 0.9.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../../index.html" title="MLTK 0.8.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../../index.html" title="MLTK 0.9.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../../index.html"
-       title="MLTK 0.8.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.9.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -438,12 +438,17 @@
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">queue</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span>
+<span class="kn">import</span> <span class="nn">atexit</span>
 
+
+<span class="kn">import</span> <span class="nn">joblib</span>
+<span class="kn">from</span> <span class="nn">joblib.externals.loky.process_executor</span> <span class="kn">import</span> <span class="n">ShutdownExecutorError</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
 <span class="kn">from</span> <span class="nn">mltk.core.keras</span> <span class="kn">import</span> <span class="n">DataSequence</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.process_pool_manager</span> <span class="kn">import</span> <span class="n">ProcessPoolManager</span>
 
 
 
@@ -469,69 +474,61 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span> <span class="o">=</span> <span class="n">shuffle</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">process_params</span> <span class="o">=</span> <span class="n">process_params</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_started</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_shutdown</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span> <span class="o">=</span> <span class="n">BatchData</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">,</span> <span class="n">shutdown_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_shutdown</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">_create_processing_pool</span><span class="p">(</span>
+            <span class="n">cores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cores</span><span class="p">,</span> 
+            <span class="n">debug</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span> 
+            <span class="n">disable_gpu_in_subprocesses</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">disable_gpu_in_subprocesses</span>
+        <span class="p">)</span>
         
-        <span class="n">t</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running_flag</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_flag</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_started</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span> <span class="o">=</span> <span class="n">BatchData</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">,</span> <span class="n">shutdown_event</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shutdown_flag</span><span class="p">)</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
             <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_generate_batch_data_safe</span><span class="p">,</span> 
             <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">'Batch data generator:</span><span class="si">{</span><span class="n">process_params</span><span class="o">.</span><span class="n">subset</span><span class="si">}</span><span class="s1">'</span>
         <span class="p">)</span>
-        <span class="n">t</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-        <span class="n">t</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_thread</span><span class="o">.</span><span class="n">setDaemon</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running_flag</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
-        <span class="n">pool_manager_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-            <span class="n">cores</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cores</span><span class="p">,</span> 
-            <span class="n">callback</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_batch_data_ready</span><span class="p">,</span>
-            <span class="n">debug</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">,</span>
-        <span class="p">)</span>
 
-        <span class="c1"># If specified,</span>
-        <span class="c1"># Add the CUDA_VISIBLE_DEVICES=-1 environment variable</span>
-        <span class="c1"># so TF doesn't use the GPU in the subprocesses</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disable_gpu_in_subprocesses</span><span class="p">:</span>
-            <span class="n">pool_manager_kwargs</span><span class="p">[</span><span class="s1">'env'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
-                <span class="n">CUDA_VISIBLE_DEVICES</span><span class="o">=</span><span class="s1">'-1'</span><span class="p">,</span>
-            <span class="p">)</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_flag</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
 
-        <span class="c1"># Re-use the processing pool if one has already been created</span>
-        <span class="k">if</span> <span class="s1">'_multiprocess_pool'</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
-            <span class="n">pool_manager_kwargs</span><span class="p">[</span><span class="s1">'pool'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">'_multiprocess_pool'</span><span class="p">]</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">running_flag</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">ProcessPoolManager</span><span class="p">(</span><span class="o">**</span><span class="n">pool_manager_kwargs</span><span class="p">)</span> 
-        <span class="nb">globals</span><span class="p">()[</span><span class="s1">'_multiprocess_pool'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">pool</span> 
-        
-
-        
     <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_started</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_shutdown</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running_flag</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">batch_thread</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_flag</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-        <span class="k">if</span> <span class="s1">'_multiprocess_pool'</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
-            <span class="k">del</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">'_multiprocess_pool'</span><span class="p">]</span>
+
 
 
     <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Asked to retrieve element </span><span class="si">{idx}</span><span class="s1">, '</span>
-                             <span class="s1">'but the Sequence '</span>
-                             <span class="s1">'has length </span><span class="si">{length}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">idx</span><span class="o">=</span><span class="n">idx</span><span class="p">,</span>
-                                                          <span class="n">length</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Data generator has been shutdown'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">'Asked to retrieve element </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">, but the Sequence has length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
+            <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_started</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
-
 
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>  <span class="c1"># round up</span>
@@ -562,9 +559,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_started</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">()</span>
         
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Data generator has been shutdown'</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_started</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="n">retval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_index</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_index</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -576,12 +570,13 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_generate_batch_data</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Exception during batch data processing, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="p">(</span><span class="n">ShutdownExecutorError</span><span class="p">,</span> <span class="n">joblib</span><span class="o">.</span><span class="n">my_exceptions</span><span class="o">.</span><span class="n">WorkerInterrupt</span><span class="p">)):</span>
+                <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Exception during batch data processing, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
     <span class="k">def</span> <span class="nf">_generate_batch_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
             <span class="c1"># Wait for training to start</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_started</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
                 <span class="k">continue</span>
@@ -595,14 +590,21 @@
                 <span class="n">index_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
             
     
+            <span class="n">all_indices</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">all_filenames</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">all_classes</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">max_chunk_size</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_batches_pending</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">n_jobs</span><span class="o">*</span><span class="mi">10</span><span class="p">)</span>
+
             <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">have_more_indices</span><span class="p">:</span>
                 <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">request_count</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_batches_pending</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-                    
+ 
                 <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_started</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                     <span class="k">break</span>
                 
                 <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">next_index</span><span class="p">()</span>
+               
                 <span class="bp">self</span><span class="o">.</span><span class="n">total_batches_seen</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">offset</span> <span class="o">=</span> <span class="n">idx</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>
                 <span class="n">batch_index_chunk</span> <span class="o">=</span> <span class="n">index_array</span><span class="p">[</span><span class="n">offset</span><span class="p">:</span><span class="n">offset</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span><span class="p">]</span>
@@ -613,25 +615,46 @@
                 <span class="k">for</span> <span class="n">batch_index</span> <span class="ow">in</span> <span class="n">batch_index_chunk</span><span class="p">:</span>
                     <span class="n">batch_filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="n">batch_index</span><span class="p">])</span>
                     <span class="n">batch_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">batch_index</span><span class="p">])</span>
-                
-                <span class="n">get_batch_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_params</span><span class="o">.</span><span class="n">get_batch_function</span> <span class="ow">or</span> <span class="n">get_batches_of_transformed_samples</span>
-                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_shutdown</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">process</span><span class="p">(</span>
-                        <span class="n">get_batch_function</span><span class="p">,</span> 
-                        <span class="n">idx</span><span class="p">,</span>
-                        <span class="n">batch_filenames</span><span class="p">,</span> 
-                        <span class="n">batch_classes</span><span class="p">,</span> 
-                        <span class="bp">self</span><span class="o">.</span><span class="n">process_params</span>
-                    <span class="p">)</span>
-            
-            
+
+                <span class="n">all_indices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
+                <span class="n">all_filenames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">batch_filenames</span><span class="p">)</span>
+                <span class="n">all_classes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">batch_classes</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_indices</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_chunk_size</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_invoke_processing</span><span class="p">(</span><span class="n">all_indices</span><span class="p">,</span> <span class="n">all_filenames</span><span class="p">,</span> <span class="n">all_classes</span><span class="p">)</span>
+                    <span class="n">all_indices</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">all_filenames</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">all_classes</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">continue</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_invoke_processing</span><span class="p">(</span><span class="n">all_indices</span><span class="p">,</span> <span class="n">all_filenames</span><span class="p">,</span> <span class="n">all_classes</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">reset_indices</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">_on_batch_data_ready</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">result</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">def</span> <span class="nf">_invoke_processing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">filenames</span><span class="p">,</span> <span class="n">classes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> 
+        
+        <span class="n">pool</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span>
+        <span class="n">get_batch_function</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_params</span><span class="o">.</span><span class="n">get_batch_function</span> <span class="ow">or</span> <span class="n">get_batches_of_transformed_samples</span>
 
+        <span class="k">def</span> <span class="nf">_iterator</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">cn</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span><span class="n">filenames</span><span class="p">,</span><span class="n">classes</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span> <span class="ow">or</span> <span class="n">pool</span><span class="o">.</span><span class="n">shutdown_flag</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                    <span class="k">return</span>
+                <span class="k">yield</span> <span class="n">idx</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">cn</span>
+        
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">preprocessing_lock</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">pool</span><span class="p">(</span><span class="n">joblib</span><span class="o">.</span><span class="n">delayed</span><span class="p">(</span><span class="n">get_batch_function</span><span class="p">)(</span><span class="n">idx</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="bp">cls</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">process_params</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="n">_iterator</span><span class="p">())</span>
 
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">res</span> <span class="ow">in</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
 
 
 
@@ -694,8 +717,9 @@
                 <span class="n">split</span> <span class="o">=</span> <span class="p">(</span><span class="n">validation_split</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s1">'Invalid subset name: </span><span class="si">%s</span><span class="s1">;'</span>
-                    <span class="s1">'expected "training" or "validation"'</span> <span class="o">%</span> <span class="p">(</span><span class="n">subset</span><span class="p">,))</span>
+                    <span class="sa">f</span><span class="s1">'Invalid subset name: </span><span class="si">{</span><span class="n">subset</span><span class="si">}</span><span class="s1">; '</span>
+                    <span class="s1">'expected "training" or "validation"'</span>
+                <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">split</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">split</span> <span class="o">=</span> <span class="n">split</span>
@@ -913,7 +937,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">:</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-                    <span class="k">return</span> <span class="kc">None</span>
+                    <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">(</span><span class="s1">'The data generator has been stopped'</span><span class="p">)</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">retval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
                     <span class="k">break</span>
@@ -929,7 +953,7 @@
                         
                     <span class="k">while</span> <span class="n">index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="p">:</span>
                         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shutdown_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-                            <span class="k">return</span> <span class="kc">None</span> 
+                            <span class="k">raise</span> <span class="ne">StopIteration</span><span class="p">(</span><span class="s1">'The data generator has been stopped'</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">batch_data_lock</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
                     
                 <span class="n">retval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
@@ -962,6 +986,88 @@
         <span class="n">retval</span><span class="p">[</span><span class="s1">'batch_filenames'</span><span class="p">]</span> <span class="o">=</span> <span class="n">batch_filenames</span>
 
     <span class="k">return</span> <span class="n">retval</span>
+
+
+
+<span class="k">def</span> <span class="nf">_create_processing_pool</span><span class="p">(</span>
+    <span class="n">cores</span><span class="p">:</span><span class="nb">int</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> 
+    <span class="n">debug</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">disable_gpu_in_subprocesses</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span> 
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">joblib</span><span class="o">.</span><span class="n">Parallel</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">'_pool'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+        <span class="n">max_cores</span> <span class="o">=</span> <span class="n">multiprocessing</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="n">n_jobs</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">elif</span> <span class="n">cores</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">max_cores</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cores</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+            <span class="n">n_jobs</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">max_cores</span> <span class="o">*</span> <span class="n">cores</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">n_jobs</span> <span class="o">=</span> <span class="n">cores</span>
+        
+        <span class="n">n_jobs</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">max_cores</span><span class="p">)</span>
+
+        <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">'Using </span><span class="si">{</span><span class="n">n_jobs</span><span class="si">}</span><span class="s1"> of </span><span class="si">{</span><span class="n">max_cores</span><span class="si">}</span><span class="s1"> cores for data preprocessing</span><span class="se">\n</span><span class="s1">'</span>
+            <span class="s1">'(You may need to adjust the "ParallelAudioDataGenerator.cores" parameter if you are seeing performance issues)'</span>
+        
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug</span><span class="p">:</span>
+            <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'ParallelAudioDataGenerator.debug=True, using threading backend for data preprocessing'</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">disable_gpu_in_subprocesses</span><span class="p">:</span>
+            <span class="c1"># If configured, disable Tensorflow in the job subprocesses</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">joblib._parallel_backends</span> <span class="kn">import</span> <span class="n">ParallelBackendBase</span>
+                <span class="n">orig_prepare_worker_env</span> <span class="o">=</span>  <span class="n">ParallelBackendBase</span><span class="o">.</span><span class="n">_prepare_worker_env</span>
+                <span class="k">def</span> <span class="nf">_prepare_worker_env_monkey_patch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">):</span>
+                    <span class="n">env</span> <span class="o">=</span> <span class="n">orig_prepare_worker_env</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">)</span>
+                    <span class="n">env</span><span class="p">[</span><span class="s1">'CUDA_VISIBLE_DEVICES'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'-1'</span>
+                    <span class="k">return</span> <span class="n">env</span>
+                <span class="n">ParallelBackendBase</span><span class="o">.</span><span class="n">_prepare_worker_env</span> <span class="o">=</span> <span class="n">_prepare_worker_env_monkey_patch</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+
+        <span class="n">pool</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span> <span class="n">backend</span><span class="o">=</span><span class="s1">'threading'</span> <span class="k">if</span> <span class="n">debug</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span>
+        
+        <span class="n">pool</span><span class="o">.</span><span class="n">preprocessing_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+        <span class="n">pool</span><span class="o">.</span><span class="n">shutdown_flag</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+        <span class="n">pool</span><span class="o">.</span><span class="fm">__enter__</span><span class="p">()</span> <span class="c1"># pylint: disable=unnecessary-dunder-call</span>
+        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">_shutdown_processing_pool</span><span class="p">)</span>
+        <span class="nb">globals</span><span class="p">()[</span><span class="s1">'_pool'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool</span>
+
+    <span class="k">return</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">'_pool'</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_shutdown_processing_pool</span><span class="p">():</span>
+    <span class="k">if</span> <span class="s1">'_pool'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+        <span class="k">return</span>
+
+    <span class="n">atexit</span><span class="o">.</span><span class="n">unregister</span><span class="p">(</span><span class="n">_shutdown_processing_pool</span><span class="p">)</span>
+    <span class="n">pool</span><span class="p">:</span><span class="n">joblib</span><span class="o">.</span><span class="n">Parallel</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">'_pool'</span><span class="p">]</span>
+    <span class="k">del</span> <span class="nb">globals</span><span class="p">()[</span><span class="s1">'_pool'</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="n">pool</span><span class="o">.</span><span class="n">preprocessing_lock</span><span class="p">:</span>
+        <span class="n">pool</span><span class="o">.</span><span class="fm">__exit__</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+
+
+<span class="c1"># This is a work-around to reduce the verbosity of the generated exception logs</span>
+<span class="kn">from</span> <span class="nn">joblib.externals.loky</span> <span class="kn">import</span> <span class="n">_base</span> <span class="c1"># pylint: disable=wrong-import-order,ungrouped-imports</span>
+<span class="k">class</span> <span class="nc">Future</span><span class="p">(</span><span class="n">_base</span><span class="o">.</span><span class="n">_BaseFuture</span><span class="p">):</span> <span class="c1"># pylint: disable=protected-access</span>
+    
+    <span class="k">def</span> <span class="nf">_invoke_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">callback</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_done_callbacks</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">ShutdownExecutorError</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">'shutdown'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span>
+                    <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'exception calling callback for </span><span class="si">%r</span><span class="s1">'</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+
+<span class="n">_base</span><span class="o">.</span><span class="n">Future</span> <span class="o">=</span> <span class="n">Future</span>
 </pre></div>
 
           </article>
@@ -986,7 +1092,7 @@
               
           </div>
             Last updated on
-              Jun 28, 2022.
+              Aug 11, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

@@ -150,8 +150,9 @@ def quantize_model(
 
 
     # If we should generate an unquantized/float32 .tflite model
+    # NOTE: Run this IF a "representative_dataset" converter setting was provided
     float32_tflite_path = None
-    if output is None and tflite_converter_settings['generate_unquantized']:
+    if output is None and tflite_converter_settings['generate_unquantized'] and tflite_converter_settings['representative_dataset'] is not None:
         float32_tflite_path = mltk_model.unquantized_tflite_log_dir_path
         logger.info(f'Generating {float32_tflite_path}')
         float32_converter = tf.lite.TFLiteConverter.from_keras_model(keras_model)

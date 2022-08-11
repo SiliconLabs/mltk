@@ -64,3 +64,10 @@
 .. autoclass:: mltk.core.ImageDatasetMixin
    :members:
 ```
+
+## SshMixin
+
+```{eval-rst}
+.. autoclass:: mltk.core.model.mixins.ssh_mixin.SshMixin
+   :members:
+```

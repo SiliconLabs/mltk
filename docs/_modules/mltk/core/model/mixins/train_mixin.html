@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.model.mixins.train_mixin &#8212; MLTK 0.8.0 documentation</title>
+    <title>mltk.core.model.mixins.train_mixin &#8212; MLTK 0.9.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../index.html" title="MLTK 0.8.0 documentation"
+        <a href="../../../../../index.html" title="MLTK 0.9.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../_static/logo.png"
-                   alt="MLTK 0.8.0 documentation logo">
+                   alt="MLTK 0.9.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../index.html" title="MLTK 0.8.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../index.html" title="MLTK 0.9.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../index.html"
-       title="MLTK 0.8.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.9.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -449,7 +449,7 @@
 <span class="k">class</span> <span class="nc">TrainMixin</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">):</span>
     <span class="sd">"""Provides training properties and methods to the base :py:class:`~MltkModel`</span>
 <span class="sd">    </span>
-<span class="sd">    Refer to te `Model Training &lt;https://siliconlabs.github.io/mltk/docs/guides/model_training.html&gt;`_ guide for more details.</span>
+<span class="sd">    Refer to the `Model Training &lt;https://siliconlabs.github.io/mltk/docs/guides/model_training.html&gt;`_ guide for more details.</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>
@@ -1144,6 +1144,16 @@
 
         <span class="k">return</span> <span class="n">best_weights_path</span></div>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">train_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+        <span class="sd">"""Additional arguments to pass the the `model.fit &lt;https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit&gt;`_ API.</span>
+<span class="sd">        These keyword arguments will override the other model properties passed to fit().</span>
+<span class="sd">        """</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.kwargs'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
+    <span class="nd">@train_kwargs</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">train_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.kwargs'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
 
     <span class="k">def</span> <span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.build_model_function'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">CallableType</span><span class="p">)</span>
@@ -1161,7 +1171,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.early_stopping'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DictType</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.tflite_converter'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">DictType</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.on_training_complete'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">CallableType</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.on_save_keras_model'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">CallableType</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.on_save_keras_model'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">CallableType</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.kwargs'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">_build_model_placeholder</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">):</span>
@@ -1193,7 +1204,7 @@
               
           </div>
             Last updated on
-              Jun 28, 2022.
+              Aug 11, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

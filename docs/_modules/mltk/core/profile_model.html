@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.profile_model &#8212; MLTK 0.8.0 documentation</title>
+    <title>mltk.core.profile_model &#8212; MLTK 0.9.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.8.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.9.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.8.0 documentation logo">
+                   alt="MLTK 0.9.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.8.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.9.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.8.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.9.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -443,7 +443,7 @@
 <span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="n">fullpath</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">append_exception_msg</span>
 
-<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="n">MltkModel</span>
+<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">MltkModel</span><span class="p">,</span> <span class="n">load_tflite_model</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
 <span class="kn">from</span> <span class="nn">.profiling_results</span> <span class="kn">import</span> <span class="n">ProfilingModelResults</span><span class="p">,</span> <span class="n">ProfilingLayerResult</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_mltk_logger</span><span class="p">,</span> <span class="n">ArchiveFileNotFoundError</span><span class="p">)</span>
@@ -481,7 +481,7 @@
     <span class="n">accelerator</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">normalize_accelerator_name</span><span class="p">(</span><span class="n">accelerator</span><span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">model_name</span><span class="p">,</span> <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">_load_tflite_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="n">build</span><span class="p">)</span>
+        <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">load_tflite_model</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span> <span class="n">build</span><span class="o">=</span><span class="n">build</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">ArchiveFileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">append_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span>
             <span class="s1">'</span><span class="se">\n</span><span class="s1">Alternatively, add the --build option to profile the model without training it first'</span>
@@ -504,7 +504,7 @@
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
-    <span class="n">profiling_model_results</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">=</span> <span class="n">model_name</span> <span class="c1"># pylint: disable=protected-access</span>
+    <span class="n">profiling_model_results</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">filename</span> <span class="ow">or</span> <span class="s1">'my_model.tflite'</span><span class="p">)[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.tflite'</span><span class="p">)]</span> <span class="c1"># pylint: disable=protected-access</span>
 
     <span class="k">return</span> <span class="n">profiling_model_results</span></div>
 
@@ -738,70 +738,6 @@
     <span class="n">v</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span> <span class="o">*</span> <span class="n">multiplier</span><span class="p">)</span>
 
-
-<span class="k">def</span> <span class="nf">_load_tflite_model</span><span class="p">(</span>
-    <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
-    <span class="n">build</span><span class="p">:</span><span class="nb">bool</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">]:</span>
-    <span class="sd">"""Load a .tflite model file"""</span>
-
-    <span class="n">model_name</span> <span class="o">=</span> <span class="s1">'my_model'</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">filename</span><span class="p">:</span>
-            <span class="n">model_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">filename</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.tflite'</span><span class="p">)])</span>
-        
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        
-        <span class="k">if</span> <span class="n">build</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">'.tflite'</span><span class="p">,</span> <span class="s1">'.mltk.zip'</span><span class="p">)):</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Cannot use --build option with .tflite or .mltk.zip model argument. Must be model name or path to model specification (.py)'</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.tflite'</span><span class="p">):</span>
-            <span class="n">model_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.tflite'</span><span class="p">)])</span>
-
-        <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.mltk.zip'</span><span class="p">):</span>
-            <span class="kn">from</span> <span class="nn">.model.mixins.archive_mixin</span> <span class="kn">import</span> <span class="n">extract_file</span>
-
-            <span class="n">model_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.mltk.zip'</span><span class="p">)])</span>
-            <span class="k">if</span> <span class="n">model_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'-test'</span><span class="p">):</span>
-                <span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'-test'</span><span class="p">)]</span>
-                <span class="n">tflite_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.test.tflite'</span>
-            <span class="k">else</span><span class="p">:</span>
-                 <span class="n">tflite_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.tflite'</span>
-            <span class="n">model</span> <span class="o">=</span> <span class="n">extract_file</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">tflite_name</span><span class="p">)</span>
-
-        <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.h5'</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Must provide .tflite or .mltk.zip model file type'</span><span class="p">)</span>
-
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">):</span>
-        <span class="n">model_name</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">name</span>
-
-    <span class="k">if</span> <span class="n">build</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">.quantize_model</span> <span class="kn">import</span> <span class="n">quantize_model</span>
-
-        <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'--build option provided, building model rather than using trained model'</span><span class="p">)</span>
-        <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">quantize_model</span><span class="p">(</span>
-            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
-            <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">output</span><span class="o">=</span><span class="s1">'tflite_model'</span>
-        <span class="p">)</span>
-
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">):</span>
-        <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">model</span>
-        
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.tflite'</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Must provide path to .tflite or MltkModel or TfliteModel instance'</span><span class="p">)</span>
-        <span class="n">model_path</span> <span class="o">=</span> <span class="n">fullpath</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-        <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">TfliteModel</span><span class="o">.</span><span class="n">load_flatbuffer_file</span><span class="p">(</span><span class="n">model_path</span><span class="p">)</span>
-
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">):</span>
-        <span class="n">tflite_path</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">tflite_archive_path</span>
-        <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">TfliteModel</span><span class="o">.</span><span class="n">load_flatbuffer_file</span><span class="p">(</span><span class="n">tflite_path</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Must provide path to .tflite, MltkModel or TfliteModel instance'</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">tflite_model</span>
 </pre></div>
 
           </article>
@@ -826,7 +762,7 @@
               
           </div>
             Last updated on
-              Jun 28, 2022.
+              Aug 11, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

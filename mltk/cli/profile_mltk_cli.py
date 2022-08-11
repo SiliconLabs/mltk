@@ -75,7 +75,6 @@ If omitted, then attempt to automatically determine the serial COM port''',
     # Import all required packages here instead of at top
     # to help improve the CLI's responsiveness
     from mltk.core import (
-        load_mltk_model,
         profile_model,
         MltkModel,
     )
@@ -83,21 +82,6 @@ If omitted, then attempt to automatically determine the serial COM port''',
 
     start_time = time.time()
     logger = cli.get_logger(verbose=verbose)
-   
-    # If the filepath to a .tflite or .mltk.zip model file was provided
-    # then directly pass that to profile_model() 
-    if model.endswith('.tflite') or model.endswith('.mltk.zip'):
-        pass
-
-    # Otherwise, find the MLTK Model file
-    else:
-        try:
-            model = load_mltk_model(
-                model,  
-                print_not_found_err=True
-            )
-        except Exception as e:
-            cli.handle_exception('Failed to load model', e)
 
     accelerator = cli.parse_accelerator_option(accelerator)
 

@@ -153,8 +153,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
     from mltk.core import (
         TfliteModel,
         TfliteModelParameters,
-        load_mltk_model,
-        load_tflite_or_keras_model
+        load_tflite_model,
     )
 
     from mltk.utils import firmware_apps
@@ -184,24 +183,14 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
     accelerator = cli.parse_accelerator_option(accelerator)
 
-    # If the filepath to a .tflite model file was provided
-    if model.endswith('.tflite'):
-        model_path = fullpath(model)
-        tflite_model = TfliteModel.load_flatbuffer_file(model_path) 
-
-    # Otherwise, find the MLTK Model file
-    else:
-        try:
-            mltk_model = load_mltk_model(
-                model,  
-                print_not_found_err=True
-            )
-            tflite_model = load_tflite_or_keras_model(
-                mltk_model, 
-                model_type='tflite'
-            )
-        except Exception as e:
-            cli.handle_exception('Failed to load model', e)
+    try:
+        tflite_model = load_tflite_model(
+            model, 
+            print_not_found_err=True,
+            logger=logger
+        )
+    except Exception as e:
+        cli.handle_exception('Failed to load model', e)
 
     input_dtype = tflite_model.inputs[0].dtype
     platform = get_current_os() if not use_device else commander.query_platform()
@@ -700,8 +689,10 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         def _on_timeout():
             logger = cli.get_logger()
             logger.warning('Issuing CTRL+C\n')
-            send_signal(signal.SIGINT)
-        t = threading.Timer(7, _on_timeout)
+            send_signal(signal.SIGINT, pid=0)
+        t = threading.Timer(5, _on_timeout)
+        t.setDaemon(True)
+        t.setName('Ctrl+C Timer')
         t.start()
 
 

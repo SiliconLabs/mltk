@@ -19,12 +19,19 @@ from .system import get_username
 TEMP_BASE_DIR = f'{tempfile.gettempdir()}/{get_username()}/mltk'
 
 
-def fullpath(path : str) -> str:
+def fullpath(path : str, cwd:str=None) -> str:
     """Return the full, normalized path of the given path"""
-    path = os.path.expandvars(path)
-    path = os.path.expanduser(path)
-    path = os.path.normpath(path)
-    path = os.path.abspath(path)
+    orig_cwd = os.getcwd()
+    if cwd:
+        os.chdir(cwd)
+
+    try:
+        path = os.path.expandvars(path)
+        path = os.path.expanduser(path)
+        path = os.path.normpath(path)
+        path = os.path.abspath(path)
+    finally:
+        os.chdir(orig_cwd)
 
     # Return the filepath as it actually exists on the FS
     # If the path doesn't exist, then just return the normalized path
@@ -89,7 +96,6 @@ def create_dir(path:str):
 
 def create_tempdir(subdir='') -> str:
     """Create a temporary directory as <temp dir>/<username>/mltk"""
-    user_name = get_username()
     d = TEMP_BASE_DIR
     if subdir:
         subdir = subdir.replace('\\', '/')
@@ -149,7 +155,8 @@ def get_user_setting(name:str, default=None):
     """Return the value of a user setting if it exists
     
     User settings are defined in the file:
-    <user home>/.mltk/user_settings.yaml
+    Environment variable: MLTK_USER_SETTINGS_PATH
+    OR <user home>/.mltk/user_settings.yaml
 
     User settings include:
     - model_paths: list of directories to search for MLTK models
@@ -157,25 +164,54 @@ def get_user_setting(name:str, default=None):
         device: Device code
         serial_number: Adapter serial number
         ip_address: Adapter IP address
+
+    See https://siliconlabs.github.io/mltk/docs/other/settings_file.html
     
     """
-    user_settings_paths = fullpath('~/.mltk/user_settings.yaml')
-    if not os.path.exists(user_settings_paths):
+    user_settings_path = fullpath(os.environ.get('MLTK_USER_SETTINGS_PATH', '~/.mltk/user_settings.yaml')) 
+    if not os.path.exists(user_settings_path):
         return default
 
     try:
         # Import the YAML package here
         # in-case it's not installed yet
         import yaml
-        with open(user_settings_paths, 'r') as fp:
+        with open(user_settings_path, 'r') as fp:
             user_settings = yaml.load(fp, Loader=yaml.SafeLoader)
-    except:
+    except Exception as e:
+        if not '_printed_user_settings_error' in globals():
+            globals()['_printed_user_settings_error'] = True
+            print(f'WARN: Failed to parse {user_settings_path}, err: {e}')
         return default
 
     if user_settings and name in user_settings:
         return user_settings[name]
 
     return default
+
+
+def add_user_setting(name:str, value:object):
+    """"Add an entry to the user settings
+    
+    User settings are defined in the file:
+    <user home>/.mltk/user_settings.yaml
+    """
+    # Import the YAML package here
+    # in-case it's not installed yet
+    import yaml
+
+    user_settings_paths = fullpath('~/.mltk/user_settings.yaml')
+    if os.path.exists(user_settings_paths):
+        with open(user_settings_paths, 'r') as fp:
+            user_settings = yaml.load(fp, Loader=yaml.SafeLoader)
+    else:
+        user_settings = dict()
+
+    user_settings[name] = value 
+
+    with open(user_settings_paths, 'w') as f:
+        yaml.dump(user_settings, f, Dumper=yaml.SafeDumper)
+
 
 
 def remove_directory(path:str):

@@ -3,7 +3,7 @@ import os
 import zipfile
 
 import mltk
-from mltk.utils.path import create_tempdir, remove_directory
+from mltk.utils.path import (create_tempdir, remove_directory, fullpath)
 from mltk.core.utils import (get_mltk_logger, ArchiveFileNotFoundError)
 from .base_mixin import BaseMixin
 from ..model_attributes import MltkModelAttributesDecorator
@@ -177,6 +177,8 @@ def get_archive_extension(test:bool=False) -> str:
 
 def extract_file(archive_path: str, name: str, dest_dir:str = None) -> str:
     """Extract a file from the give archive"""
+
+    archive_path = fullpath(archive_path)
 
     if not os.path.exists(archive_path):
         raise ArchiveFileNotFoundError(f'Archive file not found: {archive_path}.\nHas the model been trained first?')

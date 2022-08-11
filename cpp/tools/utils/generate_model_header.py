@@ -3,7 +3,7 @@ import os
 import argparse
 import json
 
-from mltk.core.model import load_mltk_model
+from mltk.core.model import load_tflite_model
 from mltk.core.tflite_model import TfliteModel
 from mltk.core.tflite_micro import TfliteMicro
 from mltk.utils.bin2header import bin2header
@@ -31,22 +31,14 @@ def generate_model_header(
         accelerator: Name of accelerator for which to generate header
     """
 
-
-    if model.endswith('.tflite'):
-        tflite_path = fullpath(model)
-        if not os.path.exists(tflite_path):
-            cli.abort(msg=f'\n\n*** .tflite model file not found: {model}\n\n')
-
-    else:
-        try:
-            mltk_model = load_mltk_model(model, print_not_found_err=True)
-        except Exception as e:
-            cli.abort(msg=f'\n\nFailed to load MltkModel, err: {e}\n\n')
-
-        try:
-            tflite_path = mltk_model.tflite_archive_path
-        except Exception as e:
-            cli.handle_exception(f'Failed to get .tflite from {mltk_model.archive_path}', e)
+    try:
+        tflite_path = load_tflite_model(
+            model, 
+            print_not_found_err=True, 
+            return_tflite_path=True
+        )
+    except Exception as e:
+        cli.abort(msg=f'\n\nFailed to load tflite model, err: {e}\n\n')
 
     output = fullpath(output)
     old_generation_details = None

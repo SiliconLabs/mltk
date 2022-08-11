@@ -29,6 +29,7 @@ The basic sequence for training a model is:
 
 When training completes, a [model archive](./model_archive.md) file is generated in the same directory as the model training script and contains the trained model files and logs.
 
+__HINT:__ See [Training via SSH](./model_training_via_ssh.md) for how to quickly train your model in the cloud.
 
 ## Model Specification
 
@@ -187,6 +188,8 @@ For more details on the available command-line options, issue the command:
 ```shell
 mltk train --help
 ```
+
+__HINT:__ See [Training via SSH](./model_training_via_ssh.md) for how to quickly train your model in the cloud.
 
 The following are examples of how training can be invoked from the command-line:
 

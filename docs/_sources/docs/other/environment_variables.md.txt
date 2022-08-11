@@ -17,6 +17,10 @@ See [Model Search Path](../guides/model_search_path) for more details.
 Specify the directory path to the MLTK's cache directory.  
 If omitted, the MLTK defaults to the directory: `~/.mltk`
 
+## MLTK_USER_SETTINGS_PATH
+
+Specify the path to the [user_settings.yaml](./settings_file.md).  
+If omitted, the settings file points to `~/.mltk/user_settings.yaml`.
 
 ## MLTK_READONLY
 

@@ -40,6 +40,8 @@ bool TfliteMicroModel::load(
     unsigned runtime_buffer_size 
 )
 {
+    uint32_t allocated_buffer_size = 0;
+
     if(TFLITE_MICRO_VERSION != nullptr)
     {
         MLTK_INFO("Using Tensorflow-Lite Micro version: %s", TFLITE_MICRO_VERSION);
@@ -53,47 +55,86 @@ bool TfliteMicroModel::load(
 
     load_model_parameters(flatbuffer);
 
+
     // If no runtime buffer was specified,
     // then we need to allocate one now
     if(runtime_buffer == nullptr)
     {
-        // Attempt to retrieve the runtime size from the model flatbuffer parameters
-        // NOTE: If the runtime_buffer_size != 0 then we skip this an just search for the optimal size 
-        int model_runtime_size;
-        if(runtime_buffer_size == 0 && parameters.get("runtime_memory_size", model_runtime_size) && model_runtime_size > 256)
+        // If the runtime_buffer_size >=0, then we attempt to allocate a buffer now.
+        // If the runtime_buffer_size  < 0, then we skip down to finding the optimal run-time buffer size.
+        int model_runtime_size = 0;
+        if(runtime_buffer_size >= 0)
         {
-            uint32_t buffer_size = model_runtime_size;
-
-            MLTK_INFO("Runtime memory size from .tflite model: %d", buffer_size);
-#if INTPTR_MAX == INT64_MAX
-            // The buffer size embedded into the .tflite is meant for a 32-bit ARM MCU
-            // If we're running on a 64-bit system then add 1MB of additional memory
-            // to account for 64-bit pointer overhead
-            buffer_size += 1024*1024;
-#endif
-
-            // Allocate the buffer with the specified size
-            runtime_buffer = static_cast<uint8_t*>(malloc(buffer_size));
-            if(runtime_buffer == nullptr)
+            // If the runtime_buffer_size == 0, 
+            // then attempt to retrieve the size from the .tflite model parameters
+            if(runtime_buffer_size == 0)
             {
-                // If there isn't enough memory to allocate the buffer
-                // then fallback to the buffer size optimization algorithm
-                MLTK_WARN("Failed to allocate buffer with size: %d specified in .tflite model", buffer_size);
-            }
-            // Load the model with the buffer
-            else if(load_interpreter(flatbuffer, op_resolver, runtime_buffer, buffer_size))
-            {
-                // If we successfully loaded the model with the runtime memory size from the flatbuffer
-                // then we're done
-                runtime_buffer_size = model_runtime_size;
+                parameters.get("runtime_memory_size", model_runtime_size);
+
+                // If the size in the .tflite model parameters is < 0,
+                // then we just skip to finding the optimal buffer size
+                if(model_runtime_size < 0)
+                {
+                    model_runtime_size = 0;
+                }
+                else 
+                {
+                    MLTK_INFO("Runtime memory size from .tflite model: %d", model_runtime_size);
+                }
             }
             else 
             {
-                // Otherwise, if the specified buffer size was too small
-                // Then fallback to the buffer size optimization algorithm
-                MLTK_WARN("Failed to load model with buffer of size %d specified in .tflite model", runtime_buffer_size);
-                free(runtime_buffer);
-                runtime_buffer = nullptr;
+                // Otherwise, allocate the size given as an argument to this API
+                model_runtime_size = runtime_buffer_size;
+            }
+
+
+            // If we should attempt to allocate a buffer before searching for the optimal size
+            if(model_runtime_size > 0)
+            {
+                allocated_buffer_size = model_runtime_size;
+
+            
+    #if INTPTR_MAX == INT64_MAX
+                // The buffer size embedded into the .tflite is meant for a 32-bit ARM MCU
+                // If we're running on a 64-bit system then add 1MB of additional memory
+                // to account for 64-bit pointer overhead
+                allocated_buffer_size += 1024*1024;
+    #endif
+
+                // Allocate the buffer with the specified size
+                runtime_buffer = static_cast<uint8_t*>(malloc(allocated_buffer_size));
+                if(runtime_buffer == nullptr)
+                {
+                    // If there isn't enough memory to allocate the buffer
+                    // then fallback to the buffer size optimization algorithm
+                    MLTK_WARN("Failed to allocate buffer with size: %d specified in .tflite model", allocated_buffer_size);
+                }
+                // Load the model with the buffer
+                else if(load_interpreter(flatbuffer, op_resolver, runtime_buffer, allocated_buffer_size))
+                {
+                    // If we successfully loaded the model with the runtime memory size from the flatbuffer
+                    // then we're done
+                    runtime_buffer_size = model_runtime_size;
+                }
+                else 
+                {
+                    // Otherwise, if the specified buffer size was too small
+                    // Then fallback to the buffer size optimization algorithm
+                    MLTK_WARN("Failed to load model with buffer of size %d", model_runtime_size);
+                    free(runtime_buffer);
+                    runtime_buffer = nullptr;
+                }
+
+                // If a size was specified by the API call and we failed to load the model with it
+                // then just return the error
+                // NOTE: If a size was specified in the model parameters and it was too small,
+                //       then we just fallback to finding the optimal size below
+                if(runtime_buffer_size > 0 && runtime_buffer == nullptr)
+                {
+                    unload();
+                    return false;
+                }
             }
         }
 
@@ -111,29 +152,29 @@ bool TfliteMicroModel::load(
                 return false;
             }
 
-            uint32_t buffer_size = runtime_buffer_size;
+            allocated_buffer_size = runtime_buffer_size;
 
 #if INTPTR_MAX == INT64_MAX
-            // If we're running on a 64-bit system then add 1k of additional memory
+            // If we're running on a 64-bit system then add 1MB of additional memory
             // to account for 64-bit pointer overhead.
             // This is only used when allocating temporary tenesors (e.g. context.GetTensor()) 
-            buffer_size += 1024;
+            allocated_buffer_size += 1024*1024;
 #endif
 
             // Allocate the buffer
-            runtime_buffer = static_cast<uint8_t*>(malloc(buffer_size));
+            runtime_buffer = static_cast<uint8_t*>(malloc(allocated_buffer_size));
             if(runtime_buffer == nullptr)
             {
                 // If this fails, something is wrong with find_optimal_buffer_size() 
-                MLTK_WARN("Failed to allocate buffer with size: %d", buffer_size);
+                MLTK_WARN("Failed to allocate buffer with size: %d", allocated_buffer_size);
                 unload();
                 return false;
             }
             // Load the model with the buffer
-            else if(!load_interpreter(flatbuffer, op_resolver, runtime_buffer, buffer_size))
+            else if(!load_interpreter(flatbuffer, op_resolver, runtime_buffer, allocated_buffer_size))
             {
                 // If this fails, something is wrong with find_optimal_buffer_size() 
-                MLTK_WARN("Failed to allocate buffer with size: %d", buffer_size);
+                MLTK_WARN("Failed to allocate buffer with size: %d", allocated_buffer_size);
                 unload();
                 return false;
             }
@@ -144,10 +185,20 @@ bool TfliteMicroModel::load(
         // When the model is unloaded, the buffer will be automatically freed
         _runtime_buffer = runtime_buffer;
     }
+    // Else if a pre-allocated buffer was given to this API
     else 
     {
+        allocated_buffer_size = runtime_buffer_size;
+
+        // Verify the runtime_buffer_size is > 0
+        if(runtime_buffer_size <= 0)
+        {
+            MLTK_ERROR("Must specify runtime_buffer_size when providing pre-allocated buffer");
+            unload();
+            return false;
+        }
         // If a runtime buffer was provided, then load the interpreter with it now
-        if(!load_interpreter(flatbuffer, op_resolver, runtime_buffer, runtime_buffer_size))
+        else if(!load_interpreter(flatbuffer, op_resolver, runtime_buffer, runtime_buffer_size))
         {
             // Return the error on failure
             MLTK_ERROR("Failed to load model with runtime buffer size: %d", runtime_buffer_size);
@@ -169,7 +220,7 @@ bool TfliteMicroModel::load(
     {
         _model_details._accelerator = accelerator->name;
 #ifdef TFLITE_MICRO_SIMULATOR_ENABLED
-        accelerator->set_simulator_memory("sram", runtime_buffer, _model_details._runtime_memory_size);
+        accelerator->set_simulator_memory("sram", runtime_buffer, allocated_buffer_size); // Be sure to use the actually allocated buffer size used by this 64-bit program
         accelerator->set_simulator_memory("flash", (void*)flatbuffer, 2*1024*1024);
 #endif
     }

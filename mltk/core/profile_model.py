@@ -10,7 +10,7 @@ from mltk.utils.logger import get_logger, make_filelike
 from mltk.utils.path import fullpath
 from mltk.utils.python import append_exception_msg
 
-from .model import MltkModel
+from .model import (MltkModel, load_tflite_model)
 from .tflite_model import TfliteModel
 from .profiling_results import ProfilingModelResults, ProfilingLayerResult
 from .utils import (get_mltk_logger, ArchiveFileNotFoundError)
@@ -48,7 +48,7 @@ def profile_model(
     accelerator = TfliteMicro.normalize_accelerator_name(accelerator)
 
     try:
-        model_name, tflite_model = _load_tflite_model(model=model, build=build)
+        tflite_model = load_tflite_model(model=model, build=build)
     except ArchiveFileNotFoundError as e:
         append_exception_msg(e,
             '\nAlternatively, add the --build option to profile the model without training it first'
@@ -71,7 +71,7 @@ def profile_model(
             **kwargs
         )
 
-    profiling_model_results._model_name = model_name # pylint: disable=protected-access
+    profiling_model_results._model_name = (tflite_model.filename or 'my_model.tflite')[:-len('.tflite')] # pylint: disable=protected-access
 
     return profiling_model_results
 
@@ -305,67 +305,3 @@ def _line_to_int(line:str) -> int:
     v = float(line)
     return int(v * multiplier)
 
-
-def _load_tflite_model(
-    model: Union[str, MltkModel, TfliteModel],
-    build:bool
-) -> Tuple[str, TfliteModel]:
-    """Load a .tflite model file"""
-
-    model_name = 'my_model'
-
-    if isinstance(model, TfliteModel):
-        if model.filename:
-            model_name = os.path.basename(model.filename[:-len('.tflite')])
-        
-    elif isinstance(model, str):
-        
-        if build and model.endswith(('.tflite', '.mltk.zip')):
-            raise RuntimeError('Cannot use --build option with .tflite or .mltk.zip model argument. Must be model name or path to model specification (.py)')
-
-        if model.endswith('.tflite'):
-            model_name = os.path.basename(model[:-len('.tflite')])
-
-        elif model.endswith('.mltk.zip'):
-            from .model.mixins.archive_mixin import extract_file
-
-            model_name = os.path.basename(model[:-len('.mltk.zip')])
-            if model_name.endswith('-test'):
-                model_name = model_name[:-len('-test')]
-                tflite_name = f'{model_name}.test.tflite'
-            else:
-                 tflite_name = f'{model_name}.tflite'
-            model = extract_file(model, tflite_name)
-
-        elif model.endswith('.h5'):
-            raise ValueError('Must provide .tflite or .mltk.zip model file type')
-
-    elif isinstance(model, MltkModel):
-        model_name = model.name
-
-    if build:
-        from .quantize_model import quantize_model
-
-        get_mltk_logger().info('--build option provided, building model rather than using trained model')
-        tflite_model = quantize_model(
-            model=model,
-            build=True,
-            output='tflite_model'
-        )
-
-    elif isinstance(model, TfliteModel):
-        tflite_model = model
-        
-    elif isinstance(model, str):
-        if not model.endswith('.tflite'):
-            raise ValueError('Must provide path to .tflite or MltkModel or TfliteModel instance')
-        model_path = fullpath(model)
-        tflite_model = TfliteModel.load_flatbuffer_file(model_path)
-
-    elif isinstance(model, MltkModel):
-        tflite_path = model.tflite_archive_path
-        tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)
-    else:
-        raise ValueError('Must provide path to .tflite, MltkModel or TfliteModel instance')
-
-    return model_name, tflite_model

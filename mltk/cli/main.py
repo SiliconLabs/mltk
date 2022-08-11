@@ -32,6 +32,10 @@ def main():
     # these packages only if "main()" is actually being invoked
     import typer
     from mltk import cli 
+    from mltk.utils.system import send_signal
+    import signal
+    import atexit
+    import threading
 
     # Get the logger now so that we can redirect TF logs
     cli.get_logger(and_set_mltk_logger=False)
@@ -82,6 +86,11 @@ mltk --no-gpu train image_example1
     if not(len(sys.argv) == 2 and sys.argv[1] == '--version'):
         # Discover and import commands
         discover_and_import_commands(cli.root_cli)
+
+    # This will send the CTRL+Break signal to any subprocesses after 5s of the program exiting.
+    # This helps to ensure that the CLI does not hang due to processes not being cleaned up properly.
+    t = threading.Timer(5, send_signal, kwargs=dict(sig=signal.SIGTERM, pid=-1))
+    atexit.register(t.start)
 
     # Execute the command
     try:

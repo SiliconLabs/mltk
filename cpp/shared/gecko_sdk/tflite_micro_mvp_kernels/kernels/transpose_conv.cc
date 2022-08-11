@@ -336,7 +336,7 @@ TfLiteStatus Invoke(TfLiteContext* context, TfLiteNode* node)
 
   const auto input  = tflite::micro::GetEvalInput(context, node, kInputTensor);
   const auto filter = tflite::micro::GetEvalInput(context, node, kFilterTensor);
-  const auto bias   = NumInputs(node) == 3
+  const auto bias   = NumInputs(node) == 4
                       ? tflite::micro::GetEvalInput(context, node, kBiasTensor)
                       : nullptr;
   auto output       = tflite::micro::GetEvalOutput(context, node, kOutputTensor);

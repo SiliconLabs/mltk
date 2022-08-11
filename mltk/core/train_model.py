@@ -1,4 +1,4 @@
-from typing import Tuple, Union
+from typing import Union
 import logging
 import os
 import json
@@ -134,7 +134,7 @@ def train_model(
     epochs = _get_epochs(mltk_model, epochs=epochs, callbacks=callbacks, logger=logger)
     initial_epoch = _try_resume_training(mltk_model, keras_model=keras_model, epochs=epochs, resume_epoch=resume_epoch, logger=logger)
     try:
-        class_weights = _compute_class_weights(mltk_model, logger=logger)
+        class_weights = compute_class_weights(mltk_model, logger=logger)
     except Exception as e:
         class_weights = None
         logger.warning("Failed to compute class weights\nSet my_model.class_weights = 'none' to disable", exc_info=e)
@@ -147,8 +147,8 @@ def train_model(
         if TQDMProgressBar is not None and contains_class_type(callbacks, TQDMProgressBar):
             verbose = False
 
-    logger.info('Starting model training ...')
-    training_history = keras_model.fit(
+   
+    kwargs = dict(
         x=mltk_model.x,
         y=mltk_model.y,
         batch_size=mltk_model.batch_size,
@@ -165,6 +165,13 @@ def train_model(
         initial_epoch=initial_epoch,
         callbacks=callbacks,
         verbose=0 if verbose == False else 1,
+    )
+    kwargs.update(mltk_model.train_kwargs)
+    logger.debug(f'Train kwargs:\n{pprint.pformat(kwargs)}')
+    
+    logger.info('Starting model training ...')
+    training_history = keras_model.fit(
+        **kwargs
     )
 
     try:
@@ -369,7 +376,20 @@ def _try_resume_training(
     return checkpoint_epoch
 
 
-def _compute_class_weights(
+def compute_class_weights(
+    mltk_model: MltkModel, 
+    logger: logging.Logger
+) -> dict:
+    try:
+        class_weights = _compute_class_weights_unsafe(mltk_model, logger=logger)
+    except Exception as e:
+        class_weights = None
+        logger.warning("Failed to compute class weights\nSet my_model.class_weights = 'none' to disable", exc_info=e)
+
+    return class_weights
+
+
+def _compute_class_weights_unsafe(
     mltk_model: MltkModel, 
     logger: logging.Logger
 ) -> dict:

@@ -131,8 +131,7 @@ In this case, ONLY the .tflite will be programmed and the existing image_classif
     from mltk.core import (
         TfliteModel,
         TfliteModelParameters,
-        load_mltk_model,
-        load_tflite_or_keras_model
+        load_tflite_model
     )
     from mltk.core.preprocess.image.image_database import UniqueImageDatabase
 
@@ -165,26 +164,16 @@ In this case, ONLY the .tflite will be programmed and the existing image_classif
     accelerator = cli.parse_accelerator_option(accelerator)
     platform = commander.query_platform()
 
-    # If the filepath to a .tflite model file was provided
-    if model.endswith('.tflite'):
-        model_path = fullpath(model)
-        tflite_model = TfliteModel.load_flatbuffer_file(model_path) 
+    try:
+        tflite_model = load_tflite_model(
+            model, 
+            print_not_found_err=True,
+            logger=logger
+        )
+    except Exception as e:
+        cli.handle_exception('Failed to load model', e)
 
-    # Otherwise, find the MLTK Model file
-    else:
-        try:
-            mltk_model = load_mltk_model(
-                model,  
-                print_not_found_err=True
-            )
-            tflite_model = load_tflite_or_keras_model(
-                mltk_model, 
-                model_type='tflite'
-            )
-        except Exception as e:
-            cli.handle_exception('Failed to load model', e)
 
-    
 
     ###############################################################
     def _start_ctrl_c_timer():

@@ -101,8 +101,16 @@ static bool load_model(TfliteMicroModel &model, logging::Logger& logger)
 
     logger.info("Loading model");
 
-    // Attempt to load the model by finding the optimal tensor arena size
-    if(!model.load(tflite_flatbuffer, op_resolver, nullptr, -1))
+#ifdef MLTK_RUNTIME_MEMORY_SIZE
+    // If the runtime memory size was defined a compile-time
+    // then use that
+    int runtime_memory_size = MLTK_RUNTIME_MEMORY_SIZE;
+#else 
+    // Otherwise, Attempt to load the model by finding the optimal tensor arena size
+    int runtime_memory_size = -1;
+#endif
+
+    if(!model.load(tflite_flatbuffer, op_resolver, nullptr, runtime_memory_size))
     {
         logger.info("Failed to load model");
         return false;

@@ -8,7 +8,14 @@ import os
 import copy
 
 import numpy as np
-import librosa
+
+from mltk.utils.python import append_exception_msg
+try:
+    import librosa
+except Exception as e:
+    if os.name != 'nt' and 'sndfile library not found' in f'{e}':
+        append_exception_msg(e, '\n\nTry running: sudo apt-get install libsndfile1\n')
+    raise
 
 from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings, AudioFeatureGenerator
 from .directory_iterator import ParallelDirectoryIterator

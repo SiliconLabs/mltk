@@ -16,7 +16,7 @@ from ..model_utils import KerasModel
 class TrainMixin(BaseMixin):
     """Provides training properties and methods to the base :py:class:`~MltkModel`
     
-    Refer to te `Model Training <https://siliconlabs.github.io/mltk/docs/guides/model_training.html>`_ guide for more details.
+    Refer to the `Model Training <https://siliconlabs.github.io/mltk/docs/guides/model_training.html>`_ guide for more details.
     """
 
     @property
@@ -711,6 +711,16 @@ class TrainMixin(BaseMixin):
 
         return best_weights_path
 
+    @property
+    def train_kwargs(self) -> dict:
+        """Additional arguments to pass the the `model.fit <https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit>`_ API.
+        These keyword arguments will override the other model properties passed to fit().
+        """
+        return self._attributes.get_value('train.kwargs', default={})
+    @train_kwargs.setter
+    def train_kwargs(self, v:dict):
+        self._attributes['train.kwargs'] = v
+
 
     def _register_attributes(self):
         self._attributes.register('train.build_model_function', dtype=CallableType)
@@ -729,6 +739,7 @@ class TrainMixin(BaseMixin):
         self._attributes.register('train.tflite_converter', dtype=DictType)
         self._attributes.register('train.on_training_complete', dtype=CallableType)
         self._attributes.register('train.on_save_keras_model', dtype=CallableType)
+        self._attributes.register('train.kwargs', dtype=dict)
 
 
 def _build_model_placeholder(mltk_model):

@@ -546,7 +546,7 @@ static logging::Logger& get_logger(logging::Logger* logger)
         logger = logging::get("MltkProfiler");
         if(logger == nullptr)
         {
-            logger = logging::create("MtlkProfiler");
+            logger = logging::create("MltkProfiler");
         }
     }
 

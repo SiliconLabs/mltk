@@ -2,6 +2,7 @@
 #define SL_EVENT_HANDLER_H
 
 void sl_platform_init(void);
+void sl_kernel_start(void);
 void sl_driver_init(void);
 void sl_service_init(void);
 void sl_stack_init(void);

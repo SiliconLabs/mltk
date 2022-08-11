@@ -1,11 +1,10 @@
-import sys
 import os
-import typer
-import pytest
 from contextlib import redirect_stdout
 
+import pytest
+import typer
+
 from mltk import cli
-from mltk.utils.path import clean_directory
 
 
 @cli.root_cli.command('utest')
@@ -41,7 +40,7 @@ Comma separated list of unit test types, options are:
     # to help improve the CLI's responsiveness
     from mltk import MLTK_DIR, MLTK_ROOT_DIR
     from mltk.utils.python import as_list
-    from mltk.utils.test_helper import get_logger, logger_dir
+    from mltk.utils.test_helper import get_logger, pytest_results_dir
     from mltk.utils.path import create_tempdir, clean_directory
 
     all_types = {'all', 'cli', 'api', 'model', 'model-full', 'cpp', 'studio'}
@@ -70,23 +69,23 @@ Comma separated list of unit test types, options are:
 
     if test_type & {'all', 'cpp'}:
         if os.path.exists(cpp_tests_dir):
-            test_dirs.append(f'../cpp/tools/tests/test_build_apps.py')
-            test_dirs.append(f'../cpp/tools/tests/test_build_cli.py')
+            test_dirs.append('../cpp/tools/tests/test_build_apps.py')
+            test_dirs.append('../cpp/tools/tests/test_build_cli.py')
         elif (test_type & {'cpp'}):
             cli.abort(msg=f'{cpp_tests_dir} does not exist. Did you clone the MLTK git repo?')
 
     if test_type & {'all', 'studio'}:
         if os.path.exists(cpp_tests_dir):
-            test_dirs.append(f'../cpp/tools/tests/test_simplicity_studio.py')
+            test_dirs.append('../cpp/tools/tests/test_simplicity_studio.py')
         elif (test_type & {'studio'}):
             cli.abort(msg=f'{cpp_tests_dir} does not exist. Did you clone the MLTK git repo?')
 
     test_dirs = as_list(test_dirs)
 
-    clean_directory(logger_dir)
+    clean_directory(pytest_results_dir)
     logger = get_logger('utest_cli', console=True)
     logger.set_terminator('')
-    logger.info(f'Generating logs at: {logger_dir}\n')
+    logger.info(f'Generating logs at: {pytest_results_dir}\n')
 
     if clear_cache:
         utest_cache_dir = create_tempdir('utest_cache')
@@ -94,14 +93,14 @@ Comma separated list of unit test types, options are:
         os.environ['MLTK_CACHE_DIR'] = utest_cache_dir
         logger.warning(f'Setting MLTK_CACHE_DIR="{os.environ["MLTK_CACHE_DIR"]}"\n')
     else:
-        logger.warning(f'NOT clearing MLTK cache, using existing cache at ~/.mltk\n')
+        logger.warning('NOT clearing MLTK cache, using existing cache at ~/.mltk\n')
     
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # Disable the GPU as well
     cli.print_info('Disabling usage of the GPU, e.g.: CUDA_VISIBLE_DEVICES=-1')
 
     cmd = []
     cmd.append(f'--rootdir={MLTK_ROOT_DIR}')
-    cmd.append(f'--html-report={logger_dir}/report.html')
+    cmd.append(f'--html-report={pytest_results_dir}/report.html')
     cmd.append('--color=yes')
     cmd.extend(['-o', 'log_cli=true'])
     if verbose:
@@ -122,5 +121,5 @@ Comma separated list of unit test types, options are:
     with redirect_stdout(logger):
         retcode = pytest.main(cmd)
     
-    logger.info(f'\n\nFor more details, see: {logger_dir}\n')
+    logger.info(f'\n\nFor more details, see: {pytest_results_dir}\n')
     cli.abort(code=retcode)

@@ -181,7 +181,7 @@ def redirect_stream(
             os.close(stream_fd)
         except:
             pass
-        pipe_redirect_thread.join()
+        pipe_redirect_thread.join(timeout=1)
 
         try:
             os.close(read_stream)

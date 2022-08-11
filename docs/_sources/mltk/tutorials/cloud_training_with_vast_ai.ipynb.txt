@@ -1,0 +1,1306 @@
+{
+
+ "cells": [
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "# Cloud Training with vast.ai\n",
+
+    "\n",
+
+    "Training a machine learning model can be a very computationally expensive operation which can take hours (if not days) to complete on a typical laptop or desktop.\n",
+
+    "As such, many third-parties offer solutions that allow for renting large cloud-connected machines with lots of GPUs, CPUs, and RAM which can greatly improvement model training times.\n",
+
+    "\n",
+
+    "One such third-party is [vast.ai](https://vast.ai/):\n",
+
+    "\n",
+
+    "> Vast.ai is a cloud computing, matchmaking and aggregation service focused on lowering the price of compute-intensive workloads. Our software allows anyone to easily become a host by renting out their hardware. Our web search interface allows users to quickly find the best deals for compute according to their specific requirements.\n",
+
+    "\n",
+
+    "This tutorial describes how to use the [mltk ssh train](../../docs/guides/model_training_via_ssh.md) command to train a model on [vast.ai](https://vast.ai/). \n",
+
+    "With this, you can develop your model locally then quickly and seamlessly train it in the cloud, reducing the training time by 10x or more.\n",
+
+    "\n",
+
+    "__NOTE:__ While this tutorial shows how to train a model using [vast.ai](https://vast.ai/), the [mltk ssh train](../../docs/guides/model_training_via_ssh.md) command with work with _any_ Linux-based SSH server."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Disclaimer\n",
+
+    "\n",
+
+    "__CAUTION:__ [vast.ai](https://vast.ai) is not free! A credit card is required. [vast.ai](https://vast.ai/) is a paid, third-party service that is not affiliated with Silicon Labs. Silicon Labs is not responsible for any losses incurred while using this software. Refer to the MLTK [License](https://github.com/SiliconLabs/mltk/blob/master/LICENSE.md) for the terms of use of this software.\n",
+
+    "\n",
+
+    "The cost of training a model is dependent on:  \n",
+
+    "- The chosen cloud machine. Some machines can cost $0.20/hr while others may cost $9.00/hr\n",
+
+    "- The amount of time the machine is in use (billed by the second)\n",
+
+    "\n",
+
+    "Refer to the vast.ai [FAQ](https://vast.ai/faq/#Billing) for more details about how billing works.\n",
+
+    "\n",
+
+    "__In this tutorial, we credit our account with $10__ which is more than enough to train the [keyword_spotting_on_off_v2](../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.md) model in less than one hour (note that on typical laptops, it can take 12hr+ to train this model)."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Quick Links\n",
+
+    "\n",
+
+    "- [Model Training via SSH Guide](../../docs/guides/model_training_via_ssh.md) - Guide for using the `mltk ssh` command-line\n",
+
+    "- [vast.ai FAQ](https://vast.ai/faq/) - vast.ai frequently asked questions\n",
+
+    "- [MLTK Installation](https://siliconlabs.github.io/mltk/docs/installation.html#standard-python-package) - Install the MLTK"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Overview\n",
+
+    "\n",
+
+    "The basic flow for training a model in the cloud is as as follows:  \n",
+
+    "![](../../docs/img/model_training_via_ssh.png)\n",
+
+    "\n",
+
+    "1. Create a [model specification](../../docs/guides/model_specification.md) on a local machine\n",
+
+    "2. Invoke the command: `mltk ssh train my_model`, which will:  \n",
+
+    "   a. Open a secure connection to a remote machine  \n",
+
+    "   b. Upload all necessary files to the remote machine  \n",
+
+    "3. Invoke the [train](../../docs/guides/model_training.md) command on the remote machine\n",
+
+    "4. After training completes on the remote machine, the [model archive](../../docs/guides/model_archive.md) and any other training files are downloaded to the local machine\n",
+
+    "\n",
+
+    "So basically, develop the model on the local machine, quickly train it on a cloud machine, and all training results appear on the local machine as if the model had been trained locally."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### About vast.ai\n",
+
+    "\n",
+
+    "From the [FAQ](https://vast.ai/faq/):\n",
+
+    "\n",
+
+    "#### What is Vast.ai?\n",
+
+    "\n",
+
+    "> Vast.ai is a cloud computing, matchmaking and aggregation service focused on lowering the price of compute-intensive workloads. Our software allows anyone to easily become a host by renting out their hardware. Our web search interface allows users to quickly find the best deals for compute according to their specific requirements.\n",
+
+    "\n",
+
+    "#### How does it work in a nutshell?\n",
+
+    "\n",
+
+    "> Hosts download and run our management software, list their machines, configure prices and set any default jobs. \n",
+
+    "> Clients then find suitable machines using our flexible search interface, rent their desired machines, and finally run commands or start SSH sessions with a few clicks.\n",
+
+    "\n",
+
+    "#### How do you protect my data from other clients?\n",
+
+    "\n",
+
+    "> Clients are isolated to unprivileged docker containers and only have access to their own data.\n",
+
+    "\n",
+
+    "#### How do you protect my data from providers?\n",
+
+    "\n",
+
+    "> There are many providers on Vast.ai, ranging from tier 4 datacenters with extensive physical and operational security down to individual hobbyists renting out a few machines in their home. \n",
+
+    "> Our vetted datacenter partners can provide data security similar to other large cloud providers. If data security is important for your use case, you may want to rent only from our datacenter partners.\n",
+
+    ">\n",
+
+    "> Even though our smaller community providers generally do not have datacenter level physical or operational security, they have little to gain and much to lose from stealing customer data. \n",
+
+    "> It can take months for providers to accumulate trust and verified status on Vast. These verified providers are thus incentivized to maintain their reputational standing just like larger cloud providers. \n",
+
+    "> Hosts generally have many different clients and there are significant costs to identifying, saving, copying, and exploiting any interesting datasets, let alone any particular client's data. You can also roughly see the relative age of a provider by their ID.\n",
+
+    "\n",
+
+    "#### How does billing work?\n",
+
+    "\n",
+
+    "> Once you enter a credit card and an email address and both are verified, you will receive a small amount of free test credit. \n",
+
+    "> Then you can increase your credit balance using one time payments with the add credit button. Whenver your credit balance hits zero or below, your instances will be stopped automatically, but not destroyed.\n",
+
+    ">\n",
+
+    "> You are still charged storage costs for stopped instances, so it is important to destroy instances when you are done using them.\n",
+
+    ">\n",
+
+    "> Your credit card will be automatically charged periodically to pay off any outstanding negative balance.\n",
+
+    "\n",
+
+    "#### How does pricing work?\n",
+
+    "\n",
+
+    "> There are seperate prices and charges for 1.) base active rental costs, 2.) storage costs, and 3.) bandwidth costs. You are charged the base active rental cost for every second your instance is in the active/connected state. You are charged the storage cost (which depends on the size of your storage allocation) for every single second your instance exists, regardless of what state it is in: whether it is active or inactive, online or offline, functional or broken. Stopping an instance does not avoid storage costs. You are charged bandwidth prices for every byte sent or received to or from the instance, regardless of what state it is in. The prices for base rental, storage, and bandwidth vary considerably from machine to machine, so make sure to check them.\n",
+
+    "\n",
+
+    "#### Why should I trust vast.ai with my credit card info?\n",
+
+    "\n",
+
+    "> You don't need to: Vast.ai does not see, store or process your credit card numbers, they are passed directly to [Stripe](https://stripe.com/)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Contents\n",
+
+    "\n",
+
+    "This tutorial is divided into the following sections:  \n",
+
+    "1. [Create an SSH keypair](#create-an-ssh-keypair)\n",
+
+    "2. [Create a vast.ai account](#create-a-vastai-account)\n",
+
+    "3. [Select a cloud machine](#select-a-cloud-machine)\n",
+
+    "4. [Configure settings](#configure-settings)\n",
+
+    "5. [Develop the model](#develop-a-model)\n",
+
+    "6. [Train the model in the cloud](#train-model-in-cloud)\n",
+
+    "7. [Shutdown cloud machine](#shutdown-cloud-instance)\n",
+
+    "8. [Next steps after training the model](#next-steps)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### MLTK Installation\n",
+
+    "\n",
+
+    "To use this tutorial, the latest MLTK must be installed on your local machine.\n",
+
+    "\n",
+
+    "Refer to the \"Standard Python Package\" [Installation Guide](https://siliconlabs.github.io/mltk/docs/installation.html#standard-python-package) for more details.\n",
+
+    "\n",
+
+    "After installing the MLTK, the `mltk` command should be able on your local command prompt. You may confirm this by issuing the command:\n",
+
+    "\n",
+
+    "```shell\n",
+
+    "mltk --help\n",
+
+    "```"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Create an SSH Keypair\n",
+
+    "\n",
+
+    "To securely log into the remote server, we first need to generate an SSH [keypair](https://wiki.archlinux.org/title/SSH_keys).\n",
+
+    "\n",
+
+    "The details of creating and distributing the keypair are out-of-scope for this document, however, it is important to note the following:  \n",
+
+    "- A keypair consists of one __private key__ and one __public key__\n",
+
+    "- The __private key__ resides on the __local machine__, its contents must be securely stored (i.e. do not share it with others)\n",
+
+    "- The __public key__ resides on the __remote machine__, its contents need not be secure (i.e. it can be copied & pasted anywhere)\n",
+
+    "\n",
+
+    "Use the following MLTK command to generate an [Ed25519](https://ed25519.cr.yp.to/) SSH keypair:\n",
+
+    "\n",
+
+    "```shell\n",
+
+    "mltk ssh-keygen vast_ai\n",
+
+    "```\n",
+
+    "\n",
+
+    "This will generate the public/private keys on your local machine at:\n",
+
+    "- ~/.ssh/id_vast_ai\n",
+
+    "- ~/.ssh/id_vast_ai.pub\n",
+
+    "\n",
+
+    "It will also print the contents of the public key. Note the public key's contents as we'll need it in the [next section](#cloud-training-with-vastai).\n",
+
+    "\n",
+
+    "__NOTE:__ `~` is your user \"home\" directory. On Windows, this typically points to: `C:\\Users\\<user name>` where `<user name>` is your Windows user name."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Create a vast.ai Account\n",
+
+    "\n",
+
+    "To create a [vast.ai](https://vast.ai/) account you will need the following:\n",
+
+    "  \n",
+
+    "1. Email address\n",
+
+    "2. SSH public key (see previous section [Create an SSH Keypair](#create-an-ssh-keypair))\n",
+
+    "3. Credit card"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Create new account\n",
+
+    "\n",
+
+    "First, we need to create a new [vast.ai](https://vast.ai/console/account/) account.\n",
+
+    "\n",
+
+    "![](../../docs/img/vastai_create_account.gif)  \n",
+
+    "\n",
+
+    "1. Open your web-browser to: [https://vast.ai/console/account/](https://vast.ai/console/account/)\n",
+
+    "2. In the center dialog, enter you email and chose a new password, then click the `CREATE!` button\n",
+
+    "3. Check your email and click the verification link that was sent from vast.ai (Please be patient, this may take a moment)\n",
+
+    "\n",
+
+    "__NOTE:__ You may need to contact the vast.ai support (black button on the bottom-right of [vast.ai](https://vast.ai/console/account/)) if you do not receive an email after a couple minutes.\n",
+
+    "Some email addresses may be automatically flagged as fraudulent and blocked. In this case, vast.ai support will have to manually send the verification link."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Add public SSH key to account\n",
+
+    "\n",
+
+    "Next, we need to add our public key from the [previous section](#create-an-ssh-keypair) to the vast.ai account.\n",
+
+    "\n",
+
+    "__NOTE:__ You may obtain the public key by viewing the file: `~/.ssh/id_vast_ai.pub` (or similar) in a text editor.\n",
+
+    "The contents of the file should look similar to:  \n",
+
+    "```\n",
+
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIBqHiSAu/Bhj7Z6HpOQE0gx/EfjAu27AiM738c4bYOJw vast_ai\n",
+
+    "```\n",
+
+    "\n",
+
+    "![](../../docs/img/vastai_set_ssh_key.gif)  \n",
+
+    "\n",
+
+    "1. On the left sidebar of [vast.ai](https://vast.ai/console/account/), click the `Account` entry\n",
+
+    "2. In the `Change SSH Key` section, paste your __SSH public key__ into the text field\n",
+
+    "3. Then click the `SET SSH KEY` button"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Add credit to account\n",
+
+    "\n",
+
+    "Next, we need to add a credit to the account.\n",
+
+    "\n",
+
+    "__NOTE:__ For this tutorial, we only use __$10__.\n",
+
+    "\n",
+
+    "![](../../docs/img/vastai_add_credit.gif) \n",
+
+    "\n",
+
+    "1. On the left sidebar of [vast.ai](https://vast.ai/console/billing/), click the `Billing` entry\n",
+
+    "2. In the `Payment Sources` section, click the `ADD CARD` button\n",
+
+    "3. Enter your credit card info in the popup dialog\n",
+
+    "4. In the `Payment Sources` section, click the `ADD CREDIT` button\n",
+
+    "5. Enter `10.00` for \"Amount of credit to add\", then click the `ADD CREDIT ONCE` button\n",
+
+    "\n",
+
+    "Once complete, you should see that you have $10.00 of credit on the top-right of the vast.ai webpage.\n",
+
+    "\n",
+
+    "#### How does billing work?\n",
+
+    "\n",
+
+    "Per the vast.ai [FAQ](https://vast.ai/faq/#Billing)\n",
+
+    "\n",
+
+    "> Once you enter a credit card and an email address and both are verified, you will receive a small amount of free test credit. Then you can increase your credit balance using one time payments with the add credit button. Whenver your credit balance hits zero or below, your instances will be stopped automatically, but not destroyed.\n",
+
+    ">  \n",
+
+    "> You are still charged storage costs for stopped instances, so it is important to destroy instances when you are done using them.\n",
+
+    ">  \n",
+
+    "> Your credit card will be automatically charged periodically to pay off any outstanding negative balance."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Configure instance image\n",
+
+    "\n",
+
+    "Next, we need to configure the default software that gets loaded onto the cloud machine upon startup.  \n",
+
+    "For our purposes, we need Tensorflow and the latest GPU drivers.\n",
+
+    "\n",
+
+    "![](../../docs/img/vastai_config_image.gif) \n",
+
+    "\n",
+
+    "1. On the left sidebar of [vast.ai](https://vast.ai/console/create/), select the `Create` entry\n",
+
+    "2. In the `Instance Configuration` section on the top-left, click the `EDIT IMAGE & CONFIG..` button\n",
+
+    "3. In the dialog that appears, select the `tensorflow/tensorflow` entry\n",
+
+    "4. Then click the `SELECT` button on the bottom of the dialog\n",
+
+    "\n",
+
+    "That's it! Now, when a cloud instance is created (see the [next section](#select-a-cloud-machine)), it will automatically come with Tensorflow and the necessary GPU drivers."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Select a Cloud Machine\n",
+
+    "\n",
+
+    "With the [vast.ai](https://vast.ai/console/create/) account configured, it is now time to select which machine we want to use:\n",
+
+    "\n",
+
+    "![](../../docs/img/vastai_select_machine.gif) \n",
+
+    "\n",
+
+    "1. On the left sidebar of [vast.ai](https://vast.ai/console/create/), select the `Create` entry\n",
+
+    "2. This will list all the machines available to rent\n",
+
+    "3. Use the sliders on the left to narrow the search (see the [Notes about selecting a machine](#notes-about-selecting-a-machine) section for more details)\n",
+
+    "4. When you find the desired machine, click the `RENT` button, which will start an instance on the machine\n",
+
+    "5. On the left sidebar of [vast.ai](https://vast.ai/console/instances/), select the `Instances` entry\n",
+
+    "6. Your instance from step 4) should be visible, click the blue `>_` button on the top-right  \n",
+
+    "   This should display a dialog that looks something like: (The exact values will be different)  \n",
+
+    "   ```\n",
+
+    "   ssh -p 35023 root@ssh4.vast.ai -L 8080:localhost:8080\n",
+
+    "   ```\n",
+
+    "   These are two things to note:\n",
+
+    "   - The SSH port, in this example, `35023`\n",
+
+    "   - The SSH username & hostname, in this example, `root@ssh4.vast.ai`  \n",
+
+    "   Save these values as well will need them in the [next section](#configure-settings)\n",
+
+    "7. __Be sure to shutdown the instance when you are done training the model!__  \n",
+
+    "   You will be charged for as long as the instance is running.   \n",
+
+    "   You must manually shutdown the instance when you are finished with it.  \n",
+
+    "   The instance can be shutdown by selecting the `trashcan` icon of your instance.   \n",
+
+    "   __NOTE:__ All data will be lost on the remote machine when the instance is shutdown.\n",
+
+    "\n",
+
+    "### SSH Client Login\n",
+
+    "\n",
+
+    "Assuming the remote instance is active, you should be able to log into the machine using a standard [SSH client](https://www.openssh.com/), e.g.:\n",
+
+    "\n",
+
+    "```shell\n",
+
+    "ssh <host> -p <port> -i ~/.ssh/id_vast_ai\n",
+
+    "```\n",
+
+    "\n",
+
+    "Where `<port>` and `<host>` may be determined in step 6) from above.  \n",
+
+    "And `~/.ssh/id_vast_ai` is the __private key__ associated to the __public key__ configured in the [Add Public Key to Account](#add-public-ssh-key-to-account) section.\n",
+
+    "\n",
+
+    "\n",
+
+    "Once logged in, you may run any Linux command on the remote machine.  \n",
+
+    "__Hint:__ You can also use Visual Studio Code's [Remote SSH](https://code.visualstudio.com/docs/remote/ssh) feature to directly develop on the remote machine.\n",
+
+    "\n",
+
+    "\n",
+
+    "### Notes about selecting a machine\n",
+
+    "\n",
+
+    "[vast.ai](https://vast.ai/console/create/) is useful because it provides a wide range of machines for rent.   \n",
+
+    "Typically, the more resources (GPUs, CPUs, RAM) a machine has the more expensive it is.  \n",
+
+    "So, the goal is to determine the lower limit of resources you need to efficiently train your model.\n",
+
+    "\n",
+
+    "While [vast.ai](https://vast.ai/console/create/) provides many different search criteria, usually the most important are:\n",
+
+    "- `$/Hour` - Determines how expensive it will be to train the model\n",
+
+    "- `GPU Count` - The number of GPUs used to train the model\n",
+
+    "- `CPU Cores` - The number of processing cores, typically used for data preprocessing (e.g. data augmentation)\n",
+
+    "- `Max Instance Duration` - The maximum amount of time you may rent the machine. Typically, the smaller this value the cheaper the machine. However, it should be large enough to completely train the model. \n",
+
+    "\n",
+
+    "#### Note about GPU Count\n",
+
+    "\n",
+
+    "Most models that are able to run on an embedded device do not have that many trainable parameters. \n",
+
+    "Thus, 1-2 \"mid-range\" GPUs is all that is needed to efficiently train the model.\n",
+
+    "\n",
+
+    "Typically, adding more than 2 GPUs will not noticeably improve the model training time \n",
+
+    "(again, this is largely dependent on the model that is being trained).\n",
+
+    "\n",
+
+    "#### Note about CPU Count\n",
+
+    "\n",
+
+    "Many times, the CPU count can be the bottleneck for the model training time.  \n",
+
+    "If the model uses extensive data augmentations, then it could take longer to generate the augmented training data than it does to train the model on the GPU(s).\n",
+
+    "\n",
+
+    "To help throughput, the MLTK features two python classes:\n",
+
+    "- [ParallelImageDataGenerator](../../docs/python_api/data_preprocessing/image_data_generator.md)\n",
+
+    "- [ParallelAudioDataGenerator](../../docs/python_api/data_preprocessing/audio_data_generator.md)\n",
+
+    "\n",
+
+    "These classes parallel process the data augmentations across the available CPUs cores.  \n",
+
+    "So, the more CPU cores there are, the faster the augmented training data is able to be generated, and thus the faster the model is able to be trained.\n",
+
+    "\n",
+
+    "__NOTE:__ Not all CPUs are the same! Some cores execute much faster than others. It is recommended to use `i7` or better."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Configure Settings\n",
+
+    "\n",
+
+    "We need to configure the file: [~/.mltk/user_settings.yaml](../../docs/other/settings_file.md)\n",
+
+    "\n",
+
+    "Create or modify the file: \n",
+
+    "- Windows -> `C:\\Users\\<user name>\\.mltk\\user_settings.yaml`\n",
+
+    "- Linux -> `~/.mltk/user_settings.yaml`\n",
+
+    "\n",
+
+    "To this file, add the following:\n",
+
+    "\n",
+
+    "```yaml\n",
+
+    "ssh:\n",
+
+    "    create_venv: false \n",
+
+    "    startup_cmds:\n",
+
+    "    - pip install wheel silabs-mltk\n",
+
+    "    - sudo apt-get update\n",
+
+    "    - sudo apt install -y p7zip-full libsndfile1\n",
+
+    "```\n",
+
+    "\n",
+
+    "This tells the [mltk ssh train](../../docs/guides/model_training_via_ssh.md) command to:\n",
+
+    "1. _Not_ create a python virtual environment.  \n",
+
+    "   By default, the command will automatically create an MLTK python virtual environment in the workspace.  \n",
+
+    "   Since the cloud instance will be destroyed after training, we do not need to waste time creating a separate development environment.\n",
+
+    "2. Install the `silabs-mltk` python package\n",
+
+    "3. Install [7zip](https://www.7-zip.org/) which is needed to extract some datasets\n",
+
+    "4. Install [libsndfile](https://github.com/libsndfile/libsndfile) which is needed to use the [ParallelAudioDataGenerator](../../docs/python_api/data_preprocessing/audio_data_generator.md)\n",
+
+    "\n",
+
+    "\n",
+
+    "__NOTE:__ All of the above is installed on the __remote machince__ before invoking the `mltk train` command. For more details about the startup sequence, see [mltk ssh train](../../docs/guides/model_training_via_ssh.md)."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Develop a Model\n",
+
+    "\n",
+
+    "Before training a model, we need to develop its [model specification](../../docs/guides/model_specification.md).   \n",
+
+    "\n",
+
+    "__NOTE:__ Typically, you should develop the model locally _before_ starting a cloud instance as you are billed by the second while the instance is active.\n",
+
+    "\n",
+
+    "### Suggested Reading\n",
+
+    "\n",
+
+    "- Refer to the [Model Training](../../docs/guides/model_training.md) guide for how to develop a [model specification](../../docs/guides/model_specification.md)\n",
+
+    "- Refer to the other [tutorials](../../docs/tutorials.md) for an end-to-end model development tutorials\n",
+
+    "\n",
+
+    "In any case, instead of training your model locally using: `mltk train my_model`, you will use `mltk ssh train my_model` to train your model in the \"cloud\".\n",
+
+    "\n",
+
+    "\n",
+
+    "### Example Development Flow\n",
+
+    "\n",
+
+    "For this tutorial, we'll train the reference model: [keyword_spotting_on_off_v2](../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.md).  \n",
+
+    "Note that while this is a \"Keyword Spotting\" model, any other type of model will work similarly.\n",
+
+    "\n",
+
+    "This model uses the [ParallelAudioDataGenerator](../../docs/python_api/data_preprocessing/audio_data_generator.md) to dynamically augment the samples during training. The dynamic augmentations can be computationally expensive which can slow down training.  \n",
+
+    "To speed up the model training, we'll spread the augmentations across 250 cores (in a later step we'll rent a cloud machine with 256 cores). "
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "#### Modify the model specification\n",
+
+    "\n",
+
+    "1. Download the model specification file (i.e. python script): [keyword_spotting_on_off_v2.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v2.py) to your local machine\n",
+
+    "2. Open `keyword_spotting_on_off_v2.py` on your local machine in a text editor\n",
+
+    "3. Locate the line `my_model.datagen = ParallelAudioDataGenerator(`  \n",
+
+    "   We need to adjust two settings to take advantage of the large cloud machine:\n",
+
+    "4. Change the line `cores=0.45,` to `cores=250,`  \n",
+
+    "   i.e. Instead of using 45% of the available cores, we'll hardcode to using 250 cores.  \n",
+
+    "   Note that we don't want to use all the cores for augmentations, we'll save 6 cores for doing other training tasks (which the system automatically manages)\n",
+
+    "5. Change the line `max_batches_pending=16,` to `max_batches_pending=10*250`  \n",
+
+    "   The cloud machine we'll rent should have lots of RAM, so we can have lots of preprocessed batches ready to go in RAM to further improve the training time"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "#### Note about custom datasets\n",
+
+    "\n",
+
+    "The model is trained on a remote machine. This means the dataset needs to be downloaded to the remote machine before training starts.\n",
+
+    "The [keyword_spotting_on_off_v2](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html) model uses the [Google Speech Commands v2](https://siliconlabs.github.io/mltk/docs/python_api/datasets/index.html#module-mltk.datasets.audio.speech_commands.speech_commands_v2) dataset which manages downloading the dataset.\n",
+
+    "\n",
+
+    "For custom datasets, you'll need to specify your own download URL. \n",
+
+    "\n",
+
+    "One way of doing this is by adding something like the following to your model specification:\n",
+
+    "```python\n",
+
+    "# Import helper function to download and extract dataset\n",
+
+    "from mltk.utils.archive_downloader import download_verify_extract\n",
+
+    "\n",
+
+    "# Define a custom function to download the dataset\n",
+
+    "def my_dataset_downloader():\n",
+
+    "    return download_verify_extract(\n",
+
+    "        url='https://mydataset/dataset.tar.gz',\n",
+
+    "        dest_subdir='datasets/mydataset/v1',\n",
+
+    "        show_progress=True,\n",
+
+    "        remove_root_dir=True # remove the root directory from the extracted archive\n",
+
+    "    )\n",
+
+    "\n",
+
+    "\n",
+
+    "# Assign the custom function to the model\n",
+
+    "# The MLTK will automatically invoke this at the beginning of the \"train\" command on the remote machine\n",
+
+    "my_model.dataset = my_dataset_downloader\n",
+
+    "```\n",
+
+    "\n",
+
+    "- See [visual_wake_words.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/visual_wake_words.py) for a working example.\n",
+
+    "- See [fingerprint_signature_generator.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/fingerprint_signature_generator.py) for a more complex example using a custom dataset class."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "#### Test everything works locally\n",
+
+    "\n",
+
+    "Before training in the cloud, it is helpful to do a training \"dry run\" locally to ensure everything is basically working.  \n",
+
+    "This can be done with the command:\n",
+
+    "\n",
+
+    "```shell\n",
+
+    "cd <same directory as model specification .py>\n",
+
+    "mltk train keyword_spotting_on_off_v2-test\n",
+
+    "```\n",
+
+    "\n",
+
+    "This will train the model for a few epochs using a subset of the dataset.\n",
+
+    "This way, you can quickly fix any errors locally before invoking the actual training on the remote cloud machine."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "#### Profile model locally\n",
+
+    "\n",
+
+    "Before spending the time and money on training a model, it is very important to know if it is even able to run on the embedded target.\n",
+
+    "For this reason, the MLTK features a [model profiler](../../docs/guides/model_profiler.md).\n",
+
+    "\n",
+
+    "Assuming you have a [supported](../../docs/other/supported_hardware.md) development board and are targeting the [MVP](https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/mvp-accelerator) hardware accelerator, issue the command:\n",
+
+    "\n",
+
+    "```shell\n",
+
+    "cd <same directory as model specification .py>\n",
+
+    "mltk profile keyword_spotting_on_off_v2 --build --accelerator mvp --device\n",
+
+    "```\n",
+
+    "\n",
+
+    "If you do not have a development board, you can still profile using the simulator:\n",
+
+    "\n",
+
+    "```shell\n",
+
+    "cd <same directory as model specification .py>\n",
+
+    "mltk profile keyword_spotting_on_off_v2 --build --accelerator mvp\n",
+
+    "```\n",
+
+    "\n",
+
+    "This will profile the _untrained_ model and provide statistics such as:\n",
+
+    "- RAM usage\n",
+
+    "- Flash usage\n",
+
+    "- Inference latency\n",
+
+    "  \n",
+
+    "See the [model profiler](../../docs/guides/model_profiler.md) guide for more details."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Train Model in Cloud\n",
+
+    "\n",
+
+    "Now that we have a working model specification, it's time to train it in the cloud.\n",
+
+    "\n",
+
+    "### Start cloud instance\n",
+
+    "\n",
+
+    "First, we need to start a cloud instance with:\n",
+
+    "- \"Max instance duration\" for `~3hrs`\n",
+
+    "  Machines may be cheaper if the \"instance duration\" is low\n",
+
+    "- `256+` CPU cores  \n",
+
+    "  Ensure the CPUs are `i7` or better (AMD Threadripper or EPYC is usually a good choice; Xeon can be slow)\n",
+
+    "- `1+` GPUs  \n",
+
+    "  The [keyword_spotting_on_off_v2](../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.md) model does not have that many trainable parameters, so 1 \"mid-range\" GPU is enough.\n",
+
+    "\n",
+
+    "(If you already have another cloud instance running that doesn't have 256+ CPU cores, then shut it down first, see [Shutdown Cloud Instance](#shutdown-cloud-instance))\n",
+
+    "\n",
+
+    "Be sure to note the SSH host and port which we'll need in the next section:\n",
+
+    "\n",
+
+    "![](../../docs/img/vastai_select_machine2.gif) "
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Start remote training\n",
+
+    "\n",
+
+    "With the model specification ready and cloud instance started, it's time to train it in the cloud.\n",
+
+    "\n",
+
+    "This done using the [mltk ssh train](../../docs/guides/model_training_via_ssh.md), e.g.:\n",
+
+    "\n",
+
+    "```shell\n",
+
+    "# Navigate to the directory containing the model specification\n",
+
+    "cd <directory where keyword_spotting_on_off_v2.py is located>\n",
+
+    "\n",
+
+    "# Train keyword_spotting_on_off_v2 model in cloud\n",
+
+    "# --clean will clean all previous  training files before starting\n",
+
+    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --clean\n",
+
+    "```\n",
+
+    "\n",
+
+    "- Refer to step 6) of [Select a Machine](#select-a-cloud-machine) section for determining the values of the `-h` and `-p` options.  \n",
+
+    "- Refer to the [Create SSH Keypair](#create-an-ssh-keypair) section for the value of the `-i` option.\n",
+
+    "\n",
+
+    "\n",
+
+    "### Other CLI options\n",
+
+    "\n",
+
+    "There are some other CLI options you may use while training:\n",
+
+    "\n",
+
+    "```shell\n",
+
+    "# Train keyword_spotting_on_off_v2 model in cloud\n",
+
+    "# --clean will clean all previous  training files before starting\n",
+
+    "# Only one command may be active, --force will abort any previous commands still executing\n",
+
+    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --clean --force\n",
+
+    "\n",
+
+    "# If a previous command's SSH connection prematurely closed, \n",
+
+    "# --resume may be used to re-connect without restarting the remote command\n",
+
+    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --resume\n",
+
+    "\n",
+
+    "# Use the --verbose option to see verbose logs\n",
+
+    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --verbose\n",
+
+    "```"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Training Results\n",
+
+    "\n",
+
+    "Once training successfully completes, the trained [model archive](../../docs/guides/model_archive.md) and any other files generated during training on the remote machine will be downloaded to the local machine.  \n",
+
+    "All of the output training files will appear on the local machine as if the model had been trained locally. i.e.:\n",
+
+    "- The [model archive](../../docs/guides/model_archive.md) (i.e. `.mltk.zip`) will appear in the same directory as the [model specification](../../docs/guides/model_specification.md)\n",
+
+    "- The training log files will appear in the model log directory, `~/.mltk/models/<model name>`"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Shutdown Cloud Instance\n",
+
+    "\n",
+
+    "__Be sure to shutdown the cloud instance when finished!__ \n",
+
+    "\n",
+
+    "![](../../docs/img/vastai_shutdown_instance.gif) \n",
+
+    "\n",
+
+    "You will be billed by the second for as long as the instance is active.\n",
+
+    "\n",
+
+    "Also note that everything on the remote instance will be lost when it's shutdown.  \n",
+
+    "So be sure you've downloaded all output files (like the trained [model archive](../../docs/guides/model_archive.md))."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Next Steps\n",
+
+    "\n",
+
+    "At this point, the [trained model files](../../docs/guides/model_archive.md) (i.e. `.mltk.zip`) should be on the local machine the same as if it was trained locally.\n",
+
+    "\n",
+
+    "As such, all of the MLTK commands are fully available.\n",
+
+    "\n",
+
+    "See the \"Model Testing\" and \"Deploying the Model\" sections of the [Keyword Spotting On/Off](../../mltk/tutorials/keyword_spotting_on_off.md) tutorial for more details."
+
+   ]
+
+  }
+
+ ],
+
+ "metadata": {
+
+  "kernelspec": {
+
+   "display_name": "Python 3.9.7 ('.venv': venv)",
+
+   "language": "python",
+
+   "name": "python3"
+
+  },
+
+  "language_info": {
+
+   "name": "python",
+
+   "version": "3.9.7"
+
+  },
+
+  "orig_nbformat": 4,
+
+  "vscode": {
+
+   "interpreter": {
+
+    "hash": "600e22ae316f8c315f552eaf99bb679bc9438a443c93affde9ac001991b79c8f"
+
+   }
+
+  }
+
+ },
+
+ "nbformat": 4,
+
+ "nbformat_minor": 2
+
+}
+

@@ -18,6 +18,7 @@ The features of this Python package include:
 - [Python API](https://siliconlabs.github.io/mltk/docs/python_api/python_api.html) - Execute all ML operations from a Python script
 - [Model Profiler](https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html) - Determine how efficient an ML model will execute on an embedded platform
 - [Model Training](https://siliconlabs.github.io/mltk/docs/guides/model_training.html) - Train an ML model using [Google Tensorflow](https://www.tensorflow.org/)
+- [Remote Training via SSH](./docs/guides/model_training_via_ssh.md) - Securely and seamlessly train the model on a remote "cloud" machine
 - [Model Evaluation](https://siliconlabs.github.io/mltk/docs/guides/model_evaluation.html) - Evaluate a trained ML model's accuracy and other metrics
 - [Model Summary](https://siliconlabs.github.io/mltk/docs/guides/model_summary.html) - Generate a summary of the model's contents
 - [Model Visualization](https://siliconlabs.github.io/mltk/docs/guides/model_visualizer.html) - Interactively view the ML model's structure 
@@ -175,6 +176,7 @@ setup(
         'tqdm<5.0',
         'pillow<9.0',
         'librosa<1.0',
+        'joblib',
         'netron<6.0',
         'bincopy<18.0',
         'pyserial<4.0',

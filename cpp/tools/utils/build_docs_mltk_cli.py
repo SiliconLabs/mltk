@@ -48,12 +48,12 @@ def build_docs_command(
 
 
 
-    install_pip_package('sphinx==4.2.0', logger=logger)
+    install_pip_package('sphinx==4.5.0', logger=logger)
     install_pip_package('myst-parser==0.17.2', 'myst_parser', logger=logger)
     install_pip_package('myst-nb==0.15.0', 'myst_nb', logger=logger)
     install_pip_package('numpydoc==1.3.1', logger=logger)
     install_pip_package('sphinx_autodoc_typehints==1.18.2', logger=logger)
-    install_pip_package('sphinx-markdown-tables==0.0.15', 'sphinx_markdown_tables', logger=logger)
+    install_pip_package('sphinx-markdown-tables==0.0.17', 'sphinx_markdown_tables', logger=logger)
     install_pip_package('sphinx-copybutton==0.5.0', 'sphinx_copybutton', logger=logger)
     install_pip_package('sphinx-panels==0.6.0', 'sphinx_panels', logger=logger)
     install_pip_package('nbclient==0.5.13', 'nbclient', logger=logger)
@@ -202,13 +202,11 @@ def _revert_docs_dir(logger:logging.Logger):
 
     def _clean_dir(path:str):
         run_shell_cmd(
-            ['git', 'restore', '--source=HEAD', '--staged', '--worktree', '--', '.'],
-            cwd=f'{MLTK_ROOT_DIR}/docs/{path}',
+            ['git', 'restore', '--source=HEAD', '--staged', '--worktree', '--', f'{MLTK_ROOT_DIR}/docs/{path}'],
             logger=logger
         )
         run_shell_cmd(
-            ['git', 'clean', '-fd', '.'],
-             cwd=f'{MLTK_ROOT_DIR}/docs/{path}',
+            ['git', 'clean', '-fd', f'{MLTK_ROOT_DIR}/docs/{path}'],
             logger=logger
         )
 

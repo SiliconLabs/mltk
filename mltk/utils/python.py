@@ -221,7 +221,8 @@ def install_pip_package(
     module_name:str=None,
     logger: logging.Logger=None,
     install_dir:str=None,
-    upgrade=False
+    upgrade=False,
+    no_deps=False
 ):
     """Install the given pip package is necessary"""
     logger = logger or DummyLogger()
@@ -252,6 +253,8 @@ def install_pip_package(
     cmd = [sys.executable, "-m", "pip", "install"]
     if upgrade:
         cmd.append('-U')
+    if no_deps:
+        cmd.append('--no-deps')
     cmd.append(package)
     if install_dir:
         cmd.extend(['--target', install_dir])

@@ -171,6 +171,16 @@ mltk_set(MLTK_RUN_MODEL_FROM_RAM ON)
 __NOTE:__ To use this, the `.tflite` _must_ fit into RAM along with the normal runtime working memory.
 
 
+### MLTK_RUNTIME_MEMORY_SIZE
+
+If specified, then hardcode the tensor arena size to the given value.
+If omitted, then automatically find the optimal tensor arena size.
+
+```shell
+mltk_set(MLTK_RUNTIME_MEMORY_SIZE 100000)
+```
+
+
 ### TFLITE_MICRO_RECORDER_ENABLED
 
 If enabled, then record each layer's input/output tensor data.

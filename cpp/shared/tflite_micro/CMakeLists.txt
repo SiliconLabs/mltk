@@ -105,6 +105,7 @@ tensorflow/lite/micro/micro_time.cc
 tensorflow/lite/micro/micro_utils.cc
 tensorflow/lite/micro/mock_micro_graph.cc
 tensorflow/lite/micro/test_helpers.cc
+tensorflow/lite/micro/test_helper_custom_ops.cc
 tensorflow/lite/micro/kernels/kernel_runner.cc 
 tensorflow/lite/micro/memory_planner/greedy_memory_planner.cc
 tensorflow/lite/micro/memory_planner/linear_memory_planner.cc

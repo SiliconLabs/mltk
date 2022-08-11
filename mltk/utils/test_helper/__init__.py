@@ -10,7 +10,7 @@ from mltk.utils.path import create_user_dir
 
 _lock = threading.Lock()
 
-logger_dir = create_user_dir('pytest_results')
+pytest_results_dir = create_user_dir('pytest_results')
 
 
 
@@ -19,19 +19,19 @@ def get_logger(name='utest', console=False):
         name, 
         level='DEBUG', 
         console=console, 
-        log_file=f'{logger_dir}/{name}.log'
+        log_file=f'{pytest_results_dir}/{name}.log'
     )
     make_filelike(logger)
     return logger
 
 
-def run_mltk_command(*args, update_model_path=False, logger=None) -> str:
+def run_mltk_command(*args, update_model_path=False, logger=None, env=None) -> str:
     if logger is None:
         logger_name = args[0]
         if logger_name.startswith('-'):
             logger_name = 'mltk'
         logger = get_logger(f'{logger_name}_cli_tests')
-    env = os.environ.copy()
+    env = env or os.environ.copy()
 
     python_bin_dir = os.path.dirname(os.path.abspath(sys.executable))
     mltk_exe_path = os.path.join(python_bin_dir, 'mltk')
@@ -47,7 +47,7 @@ def run_mltk_command(*args, update_model_path=False, logger=None) -> str:
     with _lock:
         if update_model_path:
             env['MLTK_MODEL_PATHS'] = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
-        retcode, retmsg = run_shell_cmd(cmd, outfile=logger, env=env)
+        retcode, retmsg = run_shell_cmd(cmd, outfile=logger, env=env, logger=logger)
         if retcode not in (0, 2):
             raise RuntimeError(f'Command failed (err code={retcode}): {cmd_str}\n{retmsg}')
     return retmsg

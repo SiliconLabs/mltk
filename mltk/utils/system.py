@@ -2,6 +2,7 @@ import sys
 import os
 import signal 
 import stat
+import time
 import datetime
 
 
@@ -79,18 +80,31 @@ def send_signal(sig = signal.SIGINT, pid:int=None):
         sig: The signal to send
         pid: The process id. If None then use current process. 
             If -1, only send signal to children processes of current process
+            If 0, only send signal to current process
     """
     import psutil
 
     skip_current = False
+    skip_children = False
     if pid == -1:
         skip_current = True
         pid = None
+    elif pid == 0:
+        skip_children = True
+        pid = None
 
     current_process = psutil.Process(pid=pid)
-    children = current_process.children(recursive=True)
-    for child in children:
-        os.kill(child.pid, sig)
+
+    if not skip_children:
+        # Attempt to kill the child processes 3 times
+        for i in range(1, 4):
+            children = current_process.children(recursive=True)
+            if len(children) == 0:
+                break
+            for child in children:
+                os.kill(child.pid, sig)
+            if i < 3:
+                time.sleep(0.100) # Wait a moment before trying again
 
     if not skip_current:
         os.kill(current_process.pid, sig)

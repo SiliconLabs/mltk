@@ -202,6 +202,8 @@ def tflite_to_numpy_dtype(tflite_type:_tflite_schema_fb.TensorType) -> np.dtype:
         return np.int16
     elif tflite_type == _tflite_schema_fb.TensorType.INT8:
         return np.int8
+    elif tflite_type == _tflite_schema_fb.TensorType.BOOL:
+        return np.bool8
     else:
         raise ValueError(f'Unsupported .tflite tensor data type: {tflite_type}')
 
@@ -220,5 +222,7 @@ def numpy_to_tflite_type(dtype:np.dtype) -> _tflite_schema_fb.TensorType:
         return _tflite_schema_fb.TensorType.INT16
     elif dtype == np.int8:
         return _tflite_schema_fb.TensorType.INT8
+    elif dtype == np.bool8:
+        return _tflite_schema_fb.TensorType.BOOL
     else:
-        raise ValueError(f'Unsupported .tflite tensor data type: {tflite_type}')
+        raise ValueError(f'Unsupported .tflite tensor data type: {dtype}')

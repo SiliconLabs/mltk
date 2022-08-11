@@ -10,10 +10,11 @@ This is a Python package with command-line utilities and scripts to aid the deve
 of machine learning models for Silicon Lab's embedded platforms.
 
 The features of this Python package include:
-- [Command-line](./docs/command_line.md) - Execute all ML operations from simple command-line interface
+- [Command-line](./docs/command_line.md) - Execute all ML operations from a simple command-line interface
 - [Python API](./docs/python_api/index.md) - Execute all ML operations from a Python script
 - [Model Profiler](./docs/guides/model_profiler.md) - Determine how efficient an ML model will execute on an embedded platform
 - [Model Training](./docs/guides/model_training.md) - Train an ML model using [Google Tensorflow](https://www.tensorflow.org/)
+- [Remote Training via SSH](./docs/guides/model_training_via_ssh.md) - Securely and seamlessly train the model on a remote "cloud" machine
 - [Model Evaluation](./docs/guides/model_evaluation.md) - Evaluate a trained ML model's accuracy and other metrics
 - [Model Summary](./docs/guides/model_summary.md) - Generate a summary of the model's contents
 - [Model Visualization](./docs/guides/model_visualizer.md) - Interactively view the ML model's structure 
@@ -43,7 +44,7 @@ See the [Model Profiler Utility](./docs/guides/model_profiler_utility.md)
 
 ## Installation
 
-Install the pre-build Python package:
+Install the pre-built Python package:
 
 ```{eval-rst}
 .. tabbed:: Windows
@@ -61,7 +62,7 @@ Install the pre-build Python package:
 ```
 
 
-Or, build and install Python package from [Github](https://github.com/siliconlabs/mltk):
+Or, build and install the Python package from [Github](https://github.com/siliconlabs/mltk):
 
 ```{eval-rst}
 .. tabbed:: Windows
@@ -77,7 +78,7 @@ Or, build and install Python package from [Github](https://github.com/siliconlab
       pip3 install git+https://github.com/siliconlabs/mltk.git
 ```
 
-Refer to [Installation Guide](./docs/installation.md) for more details on how to install the MLTK.
+Refer to the [Installation Guide](./docs/installation.md) for more details on how to install the MLTK.
 
 
 ## Other Information

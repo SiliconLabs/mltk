@@ -36,6 +36,14 @@ if(MLTK_RUN_MODEL_FROM_RAM)
     )
 endif()
 
+mltk_get(MLTK_RUNTIME_MEMORY_SIZE)
+if(DEFINED MLTK_RUNTIME_MEMORY_SIZE)
+    mltk_info("Forcing run-time memory size to ${MLTK_RUNTIME_MEMORY_SIZE} bytes")
+    target_compile_definitions(mltk_model_profiler
+    PUBLIC 
+        MLTK_RUNTIME_MEMORY_SIZE=${MLTK_RUNTIME_MEMORY_SIZE}
+    )
+endif()
 
 
 #####################################################

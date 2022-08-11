@@ -6,9 +6,15 @@ Additional MLTK settings may be configure in the settings file:
 ~/.mltk/user_settings.yaml
 ```
 
-Where `~` is your OS's user home directory.
+Where `~` is your OS's user home directory.  
+On Windows, this typically points to `C:\Users\<user name>` where `<user name>` is your Windows user name.
 
-The file uses the [YAML](https://www.tutorialspoint.com/yaml/yaml_quick_guide.htm) format.
+
+__NOTE:__ The environment variable `MLTK_USER_SETTINGS_PATH` may be used to override the default path `~/.mltk/user_settings.yaml`:
+
+
+This file uses the [YAML](https://www.tutorialspoint.com/yaml/yaml_quick_guide.htm) format.
+
 
 ## Example 
 
@@ -22,6 +28,28 @@ model_paths:
 commander:
     device: efr32
     serial_number: 123432
+
+ssh:
+    config_path: ~/ssh_config
+    remote_dir: ~/workspace
+    create_venv: false
+    connection:
+        hostname: my_server.com
+        port: 222
+        username: joe
+        key_filename: ~/.ssh/id_my_server
+    environment:
+    - CUDA_VISIBLE_DEVICES=-1
+    - DEV_ENV=1
+    upload_files:
+    - dataset.zip
+    - config.txt
+    startup_cmds:
+    - sudo apt install -y p7zip-full libsndfile1
+    download_files:
+    - custom_logs/**
+    shutdown_cmds:
+    - curl -F `data=log.txt` my_server.com
 ```
 
 
@@ -51,3 +79,8 @@ The following sub-settings are supported:
  - `serial_number` - The adapter serial number given to the `--serialno` command-line option
  - `ip_address` - The adapter IP address given to the `--ip` command-line option
 
+
+### ssh
+
+These are settings specific to the [mltk ssh](../guides/model_training_via_ssh.md) command.
+See the [Model Training via SSH](../guides/model_training_via_ssh.md) guide for more details.

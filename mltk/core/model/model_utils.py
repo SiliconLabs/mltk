@@ -79,20 +79,14 @@ def load_mltk_model(
     if not re.match(r'^[a-zA-Z0-9_]+$', model, re.DOTALL):
         raise ValueError('Invalid MLTK model argument given. Must either be the path to an existing model file (.tflite, .h5, .mltk.zip) or must contain only letters, numbers, or an underscore')
 
-    model_subdir = os.path.dirname(model)
-    model_name, _ = os.path.splitext(os.path.basename(model))
-
     logger.debug(f'Searching for MLTK model: {model}')
-    model_spec_path = _find_model_specification_file(
-        model_name=model_name,
-        model_subdir=model_subdir,
+    model_spec_path = find_model_specification_file(
+        model=model,
         test=test,
-        logger=logger
+        logger=logger,
+        print_not_found_err=print_not_found_err
     )
     if not model_spec_path:
-        if print_not_found_err:
-            all_models = list_mltk_models(test=test)
-            print_did_you_mean_error('Failed to find model', model, all_models, and_exit=True)
         raise Exception(f'Failed to find model specification file with name: {model}.py')
     
     return load_mltk_model_with_path(
@@ -270,6 +264,121 @@ def load_tflite_or_keras_model(
     return built_model
 
 
+def load_tflite_model(
+    model: Union[str, MltkModel, TfliteModel],
+    build:bool=False,
+    print_not_found_err:bool=False,
+    return_tflite_path:bool=False,
+    test:bool=False,
+    logger: logging.Logger=None
+) -> Union[TfliteModel,str]:
+    """Return the path to a .tflite model file or a TfliteModel instance
+    
+    Args:
+        model: One of the following:
+            - An MltkModel model instance
+            - An TfliteModel model instance
+            - The path to a .tflite
+            - The path to a .mltk.zip model archive
+            - The path to a .py MLTK model specification
+            - The name of an MLTK model
+        build: If the given Mltk model should be built into a .tflite
+        print_not_found_err: If the model model is not found, print possible alternatives and exit
+        return_tflite_path: If true, return the file path to the .tflite, otherwise return a TfliteModel instance
+        test: If a "test" model is provided
+        logger: Optional logger
+
+    Return:
+        The corresponding TfliteModel if return_tflite_path=False or the path to the .tflite if return_tflite_path=True
+    """
+
+    logger = logger or get_mltk_logger()
+    mltk_model:MltkModel = None
+    tflite_model:TfliteModel = None
+    model_name = None
+
+    if isinstance(model, MltkModel):
+        mltk_model = model
+        model_name = mltk_model.name
+
+    elif isinstance(model, TfliteModel):
+        if build:
+            raise RuntimeError('Cannot use build option with TfliteModel instance')
+        tflite_model = model
+        model_name = (tflite_model.filename or 'my_model.tflite')[:-len('.tflite')]
+        
+    elif isinstance(model, str):
+        if build and model.endswith(('.tflite', '.mltk.zip')):
+            raise RuntimeError('Cannot use --build option with .tflite or .mltk.zip model argument. Must be model name or path to model specification (.py)')
+        elif model.endswith('.h5'):
+            raise ValueError('Must provide .tflite or .mltk.zip model file type')
+
+        if model.endswith('.tflite'):
+            if return_tflite_path:
+                return fullpath(model) 
+            
+            tflite_model = TfliteModel.load_flatbuffer_file(model)
+            model_name = tflite_model.filename[:-len('.tflite')]
+
+        elif not model.endswith('.mltk.zip'):
+            if build:
+                mltk_model = load_mltk_model(
+                    model, 
+                    test=test, 
+                    logger=logger, 
+                    print_not_found_err=print_not_found_err
+                )
+
+            else:
+                model_spec_path = find_model_specification_file(
+                    model=model,
+                    test=test,
+                    logger=logger,
+                    print_not_found_err=print_not_found_err
+                )
+                if model_spec_path is None:
+                    raise ValueError(f'Failed to find model specification file with name: {model}.py')
+
+                model = model_spec_path[:-len('.py')] + '.mltk.zip'
+        
+
+        if model.endswith('.mltk.zip'):
+            from .mixins.archive_mixin import extract_file
+
+            model_name = os.path.basename(model[:-len('.mltk.zip')])
+            if model_name.endswith('-test'):
+                model_name = model_name[:-len('-test')]
+                tflite_name = f'{model_name}.test.tflite'
+            else:
+                 tflite_name = f'{model_name}.tflite'
+            tflite_path = extract_file(model, tflite_name)
+            if return_tflite_path:
+                return tflite_path 
+            
+            tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)
+
+    if build:
+        from ..quantize_model import quantize_model
+
+        if mltk_model is None:
+            raise RuntimeError('Must provide MltkModel instance, name of MltkModel, other .py path to model specification to use the build option')
+
+        logger.info('--build option provided, building model rather than using trained model')
+        tflite_model = quantize_model(
+            model=mltk_model,
+            build=True,
+            output='tflite_model'
+        )
+    
+
+    if return_tflite_path:
+        tflite_path = create_tempdir('tmp_models') + f'/{model_name}.tflite'
+        tflite_model.save(tflite_path)
+        return tflite_path
+
+    else:
+        return tflite_model
+
 
 def list_mltk_models(
     test:bool=False, 
@@ -329,12 +438,25 @@ def list_mltk_models(
     return sorted(set(found_models))
 
 
-def _find_model_specification_file(model_name, model_subdir, test, logger):
+def find_model_specification_file(
+    model:str,  
+    test:bool=False, 
+    logger:logging.Logger=None,
+    print_not_found_err:bool=False
+) -> str:
     """Given the model name, attempt to find its corresponding python specification file.
     The specification file could be in a model archive.
     """
+    logger = logger or get_mltk_logger()
     search_dirs = _get_model_search_dirs()
     cwd = fullpath(os.getcwd())
+
+    if model.endswith('-test'):
+        test = True 
+        model = model[:-len('-test')]
+
+    model_subdir = os.path.dirname(model)
+    model_name, _ = os.path.splitext(os.path.basename(model))
 
     py_path = None
     archive_path = None
@@ -373,6 +495,11 @@ def _find_model_specification_file(model_name, model_subdir, test, logger):
             name=f'{model_name}.py', 
             dest_dir=os.path.dirname(archive_path)
         )
+
+    if not py_path and print_not_found_err:
+        from mltk.cli import print_did_you_mean_error # pylint: disable=import-outside-toplevel
+        all_models = list_mltk_models(test=test)
+        print_did_you_mean_error('Failed to find model', model, all_models, and_exit=True)
 
     return py_path
 

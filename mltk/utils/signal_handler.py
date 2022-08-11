@@ -1,5 +1,6 @@
 import os
 import signal
+import threading
 
 
 class SignalHandler(object):
@@ -7,12 +8,19 @@ class SignalHandler(object):
     
     e.g. detect when CTRL+C is pressed and issue a callback
     """
-    def __init__(self, sig=signal.SIGINT, callback=None, resignal_on_exit=False):
+    def __init__(
+        self, 
+        sig=signal.SIGINT, 
+        callback=None, 
+        resignal_on_exit=False,
+        raise_exception_if_not_main_thread=True
+    ):
         self.sig = sig
         self.interrupted = False
         self.released = False
         self.original_handler = None
         self.resignal_on_exit = resignal_on_exit
+        self.raise_exception_if_not_main_thread = raise_exception_if_not_main_thread
         self.callback = callback 
     
 
@@ -20,7 +28,12 @@ class SignalHandler(object):
         self.interrupted = False
         self.released = False
 
-        self.original_handler = signal.getsignal(self.sig)
+        is_main_thread = threading.current_thread() is threading.main_thread()
+        if self.raise_exception_if_not_main_thread and not is_main_thread:
+            raise RuntimeError('SignalHandler may only be used in the "main" thread')
+
+        if is_main_thread:
+            self.original_handler = signal.getsignal(self.sig)
 
         def _handler(signum, frame):
             forward_signal = False 
@@ -36,23 +49,25 @@ class SignalHandler(object):
             if forward_signal:
                 self.original_handler()
 
-        signal.signal(self.sig, _handler)
+        if is_main_thread:
+            signal.signal(self.sig, _handler)
 
         return self
 
 
     def __exit__(self, t, value, tb):
         self.release()
-        if self.interrupted and self.resignal_on_exit:
-            os.kill(os.getpid(), self.sig)
 
 
     def release(self):
         if self.released:
             return False
 
-        signal.signal(self.sig, self.original_handler)
+        if self.original_handler is not None:
+            signal.signal(self.sig, self.original_handler)
 
         self.released = True
-
+        if self.interrupted and self.resignal_on_exit:
+            os.kill(os.getpid(), self.sig)
+        
         return True

@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.model.model_utils &#8212; MLTK 0.8.0 documentation</title>
+    <title>mltk.core.model.model_utils &#8212; MLTK 0.9.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.8.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.9.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.8.0 documentation logo">
+                   alt="MLTK 0.9.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.8.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.9.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.8.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.9.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -512,20 +512,14 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^[a-zA-Z0-9_]+$'</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Invalid MLTK model argument given. Must either be the path to an existing model file (.tflite, .h5, .mltk.zip) or must contain only letters, numbers, or an underscore'</span><span class="p">)</span>
 
-    <span class="n">model_subdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-    <span class="n">model_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
-
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Searching for MLTK model: </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-    <span class="n">model_spec_path</span> <span class="o">=</span> <span class="n">_find_model_specification_file</span><span class="p">(</span>
-        <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
-        <span class="n">model_subdir</span><span class="o">=</span><span class="n">model_subdir</span><span class="p">,</span>
+    <span class="n">model_spec_path</span> <span class="o">=</span> <span class="n">find_model_specification_file</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
         <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span>
-        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
+        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+        <span class="n">print_not_found_err</span><span class="o">=</span><span class="n">print_not_found_err</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">model_spec_path</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">print_not_found_err</span><span class="p">:</span>
-            <span class="n">all_models</span> <span class="o">=</span> <span class="n">list_mltk_models</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">)</span>
-            <span class="n">print_did_you_mean_error</span><span class="p">(</span><span class="s1">'Failed to find model'</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">all_models</span><span class="p">,</span> <span class="n">and_exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to find model specification file with name: </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1">.py'</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">load_mltk_model_with_path</span><span class="p">(</span>
@@ -703,6 +697,121 @@
     <span class="k">return</span> <span class="n">built_model</span></div>
 
 
+<span class="k">def</span> <span class="nf">load_tflite_model</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
+    <span class="n">build</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">print_not_found_err</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">return_tflite_path</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">TfliteModel</span><span class="p">,</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="sd">"""Return the path to a .tflite model file or a TfliteModel instance</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        model: One of the following:</span>
+<span class="sd">            - An MltkModel model instance</span>
+<span class="sd">            - An TfliteModel model instance</span>
+<span class="sd">            - The path to a .tflite</span>
+<span class="sd">            - The path to a .mltk.zip model archive</span>
+<span class="sd">            - The path to a .py MLTK model specification</span>
+<span class="sd">            - The name of an MLTK model</span>
+<span class="sd">        build: If the given Mltk model should be built into a .tflite</span>
+<span class="sd">        print_not_found_err: If the model model is not found, print possible alternatives and exit</span>
+<span class="sd">        return_tflite_path: If true, return the file path to the .tflite, otherwise return a TfliteModel instance</span>
+<span class="sd">        test: If a "test" model is provided</span>
+<span class="sd">        logger: Optional logger</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        The corresponding TfliteModel if return_tflite_path=False or the path to the .tflite if return_tflite_path=True</span>
+<span class="sd">    """</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">get_mltk_logger</span><span class="p">()</span>
+    <span class="n">mltk_model</span><span class="p">:</span><span class="n">MltkModel</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">tflite_model</span><span class="p">:</span><span class="n">TfliteModel</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">):</span>
+        <span class="n">mltk_model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">build</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Cannot use build option with TfliteModel instance'</span><span class="p">)</span>
+        <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="n">model_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">filename</span> <span class="ow">or</span> <span class="s1">'my_model.tflite'</span><span class="p">)[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.tflite'</span><span class="p">)]</span>
+        
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">build</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">'.tflite'</span><span class="p">,</span> <span class="s1">'.mltk.zip'</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Cannot use --build option with .tflite or .mltk.zip model argument. Must be model name or path to model specification (.py)'</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.h5'</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Must provide .tflite or .mltk.zip model file type'</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.tflite'</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">return_tflite_path</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">fullpath</span><span class="p">(</span><span class="n">model</span><span class="p">)</span> 
+            
+            <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">TfliteModel</span><span class="o">.</span><span class="n">load_flatbuffer_file</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="n">model_name</span> <span class="o">=</span> <span class="n">tflite_model</span><span class="o">.</span><span class="n">filename</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.tflite'</span><span class="p">)]</span>
+
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.mltk.zip'</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">build</span><span class="p">:</span>
+                <span class="n">mltk_model</span> <span class="o">=</span> <span class="n">load_mltk_model</span><span class="p">(</span>
+                    <span class="n">model</span><span class="p">,</span> 
+                    <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span> 
+                    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> 
+                    <span class="n">print_not_found_err</span><span class="o">=</span><span class="n">print_not_found_err</span>
+                <span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">model_spec_path</span> <span class="o">=</span> <span class="n">find_model_specification_file</span><span class="p">(</span>
+                    <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+                    <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span>
+                    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+                    <span class="n">print_not_found_err</span><span class="o">=</span><span class="n">print_not_found_err</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">model_spec_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to find model specification file with name: </span><span class="si">{</span><span class="n">model</span><span class="si">}</span><span class="s1">.py'</span><span class="p">)</span>
+
+                <span class="n">model</span> <span class="o">=</span> <span class="n">model_spec_path</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.py'</span><span class="p">)]</span> <span class="o">+</span> <span class="s1">'.mltk.zip'</span>
+        
+
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.mltk.zip'</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">.mixins.archive_mixin</span> <span class="kn">import</span> <span class="n">extract_file</span>
+
+            <span class="n">model_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.mltk.zip'</span><span class="p">)])</span>
+            <span class="k">if</span> <span class="n">model_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'-test'</span><span class="p">):</span>
+                <span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'-test'</span><span class="p">)]</span>
+                <span class="n">tflite_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.test.tflite'</span>
+            <span class="k">else</span><span class="p">:</span>
+                 <span class="n">tflite_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.tflite'</span>
+            <span class="n">tflite_path</span> <span class="o">=</span> <span class="n">extract_file</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">tflite_name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">return_tflite_path</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">tflite_path</span> 
+            
+            <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">TfliteModel</span><span class="o">.</span><span class="n">load_flatbuffer_file</span><span class="p">(</span><span class="n">tflite_path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">build</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">..quantize_model</span> <span class="kn">import</span> <span class="n">quantize_model</span>
+
+        <span class="k">if</span> <span class="n">mltk_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Must provide MltkModel instance, name of MltkModel, other .py path to model specification to use the build option'</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'--build option provided, building model rather than using trained model'</span><span class="p">)</span>
+        <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">quantize_model</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">mltk_model</span><span class="p">,</span>
+            <span class="n">build</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">output</span><span class="o">=</span><span class="s1">'tflite_model'</span>
+        <span class="p">)</span>
+    
+
+    <span class="k">if</span> <span class="n">return_tflite_path</span><span class="p">:</span>
+        <span class="n">tflite_path</span> <span class="o">=</span> <span class="n">create_tempdir</span><span class="p">(</span><span class="s1">'tmp_models'</span><span class="p">)</span> <span class="o">+</span> <span class="sa">f</span><span class="s1">'/</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.tflite'</span>
+        <span class="n">tflite_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">tflite_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tflite_path</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tflite_model</span>
+
 
 <div class="viewcode-block" id="list_mltk_models"><a class="viewcode-back" href="../../../../docs/python_api/core/utilities.html#mltk.core.list_mltk_models">[docs]</a><span class="k">def</span> <span class="nf">list_mltk_models</span><span class="p">(</span>
     <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
@@ -762,12 +871,25 @@
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">found_models</span><span class="p">))</span></div>
 
 
-<span class="k">def</span> <span class="nf">_find_model_specification_file</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">model_subdir</span><span class="p">,</span> <span class="n">test</span><span class="p">,</span> <span class="n">logger</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">find_model_specification_file</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>  
+    <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+    <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">print_not_found_err</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="sd">"""Given the model name, attempt to find its corresponding python specification file.</span>
 <span class="sd">    The specification file could be in a model archive.</span>
 <span class="sd">    """</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">get_mltk_logger</span><span class="p">()</span>
     <span class="n">search_dirs</span> <span class="o">=</span> <span class="n">_get_model_search_dirs</span><span class="p">()</span>
     <span class="n">cwd</span> <span class="o">=</span> <span class="n">fullpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'-test'</span><span class="p">):</span>
+        <span class="n">test</span> <span class="o">=</span> <span class="kc">True</span> 
+        <span class="n">model</span> <span class="o">=</span> <span class="n">model</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'-test'</span><span class="p">)]</span>
+
+    <span class="n">model_subdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+    <span class="n">model_name</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
 
     <span class="n">py_path</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">archive_path</span> <span class="o">=</span> <span class="kc">None</span>
@@ -806,6 +928,11 @@
             <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.py'</span><span class="p">,</span> 
             <span class="n">dest_dir</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">archive_path</span><span class="p">)</span>
         <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">py_path</span> <span class="ow">and</span> <span class="n">print_not_found_err</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">mltk.cli</span> <span class="kn">import</span> <span class="n">print_did_you_mean_error</span> <span class="c1"># pylint: disable=import-outside-toplevel</span>
+        <span class="n">all_models</span> <span class="o">=</span> <span class="n">list_mltk_models</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">)</span>
+        <span class="n">print_did_you_mean_error</span><span class="p">(</span><span class="s1">'Failed to find model'</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">all_models</span><span class="p">,</span> <span class="n">and_exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">py_path</span>
 
@@ -870,7 +997,7 @@
               
           </div>
             Last updated on
-              Jun 28, 2022.
+              Aug 11, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

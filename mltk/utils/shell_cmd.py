@@ -2,6 +2,7 @@ import os
 import tempfile
 import logging
 import queue
+import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import Tuple,Union,Iterable,Callable
 import subprocess
@@ -42,7 +43,10 @@ def run_shell_cmd(
         cmd_str = ''
         if cwd:
             cmd_str += f'CWD:{cwd}, '
-        cmd_str += ' '.join(cmd)
+        if isinstance(cmd, (list,tuple)):
+            cmd_str += ' '.join(cmd)
+        else:
+            cmd_str += ' ' + cmd
         logger.debug(cmd_str)
      
     process_line_by_line = line_processor is not None or outfile is not None
@@ -92,7 +96,7 @@ def run_shell_cmd(
         return retcode, retval
 
 
-def _run_with_line_processing(p, outfile, line_processor):
+def _run_with_line_processing(p:subprocess.Popen, outfile, line_processor):
     flush_func = None
     saved_terminators = None
     
@@ -118,8 +122,8 @@ def _run_with_line_processing(p, outfile, line_processor):
 
     retval = ''
     cancelled = False
-    with SignalHandler() as sigint:
-        for out_line, err_line in _read_popen_pipes(p):
+    with SignalHandler(raise_exception_if_not_main_thread=False) as sigint:
+        for out_line, err_line in _read_popen_pipes(p, sigint):
             if out_line:
                 out_line = _write_line(out_line)
             if err_line:
@@ -130,9 +134,8 @@ def _run_with_line_processing(p, outfile, line_processor):
             if err_line:
                 retval += err_line
 
-            if sigint.interrupted:
-                cancelled = True
-                break
+        if sigint.interrupted:
+            cancelled = True
 
     if saved_terminators:
         outfile.set_terminator(saved_terminators)
@@ -146,12 +149,16 @@ def _run_with_line_processing(p, outfile, line_processor):
 
 
 def _enqueue_output(file, q):
-    for line in iter(file.readline, ''):
-        q.put(line)
-    file.close()
+    try:
+        for line in iter(file.readline, ''):
+            q.put(line)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        file.close()
 
 
-def _read_popen_pipes(p):
+def _read_popen_pipes(p:subprocess.Popen, sigint:SignalHandler):
     with ThreadPoolExecutor(2) as pool:
         q_stdout, q_stderr = queue.Queue(), queue.Queue()
 
@@ -159,6 +166,10 @@ def _read_popen_pipes(p):
         pool.submit(_enqueue_output, p.stderr, q_stderr)
 
         while True:
+            if sigint.interrupted:
+                p.kill()
+                break
+            
             if p.poll() is not None and q_stdout.empty() and q_stderr.empty():
                 break
 
@@ -172,5 +183,9 @@ def _read_popen_pipes(p):
                 err_line = q_stderr.get_nowait()
             except queue.Empty:
                 pass
+
+            if not (out_line or err_line):
+                time.sleep(0.010) # Short delay to avoid thread starvation
+                continue
 
             yield (out_line, err_line)
