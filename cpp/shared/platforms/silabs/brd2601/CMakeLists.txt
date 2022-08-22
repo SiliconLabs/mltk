@@ -159,6 +159,7 @@ PRIVATE
 macro(mltk_platform_add_exe_targets exe_target)
   mltk_commander_add_download_target(${exe_target})
   mltk_commander_add_reset_target(${exe_target})
+  mltk_commander_add_download_run_target(${exe_target} ${ARGN})
 endmacro()
 
 

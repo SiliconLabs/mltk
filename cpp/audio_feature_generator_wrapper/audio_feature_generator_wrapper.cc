@@ -20,9 +20,9 @@ static const auto float_dtype = py::format_descriptor<float>::format();
 static void verify_setting(const py::dict& settings, const std::string& name);
 typedef void* (*PopulateFunc)(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output);
 static void* populate_int8_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output);
-static void* populate_dynamic_scale_int8_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output);
 static void* populate_uint16_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output);
 static void* populate_float_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output);
+static void dynamic_scale_int8_spectrogram(const uint16_t* src, int8_t* dst, int length, int dynamic_quantize_range);
 
 
 /*************************************************************************************************/
@@ -125,10 +125,25 @@ void AudioFeatureGeneratorWrapper::process_sample(const py::array_t<int16_t>& in
     throw std::invalid_argument("Output must have shape" + std::to_string(_n_features) + "x" + std::to_string(_n_channels));
   }
 
+  auto audio_ptr = static_cast<int16_t*>(input_buf.ptr);
+  void* output_ptr = output_buf.ptr;
+  void* quantize_tmp_buffer = nullptr;
+
 
   if(dtype == int8_dtype)
   {
-    populate_func = _dynamic_quantize_range > 0 ? &populate_dynamic_scale_int8_slice : &populate_int8_slice;
+    // If we're using dynamic quantization, 
+    // then populated each slice as uint16 and at the end do the quantization
+    if(_dynamic_quantize_range > 0)
+    {
+      populate_func = &populate_uint16_slice;
+      output_ptr = quantize_tmp_buffer = malloc(sizeof(uint16_t) * _n_features * _n_channels);
+    }
+    else 
+    {
+      populate_func = &populate_int8_slice;
+    }
+    
   }
   else if(dtype == uint16_dtype)
   {
@@ -146,9 +161,6 @@ void AudioFeatureGeneratorWrapper::process_sample(const py::array_t<int16_t>& in
 
   FrontendReset(&_frontend_state);
 
-
-  void* output_ptr = output_buf.ptr;
-  auto audio_ptr = static_cast<int16_t*>(input_buf.ptr);
   int samples_processed = 0;
   for(int i = _n_features; i > 0; --i)
   {
@@ -163,6 +175,21 @@ void AudioFeatureGeneratorWrapper::process_sample(const py::array_t<int16_t>& in
     audio_ptr += num_samples_read;
     output_ptr = populate_func(this, frontend_output, output_ptr);
   }
+
+  // If we're using dynamic quantization,
+  // then convert the uint16 spectrogram in the tmp buffer
+  // to int8 using dynamic quantization
+  if(quantize_tmp_buffer != nullptr)
+  {
+    dynamic_scale_int8_spectrogram(
+      (const uint16_t*)quantize_tmp_buffer, 
+      (int8_t*)output_buf.ptr, 
+      _n_features * _n_channels, 
+      this->_dynamic_quantize_range
+    );
+    free(quantize_tmp_buffer);
+  }
+
 }
 
 /*************************************************************************************************/
@@ -219,40 +246,6 @@ static void* populate_int8_slice(AudioFeatureGeneratorWrapper *self, const struc
   return dst;
 }
 
-/*************************************************************************************************
- */
-static void* populate_dynamic_scale_int8_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output)
-{
-  const uint16_t* src = frontend_output.values;
-  int8_t *dst = static_cast<int8_t*>(output);
-
-  // Find the maximum value in the uint16 spectrogram
-  int32_t maxval = 0;
-
-  for (size_t i = frontend_output.size; i > 0; --i) 
-  {
-    const int32_t value = (int32_t)*src++;
-    maxval = std::max(value, maxval);
-  }
-
-  const int32_t minval = std::max(maxval - self->_dynamic_quantize_range, 0);
-  const int32_t val_range = std::max(maxval - minval, 1);
-  src = frontend_output.values;
-
-  // Scaling the uint16 spectrogram between -128 and +127 using the given range
-  for (size_t i = frontend_output.size; i > 0; --i) 
-  {
-    int32_t value = (int32_t)*src++;
-    value -= minval;
-    value *= 255;
-    value /= val_range;
-    value -= 128;
-    value = std::min(std::max(value, -128), 127);
-    *dst++ = (int8_t)value;
-  }
-
-  return dst;
-}
 
 /*************************************************************************************************/
 static void* populate_uint16_slice(AudioFeatureGeneratorWrapper *self, const struct FrontendOutput& frontend_output, void* output)
@@ -277,6 +270,40 @@ static void* populate_float_slice(AudioFeatureGeneratorWrapper *self, const stru
     *dst++ = static_cast<float>(value);
   }
   return dst;
+}
+
+
+
+/**************************************************************************************************/
+static void dynamic_scale_int8_spectrogram(const uint16_t* src, int8_t* dst, int length, int dynamic_quantize_range)
+{
+  const uint16_t* ptr;
+
+  // Find the maximum value in the uint16 spectrogram
+  int32_t maxval = 0;
+
+  ptr = src;
+  for (size_t i = length; i > 0; --i) 
+  {
+    const int32_t value = (int32_t)*ptr++;
+    maxval = std::max(value, maxval);
+  }
+
+  const int32_t minval = std::max(maxval - dynamic_quantize_range, 0);
+  const int32_t val_range = std::max(maxval - minval, 1);
+
+  // Scaling the uint16 spectrogram between -128 and +127 using the given range
+  ptr = src;
+  for (size_t i = length; i > 0; --i) 
+  {
+    int32_t value = (int32_t)*ptr++;
+    value -= minval;
+    value *= 255;
+    value /= val_range;
+    value -= 128;
+    value = std::min(std::max(value, -128), 127);
+    *dst++ = (int8_t)value;
+  }
 }
 
 

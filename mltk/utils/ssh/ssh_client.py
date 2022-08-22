@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import glob
 import os
+import re
 import time
 import queue
 import threading
@@ -15,6 +16,7 @@ from mltk.utils.python import (
 )
 from mltk.utils.path import create_tempdir, fullpath
 from mltk.utils.signal_handler import SignalHandler
+from ..system import is_windows
 
 
 install_pip_package('paramiko')
@@ -37,7 +39,7 @@ class SshClient(paramiko.client.SSHClient):
         compress:bool=False,
         sudo_password:str=None,
         bufsize:int=65536,
-        shell:str='sh',
+        shell:str='auto',
         remote_dir:str='.',
         connection_settings:dict=None
     ):
@@ -48,6 +50,7 @@ class SshClient(paramiko.client.SSHClient):
         self.bufsize = bufsize
         self.remote_dir = remote_dir
         self.shell = shell
+        self.is_windows = False
 
         self._transport:paramiko.Transport = None
         self._environment= environment or {}
@@ -80,11 +83,29 @@ class SshClient(paramiko.client.SSHClient):
 
             transport = self.get_transport()
             transport.use_compression(self.compress)
-
             self.logger.debug('Connected')
         except Exception as e:
             prepend_exception_msg(e, f'Failed to connect to {connect_msg}')
             raise
+
+
+        if self.shell == 'auto':
+            self.shell = None
+            self.is_windows = True
+            self.logger.debug('Determining remote OS')
+            retcode, _ = self.execute_command('ver.exe', log_level=1, raise_exception_on_error=False)
+            if retcode == 0:
+                self.logger.info('Remote OS is Windows')
+                self.is_windows = True
+            else:
+                self.logger.info('Remote OS is Unix')
+                self.is_windows = False 
+                self.shell = 'sh'
+
+        if self.is_windows:
+            self.python_exe = 'python'
+        else:
+            self.python_exe = 'python3'
 
 
     def close(self):
@@ -120,10 +141,17 @@ class SshClient(paramiko.client.SSHClient):
         if input_data is None and cmd.startswith('sudo'):
             input_data = self._sudo_password
 
-        cmd = f'{self.shell} -c \'{cmd}\''
+        if self.shell:
+            if self.shell == 'cmd':
+                cmd = f'{self.shell} /c {cmd}'
+            else:
+                cmd = f'{self.shell} -c \'{cmd}\''
 
         try:
             if background:
+                if self.is_windows:
+                    raise RuntimeError('Background commands not currently supported with Windows')
+                
                 handle = SshBackgroundCommand(
                     func=self._run_poll,
                     cmd=cmd,
@@ -170,6 +198,9 @@ class SshClient(paramiko.client.SSHClient):
         maxlen=4096
     ) -> Tuple[int, str]:
         """Execute a list of shell commands on the SSH server machine"""
+        if self.is_windows:
+            raise RuntimeError('Batch commands not currently supported with Windows')
+
         if input_data is None and any(e.startswith('sudo') for e in cmds):
             input_data = self._sudo_password
 
@@ -227,11 +258,11 @@ class SshClient(paramiko.client.SSHClient):
         remote_path = remote_path or f'{self.remote_dir}/{os.path.basename(local_path)}'
         
         try:
-            self.logger.debug(f'Uploading: {local_path} to: {remote_path}')
-            sftp_client.chdir(self.remote_dir)
             remote_dir = os.path.dirname(remote_path).replace('\\', '/')
             if remote_dir:
                 self.create_remote_dir(remote_dir)
+            self.logger.debug(f'Uploading: {local_path} to: {remote_path}')
+            self._change_remote_cwd(sftp_client, self.remote_dir, remote_path)
             sftp_client.put(local_path, remote_path)
         finally:
             try:
@@ -293,8 +324,9 @@ class SshClient(paramiko.client.SSHClient):
                 if remote_dir and remote_dir not in created_remote_dirs:
                     created_remote_dirs.append(remote_dir)
                     self.create_remote_dir(remote_dir, remote_cwd=remote_cwd)
-                self.logger.debug(f'Uploading: {local_path} to: {remote_path}')
                 
+                self.logger.debug(f'Uploading: {local_path} to: {remote_path}')
+                self._change_remote_cwd(sftp_client, remote_cwd, remote_path)
                 sftp_client.put(local_path, remote_path)
         finally:
             try:
@@ -326,7 +358,6 @@ class SshClient(paramiko.client.SSHClient):
 
         try:
             self.logger.debug(f'Downloading: {resolved_remote_path} to: {local_path}')
-            sftp_client.chdir(self.remote_dir)
             local_dir = os.path.dirname(local_path)
             if local_dir:
                 os.makedirs(local_dir, exist_ok=True)
@@ -444,7 +475,6 @@ class SshClient(paramiko.client.SSHClient):
                     kwds=dict(
                         client_index=client_index,
                         clients=sftp_clients,
-                        remote_cwd=remote_cwd,
                         paths=path_chunk,
                         cancelled_download=cancelled_download
                 )))
@@ -488,7 +518,6 @@ class SshClient(paramiko.client.SSHClient):
         self, 
         client_index:int, 
         clients:List[paramiko.SFTPClient], 
-        remote_cwd:str,
         paths:List[Tuple[str]],
         cancelled_download:threading.Event,
     ) -> Union[List[str], str]:
@@ -507,7 +536,6 @@ class SshClient(paramiko.client.SSHClient):
                 try:
                     if clients[client_index] is None:
                         clients[client_index] = self.open_sftp()
-                        clients[client_index].chdir(remote_cwd)
                         clients[client_index].sock.timeout = 15
 
                     clients[client_index].get(remote_path, local_path)
@@ -544,8 +572,15 @@ class SshClient(paramiko.client.SSHClient):
         """Create a directory on the SSH server"""
         remote_cwd = remote_cwd or self.remote_dir
         self.logger.debug(f'Creating directory on remote: {remote_dir}')
+        if self.is_windows:
+            remote_cwd = self._normalize_remote_path(remote_cwd)
+            remote_dir = self._normalize_remote_path(remote_dir)
+            mkdir_cmd = f'mkdir "{remote_dir}" 2> NUL'
+        else:
+            mkdir_cmd = f'mkdir -p {remote_dir}'
+        
         self.execute_command(
-            f'cd {remote_cwd} && mkdir -p {remote_dir}', 
+            f'cd "{remote_cwd}" && {mkdir_cmd}', 
             log_level=1, 
             raise_exception_on_error=False
         )
@@ -554,7 +589,9 @@ class SshClient(paramiko.client.SSHClient):
     def resolve_glob_remote_paths(self, path:str, cwd:str=None) -> List[str]:
         """List files on the SSH server using glob"""
         cwd = cwd or self.remote_dir
-        cmd = f'cd "{cwd}" && python3 -c "import glob,os; r=glob.glob(\\"{path}\\", recursive=True); print(\\"MLTK_START_PATHS=\\" + \\";\\".join(p for p in r if os.path.isfile(p)));"'
+        cwd = self._normalize_remote_path(cwd)
+
+        cmd = f'cd "{cwd}" && {self.python_exe} -c "import glob,os; r=glob.glob(\\"{path}\\", recursive=True); print(\\"MLTK_START_PATHS=\\" + \\";\\".join(p for p in r if os.path.isfile(p)));"'
         _, retmsg = self.execute_command(cmd, log_level=1, maxlen=-1)
         idx = retmsg.index('MLTK_START_PATHS=')
         if idx == -1:
@@ -566,7 +603,9 @@ class SshClient(paramiko.client.SSHClient):
     def resolve_remote_path(self, path:str, cwd:str=None, raise_exception=True) -> str:
         """Resolve a file path on the SSH server"""
         cwd = cwd or self.remote_dir
-        cmd = f'cd "{cwd}" && python3 -c "from os.path import expandvars,expanduser,normpath,abspath; print(\\"MLTK_REMOTE_PATH=\\"+abspath(normpath(expanduser(expandvars(\\"{path}\\")))))"'
+        cwd = self._normalize_remote_path(cwd)
+
+        cmd = f'cd "{cwd}" && {self.python_exe} -c "from os.path import expandvars,expanduser,normpath,abspath; print(\\"MLTK_REMOTE_PATH=\\"+abspath(normpath(expanduser(expandvars(\\"{path}\\")))))"'
         retcode, retmsg = self.execute_command(cmd, log_level=1, maxlen=-1, raise_exception_on_error=False)
         if retcode == 0:
             idx = retmsg.index('MLTK_REMOTE_PATH=')
@@ -578,6 +617,28 @@ class SshClient(paramiko.client.SSHClient):
         self.logger.debug(f'File not found on remote: {path}')
 
         return None
+
+
+    def kill_process(self, pid:int):
+        """Kill a process by ID"""
+        if self.is_windows:
+            self.execute_command(f'taskkill /F /PID {pid}', raise_exception_on_error=False, log_level=1) 
+        else:
+            self.execute_command(f'pkill -P {pid}', raise_exception_on_error=False, log_level=1) 
+
+
+    def _normalize_remote_path(self, remote_path:str) -> str:
+        if self.is_windows:
+            return remote_path.replace('/', '\\')
+        return remote_path
+
+
+    def _change_remote_cwd(self, sftp_client:paramiko.SFTPClient, remote_cwd:str, remote_path:str):
+        # Only change the remote directory if the remote is non-Windows OR we were not given a Windows absolute path.
+        # For Windows, we chdir(None) due to an incompatibility in paramiko
+        remote_path = self._normalize_remote_path(remote_path)
+        remote_cwd = remote_cwd if not (self.is_windows and re.match(r'[a-z]\:\\.*', remote_path, flags=re.IGNORECASE)) else None
+        sftp_client.chdir(remote_cwd)
 
 
     def _run_poll(
@@ -596,7 +657,8 @@ class SshClient(paramiko.client.SSHClient):
         
         session = self._transport.open_session()
         session.set_combine_stderr(True)
-        session.get_pty(width=0, height=0, term='dumb')
+        if not self.is_windows:
+            session.get_pty(width=0, height=0, term='dumb')
         session.update_environment(self._environment)
 
         stdin = session.makefile_stdin("wb", self.bufsize)
@@ -661,8 +723,8 @@ class SshClient(paramiko.client.SSHClient):
                 out_buf = out_buf[len(out_buf)-maxlen:]
 
 
-            crlf_index = line_buf.index('\r\n')
-            lf_index = line_buf.index('\n')
+            crlf_index = line_buf.find('\r\n')
+            lf_index = line_buf.find('\n')
             if crlf_index != -1:
                 line =  line_buf[:crlf_index]
                 line_buf = line_buf[crlf_index+2:]

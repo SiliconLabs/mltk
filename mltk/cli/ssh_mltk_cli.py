@@ -146,7 +146,6 @@ The currently supported commands are: train
         if not verbose:
             cli.print_info(f'HINT: For verbose remote server logs, see: {log_file}')
         
-        print(f'port={port}')
         ssh.run_mltk_command(
             ssh_host=host,
             ssh_port=port,

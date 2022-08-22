@@ -5,7 +5,7 @@ extern const uint32_t __init_array_start;
 extern const uint32_t __init_array_end;
 extern const uint8_t __HeapBase;
 extern const uint8_t __HeapLimit;
-
+int __dso_handle; // This is just a placeholder to keep the linker happy
 
 extern int main(void);
 extern void heap_set_buffer(void* buffer, uint32_t length);

@@ -270,7 +270,7 @@ def download_url(
     dst_path:str, 
     show_progress=False, 
     logger=None
-):
+) -> str:
     """Downloads the tarball or zip file from url into dst_path.
     Args:
       url: The URL of a tarball or zip file.
@@ -297,7 +297,7 @@ def download_url(
             logger=logger, 
             show_progress=show_progress
         )
-        return
+        return dst_path
 
 
 
@@ -327,6 +327,8 @@ def download_url(
             pass 
         prepend_exception_msg(e, f'Failed to download: {url}')
         raise
+
+    return dst_path
 
 
 def verify_file_hash(

@@ -69,6 +69,7 @@ freely, subject to the following restrictions:
 import os
 import sys
 import time
+import re
 import subprocess
 from setuptools import setup, find_packages
 from setuptools.command.build_py import build_py
@@ -138,6 +139,60 @@ else:
     print('Uninstalling pickle5 (if necessary)')
     subprocess.run([sys.executable, '-m', 'pip', 'uninstall', 'pickle5'])
 
+
+install_requires=[
+    'typer<1.0',
+    'pytest',
+    'pytest-dependency',
+    'pytest-html-reporter',
+    'cmake',
+    'ninja',
+    'psutil',
+    'pyaml<22.0',
+    'tensorflow>=2.3,<3.0',
+    'tensorflow_probability>=0.12.2',
+    'tflite-support<0.4.2', # 'tflite-support==0.4.2 requires flatbuffers>2.0, but TF requires flatbuffers<2.0
+    'protobuf>=3.18,<3.20', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
+    'onnx',
+    'onnxruntime<1.11',
+    'flatbuffers<2.0', # This is required by TF
+    'numpy<1.23', # Numba, which is installed by TF, has a requirement of < 1.23
+    'scipy<2.0',
+    'matplotlib<4.0',
+    'tqdm<5.0',
+    'pillow<9.0',
+    'librosa<1.0',
+    'joblib',
+    'netron<6.0',
+    'bincopy<18.0',
+    'pyserial<4.0',
+    'GPUtil<2.0',
+    'patool==1.12',
+    'prettytable>=2.0,<3.0'
+] + additional_install_dependencies
+
+setup_dependencies_py = os.environ.get('MLTK_SETUP_PY_DEPS', '').split('|')
+package_name_re = re.compile(f'^(\w+)') # Find everything before the non-alphanumeric characters
+for dep in setup_dependencies_py:
+    match = package_name_re.match(dep)
+    if not match:
+        continue
+    dep_name = match.group(1).lower()
+    modified = False
+    for i, req in enumerate(install_requires):
+        # If the MLTK_SETUP_PY_DEPS is already an install requirement, 
+        # then just replace it
+        if req.lower().startswith(dep_name): 
+            install_requires[i] = dep 
+            print(f'Modifying install requirement: {dep}')
+            modified = True 
+            break
+    # Otherwise add the new MLTK_SETUP_PY_DEPS to the install requirements
+    if not modified:
+        print(f'Adding install requirement: {dep}')
+        install_requires.append(dep)
+
+
 setup(
     name='silabs-mltk',
     version=mltk.__version__,
@@ -154,36 +209,7 @@ setup(
     ],
     python_requires='>=3.7,<3.10',
     setup_requires=['wheel'],
-    install_requires=[
-        'typer<1.0',
-        'pytest',
-        'pytest-dependency',
-        'pytest-html-reporter',
-        'cmake',
-        'ninja',
-        'psutil',
-        'pyaml<22.0',
-        'tensorflow>2.3,<3.0',
-        'tensorflow_probability>=0.12.2',
-        'tflite-support',
-        'protobuf>=3.18,<3.20', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
-        'onnx',
-        'onnxruntime<1.11',
-        'flatbuffers<2.0',
-        'numpy',
-        'scipy<2.0',
-        'matplotlib<4.0',
-        'tqdm<5.0',
-        'pillow<9.0',
-        'librosa<1.0',
-        'joblib',
-        'netron<6.0',
-        'bincopy<18.0',
-        'pyserial<4.0',
-        'GPUtil<2.0',
-        'patool==1.12',
-        'prettytable>=2.0,<3.0'
-    ] + additional_install_dependencies,
+    install_requires=install_requires,
     packages=find_packages(include=['mltk', 'mltk.*']),
     package_dir={'': '.'},
     package_data={ 

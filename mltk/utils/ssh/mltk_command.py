@@ -348,32 +348,6 @@ def _start_command(
         logger.info('Installing the MLTK into the remote virtual environment')
         ssh_client.execute_command(f'cd "{remote_dir}" && . ./.venv/bin/activate && pip3 install wheel silabs-mltk=={mltk.__version__}', log_level=logging.DEBUG)
 
-
-    # FIXME: This is a work-around to use the latest ParallelAudioGenerator iterator that uses joblib
-    #        remove this once the latest mltk is released
-    from mltk.core.preprocess.audio.parallel_generator import iterator as audio_iterator
-    from mltk.core.preprocess.image.parallel_generator import iterator as image_iterator
-    from mltk.core import model
-    from mltk.core.model import model_utils
-    from mltk.core.model.mixins import ssh_mixin
-
-    combined_upload_files.append(
-        f'{audio_iterator.__file__}|.mltk_tmp/parallel_audio_generator_iterator_workaround.py'
-    )
-    combined_upload_files.append(
-        f'{image_iterator.__file__}|.mltk_tmp/parallel_image_generator_iterator_workaround.py'
-    )
-    combined_upload_files.append(
-        f'{os.path.dirname(model.__file__) + "/__init__.py"}|.mltk_tmp/model_init_workaround.py'
-    )
-    combined_upload_files.append(
-        f'{ssh_mixin.__file__}|.mltk_tmp/ssh_mixin_workaround.py'
-    )
-    combined_upload_files.append(
-        f'{model_utils.__file__}|.mltk_tmp/model_utils.py'
-    )
-
-
     # Uploading any local files to the remote server
     logger.info('Copying files from local machine to remote server')
     ssh_client.upload_files(
@@ -388,20 +362,6 @@ def _start_command(
         activate_venv=create_venv
     )
     batch_cmds.append('which mltk') # This is useful for debugging
-
-    # FIXME: This is a work-around to use the latest ParallelAudioGenerator iterator that uses joblib
-    #        remove this once the latest mltk is released
-    # This is a work-around of a bug in an older version of the MLTK that can cause the command to hang at the end of execution
-    batch_cmds.append('python3 -c "import shutil,os;import mltk;shutil.copyfile(\'./.mltk_tmp/model_utils.py\',os.path.dirname(mltk.__file__)+\'/core/model/model_utils.py\')"')
-    batch_cmds.append('python3 -c "import os,pathlib;from mltk.utils import logger;d=pathlib.Path(logger.__file__).read_text();d=d.replace(\\"pipe_redirect_thread.join()\\",\\"pipe_redirect_thread.join(timeout=1)\\");pathlib.Path(logger.__file__).write_text(d);"')
-    # This is a work-around to use the latest ParallelAudioGenerator iterator that uses joblib
-    batch_cmds.append('python3 -c "import shutil;from mltk.core.preprocess.audio.parallel_generator import iterator;shutil.copyfile(\'./.mltk_tmp/parallel_audio_generator_iterator_workaround.py\',iterator.__file__)"')
-    # This is a work-around to use the latest ParallelAudioGenerator iterator that uses joblib
-    batch_cmds.append('python3 -c "import shutil;from mltk.core.preprocess.image.parallel_generator import iterator;shutil.copyfile(\'./.mltk_tmp/parallel_image_generator_iterator_workaround.py\',iterator.__file__)"')
-    batch_cmds.append('python3 -c "import shutil,os;from mltk.core.model import mixins;shutil.copyfile(\'./.mltk_tmp/ssh_mixin_workaround.py\',os.path.dirname(mixins.__file__)+\'/ssh_mixin.py\')"')
-   
-    batch_cmds.append('python3 -c "import os,shutil;from mltk.core import model;shutil.copyfile(\'./.mltk_tmp/model_init_workaround.py\',os.path.dirname(model.__file__)+\'/__init__.py\')"')
-    
 
     mltk_cmd_str = 'mltk ' + ' '.join(cmd)
     batch_cmds.append(f'rm -rf "{proc_context.remote_cmd_log_file}"')

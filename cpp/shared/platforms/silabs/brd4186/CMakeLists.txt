@@ -150,11 +150,12 @@ PRIVATE
 ###########################################################
 # mltk_platform_add_exe_targets
 #
-# Adds a target to download the appplication binary to the embedded device
+# Adds a target to download the application binary to the embedded device
 #
 macro(mltk_platform_add_exe_targets exe_target)
   mltk_commander_add_download_target(${exe_target})
   mltk_commander_add_reset_target(${exe_target})
+  mltk_commander_add_download_run_target(${exe_target} ${ARGN})
 endmacro()
 
 

@@ -3,7 +3,6 @@ import pytest
 import os
 import stat
 import yaml
-import tempfile
 
 # Skip these tests if there is no SSH server locally running on Linux
 pytestmark = pytest.mark.skipif(not os.path.exists('/var/run/sshd.pid'), reason='No SSH server found or not running on Linux')
@@ -60,7 +59,7 @@ def test_train_model_with_params_in_cmd_create_venv():
     shutdown_cmd_file_path = f'{pytest_results_dir}/test_shutdown_cmd.txt'
     model_file_path = f'{TEST_MODELS_DIR}/test_image_model-test.mltk.zip'
     model_log_dir = f'{create_user_dir()}/models/test_image_model-test'
-    upload_file_abspath = f'{tempfile.gettempdir()}/test_ssh_cli.py'
+    upload_file_abspath = f'{create_tempdir("temp")}/test_ssh_cli.py'
 
     ssh_workspace_dir = _get_ssh_workspace_dir()
     ssh_username = _get_ssh_username()
@@ -111,7 +110,7 @@ def test_train_model_with_params_in_settings_no_create_venv():
     shutdown_cmd_file_path = f'{pytest_results_dir}/test_shutdown_cmd.txt'
     model_file_path = f'{TEST_MODELS_DIR}/test_image_model.mltk.zip'
     model_log_dir = f'{create_user_dir()}/models/test_image_model'
-    upload_file_abspath = f'{tempfile.gettempdir()}/test_ssh_cli.py'
+    upload_file_abspath = f'{create_tempdir("temp")}/test_ssh_cli.py'
 
     ssh_workspace_dir = _get_ssh_workspace_dir()
     ssh_username = _get_ssh_username()
@@ -175,7 +174,7 @@ def test_train_model_with_ssh_mixin_and_config():
     shutdown_cmd_file2_path = f'{pytest_results_dir}/test_shutdown_cmd2.txt'
     model_file_path = f'{pytest_results_dir}/test_image_model-test.mltk.zip'
     model_log_dir = f'{create_user_dir()}/models/test_image_model-test'
-    upload_file_abspath = f'{tempfile.gettempdir()}/test_ssh_cli.py'
+    upload_file_abspath = f'{create_tempdir("temp")}/test_ssh_cli.py'
     ssh_config_path = f'{pytest_results_dir}/ssh_config.txt'
 
     ssh_workspace_dir = _get_ssh_workspace_dir()
@@ -263,7 +262,7 @@ def test_train_model_nowait():
     shutdown_cmd_file_path = f'{pytest_results_dir}/test_shutdown_cmd.txt'
     model_file_path = f'{TEST_MODELS_DIR}/test_image_model-test.mltk.zip'
     model_log_dir = f'{create_user_dir()}/models/test_image_model-test'
-    upload_file_abspath = f'{tempfile.gettempdir()}/test_ssh_cli.py'
+    upload_file_abspath = f'{create_tempdir("temp")}/test_ssh_cli.py'
 
     ssh_workspace_dir = _get_ssh_workspace_dir()
     ssh_username = _get_ssh_username()
@@ -303,7 +302,7 @@ def test_train_model_resume():
     shutdown_cmd_file_path = f'{pytest_results_dir}/test_shutdown_cmd.txt'
     model_file_path = f'{TEST_MODELS_DIR}/test_image_model-test.mltk.zip'
     model_log_dir = f'{create_user_dir()}/models/test_image_model-test'
-    upload_file_abspath = f'{tempfile.gettempdir()}/test_ssh_cli.py'
+    upload_file_abspath = f'{create_tempdir("temp")}/test_ssh_cli.py'
 
     ssh_workspace_dir = _get_ssh_workspace_dir()
     ssh_username = _get_ssh_username()
@@ -329,7 +328,12 @@ def test_train_model_resume():
 
 
 def _get_ssh_workspace_dir() -> str:
-    _, retmsg = run_shell_cmd(['bash', '-l', '-c', 'cd ~ && pwd'])
+    # If we're running in Jenkins, then e sure to switch to the home directory
+    if 'JENKINS_URL' in os.environ:
+        _, retmsg = run_shell_cmd(['bash', '-l', '-c', 'cd ~ && pwd'])
+    # Otherwise, just use whatever directory is used in the bash login
+    else:
+        _, retmsg = run_shell_cmd(['bash', '-l', '-c', 'pwd'])
     return retmsg.splitlines()[-1].strip() + '/utest_ssh_workspace'
 
 

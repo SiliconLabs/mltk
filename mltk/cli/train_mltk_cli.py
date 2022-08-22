@@ -94,8 +94,10 @@ May be one of the following:
     from mltk.core import  (
         train_model, 
         evaluate_model,
-        load_mltk_model
+        load_mltk_model,
+        EvaluateMixin
     )
+
     from mltk.core.model.mixins.archive_mixin import ARCHIVE_EXTENSION
     from mltk.utils.logger import ConsoleLoggerLevelContext
 
@@ -132,7 +134,7 @@ May be one of the following:
             show=show,
         )
 
-        if evaluate:
+        if evaluate and isinstance(mltk_model, EvaluateMixin):
             try:
                 logger.info('\n\n' + '-' * 80)
                 logger.info('Evaluating the .h5 model ...')

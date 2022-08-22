@@ -72,19 +72,7 @@ def initialize(logger=None):
         try:
             tf_gpus = tf.config.list_physical_devices('GPU')
             if len(tf_gpus) == 0:
-                logger.warning('\n\n\n'
-                    '*******************************************************************************\n'
-                    'WARNING: Failed to load GPU driver\n'
-                    '\n'
-                    'This could mean that the driver or CUDA libraries are not properly installed.\n'
-                    'Refer to the Tensorflow GPU installation guide here:\n'
-                    'https://www.tensorflow.org/install/gpu\n'
-                    '\n'
-                    'Alternatively, you can disable the GPU by defining the environment variable: CUDA_VISIBLE_DEVICES=-1\n'
-                    '.e.g.:\n'
-                    f'{"set" if os.name == "nt" else "export"} CUDA_VISIBLE_DEVICES=-1\n\n'
-                    '*******************************************************************************\n'
-                )
+                _print_warning_msg(logger)
                 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
                 deinitialize(force=True)
                 return 
@@ -101,7 +89,10 @@ def initialize(logger=None):
         atexit.register(deinitialize)
 
     except Exception as e:
-        logger.warning(f'GPU init err: {e}')
+        err_msg = f'{e}'
+        logger.warning(f'GPU init err: {err_msg}')
+        if 'Driver/library version mismatch' in err_msg:
+            _print_warning_msg(logger)
         logger.info("Using CPU for training")
         os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
         deinitialize()
@@ -210,3 +201,21 @@ def check_tensorflow_cuda_compatibility_error(log_file_path:str) -> str:
         retval += '   export CUDA_VISIBLE_DEVICES=-1\n'
 
     return retval
+
+
+def _print_warning_msg(logger):
+    logger.warning('\n\n\n'
+        '*******************************************************************************\n'
+        'WARNING: Failed to load GPU driver\n'
+        '\n'
+        'This could mean that the driver or CUDA libraries are not properly installed,\n'
+        'or that your installed GPU driver does not match the Tensorflow version.\n\n'
+        'Refer to the Tensorflow GPU installation guide here:\n'
+        'https://www.tensorflow.org/install/gpu\n'
+        'https://www.tensorflow.org/install/source#gpu\n'
+        '\n'
+        'Alternatively, you can disable the GPU by defining the environment variable: CUDA_VISIBLE_DEVICES=-1\n'
+        '.e.g.:\n'
+        f'{"set" if os.name == "nt" else "export"} CUDA_VISIBLE_DEVICES=-1\n\n'
+        '*******************************************************************************\n'
+    )

@@ -29,3 +29,14 @@ This is useful if te MLTK package is running in a cloud "lambda" function.
 
 When set, the MLTK will only write to the OS's temporary directory.
 
+
+## MLTK_SETUP_PY_DEPS
+
+This is used by [setup.py](https://github.com/SiliconLabs/mltk/blob/master/setup.py), the script used to install the MLTK Python package.
+This may be used to override the MLTK Python package dependencies.
+
+This should contain a list of [install requirements](https://packaging.python.org/en/latest/discussions/install-requires-vs-requirements/) delimited by a pipe `|`, e.g.:
+
+```
+export MLTK_SETUP_PY_DEPS="tensorflow==2.4.4|numpy==1.19.5|tflite-support==0.2.0|tensorflow_probability==0.12.2|onnxruntime==1.9.0|typing-extensions==3.7.4"
+```

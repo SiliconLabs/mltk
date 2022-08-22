@@ -170,7 +170,7 @@ def program_flash(
     elif path.endswith('.bin'):
         cmd.append('--binary')
 
-    if '--binary' in path and address is None:
+    if '--binary' in cmd and address is None:
         device_info = retrieve_device_info()
         address = device_info.flash_base_address
 
@@ -219,6 +219,8 @@ def reset_device(
     """
     if platform is None and device is None:
         platform = query_platform()
+    if logger is not None:
+        logger.debug('Resetting device')
     issue_command(
         'device', 'reset', 
         platform=platform, 
