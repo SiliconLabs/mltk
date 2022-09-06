@@ -19,11 +19,15 @@ from .tflite_model_parameters import TfliteModelParameters
 
 
 def profile_model(
-    model:Union[MltkModel, TfliteModel, str], 
+    model:Union[MltkModel, TfliteModel, str],
+    image_path:str=None,
     accelerator:str=None,
+    baud:int=115200,
     port:str=None,
     use_device:bool=False,
     build:bool=False, 
+    platform:str=None,
+    runtime_buffer_size=-1,
     **kwargs
 ) -> ProfilingModelResults:
     """Profile a model for the given accelerator
@@ -40,13 +44,15 @@ def profile_model(
         use_device: Profile on a locally connected embedded device. If omitted, then profile in simulator
         port: Serial port of physical platform. If omitted, attempt to discover automatically
         build: If true, build the MLTK Model as a .tflite before profiling
+        runtime_buffer_size: The size of the tensor arena. This is only used by the simulator (i.e. when use_device=False).
+            If greater than 0, use the size given. If the given size is too small then loading the model will fail.
+            If equal to 0, try to use the size built into the model's parameters, if the model size is not available or too small, find the optimal size
+            If less than 0, automatically find the optimal tensor arena size, ignore the size built into the model parameters  
 
     Returns:
         The results of model profiling
     """
-    
-    accelerator = TfliteMicro.normalize_accelerator_name(accelerator)
-
+    #accelerator = TfliteMicro.normalize_accelerator_name(accelerator)
     try:
         tflite_model = load_tflite_model(model=model, build=build)
     except ArchiveFileNotFoundError as e:
@@ -55,19 +61,25 @@ def profile_model(
         )
         raise
 
-
     if use_device:
         # Profile on embedded device
         profiling_model_results = profile_model_on_device(
-            tflite_model, 
+            tflite_model,
+            image_path,
+            platform=platform,
+            baud=baud,
             accelerator=accelerator, 
             port=port
         )
+    elif image_path:
+        profiling_model_results = profile_model_in_executable(image_path, tflite_model, accelerator)
+
     else:
         # Profile in hardware simulator
         profiling_model_results = profile_model_in_simulator(
-            tflite_model, 
+            tflite_model,
             accelerator=accelerator,
+            runtime_buffer_size=runtime_buffer_size,
             **kwargs
         )
 
@@ -75,10 +87,30 @@ def profile_model(
 
     return profiling_model_results
 
+def profile_model_in_executable(
+    image_path:str, 
+    tflite_model:str, 
+    accelerator:str
+) -> ProfilingModelResults :
+    """Profile the given model using the given profiler executable
+
+    Args:
+        image_path: path to the profiler executable
+        tflite_model: path to the model to profile
+        accelerator: name of the accelerator to use when profiling
+    
+    Returns:
+        ProfilingModelResults: results of the model profiling
+    """
+    from mltk.utils.shell_cmd import run_shell_cmd 
+    model_path = tflite_model.path
+    retcode, retval = run_shell_cmd([image_path, '--model', model_path])
+    return parse_device_model_profiler_log(log_data=retval, tflite_model=tflite_model, accelerator=accelerator)
 
 def profile_model_in_simulator(
     tflite_model:TfliteModel,
     accelerator:str=None,
+    runtime_buffer_size:int=-1,
     **kwargs
 ) -> ProfilingModelResults:
     """Profile the given TfliteModel in simulator
@@ -100,6 +132,7 @@ def profile_model_in_simulator(
         tflite_model,
         accelerator=accelerator,
         return_estimates=True,
+        runtime_buffer_size=runtime_buffer_size,
         **kwargs
     )
 
@@ -108,8 +141,11 @@ def profile_model_in_simulator(
 
 def profile_model_on_device(
     tflite_model:TfliteModel,
+    image_path:str=None,
     accelerator:str=None,
-    port:str=None
+    port:str=None,
+    baud:int=115200,
+    platform:str=None
 ) -> ProfilingModelResults:
     """Profile the given TfliteModel on a physical embedded target
     
@@ -127,7 +163,6 @@ def profile_model_on_device(
     from mltk.utils.serial_reader import SerialReader
 
     logger = get_mltk_logger()
-    accelerator = TfliteMicro.normalize_accelerator_name(accelerator)
     tflite_model = copy.deepcopy(tflite_model)
     try:
         tflite_model_params = TfliteModelParameters.load_from_tflite_model(tflite_model)
@@ -138,18 +173,19 @@ def profile_model_on_device(
         # If the model doesn't have params then just ignore the error
         pass
 
+    port = port or 'regex:JLink CDC UART Port'
+    platform = platform or commander.query_platform()
+
     logger.error('Programming ML model to device ...')
     firmware_apps.program_image_with_model(
         name='mltk_model_profiler',
         accelerator=accelerator,
+        platform=platform,
+        firmware_image_path=image_path,
         tflite_model=tflite_model,
         logger=logger,
         halt=True
     )
-
-    # If no serial COM port is provided, 
-    # then attemp to resolve it based on common Silab's board COM port description
-    port = port or 'regex:JLink CDC UART Port'
     
     # We want the serial logger to always write to the file
     # but only to the console if verbose logging is enabled
@@ -160,7 +196,7 @@ def profile_model_on_device(
     logger.error('Profiling ML model on device ...')
     with SerialReader( 
         port=port,
-        baud=115200, 
+        baud=baud, 
         outfile=serial_logger,
         start_regex=[
             re.compile('.*Starting Model Profiler', re.IGNORECASE), 
@@ -174,7 +210,7 @@ def profile_model_on_device(
         ]
     ) as serial_reader:
         # Reset the board to start the profiling firmware
-        commander.reset_device()
+        commander.reset_device(platform=platform)
 
         # Wait for up to a minute for the profiler to complete
         if not serial_reader.read(timeout=60):
@@ -190,7 +226,8 @@ def profile_model_on_device(
     return parse_device_model_profiler_log(
         device_log,
         tflite_model=tflite_model,
-        accelerator=accelerator
+        accelerator=accelerator,
+        platform=platform,
     )
 
 
@@ -198,11 +235,11 @@ def profile_model_on_device(
 def parse_device_model_profiler_log(
     log_data:str,
     tflite_model:TfliteModel,
-    accelerator:str
+    accelerator:str,
+    platform:str=None
 ) -> ProfilingModelResults:
     # pylint: disable=protected-access
     lines = [x.strip() for x in log_data.splitlines()]
-
     runtime_memory_size = 0
     cpu_clock_rate = 0
     layer_results:List[ProfilingLayerResult] = []
@@ -262,29 +299,29 @@ def parse_device_model_profiler_log(
 
             match = ops_cycles_re.match(line)
             if match:
-                layer._ops = _line_to_int(match.group(1))
+                layer['ops'] = _line_to_int(match.group(1))
                 continue
             match = macs_cycles_re.match(line)
             if match:
-                layer._macs = _line_to_int(match.group(1))
+                layer['macs'] = _line_to_int(match.group(1))
                 continue
             match = cpu_cycles_re.match(line)
             if match:
-                layer._cpu_cycles = _line_to_int(match.group(1))
+                layer['cpu_cycles'] = _line_to_int(match.group(1))
                 continue
             match = acc_cycles_re.match(line)
             if match:
-                layer._accelerator_cycles = _line_to_int(match.group(1))
+                layer['accelerator_cycles'] = _line_to_int(match.group(1))
                 continue
             match = time_ms_re.match(line)
             if match:
-                layer._time = float(match.group(1))/1e3
+                layer['time'] = float(match.group(1))/1e3
                 continue
-
 
     return ProfilingModelResults(
         model=tflite_model,
         accelerator=accelerator,
+        platform=platform,
         cpu_clock_rate=cpu_clock_rate,
         runtime_memory_bytes=runtime_memory_size,
         layers=layer_results,

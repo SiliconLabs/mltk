@@ -28,6 +28,8 @@ add_custom_target(${PROJECT_NAME}
 # as it defines PYTHON variables used by the script
 find_package(mltk_pybind11 REQUIRED)
 # Include the tflite_micro_wrapper helper script
+# This must come before finding the mltk_tflite_micro_model package
+# as it enables required settings
 include(${CMAKE_CURRENT_LIST_DIR}/../tflite_micro_wrapper/tflite_micro_wrapper_helper.cmake)
 
 # Find the tflite micro mvp kernels which we'll link against

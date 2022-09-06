@@ -10,7 +10,7 @@ from mltk.utils import commander
 from mltk.utils.string_formatting import iso_time_str
 from mltk.utils.path import create_tempdir
 from mltk.utils.archive_downloader import download_verify_extract
-
+from mltk.utils.commander import DeviceInfo
 
 def add_image(
     name:str, 
@@ -147,6 +147,7 @@ def program_image_with_model(
     program_model(
         tflite_model=tflite_model,
         logger=logger,
+        platform=platform,
         halt=halt,
         firmwage_image_length=firmwage_image_length,
         offset=model_offset
@@ -156,14 +157,20 @@ def program_image_with_model(
 def program_model(
     tflite_model:TfliteModel,
     logger: logging.Logger,
+    platform:str = None,
     halt:bool = False,
     firmwage_image_length:int=-1,
     offset:int=0
 ):
     """Program the .tflite model to the end of the device's flash"""
+    
+    try:
+        device_info = commander.retrieve_device_info()
+    except:
+        logger.warning('Failed to retrieve device info')
 
-    device_info = commander.retrieve_device_info()
-    platform = commander.query_platform(device_info=device_info)
+    if platform is None:
+        platform = commander.query_platform(device_info=device_info)
 
     tmp_tflite_path = create_tempdir('temp') + '/model.bin'
     

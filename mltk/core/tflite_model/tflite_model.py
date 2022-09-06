@@ -521,6 +521,12 @@ class TfliteModel:
             #       quantization is done automatically inside the model
             x = self.quantize_to_input_dtype(x)
 
+            # If the last dimension of the model's input shape is 1,
+            # and the input data is missing this dimension
+            # then automatically expand the dimension
+            if len(self._input0.shape) != len(x.shape) and self._input0.shape[-1] == 1:
+                x = np.expand_dims(x, axis=-1)
+
             # Then set model input tensor
             self._interpreter.set_tensor(self._input0.index, x)
             # Execute the model
@@ -554,6 +560,12 @@ class TfliteModel:
                 # If the input sample isn't the same as the model input dtype,
                 # then we need to manually convert it first 
                 batch_x = self.quantize_to_input_dtype(batch_x)
+
+                # If the last dimension of the model's input shape is 1,
+                # and the batch data is missing this dimension
+                # then automatically expand the dimension
+                if len(self._input0.shape) != len(batch_x.shape) and self._input0.shape[-1] == 1:
+                    batch_x = np.expand_dims(batch_x, axis=-1)
 
                 # The set model input tensor
                 self._interpreter.set_tensor(self._input0.index, batch_x)

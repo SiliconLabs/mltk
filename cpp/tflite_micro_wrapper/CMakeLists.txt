@@ -67,6 +67,7 @@ target_link_libraries(${TFLITE_MICRO_MODULE_NAME}
 PUBLIC 
   ${MLTK_PLATFORM}
   mltk::tflite_micro_model
+  mltk::pybind11_helper
 )
 
 target_compile_features(${TFLITE_MICRO_MODULE_NAME}  

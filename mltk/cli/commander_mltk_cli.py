@@ -126,7 +126,8 @@ def download_run_command(
         fail_regex=[
             re.compile(r'.*hardfault.*', re.IGNORECASE), 
             re.compile(r'.*error.*', re.IGNORECASE),
-            re.compile(r'.*failed to alloc memory.*', re.IGNORECASE)
+            re.compile(r'.*failed to alloc memory.*', re.IGNORECASE),
+            re.compile(r'.*assert failed.*', re.IGNORECASE)
         ]
     ) as serial_reader:
         # Reset the board to start the profiling firmware

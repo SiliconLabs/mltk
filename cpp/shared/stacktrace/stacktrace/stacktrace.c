@@ -143,13 +143,6 @@ static int addr2line(const char* addr, const char* program_path)
 #ifdef _WIN32
 
 
-/*************************************************************************************************/
-static void os_print_stacktrace()
-{
-    // Trigger a breakpoint exception which will cause the stacktrace to print
-    __asm__("int $3");
-}
-
 
 /*************************************************************************************************/
 static void windows_print_stacktrace(CONTEXT *context)
@@ -344,6 +337,18 @@ static int os_init()
 
     return 0;
 }
+
+
+/*************************************************************************************************/
+static void os_print_stacktrace()
+{
+  CONTEXT context;
+  memset(&context, 0, sizeof(CONTEXT));
+  context.ContextFlags = CONTEXT_FULL;
+  RtlCaptureContext(&context);
+  windows_print_stacktrace(&context);
+}
+
 
 
 

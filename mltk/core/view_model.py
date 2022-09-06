@@ -3,16 +3,22 @@ import os
 import time
 
 import http
+from mltk.utils.network import find_listening_port
+from mltk.utils.path import create_tempdir, fullpath
+from mltk.utils.python import append_exception_msg
+from mltk.utils.python import install_pip_package
+
+# Install the netron Python package (if necessary)
+install_pip_package('netron')
+
 import netron
 # The default netron.server.ThreadedHTTPServer class that netron
 # uses inherits ThreadingMixIn which can hang.
 # Override this class to use http.server.ThreadingHTTPServer
 # which does not hang when it's shutdown
 netron.server.ThreadedHTTPServer = http.server.ThreadingHTTPServer
+netron.server._ThreadedHTTPServer = http.server.ThreadingHTTPServer
 
-from mltk.utils.network import find_listening_port
-from mltk.utils.path import create_tempdir, fullpath
-from mltk.utils.python import append_exception_msg
 
 from .model import (
     MltkModel, 

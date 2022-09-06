@@ -23,3 +23,25 @@ CPMAddPackage(
     OPTIONS 
         "MSVC OFF"
 )
+
+
+add_library(mltk_pybind11_helper INTERFACE)
+add_library(mltk::pybind11_helper ALIAS mltk_pybind11_helper)
+
+target_sources(mltk_pybind11_helper
+INTERFACE
+  pybind11_helper.hpp
+)
+target_include_directories(mltk_pybind11_helper
+INTERFACE
+  .
+  ${PYTHON_INCLUDE_DIRS}
+)
+
+target_link_libraries(mltk_pybind11_helper
+INTERFACE 
+  pybind11_headers
+  ${PYTHON_LIBRARIES}
+  mltk_tflite_micro # NOTE: These must be manually included into the build
+  mltk_tflite_micro_model
+)

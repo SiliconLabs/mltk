@@ -396,7 +396,7 @@ def _compute_class_weights_unsafe(
     """Compute the given data's class weights"""
     def _create_weights_dict():
         class_weights = mltk_model.class_weights
-        if class_weights is None:
+        if not class_weights:
             return None
         # If a dictionary where the keys directly map to the class ids was given
         # then just return the class_weights as-is

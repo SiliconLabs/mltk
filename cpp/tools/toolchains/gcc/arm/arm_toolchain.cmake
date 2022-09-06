@@ -16,7 +16,6 @@ if(NOT MLTK_USER_OPTIONS)
 endif()
 
 if(EXISTS "${MLTK_USER_OPTIONS}" AND NOT MLTK_NO_USER_OPTIONS)
-  mltk_info("MLTK_USER_OPTIONS=${MLTK_USER_OPTIONS}")
   include("${MLTK_USER_OPTIONS}")
 endif()
 
@@ -109,8 +108,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 set(SPEC_PATH "${TOOLCHAIN_DIR}/arm-none-eabi/lib")
 set(CLIB_SPECS "--specs ${SPEC_PATH}/nano.specs --specs ${SPEC_PATH}/nosys.specs")
 
-set(CMAKE_C_FLAGS_INIT   "${CLIB_SPECS} -nostartfiles -ffunction-sections -fdata-sections -ffreestanding -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter" CACHE INTERNAL "c compiler flags")
-set(CMAKE_CXX_FLAGS_INIT "${CLIB_SPECS} -nostartfiles -ffunction-sections -fdata-sections -ffreestanding -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fno-threadsafe-statics -fno-rtti -fno-exceptions -fno-use-cxa-atexit" CACHE INTERNAL "cxx compiler flags")
+set(CMAKE_C_FLAGS_INIT   "${CLIB_SPECS} -nostartfiles -ffunction-sections -fdata-sections -ffreestanding -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "c compiler flags")
+set(CMAKE_CXX_FLAGS_INIT "${CLIB_SPECS} -nostartfiles -ffunction-sections -fdata-sections -ffreestanding -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fno-threadsafe-statics -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "cxx compiler flags")
 set(CMAKE_ASM_FLAGS_INIT "${CMAKE_C_FLAGS_INIT} -x assembler-with-cpp")
 set(CMAKE_EXE_LINKER_FLAGS_INIT "-Wl,--gc-sections -Wl,--cref" CACHE INTERNAL "exe link flags")
 
@@ -118,8 +117,16 @@ SET(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb3 -DDEBUG" CACHE INTERNAL "c debug compiler fl
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb3 -DDEBUG" CACHE INTERNAL "cxx debug compiler flags")
 SET(CMAKE_ASM_FLAGS_DEBUG "-ggdb" CACHE INTERNAL "asm debug compiler flags")
 
+
+mltk_get(MLTK_ENABLE_DEBUG_INFO_IN_RELEASE_BUILDS)
+if(MLTK_ENABLE_DEBUG_INFO_IN_RELEASE_BUILDS)
+SET(CMAKE_C_FLAGS_RELEASE "-O3 -g -ggdb3" CACHE INTERNAL "c release compiler flags")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -g -ggdb3" CACHE INTERNAL "cxx release compiler flags")
+else()
 SET(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE INTERNAL "c release compiler flags")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE INTERNAL "cxx release compiler flags")
+endif()
+
 set(CMAKE_EXE_LINKER_RELEASE "-flto" CACHE INTERNAL "exe link flags")
 
 SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -ggdb3" CACHE INTERNAL "c release compiler flags")

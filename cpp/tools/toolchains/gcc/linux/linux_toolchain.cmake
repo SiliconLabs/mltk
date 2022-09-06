@@ -8,6 +8,14 @@ set(MLTK_TOOLCHAIN_NAME linux CACHE INTERNAL "")
 
 include(${CMAKE_CURRENT_LIST_DIR}/../../../cmake/utilities.cmake)
 
+if(NOT MLTK_USER_OPTIONS)
+  set(MLTK_USER_OPTIONS ${CMAKE_SOURCE_DIR}/user_options.cmake)
+endif()
+
+if(EXISTS "${MLTK_USER_OPTIONS}" AND NOT MLTK_NO_USER_OPTIONS)
+  include("${MLTK_USER_OPTIONS}")
+endif()
+
 execute_process(
   COMMAND ${TOOLCHAIN_PREFIX}-gcc-8 --version 
   RESULT_VARIABLE result
@@ -54,8 +62,8 @@ set(CMAKE_MAKE_PROGRAM  ${CMAKE_MAKE_PROGRAM} CACHE INTERNAL "Ninja generation p
 
 set(CMAKE_FIND_ROOT_PATH /usr/bin)
 
-set(CMAKE_C_FLAGS_INIT   "-std=gnu11 -fdata-sections -ffunction-sections -Wno-main -m64" CACHE INTERNAL "c compiler flags")
-set(CMAKE_CXX_FLAGS_INIT "-fdata-sections -ffunction-sections -Wno-main -m64" CACHE INTERNAL "cxx compiler flags")
+set(CMAKE_C_FLAGS_INIT   "-std=gnu11 -fdata-sections -ffunction-sections -Wno-main -m64 -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "c compiler flags")
+set(CMAKE_CXX_FLAGS_INIT "-fdata-sections -ffunction-sections -Wno-main -m64 -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "cxx compiler flags")
 set(CMAKE_ASM_FLAGS_INIT "" CACHE INTERNAL "asm compiler flags")
 set(CMAKE_EXE_LINKER_FLAGS_INIT "-Wl,--gc-sections -static-libgcc -static-libstdc++ -pthread -m64" CACHE INTERNAL "exe link flags")
 
@@ -63,8 +71,14 @@ SET(CMAKE_C_FLAGS_DEBUG "-O0 -g -ggdb3 -fno-inline-small-functions" CACHE INTERN
 SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -ggdb3 -fno-inline-small-functions" CACHE INTERNAL "cxx debug compiler flags")
 SET(CMAKE_ASM_FLAGS_DEBUG "-g -ggdb3" CACHE INTERNAL "asm debug compiler flags")
 
-SET(CMAKE_C_FLAGS_RELEASE "-O3  -DNDEBUG" CACHE INTERNAL "c release compiler flags")
+mltk_get(MLTK_ENABLE_DEBUG_INFO_IN_RELEASE_BUILDS)
+if(MLTK_ENABLE_DEBUG_INFO_IN_RELEASE_BUILDS)
+SET(CMAKE_C_FLAGS_RELEASE "-O3 -g -ggdb3" CACHE INTERNAL "c release compiler flags")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -g -ggdb3" CACHE INTERNAL "cxx release compiler flags")
+else()
+SET(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE INTERNAL "c release compiler flags")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE INTERNAL "cxx release compiler flags")
+endif()
 
 SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -ggdb3" CACHE INTERNAL "c release compiler flags")
 SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g -ggdb3" CACHE INTERNAL "cxx release compiler flags")

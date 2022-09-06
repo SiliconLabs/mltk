@@ -95,7 +95,9 @@ May be one of the following:
         train_model, 
         evaluate_model,
         load_mltk_model,
-        EvaluateMixin
+        EvaluateMixin,
+        EvaluateClassifierMixin,
+        EvaluateAutoEncoderMixin
     )
 
     from mltk.core.model.mixins.archive_mixin import ARCHIVE_EXTENSION
@@ -145,7 +147,10 @@ May be one of the following:
                     )
                 logger.info(f'{h5_eval_results}')
                 
-                if mltk_model.tflite_converter:
+                if mltk_model.tflite_converter and \
+                   (mltk_model.eval_custom_function is not None or \
+                    isinstance(mltk_model, (EvaluateClassifierMixin, EvaluateAutoEncoderMixin))):
+
                     logger.info('Evaluating the .tflite model ...')
                     with ConsoleLoggerLevelContext(logger, 'ERROR'):
                         tflite_eval_results = evaluate_model( 

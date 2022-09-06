@@ -136,6 +136,7 @@ def discover_and_import_commands(root_cli):
     if os.path.exists(cpp_cli_path):
         search_paths.append(cpp_cli_path)
 
+
     # Also all any apps directories that define an mltk_cli.py script
     cpp_apps_path = f'{MLTK_ROOT_DIR}/cpp/shared/apps'
     if os.path.exists(cpp_apps_path):

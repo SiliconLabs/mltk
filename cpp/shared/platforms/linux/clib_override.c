@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "stacktrace/stacktrace.h"
 
@@ -8,21 +9,18 @@
 
 
 /*************************************************************************************************/
-void __wrap___assert_func(const char * file, int line, const char * func, const char * failedexpr)
+void __wrap___assert_fail (const char *__assertion, const char *__file,
+			   unsigned int __line, const char *__function)
 {
     /* Assertion failed!
      *
      * To find out where this assert was triggered, either look up the call stack,
      * or inspect the file, line and function parameters
      */
-    printf("Assertion failed: %s (%d): %s %s\n\n", file, line, func, failedexpr);
+    printf("Assertion failed: %s (%d): %s %s\n\n", __file, __line, __function, __assertion);
     fflush(stdout);
 
     stacktrace_dump();
-
-#if defined(DEBUG) && defined(_WIN32)
-    __asm__("int $3");
-#endif
 
     exit(-1);
 }
@@ -30,9 +28,7 @@ void __wrap___assert_func(const char * file, int line, const char * func, const 
 
 
 /*************************************************************************************************/
-void __wrap__assert( char const* message,
-                      char const* filename,
-                      unsigned line)
+void __wrap__assert(const char* message, const char* filename, unsigned line)
 {
     /* Assertion failed!
      *
@@ -44,54 +40,24 @@ void __wrap__assert( char const* message,
 
     stacktrace_dump();
 
-#if defined(DEBUG) && defined(_WIN32)
-    __asm__("int $3");
-#endif
     exit(-1);
 }
 
-/*************************************************************************************************
-* FIXME: This function signature isn't quite right and is causing a segfault 
-* (which occurs are the location of the assert so this is still useful)
-*/
-void __wrap___imp__assert( char const* message,
-                      char const* filename,
-                      unsigned line)
-{
-    /* Assertion failed!
-     *
-     * To find out where this assert was triggered, either look up the call stack,
-     * or inspect the file, line and function parameters
-     */
-    //printf("Assertion failed: %s (%d): %s\n\n", filename, line, message);
-    //fflush(stdout);
-
-    stacktrace_dump();
-
-#if defined(DEBUG) && defined(_WIN32)
-    __asm__("int $3");
-#endif
-    exit(-1);
-}
 
 /*************************************************************************************************/
-void __wrap__wassert( wchar_t const* message,
-                      wchar_t const* filename,
-                      unsigned line)
+void __wrap___assert_perror_fail (int __errnum, const char *__file,
+				  unsigned int __line, const char *__function)
 {
     /* Assertion failed!
      *
      * To find out where this assert was triggered, either look up the call stack,
      * or inspect the file, line and function parameters
      */
-    printf("Assertion failed: %ls (%d): %ls\n\n", filename, line, message);
+    printf("Assertion failed: %s (%d): %s %d\n\n", __file, __line, __function, __errnum);
     fflush(stdout);
 
     stacktrace_dump();
 
-#if defined(DEBUG) && defined(_WIN32)
-    __asm__("int $3");
-#endif
     exit(-1);
 }
 

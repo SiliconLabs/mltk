@@ -4,7 +4,7 @@
 #include "tflite_micro_model_wrapper.hpp"
 #include "tflite_micro_accelerator_wrapper.hpp"
 #include "mltk_tflite_micro_helper.hpp"
-
+#include "pybind11_helper.hpp"
 
 
 extern bool mltk_tflm_force_buffer_overlap;
@@ -133,7 +133,7 @@ py::array TfliteMicroModelWrapper::get_input(int index)
         throw std::out_of_range("Invalid input tensor index");
     }
 
-    return tflite_tensor_to_buffer_info(*tensor);
+    return tflite_tensor_to_array(*tensor);
 }
 
 /*************************************************************************************************/
@@ -146,7 +146,7 @@ py::array TfliteMicroModelWrapper::get_output(int index)
         throw std::out_of_range("Invalid output tensor index");
     }
 
-    return tflite_tensor_to_buffer_info(*tensor);
+    return tflite_tensor_to_array(*tensor);
 }
 
 /*************************************************************************************************/
@@ -225,61 +225,5 @@ py::list TfliteMicroModelWrapper::get_recorded_data()
     return retval;
 }
 
-/*************************************************************************************************/
-std::string tflite_type_to_format_descriptor(TfLiteType type)
-{
-    switch(type)
-    {
-        case kTfLiteInt8: 
-            return py::format_descriptor<int8_t>::format();
-        case kTfLiteUInt8: 
-            return py::format_descriptor<uint8_t>::format();
-        case kTfLiteInt16:
-            return py::format_descriptor<int16_t>::format();
-        case kTfLiteInt32: 
-            return py::format_descriptor<int32_t>::format();
-        case kTfLiteInt64: 
-            return py::format_descriptor<int64_t>::format();
-        case kTfLiteFloat32: 
-            return py::format_descriptor<float>::format();
-        case kTfLiteFloat64: 
-            return py::format_descriptor<double>::format();
-        default:  
-            throw std::invalid_argument("Tensor data type not supported");
-    }
-}
-
-/*************************************************************************************************/
-py::array tflite_tensor_to_buffer_info(TfliteTensorView& tensor)
-{
-    const auto shape = tensor.shape();
-    const auto element_size = tensor.element_size();
-    std::vector<ssize_t> dims(shape.length);
-    std::vector<ssize_t> strides(shape.length);
-    ssize_t stride = 1;
-    for(int i = shape.length-1; i >= 0; --i)
-    {
-        dims[i] = shape[i];
-        strides[i] = stride * element_size;
-        stride *= shape[i];
-    }
-
-    // We want to return a numpy array object for the 
-    // given model tensor WITHOUT copying the data.
-    // This way, Python can modify the model tensor.
-    // We do this by passing in a dummy py::capsule
-    // object which causes the py::array() constructor
-    // to not do a copy.
-    py::capsule dummy([](){});
-
-    return py::array(py::buffer_info(
-            tensor.data.raw,
-            element_size,
-            tflite_type_to_format_descriptor(tensor.type),
-            shape.length,
-            dims,
-            strides
-    ), dummy);
-}
 
 } // namespace mltk

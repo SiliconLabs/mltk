@@ -29,6 +29,10 @@ PRIVATE
     start.cc
     clib_override.c
 )
+target_compile_options(platform_windows_clib_override
+PUBLIC
+    -I $(CMAKE_CURRENT_LIST_DIR)
+)
 target_compile_definitions(platform_windows_clib_override
 PRIVATE 
     MLTK_CPU_CLOCK=${MLTK_CPU_CLOCK}
@@ -40,7 +44,6 @@ PUBLIC
     -Wl,--wrap,_assert  
     -Wl,--wrap,abort
     -Wl,--wrap,_wassert 
-    -Wl,--wrap,__imp__assert
     -Wl,--whole-archive ${CMAKE_CURRENT_BINARY_DIR}/libplatform_windows_clib_override.a -Wl,--no-whole-archive
 )
 target_link_libraries(platform_windows_clib_override

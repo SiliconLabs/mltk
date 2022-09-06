@@ -170,6 +170,7 @@ class TfliteMicro:
         accelerator:str=None,
         return_estimates=True,
         disable_simulator_backend=False,
+        runtime_buffer_size=-1, # If runtime_buffer_size not given, determine the optimal memory size
         **kwargs
     ) -> ProfilingModelResults:
         """Profile the given model in the simulator and optionally determine metric estimates
@@ -180,7 +181,7 @@ class TfliteMicro:
             model=tflite_model,
             accelerator=accelerator,
             enable_profiler=True,
-            runtime_buffer_size=-1 # Determine the optimal memory size
+            runtime_buffer_size=runtime_buffer_size 
         )
         try:
             renable_simulator_backend = False
@@ -214,18 +215,11 @@ class TfliteMicro:
             for layer_index, tflm_result in enumerate(tflm_results):
                 layer_err = tflm_model.get_layer_error(layer_index)
                 layer_err_msg = None if layer_err is None else layer_err.msg
+                del tflm_result['name']
                 layer_result = ProfilingLayerResult(
                     tflite_layer=tflite_model.layers[layer_index],
-                    ops=tflm_result.ops,
-                    macs=tflm_result.macs,
-                    time=tflm_result.time,
-                    energy=tflm_result.energy,
-                    cpu_cycles=tflm_result.cpu_cycles,
-                    accelerator_cycles=tflm_result.accelerator_cycles,
-                    accelerator_loads=tflm_result['accelerator_loads'],
-                    accelerator_optimized_loads=tflm_result['accelerator_optimized_loads'],
-                    accelerator_parallel_loads=tflm_result['accelerator_parallel_loads'],
-                    error_msg=layer_err_msg
+                    error_msg=layer_err_msg,
+                    **tflm_result
                 )
                 layer_results.append(layer_result)
 

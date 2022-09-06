@@ -316,7 +316,7 @@ class ParallelAudioDataGenerator(object):
         self.frontend_enabled = frontend_enabled
         if not frontend_enabled and sample_shape is None:
             raise RuntimeError('Must provide "sample_shape" parameter if frontend_enabled=False')
-        self.sample_shape = sample_shape if not frontend_enabled else frontend_settings.spectrogram_shape
+        self._sample_shape = sample_shape
         self.disable_gpu_in_subprocesses = disable_gpu_in_subprocesses
         self.add_channel_dimension = add_channel_dimension
 
@@ -339,13 +339,24 @@ class ParallelAudioDataGenerator(object):
                               '`samplewise_center`.')
 
 
+    @property 
+    def sample_shape(self) -> tuple:
+        """The shape of the sample as a tuple"""
+        if self.frontend_enabled:
+            return self.frontend_settings.spectrogram_shape
+        return self._sample_shape
+    @sample_shape.setter
+    def sample_shape(self, v):
+        raise RuntimeError('The sample_shape is calculated dynamically, it cannot be manually set')
+
+
     @property
     def sample_length(self) -> int:
         """Return the length of the audio sample as the number of individual ADC samples"""
-        return int((self.sample_length_ms / 1000) * self.sample_rate_hz) 
+        return int((self.sample_length_ms * self.sample_rate_hz) / 1000)
     @sample_length.setter
     def sample_length(self, v):
-        raise Exception('The sample_length is calculated dynamically, it cannot be manually set. Try setting sample_length_ms')
+        raise RuntimeError('The sample_length is calculated dynamically, it cannot be manually set. Try setting sample_length_ms')
 
     @property
     def sample_length_ms(self) -> int:

@@ -36,6 +36,10 @@ PRIVATE
     start.cc
     clib_override.c
 )
+target_compile_options(platform_linux_clib_override
+PUBLIC
+    -I $(CMAKE_CURRENT_LIST_DIR)
+)
 target_compile_definitions(platform_linux_clib_override
 PRIVATE 
     MLTK_CPU_CLOCK=${MLTK_CPU_CLOCK}
@@ -43,11 +47,10 @@ PRIVATE
 target_link_options(platform_linux_clib_override
 PUBLIC 
     -Wl,--wrap,main 
-    -Wl,--wrap,_assert_func 
-    -Wl,--wrap,_assert  
+    -Wl,--wrap,_assert
+    -Wl,--wrap,__assert_fail  
+    -Wl,--wrap,__assert_perror_fail 
     -Wl,--wrap,abort 
-    -Wl,--wrap,_wassert 
-    -Wl,--wrap,__imp__assert
     -Wl,--whole-archive ${CMAKE_CURRENT_BINARY_DIR}/libplatform_linux_clib_override.a -Wl,--no-whole-archive
 )
 target_link_libraries(platform_linux_clib_override

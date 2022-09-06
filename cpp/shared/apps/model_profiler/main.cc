@@ -7,6 +7,10 @@
 #include "tflite_micro_model/tflite_micro_model.hpp"
 #include "mltk_tflite_micro_helper.hpp"
 
+#ifndef __arm__
+// CLI parsing only supported on Windows/Linux
+#include "cli_opts.hpp"
+#endif
 
 // These are defined by the build scripts
 // which converts the specified .tflite to a C array
@@ -18,7 +22,12 @@ using namespace mltk;
 
 
 
-static bool load_model(TfliteMicroModel &model, logging::Logger& logger);
+static bool load_model(
+    TfliteMicroModel &model, 
+    logging::Logger& logger, 
+    const uint8_t* tflite_input_flatbuffer, 
+    uint32_t tflite_input_flatbuffer_len
+);
 static void print_recorded_data(TfliteMicroModel &model, logging::Logger& logger);
 
 
@@ -36,12 +45,33 @@ extern "C" int main(void)
     logger.flags(logging::Newline);
 
     logger.info("Starting Model Profiler");
+    
+#ifndef __arm__
+    // If this is a Windows/Linux build
+    // Parse the CLI options
+    parse_cli_opts();
 
-    if(!load_model(model, logger))
+    // If no model path was given on the command-line
+    // then use the default model built into the app
+    if(cli_opts.model_flatbuffer == nullptr)
+    {
+        logger.info("No model path given. Using default built into application");
+        cli_opts.model_flatbuffer = sl_tflite_model_array;
+        cli_opts.model_flatbuffer_len = sl_tflite_model_len;
+    }
+
+    if(!load_model(model, logger, cli_opts.model_flatbuffer, cli_opts.model_flatbuffer_len))
     {
         logger.error("Error while loading model");
         return -1;
     }
+#else
+    if(!load_model(model, logger, nullptr, 0))
+    {
+        logger.error("Error while loading model");
+        return -1;
+    }
+#endif // ifndef __arm__
 
     model.print_summary(&logger);
 
@@ -63,7 +93,12 @@ extern "C" int main(void)
 }
 
 
-static bool load_model(TfliteMicroModel &model, logging::Logger& logger)
+static bool load_model(
+    TfliteMicroModel &model, 
+    logging::Logger& logger, 
+    const uint8_t* tflite_input_flatbuffer, 
+    uint32_t tflite_input_flatbuffer_len
+)
 {
     const uint8_t* tflite_flatbuffer;
     uint32_t tflite_flatbuffer_length;
@@ -71,9 +106,16 @@ static bool load_model(TfliteMicroModel &model, logging::Logger& logger)
     // Register the accelerator if the TFLM lib was built with one
     mltk_tflite_micro_register_accelerator();
 
+    // If a valid model flatbuffer is inputted use that    
+    if (tflite_input_flatbuffer != nullptr && tflite_input_flatbuffer_len > 0)
+    {
+        logger.info("Loading provided model");
+        tflite_flatbuffer = tflite_input_flatbuffer;
+        tflite_flatbuffer_length = tflite_input_flatbuffer_len;
+    }
     // First check if a new .tflite was programmed to the end of flash
     // (This will happen when this app is executed from the command-line: "mltk profiler my_model --device")
-    if(!get_tflite_flatbuffer_from_end_of_flash(&tflite_flatbuffer, &tflite_flatbuffer_length))
+    else if (!get_tflite_flatbuffer_from_end_of_flash(&tflite_flatbuffer, &tflite_flatbuffer_length))
     {
          // If no .tflite was programmed, then just use the default model
         printf("Using default model built into application\n");

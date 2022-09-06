@@ -57,11 +57,9 @@ def process_op_macros_h(lineno: int, line: str, arg: object) -> str:
     if arg['state'] == 0 and line.strip() == '#endif  // TENSORFLOW_LITE_KERNELS_OP_MACROS_H_':
         arg['state'] = 1
         line = '// Patched by the MLTK\n'
-        line += '#if !defined(__arm__) && defined(__cplusplus)\n'
-        line += '#  include <stdexcept>\n'
-        line += '#  undef TFLITE_ABORT\n'
-        line += '#  define TFLITE_ABORT throw std::runtime_error("TF-Lite assertion failed");\n'
-        line += '#endif // __cplusplus\n'
+        line += '#include <assert.h>\n'
+        line += '#undef TFLITE_ABORT\n'
+        line += '#define TFLITE_ABORT assert(!"TF-Lite Micro assertion failed");\n'
         line += '\n\n#endif  // TENSORFLOW_LITE_KERNELS_OP_MACROS_H_\n'
 
     return line

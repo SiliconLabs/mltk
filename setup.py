@@ -163,7 +163,6 @@ install_requires=[
     'pillow<9.0',
     'librosa<1.0',
     'joblib',
-    'netron<6.0',
     'bincopy<18.0',
     'pyserial<4.0',
     'GPUtil<2.0',

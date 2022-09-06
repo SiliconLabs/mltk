@@ -51,18 +51,18 @@ class BaseEstimator(abc.ABC):
         self.load_models()
 
         if self.cpu_cycles_model is not None:
-            layer._cpu_cycles = self.predict_cpu_cycles(layer, layer.accelerator_cycles)
+            layer['cpu_cycles'] = self.predict_cpu_cycles(layer, layer.accelerator_cycles)
 
         if self.energy_model is not None:
-            layer._energy = self.predict_energy(
+            layer['energy'] = self.predict_energy(
                 layer, 
                 accelerator_cycles=layer.accelerator_cycles,
-                cpu_cycles=layer._cpu_cycles,
+                cpu_cycles=layer.cpu_cycles,
             )
 
         layer._time = self.predict_time(
             accelerator_cycles=layer.accelerator_cycles, 
-            cpu_cycles=layer._cpu_cycles,
+            cpu_cycles=layer.cpu_cycles,
             cpu_clock_rate=cpu_clock_rate
         )
 

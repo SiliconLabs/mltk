@@ -170,7 +170,7 @@ def invoke_mltk_target(
     platform:str=None,
     logger:logging.Logger=None,
     verbose:bool=False,
-):
+) -> str:
     """Invoke an MLTK CMake target"""
 
     logger = logger or DummyLogger()
@@ -193,13 +193,13 @@ def invoke_mltk_target(
         cmd.append('-v')
     
     logger.info(f'Invoking {" ".join(cmd)}')
-    retcode, _ = run_shell_cmd(
+    retcode, retval = run_shell_cmd(
         cmd=cmd, 
         outfile=logger,
     )
     if retcode != 0:
         raise RuntimeError('Failed to invoke CMake target')
-
+    return retval
 
 def get_build_directory(
     platform:str=None,

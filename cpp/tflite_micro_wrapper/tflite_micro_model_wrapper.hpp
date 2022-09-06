@@ -41,8 +41,4 @@ private:
 };
 
 
-std::string tflite_type_to_format_descriptor(TfLiteType type);
-py::array tflite_tensor_to_buffer_info(TfliteTensorView& tensor);
-
-
 } // namespace mltk

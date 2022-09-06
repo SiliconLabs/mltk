@@ -26,6 +26,24 @@ PRIVATE
     ${MLTK_PLATFORM}
 )
 
+target_include_directories(mltk_model_profiler
+PRIVATE 
+    .
+)
+
+mltk_get(MLTK_PLATFORM_IS_EMBEDDED)
+if(NOT MLTK_PLATFORM_IS_EMBEDDED)
+    find_package(mltk_cxxopts REQUIRED)
+    target_link_libraries(mltk_model_profiler
+    PRIVATE 
+        mltk::cxxopts
+    )
+    target_sources(mltk_model_profiler
+    PRIVATE 
+        cli_opts.cc
+    )
+
+endif()
 
 mltk_get(MLTK_RUN_MODEL_FROM_RAM)
 if(MLTK_RUN_MODEL_FROM_RAM)
