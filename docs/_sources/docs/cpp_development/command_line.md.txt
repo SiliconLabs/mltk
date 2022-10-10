@@ -26,7 +26,7 @@ More details here: [https://www.7-zip.org/download.html](https://www.7-zip.org/d
 
 ### 3) Install Python
 
-Install Python 3.7, 3.8, _or_ 3.9 64-bit and ensure it is available on the command `PATH`  
+Install Python 3.7, 3.8, 3.9, _or_ 3.10 64-bit and ensure it is available on the command `PATH`  
 More details here: [https://www.python.org/downloads](https://www.python.org/downloads)
 
 

@@ -1,0 +1,1017 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, machine-learning, machinelearning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tensorflow-lite-micro, keras-tensorflow, keras, tflite, embedded, embedded-systems, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HZ5MW943WF"></script>
+<script>
+    window.gTrackingId = 'G-HZ5MW943WF';
+</script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
+  
+  
+    <title>ImageDatasetMixin &#8212; MLTK 0.12.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/apitoc.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="AudioDatasetMixin" href="audio_dataset_mixin.html" />
+    <link rel="prev" title="DatasetMixin" href="dataset_mixin.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#docs/python_api/mltk_model/image_dataset_mixin" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../../index.html" title="MLTK 0.12.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../../_static/logo.png"
+                   alt="MLTK 0.12.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> ImageDatasetMixin </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">API Reference</a></li>
+          <li class="md-tabs__item"><a href="index.html" class="md-tabs__link">MLTK Model</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../../index.html" title="MLTK 0.12.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../../index.html"
+       title="MLTK 0.12.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../tutorials.html" class="md-nav__link">Tutorials</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../index.html" class="md-nav__link">API Reference</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="../operations/index.html" class="md-nav__link">Model Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="index.html" class="md-nav__link">MLTK Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tflite_micro_model/index.html" class="md-nav__link">Tensorflow-Lite Micro Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tflite_model/index.html" class="md-nav__link">Tensorflow-Lite Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../keras_model.html" class="md-nav__link">Keras Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../data_preprocessing/index.html" class="md-nav__link">Data Preprocessing</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../../index.html"><i class="md-icon">home</i></a></li>
+                <li><a href="../index.html" >API Reference</a></li>
+                <li><a href="index.html" accesskey="U">MLTK Model</a></li>
+
+              <li class="activate"><a>ImageDatasetMixin</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="imagedatasetmixin">
+<h1 id="docs-python-api-mltk-model-image-dataset-mixin--page-root">ImageDatasetMixin<a class="headerlink" href="#docs-python-api-mltk-model-image-dataset-mixin--page-root" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mltk.core.</span></span><span class="sig-name descname"><span class="pre">ImageDatasetMixin</span></span><a class="reference internal" href="../../../_modules/mltk/core/model/mixins/image_dataset_mixin.html#ImageDatasetMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.ImageDatasetMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides image dataset properties to the base <a class="reference internal" href="model.html#mltk.core.MltkModel" title="mltk.core.MltkModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MltkModel</span></code></a></p>
+<p class="rubric">Properties</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%"/>
+<col style="width: 90%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.class_counts" title="mltk.core.ImageDatasetMixin.class_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_counts</span></code></a></p></td>
+<td><p>Dictionary of samples counts for each class</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.class_mode" title="mltk.core.ImageDatasetMixin.class_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_mode</span></code></a></p></td>
+<td><p>Determines the type of label arrays that are returned.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.class_weights" title="mltk.core.ImageDatasetMixin.class_weights"><code class="xref py py-obj docutils literal notranslate"><span class="pre">class_weights</span></code></a></p></td>
+<td><p>Specifies how class weights should be calculated.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.color_mode" title="mltk.core.ImageDatasetMixin.color_mode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">color_mode</span></code></a></p></td>
+<td><p>The type of image data to use</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.datagen" title="mltk.core.ImageDatasetMixin.datagen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datagen</span></code></a></p></td>
+<td><p>Training data generator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.datagen_context" title="mltk.core.ImageDatasetMixin.datagen_context"><code class="xref py py-obj docutils literal notranslate"><span class="pre">datagen_context</span></code></a></p></td>
+<td><p>Loaded data generator's context</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.dataset" title="mltk.core.ImageDatasetMixin.dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dataset</span></code></a></p></td>
+<td><p>Path to the image dataset's python module, a function that manually loads the dataset, or the file path to a directory of samples.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.follow_links" title="mltk.core.ImageDatasetMixin.follow_links"><code class="xref py py-obj docutils literal notranslate"><span class="pre">follow_links</span></code></a></p></td>
+<td><p>Whether to follow symlinks inside class sub-directories</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.image_classes" title="mltk.core.ImageDatasetMixin.image_classes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_classes</span></code></a></p></td>
+<td><p>Return a list of class labels the model should classify</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.image_input_shape" title="mltk.core.ImageDatasetMixin.image_input_shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">image_input_shape</span></code></a></p></td>
+<td><p>Return the image input shape as a tuple of integers</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.interpolation" title="mltk.core.ImageDatasetMixin.interpolation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">interpolation</span></code></a></p></td>
+<td><p>Interpolation method used to resample the image if the target size is different from that of the loaded image</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.loaded_subset" title="mltk.core.ImageDatasetMixin.loaded_subset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loaded_subset</span></code></a></p></td>
+<td><p>training, validation, evaluation</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.sample_weight" title="mltk.core.ImageDatasetMixin.sample_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample_weight</span></code></a></p></td>
+<td><p>Optional Numpy array of weights for the training samples, used for weighting the loss function (during training only).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.shuffle" title="mltk.core.ImageDatasetMixin.shuffle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shuffle</span></code></a></p></td>
+<td><p>Boolean (whether to shuffle the training data before each epoch) or str (for 'batch').</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.shuffle_dataset_enabled" title="mltk.core.ImageDatasetMixin.shuffle_dataset_enabled"><code class="xref py py-obj docutils literal notranslate"><span class="pre">shuffle_dataset_enabled</span></code></a></p></td>
+<td><p>Shuffle the dataset directory once</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.steps_per_epoch" title="mltk.core.ImageDatasetMixin.steps_per_epoch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">steps_per_epoch</span></code></a></p></td>
+<td><p>Integer or None.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.target_size" title="mltk.core.ImageDatasetMixin.target_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">target_size</span></code></a></p></td>
+<td><p>Return the target size of the generated images.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.validation_batch_size" title="mltk.core.ImageDatasetMixin.validation_batch_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation_batch_size</span></code></a></p></td>
+<td><p>Integer or None.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.validation_data" title="mltk.core.ImageDatasetMixin.validation_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation_data</span></code></a></p></td>
+<td><p>Data on which to evaluate the loss and any model metrics at the end of each epoch.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.validation_datagen" title="mltk.core.ImageDatasetMixin.validation_datagen"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation_datagen</span></code></a></p></td>
+<td><p>Validation/evaluation data generator.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.validation_freq" title="mltk.core.ImageDatasetMixin.validation_freq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation_freq</span></code></a></p></td>
+<td><p>Only relevant if validation data is provided.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.validation_split" title="mltk.core.ImageDatasetMixin.validation_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation_split</span></code></a></p></td>
+<td><p>Float between 0 and 1 Fraction of the training data to be used as validation data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.validation_steps" title="mltk.core.ImageDatasetMixin.validation_steps"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validation_steps</span></code></a></p></td>
+<td><p>Only relevant if validation_data is provided and is a tf.data dataset.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.x" title="mltk.core.ImageDatasetMixin.x"><code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code></a></p></td>
+<td><p>Input data</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.y" title="mltk.core.ImageDatasetMixin.y"><code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code></a></p></td>
+<td><p>Target data</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%"/>
+<col style="width: 90%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.__init__" title="mltk.core.ImageDatasetMixin.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.get_datagen_creator" title="mltk.core.ImageDatasetMixin.get_datagen_creator"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datagen_creator</span></code></a></p></td>
+<td><p>Return an object that creates a data generator for the given subset</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.get_shuffle_index_dir" title="mltk.core.ImageDatasetMixin.get_shuffle_index_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_shuffle_index_dir</span></code></a></p></td>
+<td><p>The ParallelImageGenerator and ParallelImageGenerator have the option to shuffle the dataset entries once before they're used.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.load_dataset" title="mltk.core.ImageDatasetMixin.load_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_dataset</span></code></a></p></td>
+<td><p>Pre-process the dataset and prepare the model dataset attributes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.summarize_dataset" title="mltk.core.ImageDatasetMixin.summarize_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">summarize_dataset</span></code></a></p></td>
+<td><p>Summarize the dataset</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.ImageDatasetMixin.unload_dataset" title="mltk.core.ImageDatasetMixin.unload_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unload_dataset</span></code></a></p></td>
+<td><p>Unload the dataset</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.dataset">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">dataset</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to the image dataset’s python module, a function
+that manually loads the dataset, or the file path to a directory of samples.</p>
+<p>If a Python module is provided, it must implement the function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_data</span><span class="p">():</span>
+   <span class="o">...</span>
+</pre></div>
+</div>
+<p>The load_data() function should either return a tuple as:
+(x_train, y_train), (x_test, y_test)
+OR it should return the path to a directory containing the dataset’s samples.</p>
+<p>If a function is provided, the function should return the tuple:
+(x_train, y_train), (x_test, y_test)
+OR it should return the path to a directory containing the dataset’s samples.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.follow_links">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">follow_links</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.follow_links" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to follow symlinks inside class sub-directories</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.shuffle_dataset_enabled">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shuffle_dataset_enabled</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.shuffle_dataset_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shuffle the dataset directory once</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>If true, the dataset directory will be shuffled the first time it is processed and</dt><dd><p>and an index containing the shuffled file names is generated in the training log directory.
+The index is reused to maintain the shuffled order for subsequent processing.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>If false, then the dataset samples are sorted alphabetically and saved to an index in the dataset directory.</dt><dd><p>The alphabetical index file is used for subsequent processing.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.image_classes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">image_classes</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.image_classes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of class labels the model should classify</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.image_input_shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">image_input_shape</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.image_input_shape" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the image input shape as a tuple of integers</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.target_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">target_size</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.target_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the target size of the generated images.
+The image data generator will automatically resize all images to this size.
+If omitted, <code class="docutils literal notranslate"><span class="pre">my_model.input_shape</span></code> is used.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is only used if providing a directory image dataset</p>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.class_mode">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_mode</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.class_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determines the type of label arrays that are returned.
+Default: <cite>categorical</cite></p>
+<ul class="simple">
+<li><p><strong>categorical</strong> -  2D one-hot encoded labels</p></li>
+<li><p><strong>binary</strong> - 1D binary labels</p></li>
+<li><p><strong>sparse</strong> - 1D integer labels</p></li>
+<li><p><strong>input</strong> - images identical to input images (mainly used to work with autoencoders)</p></li>
+</ul>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.color_mode">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">color_mode</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.color_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>The type of image data to use</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">auto</span></code></p>
+<p>May be one of the following:</p>
+<ul class="simple">
+<li><p><strong>auto</strong> - Automatically determine the color mode based on the input shape channels</p></li>
+<li><p><strong>grayscale</strong> - Convert the images to grayscale (if necessary). The put shape must only have 1 channel</p></li>
+<li><p><strong>rgb</strong> -  The input shape must only have 3 channels</p></li>
+<li><p><strong>rgba</strong> - The input shape must have 4 channels</p></li>
+</ul>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.interpolation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">interpolation</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.interpolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolation method used to resample the image if the target size is different from that of the loaded image</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">bilinear</span></code></p>
+<p>Supported methods are <code class="docutils literal notranslate"><span class="pre">none</span></code>, <code class="docutils literal notranslate"><span class="pre">nearest</span></code>, <code class="docutils literal notranslate"><span class="pre">bilinear</span></code>, <code class="docutils literal notranslate"><span class="pre">bicubic</span></code>, <code class="docutils literal notranslate"><span class="pre">lanczos</span></code>, <code class="docutils literal notranslate"><span class="pre">box</span></code> and <code class="docutils literal notranslate"><span class="pre">hamming</span></code> .
+If <code class="docutils literal notranslate"><span class="pre">none</span></code> is used then the generated images are <strong>not automatically resized</strong>.
+In this case, the <a class="reference internal" href="../data_preprocessing/image_data_generator.html#mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator" title="mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator</span></code></a> <code class="docutils literal notranslate"><span class="pre">preprocessing_function</span></code> argument should be used to reshape the
+image to the expected model input shape.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.class_counts">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_counts</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.class_counts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary of samples counts for each class</p>
+<p>This is used for generating a summary of the dataset or when calculating class weights
+when <code class="docutils literal notranslate"><span class="pre">my_model.class_weights=balanced</span></code>.</p>
+<p>The dictionary may contain sub-dictionaries for each subset of the dataset, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">class_counts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">training</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">cat</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="n">dog</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="n">goat</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="p">),</span>
+    <span class="n">validation</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">cat</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">dog</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">goat</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="p">),</span>
+    <span class="n">evaluation</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+        <span class="n">cat</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+        <span class="n">dog</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+        <span class="n">goat</span> <span class="o">=</span> <span class="mi">50</span>
+    <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Or it may contain just class/counts, e.g.:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">class_counts</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
+    <span class="n">cat</span> <span class="o">=</span> <span class="mi">100</span><span class="p">,</span>
+    <span class="n">dog</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="n">goat</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.class_weights">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">class_weights</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.class_weights" title="Permalink to this definition">¶</a></dt>
+<dd><p>Specifies how class weights should be calculated.
+Default: <cite>None</cite></p>
+<p>This can be useful to tell the model to “pay more attention” to samples from an under-represented class.</p>
+<p>May be one of the following:</p>
+<ul class="simple">
+<li><p>If <code class="docutils literal notranslate"><span class="pre">balanced</span></code> is given, class weights will be given by: <code class="docutils literal notranslate"><span class="pre">n_samples</span> <span class="pre">/</span> <span class="pre">(n_classes</span> <span class="pre">*</span> <span class="pre">np.bincount(y))</span></code></p></li>
+<li><p>If a dictionary is given, keys are classes and values are corresponding class weights.</p></li>
+<li><p>If <code class="docutils literal notranslate"><span class="pre">None</span></code> is given, the class weights will be uniform.</p></li>
+</ul>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.datagen">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">datagen</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.datagen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Training data generator.</p>
+<p>Should be a reference to a <a class="reference internal" href="../data_preprocessing/image_data_generator.html#mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator" title="mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator</span></code></a> instance
+OR <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/ImageDataGenerator">tensorflow.keras.preprocessing.image.ImageDataGenerator</a></p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.datagen_context">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">datagen_context</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.datagen_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loaded data generator’s context</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.get_datagen_creator">
+<span class="sig-name descname"><span class="pre">get_datagen_creator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subset</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.get_datagen_creator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an object that creates a data generator for the given subset</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.get_shuffle_index_dir">
+<span class="sig-name descname"><span class="pre">get_shuffle_index_dir</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.get_shuffle_index_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ParallelImageGenerator and ParallelImageGenerator have the option to shuffle the dataset
+entries once before they’re used. The shuffled indices are then saved
+to a file. The saved indices file is added to the generated model archive.
+This function loads the indices file from the archive during evaluation
+and validation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>We do NOT want to shuffle during eval/validation so that results are reproducible
+(hence we use the one-time-generated indices file)</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.loaded_subset">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loaded_subset</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.loaded_subset" title="Permalink to this definition">¶</a></dt>
+<dd><p>training, validation, evaluation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>The currently loaded dataset subset</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.sample_weight">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sample_weight</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.sample_weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optional Numpy array of weights for the training samples,
+used for weighting the loss function (during training only).
+You can either pass a flat (1D) Numpy array with the same length as the input samples
+(1:1 mapping between weights and samples), or in the case of temporal data, you can pass
+a 2D array with shape (samples, sequence_length), to apply a different weight to every
+timestep of every sample. This argument is not supported when x is a dataset, generator,
+or keras.utils.Sequence instance, instead provide the sample_weights as the third element of x.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.shuffle">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shuffle</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.shuffle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Boolean (whether to shuffle the training data before each epoch) or str (for ‘batch’).
+This argument is ignored when x is a generator. ‘batch’ is a special option for dealing with the limitations of HDF5 data;
+it shuffles in batch-sized chunks. Has no effect when steps_per_epoch is not None.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.steps_per_epoch">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">steps_per_epoch</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.steps_per_epoch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integer or None. Total number of steps (batches of samples) before
+declaring one epoch finished and starting the next epoch.
+When training with input tensors such as TensorFlow data tensors, the default None
+is equal to the number of samples in your dataset divided by the batch size,
+or 1 if that cannot be determined. If x is a tf.data dataset, and ‘steps_per_epoch’
+is None, the epoch will run until the input dataset is exhausted.
+When passing an infinitely repeating dataset, you must specify the steps_per_epoch argument.
+This argument is not supported with array inputs.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.summarize_dataset">
+<span class="sig-name descname"><span class="pre">summarize_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.summarize_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summarize the dataset</p>
+<p>If my_model.dataset is provided then this attempts to call my_model.dataset.summarize_dataset().
+If my_model.dataset is not provided or does not have the summarize_dataset() method,
+then this attempts to generate a summary from my_model.class_counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.unload_dataset">
+<span class="sig-name descname"><span class="pre">unload_dataset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.unload_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unload the dataset</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.validation_batch_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validation_batch_size</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.validation_batch_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Integer or None. Number of samples per validation batch.
+If unspecified, will default to batch_size. Do not specify
+the validation_batch_size if your data is in the form of datasets, generators,
+or keras.utils.Sequence instances (since they generate batches).</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.validation_data">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validation_data</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.validation_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data on which to evaluate the loss and any model metrics at the end of each epoch.
+The model will not be trained on this data. Thus, note the fact that the validation loss of
+data provided using validation_split or validation_data is not affected by regularization
+layers like noise and dropout. validation_data will override validation_split.
+validation_data could be:</p>
+<ul class="simple">
+<li><p>tuple (x_val, y_val) of Numpy arrays or tensors</p></li>
+<li><p>tuple (x_val, y_val, val_sample_weights) of Numpy arrays</p></li>
+<li><p>dataset For the first two cases, batch_size must be provided. For the last case, validation_steps
+could be provided. Note that validation_data does not support all the data types that are supported
+in x, eg, dict, generator or keras.utils.Sequence.</p></li>
+</ul>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.validation_freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validation_freq</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.validation_freq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only relevant if validation data is provided.
+Integer or collections_abc.Container instance (e.g. list, tuple, etc.).
+If an integer, specifies how many training epochs to run before a new validation run is performed,
+e.g. validation_freq=2 runs validation every 2 epochs. If a Container, specifies the epochs on which to run validation,
+e.g. validation_freq=[1, 2, 10] runs validation at the end of the 1st, 2nd, and 10th epochs.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.validation_split">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validation_split</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.validation_split" title="Permalink to this definition">¶</a></dt>
+<dd><p>Float between 0 and 1
+Fraction of the training data to be used as validation data.
+The model will set apart this fraction of the training data, will not train on it,
+and will evaluate the loss and any model metrics on this data at the end of each epoch.
+The validation data is selected from the last samples in the x and y data provided, before shuffling.
+This argument is not supported when x is a dataset, generator or keras.utils.Sequence instance.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.validation_steps">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validation_steps</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.validation_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only relevant if validation_data is provided and is a tf.data dataset.
+Total number of steps (batches of samples) to draw before stopping when
+performing validation at the end of every epoch. If ‘validation_steps’ is None,
+validation will run until the validation_data dataset is exhausted.
+In the case of an infinitely repeated dataset, it will run into an infinite loop.
+If ‘validation_steps’ is specified and only part of the dataset will be consumed,
+the evaluation will start from the beginning of the dataset at each epoch.
+This ensures that the same validation samples are used every time.</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.x">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">x</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Input data</p>
+<p>It could be:</p>
+<ul class="simple">
+<li><p>A Numpy array (or array-like), or a list of arrays (in case the model has multiple inputs).</p></li>
+<li><p>A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).</p></li>
+<li><p>A dict mapping input names to the corresponding array/tensors, if the model has named inputs.</p></li>
+<li><p>A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).</p></li>
+<li><p>A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample_weights).
+A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.</p></li>
+</ul>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.y">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">y</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Target data</p>
+<p>Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s).
+It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely).
+If x is a dataset, generator, or keras.utils.Sequence instance, y should not be specified (since targets will be obtained from x).</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.validation_datagen">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">validation_datagen</span></span><a class="headerlink" href="#mltk.core.ImageDatasetMixin.validation_datagen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validation/evaluation data generator.</p>
+<p>If omitted, then <code class="docutils literal notranslate"><span class="pre">datagen</span></code> is used for validation and evaluation.</p>
+<p>Should be a reference to a <a class="reference internal" href="../data_preprocessing/image_data_generator.html#mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator" title="mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator</span></code></a> instance
+OR <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/ImageDataGenerator">tensorflow.keras.preprocessing.image.ImageDataGenerator</a></p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.ImageDatasetMixin.load_dataset">
+<span class="sig-name descname"><span class="pre">load_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples_per_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-</span> <span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/model/mixins/image_dataset_mixin.html#ImageDatasetMixin.load_dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.ImageDatasetMixin.load_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Pre-process the dataset and prepare the model dataset attributes</p>
+</dd></dl>
+</dd></dl>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="dataset_mixin.html" title="DatasetMixin"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> DatasetMixin </span>
+              </div>
+            </a>
+          
+          
+            <a href="audio_dataset_mixin.html" title="AudioDatasetMixin"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> AudioDatasetMixin </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Oct 10, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
+        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
+        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+      </p>
+      <a class="privacy-banner-accept" href="#">Accept</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

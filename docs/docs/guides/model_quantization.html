@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>Model Quantization &#8212; MLTK 0.10.0 documentation</title>
+    <title>Model Quantization &#8212; MLTK 0.12.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
@@ -79,6 +79,7 @@
     <script src="../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -107,11 +108,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../index.html" title="MLTK 0.10.0 documentation"
+        <a href="../../index.html" title="MLTK 0.12.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../_static/logo.png"
-                   alt="MLTK 0.10.0 documentation logo">
+                   alt="MLTK 0.12.0 documentation logo">
           
         </a>
       </div>
@@ -209,13 +210,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../index.html" title="MLTK 0.10.0 documentation" class="md-nav__button md-logo">
+    <a href="../../index.html" title="MLTK 0.12.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../index.html"
-       title="MLTK 0.10.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.12.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -319,6 +320,13 @@
     <li class="md-nav__item">
     
     
+      <a href="model_training_monitor.html" class="md-nav__link">Model Training Monitor</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
       <a href="model_evaluation.html" class="md-nav__link">Model Evaluation</a>
       
     
@@ -334,7 +342,7 @@
         
 <nav class="md-nav md-nav--secondary">
     <label class="md-nav__title" for="__toc">Contents</label>
-  <ul class="md-nav__list" data-md-scrollfix="">
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
         <li class="md-nav__item"><a href="#docs-guides-model-quantization--page-root" class="md-nav__link">Model Quantization</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#quick-reference" class="md-nav__link">Quick Reference</a>
@@ -365,9 +373,7 @@
         </li></ul>
             </nav>
         </li>
-    
-<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/docs/guides/model_quantization.md.txt">Show Source</a> </li>
-
+      <script type="text/javascript" src=../../_static/js/apitoc.js></script>
   </ul>
 </nav>
       
@@ -543,7 +549,7 @@
                 
 <nav class="md-nav md-nav--secondary">
     <label class="md-nav__title" for="__toc">Contents</label>
-  <ul class="md-nav__list" data-md-scrollfix="">
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
         <li class="md-nav__item"><a href="#docs-guides-model-quantization--page-root" class="md-nav__link">Model Quantization</a><nav class="md-nav">
               <ul class="md-nav__list">
         <li class="md-nav__item"><a href="#quick-reference" class="md-nav__link">Quick Reference</a>
@@ -574,11 +580,7 @@
         </li></ul>
             </nav>
         </li>
-    
-<li class="md-nav__item"><a class="md-nav__extra_link" href="../../_sources/docs/guides/model_quantization.md.txt">Show Source</a> </li>
-
-<li id="searchbox" class="md-nav__item"></li>
-
+      <script type="text/javascript" src=../../_static/js/apitoc.js></script>
   </ul>
 </nav>
               </div>
@@ -592,7 +594,9 @@
             <ul class="breadcrumb">
               <li></li>
               <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
-                <li class="active"><a href="index.html" accesskey="U">Modeling Guides</a></li>
+                <li><a href="index.html" accesskey="U">Modeling Guides</a></li>
+
+              <li class="activate"><a>Model Quantization</a></li>
             </ul>
           </div>
           
@@ -606,7 +610,7 @@
 <h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p>Command-line: <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">quantize</span> <span class="pre">--help</span></code></p></li>
-<li><p>Python API: <a class="reference internal" href="../python_api/operations.html#mltk.core.quantize_model" title="mltk.core.quantize_model"><span class="xref myst py py-func">quantize_model</span></a></p></li>
+<li><p>Python API: <a class="reference internal" href="../python_api/operations/quantize.html#mltk.core.quantize_model" title="mltk.core.quantize_model"><span class="xref myst py py-func">quantize_model</span></a></p></li>
 <li><p>Python API examples: <a class="reference internal" href="../../mltk/examples/quantize_model.html"><span class="doc std std-doc">quantize_model.ipynb</span></a></p></li>
 </ul>
 </section>
@@ -620,7 +624,7 @@ for more details about how quantization is implemented.</p>
 <p>Model quantization happens <strong>automatically</strong> at the end of <a class="reference internal" href="model_training.html"><span class="doc std std-doc">model training</span></a>.<br/>
 The output of model quantization is a <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file that can be directly programmed to an
 embedded device and executed by the <a class="reference external" href="https://github.com/tensorflow/tflite-micro">Tensorflow-Lite Micro</a> interpreter.</p>
-<p>Additionally, model quantization can be invoked via the <code class="docutils literal notranslate"><span class="pre">quantize</span></code> command or the <a class="reference internal" href="../python_api/operations.html#mltk.core.quantize_model" title="mltk.core.quantize_model"><span class="xref myst py py-func">quantize_model</span></a> API,
+<p>Additionally, model quantization can be invoked via the <code class="docutils literal notranslate"><span class="pre">quantize</span></code> command or the <a class="reference internal" href="../python_api/operations/quantize.html#mltk.core.quantize_model" title="mltk.core.quantize_model"><span class="xref myst py py-func">quantize_model</span></a> API,
 either of these will also generate a <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -632,7 +636,7 @@ See <a class="reference internal" href="model_parameters.html"><span class="doc 
 <h2 id="tensorflow-lite-converter-settings">Tensorflow-Lite Converter Settings<a class="headerlink" href="#tensorflow-lite-converter-settings" title="Permalink to this headline">¶</a></h2>
 <p>Model quantization is performed using the <a class="reference external" href="https://www.tensorflow.org/lite/convert">Tensorflow-Lite Converter</a>.
 The settings for the converter are configured in the <a class="reference internal" href="model_specification.html"><span class="doc std std-doc">model specification</span></a> script
-using the model property: <a class="reference internal" href="../python_api/core/mltk_model.html#mltk.core.TrainMixin.tflite_converter" title="mltk.core.TrainMixin.tflite_converter"><span class="xref myst py py-attr">TrainMixin.tflite_converter</span></a>.</p>
+using the model property: <a class="reference internal" href="../python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin.tflite_converter" title="mltk.core.TrainMixin.tflite_converter"><span class="xref myst py py-attr">TrainMixin.tflite_converter</span></a>.</p>
 <p>For example, the model specification script might have:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'optimizations'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">Optimize</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">]</span>
 <span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'supported_ops'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">OpsSet</span><span class="o">.</span><span class="n">TFLITE_BUILTINS_INT8</span><span class="p">]</span>
@@ -685,7 +689,7 @@ to the <code class="docutils literal notranslate"><span class="pre">.tflite</spa
 <h2 id="command">Command<a class="headerlink" href="#command" title="Permalink to this headline">¶</a></h2>
 <p>Model quantization from the command-line is done using the <code class="docutils literal notranslate"><span class="pre">quantize</span></code> operation.<br/>
 This command should be invoked <strong>after</strong> <a class="reference internal" href="model_training.html"><span class="doc std std-doc">model training</span></a>.</p>
-<p>This command is useful as it allows for modifying a trained model’s <a class="reference internal" href="../python_api/core/mltk_model.html#mltk.core.TrainMixin.tflite_converter" title="mltk.core.TrainMixin.tflite_converter"><span class="xref myst py py-attr">TrainMixin.tflite_converter</span></a>
+<p>This command is useful as it allows for modifying a trained model’s <a class="reference internal" href="../python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin.tflite_converter" title="mltk.core.TrainMixin.tflite_converter"><span class="xref myst py py-attr">TrainMixin.tflite_converter</span></a>
 settings to generate new <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.</p>
 <p>For more details on the available command-line options, issue the command:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk quantize --help
@@ -699,7 +703,7 @@ settings to generate new <code class="docutils literal notranslate"><span class=
 <li><p>Later modify the TrainMixin.tflite_converter](mltk.core.TrainMixin.tflite_converter) settings in the <a class="reference internal" href="model_specification.html"><span class="doc std std-doc">model specification</span></a> script</p></li>
 <li><p>Run the <code class="docutils literal notranslate"><span class="pre">quantize</span></code> command to update the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file in the <a class="reference internal" href="model_archive.html"><span class="doc std std-doc">model archive</span></a></p></li>
 </ol>
-<p>In this example, it’s assumed that the <a class="reference internal" href="../python_api/core/mltk_model.html#mltk.core.TrainMixin.tflite_converter" title="mltk.core.TrainMixin.tflite_converter"><span class="xref myst py py-attr">TrainMixin.tflite_converter</span></a> settings in
+<p>In this example, it’s assumed that the <a class="reference internal" href="../python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin.tflite_converter" title="mltk.core.TrainMixin.tflite_converter"><span class="xref myst py py-attr">TrainMixin.tflite_converter</span></a> settings in
 the <a class="reference internal" href="../python_api/models/tinyml/image_classification.html#module-mltk.models.tinyml.image_classification" title="mltk.models.tinyml.image_classification"><span class="xref myst py py-mod">image_classification</span></a> model specification script have been modified <em>after</em> the model has been
 trained.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk quantize image_classification
@@ -710,9 +714,9 @@ trained.</p>
 </section>
 <section id="python-api">
 <h2 id="python-api">Python API<a class="headerlink" href="#python-api" title="Permalink to this headline">¶</a></h2>
-<p>Model quantization is accessible via the <a class="reference internal" href="../python_api/operations.html#mltk.core.quantize_model" title="mltk.core.quantize_model"><span class="xref myst py py-func">quantize_model</span></a> API.<br/>
+<p>Model quantization is accessible via the <a class="reference internal" href="../python_api/operations/quantize.html#mltk.core.quantize_model" title="mltk.core.quantize_model"><span class="xref myst py py-func">quantize_model</span></a> API.<br/>
 This API should be invoked <strong>after</strong> <a class="reference internal" href="model_training.html"><span class="doc std std-doc">model training</span></a>.</p>
-<p>This API is useful as it allows for modifying a trained model’s <a class="reference internal" href="../python_api/core/mltk_model.html#mltk.core.TrainMixin.tflite_converter" title="mltk.core.TrainMixin.tflite_converter"><span class="xref myst py py-attr">TrainMixin.tflite_converter</span></a>
+<p>This API is useful as it allows for modifying a trained model’s <a class="reference internal" href="../python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin.tflite_converter" title="mltk.core.TrainMixin.tflite_converter"><span class="xref myst py py-attr">TrainMixin.tflite_converter</span></a>
 settings to generate a new <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file.</p>
 <p>Examples using this API may be found in <a class="reference internal" href="../../mltk/examples/quantize_model.html"><span class="doc std std-doc">quantize_model.ipynb</span></a></p>
 </section>
@@ -722,6 +726,7 @@ settings to generate a new <code class="docutils literal notranslate"><span clas
           </article>
         </div>
       </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
     </main>
   </div>
   <footer class="md-footer">
@@ -765,7 +770,7 @@ settings to generate a new <code class="docutils literal notranslate"><span clas
               
           </div>
             Last updated on
-              Aug 22, 2022.
+              Oct 10, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.model.model &#8212; MLTK 0.10.0 documentation</title>
+    <title>mltk.core.model.model &#8212; MLTK 0.12.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
@@ -78,6 +78,7 @@
     <script src="../../../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../../_static/js/custom.js"></script>
+    <script src="../../../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -104,11 +105,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.10.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.12.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.10.0 documentation logo">
+                   alt="MLTK 0.12.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.10.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.12.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.10.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.12.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -405,11 +406,7 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
-  <ul class="md-nav__list" data-md-scrollfix="">
-    
-
-<li id="searchbox" class="md-nav__item"></li>
-
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
   </ul>
 </nav>
               </div>
@@ -423,7 +420,9 @@
             <ul class="breadcrumb">
               <li></li>
               <li><a href="../../../../index.html"><i class="md-icon">home</i></a></li>
-                <li class="active"><a href="../../../index.html" accesskey="U">Module code</a></li>
+                <li><a href="../../../index.html" accesskey="U">Module code</a></li>
+
+              <li class="activate"><a>mltk.core.model.model</a></li>
             </ul>
           </div>
           
@@ -440,7 +439,7 @@
 <span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="n">clean_directory</span><span class="p">,</span> <span class="n">create_user_dir</span>
 <span class="kn">from</span> <span class="nn">mltk.core.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
-
+<span class="kn">from</span> <span class="nn">mltk.utils.string_formatting</span> <span class="kn">import</span> <span class="n">format_units</span>
 
 <span class="kn">from</span> <span class="nn">.mixins.archive_mixin</span> <span class="kn">import</span> <span class="n">ArchiveMixin</span>
 <span class="kn">from</span> <span class="nn">.mixins.tflite_model_metadata_mixin</span> <span class="kn">import</span> <span class="n">TfliteModelMetadataMixin</span>
@@ -449,7 +448,7 @@
 
 
 
-<div class="viewcode-block" id="MltkModel"><a class="viewcode-back" href="../../../../docs/python_api/core/mltk_model.html#mltk.core.MltkModel">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
+<div class="viewcode-block" id="MltkModel"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">MltkModel</span><span class="p">(</span>
     <span class="n">ArchiveMixin</span><span class="p">,</span> 
     <span class="n">TfliteModelMetadataMixin</span><span class="p">,</span>
@@ -462,7 +461,7 @@
 <span class="sd">    Refer to the `Model Specification &lt;https://siliconlabs.github.io/mltk/docs/guides/model_specification.html&gt;`_ guide fore more details.</span>
 <span class="sd">    """</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_script_path</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="MltkModel.__init__"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_script_path</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_script_path</span> <span class="o">=</span> <span class="n">model_script_path</span>
         <span class="c1"># If not model script path was provided</span>
         <span class="c1"># then attempt to automatically determine it from the</span>
@@ -481,7 +480,7 @@
             <span class="p">),</span>
             <span class="n">add_completion</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">MltkModelAttributes</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">MltkModelAttributes</span><span class="p">()</span> </div>
 
 
     <span class="nd">@property</span> 
@@ -489,7 +488,7 @@
         <span class="sd">"""Return all model attributes"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span>
 
-<div class="viewcode-block" id="MltkModel.get_attribute"><a class="viewcode-back" href="../../../../docs/python_api/core/mltk_model.html#mltk.core.MltkModel.get_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="MltkModel.get_attribute"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel.get_attribute">[docs]</a>    <span class="k">def</span> <span class="nf">get_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="sd">"""Return attribute value or None if unknown"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 
@@ -560,7 +559,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'log_dir'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
-<div class="viewcode-block" id="MltkModel.create_log_dir"><a class="viewcode-back" href="../../../../docs/python_api/core/mltk_model.html#mltk.core.MltkModel.create_log_dir">[docs]</a>    <span class="k">def</span> <span class="nf">create_log_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span> <span class="n">delete_existing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="MltkModel.create_log_dir"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel.create_log_dir">[docs]</a>    <span class="k">def</span> <span class="nf">create_log_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">suffix</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s1">''</span><span class="p">,</span> <span class="n">delete_existing</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Create a directory for storing model log files"""</span>
         <span class="n">log_dir</span> <span class="o">=</span> <span class="n">create_user_dir</span><span class="p">(</span>
             <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span>
@@ -571,7 +570,7 @@
         <span class="k">return</span> <span class="n">log_dir</span></div>
 
 
-<div class="viewcode-block" id="MltkModel.create_logger"><a class="viewcode-back" href="../../../../docs/python_api/core/mltk_model.html#mltk.core.MltkModel.create_logger">[docs]</a>    <span class="k">def</span> <span class="nf">create_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
+<div class="viewcode-block" id="MltkModel.create_logger"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel.create_logger">[docs]</a>    <span class="k">def</span> <span class="nf">create_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
         <span class="sd">"""Create a logger for this model"""</span>
         <span class="n">train_log_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_log_dir</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">train_log_dir</span><span class="si">}</span><span class="s1">/log.txt'</span>
@@ -628,7 +627,7 @@
             <span class="c1"># pylint: disable=raise-missing-from</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="s1">'Model does not specify the dataset</span><span class="se">\'</span><span class="s1">s classes.</span><span class="se">\n</span><span class="s1">'</span>
-                <span class="s1">'It must either be manually specified or inherit a mixin that supports an classes, e.g.: ImageDatasetMixin'</span><span class="p">)</span>
+                <span class="s1">'It must either be manually specified, e.g. my_model.classes = ["dog", "cat"] or inherit a mixin that supports an classes, e.g.: ImageDatasetMixin'</span><span class="p">)</span>
     <span class="nd">@classes</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -653,7 +652,7 @@
             <span class="c1"># pylint: disable=raise-missing-from</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
                 <span class="s1">'Model does not specify the dataset</span><span class="se">\'</span><span class="s1">s input_shape.</span><span class="se">\n</span><span class="s1">'</span>
-                <span class="s1">'It must either be manually specified or inherit a mixin that supports an input_shape, e.g.: ImageDatasetMixin'</span>
+                <span class="s1">'It must either be manually specified, e.g. my_model.input_shape = (96,96,3) or inherit a mixin that supports an input_shape, e.g.: ImageDatasetMixin'</span>
             <span class="p">)</span>
     <span class="nd">@input_shape</span><span class="o">.</span><span class="n">setter</span> 
     <span class="k">def</span> <span class="nf">input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
@@ -682,21 +681,21 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'test_mode_enabled'</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="MltkModel.enable_test_mode"><a class="viewcode-back" href="../../../../docs/python_api/core/mltk_model.html#mltk.core.MltkModel.enable_test_mode">[docs]</a>    <span class="k">def</span> <span class="nf">enable_test_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MltkModel.enable_test_mode"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel.enable_test_mode">[docs]</a>    <span class="k">def</span> <span class="nf">enable_test_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">"""Enable testing mode"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'test_mode_enabled'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'Enabling test mode'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">log_dir</span><span class="si">}</span><span class="s1">-test'</span></div>
 
 
-<div class="viewcode-block" id="MltkModel.summary"><a class="viewcode-back" href="../../../../docs/python_api/core/mltk_model.html#mltk.core.MltkModel.summary">[docs]</a>    <span class="k">def</span> <span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="MltkModel.summary"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel.summary">[docs]</a>    <span class="k">def</span> <span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Return a summary of the model"""</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'Name: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
         <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'Version: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
         <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'Description: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
 
         <span class="n">params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_parameters</span>
-        <span class="n">exclude_params</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'version'</span><span class="p">]</span>
+        <span class="n">exclude_params</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'name'</span><span class="p">,</span> <span class="s1">'version'</span><span class="p">,</span> <span class="s1">'classes'</span><span class="p">,</span> <span class="s1">'runtime_memory_size'</span><span class="p">]</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">classes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">classes</span>
@@ -709,7 +708,6 @@
         <span class="k">if</span> <span class="n">classes</span><span class="p">:</span>
             <span class="n">classes</span> <span class="o">=</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
             <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'Classes: </span><span class="si">{</span><span class="n">classes</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
-            <span class="n">exclude_params</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'classes'</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="n">input_shape</span> <span class="o">=</span> <span class="s1">'x'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span>
@@ -724,8 +722,11 @@
         <span class="k">except</span><span class="p">:</span>
             <span class="k">pass</span>
 
+        <span class="k">if</span> <span class="s1">'runtime_memory_size'</span> <span class="ow">in</span> <span class="n">params</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s1">'runtime_memory_size'</span><span class="p">]:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'Runtime memory size (RAM): </span><span class="si">{</span><span class="n">format_units</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s2">"runtime_memory_size"</span><span class="p">])</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
+
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">exclude_params</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'hash'</span><span class="p">,</span> <span class="s1">'date'</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">exclude_params</span><span class="p">:</span>
                 <span class="k">continue</span> 
             <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
 
@@ -781,6 +782,7 @@
           </article>
         </div>
       </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
     </main>
   </div>
   <footer class="md-footer">
@@ -800,7 +802,7 @@
               
           </div>
             Last updated on
-              Aug 22, 2022.
+              Oct 10, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

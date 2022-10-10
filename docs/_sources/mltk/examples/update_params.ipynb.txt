@@ -14,7 +14,7 @@
 
     "\n",
 
-    "This demonstrates how to use the [update_model_parameters](../../docs/python_api/operations.md#update_model_parameters) API.\n",
+    "This demonstrates how to use the [update_model_parameters](../../docs/python_api/operations/update_model_parameters.md) API.\n",
 
     "\n",
 
@@ -86,7 +86,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 2,
+   "execution_count": 1,
 
    "metadata": {},
 
@@ -114,17 +114,17 @@
 
     "\n",
 
-    "The most common use case of the [update_model_parameters](../../docs/python_api/operations.md#update_model_parameters) API is:  \n",
+    "The most common use case of the [update_model_parameters](../../docs/python_api/operations/update_model_parameters.md) API is:  \n",
 
     "1. Fully [train](../../docs/guides/model_training.md) a model  \n",
 
     "2. Later modify the [model specification](../../docs/guides/model_specification.md) script with additional parameters  \n",
 
-    "3. Run the [update_model_parameters](https://siliconlabs.github.io/mltk/docs/python_api/operations.html#update_model_parameters) API to update the `.tflite` model file in the [model archive](https://siliconlabs.github.io/mltk/docs/guides/model_archive.html).\n",
+    "3. Run the [update_model_parameters](../../docs/python_api/operations/update_model_parameters.md) API to update the `.tflite` model file in the [model archive](../../docs/guides/model_archive.md).\n",
 
     "\n",
 
-    "In this example, it's assumed that the [MltkModel.model_parameters](https://siliconlabs.github.io/mltk/docs/python_api/core/mltk_model.html#mltk.core.MltkModel.model_parameters) settings in\n",
+    "In this example, it's assumed that the [MltkModel.model_parameters](https://siliconlabs.github.io/mltk/docs/python_api/mltk_model/model.html#mltk.core.MltkModel.model_parameters) settings in\n",
 
     "the [tflite_micro_speech](../../docs/python_api/models/tflite_micro/tflite_micro_speech.md) model specification script have been modified _after_ the model have been\n",
 
@@ -164,7 +164,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 3,
+   "execution_count": 2,
 
    "metadata": {},
 
@@ -178,37 +178,47 @@
 
      "text": [
 
-      "Updating c:/users/reed/workspace/silabs/mltk/mltk/models/examples/tflite_micro_speech.mltk.zip\n",
+      "Using Tensorflow-Lite Micro version: b13b48c (2022-06-08)\n",
 
-      "Model: \"sequential\"\n",
+      "Searching for optimal runtime memory size ...\n",
+
+      "Determined optimal runtime memory size to be 9600\n",
+
+      "Updating c:/users/reed/workspace/silabs/mltk/mltk/models/tflite_micro/tflite_micro_speech.mltk.zip\n",
+
+      "Model: \"tflite_micro_speech\"\n",
 
       "_________________________________________________________________\n",
 
-      "Layer (type)                 Output Shape              Param #   \n",
+      " Layer (type)                Output Shape              Param #   \n",
 
       "=================================================================\n",
 
-      "conv2d (Conv2D)              (None, 25, 20, 8)         648       \n",
+      " conv2d (Conv2D)             (None, 25, 20, 8)         648       \n",
 
-      "_________________________________________________________________\n",
+      "                                                                 \n",
 
-      "batch_normalization (BatchNo (None, 25, 20, 8)         32        \n",
+      " batch_normalization (BatchN  (None, 25, 20, 8)        32        \n",
 
-      "_________________________________________________________________\n",
+      " ormalization)                                                   \n",
 
-      "activation (Activation)      (None, 25, 20, 8)         0         \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " activation (Activation)     (None, 25, 20, 8)         0         \n",
 
-      "dropout (Dropout)            (None, 25, 20, 8)         0         \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " dropout (Dropout)           (None, 25, 20, 8)         0         \n",
 
-      "flatten (Flatten)            (None, 4000)              0         \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " flatten (Flatten)           (None, 4000)              0         \n",
 
-      "dense (Dense)                (None, 4)                 16004     \n",
+      "                                                                 \n",
+
+      " dense (Dense)               (None, 4)                 16004     \n",
+
+      "                                                                 \n",
 
       "=================================================================\n",
 
@@ -230,27 +240,23 @@
 
       "Version: 1\n",
 
-      "Description: TFLite-micro speech\n",
+      "Description: TFLite-Micro speech\n",
 
       "Classes: yes, no, _unknown_, _silence_\n",
-
-      "hash: None\n",
-
-      "date: None\n",
 
       "average_window_duration_ms: 1000\n",
 
       "detection_threshold: 185\n",
 
-      "suppression_ms: 1500\n",
+      "suppression_ms: 750\n",
 
       "minimum_count: 3\n",
 
-      "volume_db: 5.0\n",
+      "volume_gain: 2\n",
 
-      "latency_ms: 0\n",
+      "latency_ms: 100\n",
 
-      "log_level: info\n"
+      "verbose_model_output_logs: False\n"
 
      ]
 
@@ -286,7 +292,7 @@
 
     "\n",
 
-    "The [update_model_parameters](../../docs/python_api/operations.md#update_model_parameters) API also works with `.tflite` model files generated outside of the MLTK.  \n",
+    "The [update_model_parameters](../../docs/python_api/operations/update_model_parameters.md) API also works with `.tflite` model files generated outside of the MLTK.  \n",
 
     "In this mode, model parameters can be supplied via API argument, e.g.:"
 
@@ -298,7 +304,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 4,
+   "execution_count": 3,
 
    "metadata": {},
 
@@ -344,7 +350,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 5,
+   "execution_count": 4,
 
    "metadata": {},
 
@@ -358,6 +364,12 @@
 
      "text": [
 
+      "Using Tensorflow-Lite Micro version: b13b48c (2022-06-08)\n",
+
+      "Searching for optimal runtime memory size ...\n",
+
+      "Determined optimal runtime memory size to be 25472\n",
+
       "+-------+-------------------+----------------+----------------+-------------------------------------------------------+\n",
 
       "| Index | OpCode            | Input(s)       | Output(s)      | Config                                                |\n",
@@ -370,7 +382,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 1     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 1     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -382,7 +394,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 3     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 3     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -394,7 +406,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 5     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 5     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -406,7 +418,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 7     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 7     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -420,7 +432,7 @@
 
       "| 9     | average_pool_2d   | 25x5x64 (int8) | 1x1x64 (int8)  | Padding:valid stride:5x25 filter:5x25 activation:none |\n",
 
-      "| 10    | reshape           | 1x1x64 (int8)  | 64 (int8)      | BuiltinOptionsType=0                                  |\n",
+      "| 10    | reshape           | 1x1x64 (int8)  | 64 (int8)      | Type=none                                             |\n",
 
       "|       |                   | 2 (int32)      |                |                                                       |\n",
 
@@ -430,7 +442,7 @@
 
       "|       |                   | 12 (int32)     |                |                                                       |\n",
 
-      "| 12    | softmax           | 12 (int8)      | 12 (int8)      | BuiltinOptionsType=9                                  |\n",
+      "| 12    | softmax           | 12 (int8)      | 12 (int8)      | Type=softmaxoptions                                   |\n",
 
       "+-------+-------------------+----------------+----------------+-------------------------------------------------------+\n",
 
@@ -444,11 +456,11 @@
 
       "Description: Generated by Silicon Lab's MLTK Python package\n",
 
-      "classes: []\n",
+      "Runtime memory size (RAM): 24.384 k\n",
 
-      "hash: cda11c4380f044289cd9b73ccc2c20cc\n",
+      "hash: a4fadcb07cc13bf4ce4249e7349cadf3\n",
 
-      "date: 2021-10-19T18:53:57.429Z\n",
+      "date: 2022-10-06T16:36:18.836Z\n",
 
       "volume: 10.0\n",
 
@@ -456,7 +468,7 @@
 
       "threshold: 43\n",
 
-      ".tflite file size: 54.0kB\n"
+      ".tflite file size: 54.1kB\n"
 
      ]
 
@@ -504,7 +516,7 @@
 
     "\n",
 
-    "Rather than update the given model, the [update_model_parameters](https://siliconlabs.github.io/mltk/docs/python_api/operations.html#update-model-parameters) API can also return a [TfliteModel](https://siliconlabs.github.io/mltk/docs/python_api/core/tflite_model.html) instance with the updated parameters.\n",
+    "Rather than update the given model, the [update_model_parameters](../../docs/python_api/operations/update_model_parameters.md) API can also return a [TfliteModel](../../docs/python_api/tflite_model/index.md) instance with the updated parameters.\n",
 
     "\n",
 
@@ -518,7 +530,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 6,
+   "execution_count": 5,
 
    "metadata": {},
 
@@ -532,6 +544,12 @@
 
      "text": [
 
+      "Using Tensorflow-Lite Micro version: b13b48c (2022-06-08)\n",
+
+      "Searching for optimal runtime memory size ...\n",
+
+      "Determined optimal runtime memory size to be 25472\n",
+
       "+-------+-------------------+----------------+----------------+-------------------------------------------------------+\n",
 
       "| Index | OpCode            | Input(s)       | Output(s)      | Config                                                |\n",
@@ -544,7 +562,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 1     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 1     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -556,7 +574,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 3     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 3     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -568,7 +586,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 5     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 5     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -580,7 +598,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 7     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 7     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -594,7 +612,7 @@
 
       "| 9     | average_pool_2d   | 25x5x64 (int8) | 1x1x64 (int8)  | Padding:valid stride:5x25 filter:5x25 activation:none |\n",
 
-      "| 10    | reshape           | 1x1x64 (int8)  | 64 (int8)      | BuiltinOptionsType=0                                  |\n",
+      "| 10    | reshape           | 1x1x64 (int8)  | 64 (int8)      | Type=none                                             |\n",
 
       "|       |                   | 2 (int32)      |                |                                                       |\n",
 
@@ -604,7 +622,7 @@
 
       "|       |                   | 12 (int32)     |                |                                                       |\n",
 
-      "| 12    | softmax           | 12 (int8)      | 12 (int8)      | BuiltinOptionsType=9                                  |\n",
+      "| 12    | softmax           | 12 (int8)      | 12 (int8)      | Type=softmaxoptions                                   |\n",
 
       "+-------+-------------------+----------------+----------------+-------------------------------------------------------+\n",
 
@@ -618,11 +636,11 @@
 
       "Description: Generated by Silicon Lab's MLTK Python package\n",
 
-      "classes: []\n",
+      "Runtime memory size (RAM): 24.384 k\n",
 
-      "hash: cda11c4380f044289cd9b73ccc2c20cc\n",
+      "hash: a4fadcb07cc13bf4ce4249e7349cadf3\n",
 
-      "date: 2021-10-19T18:53:57.565Z\n",
+      "date: 2022-10-06T16:36:26.831Z\n",
 
       "volume: 10.0\n",
 
@@ -630,7 +648,7 @@
 
       "threshold: 43\n",
 
-      ".tflite file size: 54.0kB\n"
+      ".tflite file size: 54.1kB\n"
 
      ]
 
@@ -672,15 +690,11 @@
 
  "metadata": {
 
-  "interpreter": {
-
-   "hash": "d2cfb25ea30f37ddda2085817c91f6bd2a4a914387b5b179eb21bf4600b69cf8"
-
-  },
-
   "kernelspec": {
 
-   "display_name": "Python 3.9.7 64-bit ('.venv': venv)",
+   "display_name": "Python 3.9.7 ('.venv': venv)",
+
+   "language": "python",
 
    "name": "python3"
 
@@ -710,7 +724,17 @@
 
   },
 
-  "orig_nbformat": 4
+  "orig_nbformat": 4,
+
+  "vscode": {
+
+   "interpreter": {
+
+    "hash": "600e22ae316f8c315f552eaf99bb679bc9438a443c93affde9ac001991b79c8f"
+
+   }
+
+  }
 
  },
 

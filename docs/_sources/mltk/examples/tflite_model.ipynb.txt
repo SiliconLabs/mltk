@@ -1,0 +1,844 @@
+{
+
+ "cells": [
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "# TF-Lite Model API Examples\n",
+
+    "\n",
+
+    "This demonstrates how to use the [TF-Lite Model](../../docs/python_api/tflite_model/index.md) package.\n",
+
+    "\n",
+
+    "__NOTES:__  \n",
+
+    "- Click here: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/examples/tflite_model.ipynb) to run this example interactively in your browser  \n",
+
+    "- Refer to the [Notebook Examples Guide](../../docs/guides/notebook_examples_guide.md) for how to run this example locally in VSCode   "
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Install MLTK Python Package"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": null,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "# Install the MLTK Python package (if necessary)\n",
+
+    "!pip install --upgrade silabs-mltk"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Import Python Packages"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 1,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "# Import the standard Python packages used by the examples\n",
+
+    "import os\n",
+
+    "import urllib\n",
+
+    "import shutil\n",
+
+    "import tempfile"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Download .tflite model file\n",
+
+    "\n",
+
+    "A `.tflite` model file is required to run these examples.  \n",
+
+    "The following code downloads a model.\n",
+
+    "\n",
+
+    "__NOTE:__ Update `TFLITE_MODEL_URL` or `tflite_path` to point to your model if necessary"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 2,
+
+   "metadata": {},
+
+   "outputs": [],
+
+   "source": [
+
+    "# Use .tflite mode found here:\n",
+
+    "# https://github.com/siliconlabs/mltk/tree/master/mltk/utils/test_helper/data/\n",
+
+    "# NOTE: Update this URL to point to your model if necessary\n",
+
+    "TFLITE_MODEL_URL = 'https://github.com/siliconlabs/mltk/raw/master/mltk/utils/test_helper/data/image_example1.tflite'\n",
+
+    "\n",
+
+    "# Download the .tflite file and save to the temp dir\n",
+
+    "tflite_path = os.path.normpath(f'{tempfile.gettempdir()}/image_example1.tflite')\n",
+
+    "with open(tflite_path, 'wb') as dst:\n",
+
+    "    with urllib.request.urlopen(TFLITE_MODEL_URL) as src:\n",
+
+    "        shutil.copyfileobj(src, dst)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 1: Load .tflite and print summary\n",
+
+    "\n",
+
+    "This example loads `.tflite` model file and prints a summary:"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 3,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+
+      "| Index | OpCode          | Input(s)        | Output(s)       | Config                                              |\n",
+
+      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+
+      "| 0     | conv_2d         | 96x96x1 (int8)  | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |\n",
+
+      "|       |                 | 3x3x1 (int8)    |                 |                                                     |\n",
+
+      "|       |                 | 24 (int32)      |                 |                                                     |\n",
+
+      "| 1     | average_pool_2d | 48x48x24 (int8) | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 2     | conv_2d         | 24x24x24 (int8) | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |\n",
+
+      "|       |                 | 3x3x24 (int8)   |                 |                                                     |\n",
+
+      "|       |                 | 16 (int32)      |                 |                                                     |\n",
+
+      "| 3     | conv_2d         | 11x11x16 (int8) | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |\n",
+
+      "|       |                 | 3x3x16 (int8)   |                 |                                                     |\n",
+
+      "|       |                 | 24 (int32)      |                 |                                                     |\n",
+
+      "| 4     | average_pool_2d | 9x9x24 (int8)   | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 5     | reshape         | 4x4x24 (int8)   | 384 (int8)      | Type=none                                           |\n",
+
+      "|       |                 | 2 (int32)       |                 |                                                     |\n",
+
+      "| 6     | fully_connected | 384 (int8)      | 3 (int8)        | Activation:none                                     |\n",
+
+      "|       |                 | 384 (int8)      |                 |                                                     |\n",
+
+      "|       |                 | 3 (int32)       |                 |                                                     |\n",
+
+      "| 7     | softmax         | 3 (int8)        | 3 (int8)        | Type=softmaxoptions                                 |\n",
+
+      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "# Import the TfliteModel class\n",
+
+    "from mltk.core import TfliteModel \n",
+
+    "\n",
+
+    "# Load the .tflite\n",
+
+    "tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)\n",
+
+    "\n",
+
+    "# Generate a summary of the .tflite\n",
+
+    "summary = tflite_model.summary()\n",
+
+    "\n",
+
+    "# Print the summary to the console\n",
+
+    "print(summary)"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 2: Iterate the model layers\n",
+
+    "\n",
+
+    "This example loads `.tflite` model file and iterates through the layers of the model"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 7,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Layer op0-conv_2d:\n",
+
+      "\tInputs=conv2d_input_int8, dtype:int8, shape:1x96x96x1,image_example1/conv2d/Conv2D, dtype:int8, shape:24x3x3x1,image_example1/conv2d/BiasAdd/ReadVariableOp/resource, dtype:int32, shape:24\n",
+
+      "\tOutputs=image_example1/conv2d/Relu;image_example1/conv2d/BiasAdd;image_example1/conv2d_2/Conv2D;image_example1/conv2d/Conv2D;image_example1/conv2d/BiasAdd/ReadVariableOp/resource, dtype:int8, shape:1x48x48x24\n",
+
+      "Layer op1-average_pool_2d:\n",
+
+      "\tInputs=image_example1/conv2d/Relu;image_example1/conv2d/BiasAdd;image_example1/conv2d_2/Conv2D;image_example1/conv2d/Conv2D;image_example1/conv2d/BiasAdd/ReadVariableOp/resource, dtype:int8, shape:1x48x48x24\n",
+
+      "\tOutputs=image_example1/average_pooling2d/AvgPool, dtype:int8, shape:1x24x24x24\n",
+
+      "Layer op2-conv_2d:\n",
+
+      "\tInputs=image_example1/average_pooling2d/AvgPool, dtype:int8, shape:1x24x24x24,image_example1/conv2d_1/Conv2D, dtype:int8, shape:16x3x3x24,image_example1/conv2d_1/BiasAdd/ReadVariableOp/resource, dtype:int32, shape:16\n",
+
+      "\tOutputs=image_example1/conv2d_1/Relu;image_example1/conv2d_1/BiasAdd;image_example1/conv2d_1/Conv2D;image_example1/conv2d_1/BiasAdd/ReadVariableOp/resource, dtype:int8, shape:1x11x11x16\n",
+
+      "Layer op3-conv_2d:\n",
+
+      "\tInputs=image_example1/conv2d_1/Relu;image_example1/conv2d_1/BiasAdd;image_example1/conv2d_1/Conv2D;image_example1/conv2d_1/BiasAdd/ReadVariableOp/resource, dtype:int8, shape:1x11x11x16,image_example1/conv2d_2/Conv2D, dtype:int8, shape:24x3x3x16,image_example1/activation/Relu;image_example1/batch_normalization/FusedBatchNormV3;image_example1/conv2d_2/BiasAdd/ReadVariableOp/resource;image_example1/conv2d_2/BiasAdd;image_example1/conv2d_2/Conv2D, dtype:int32, shape:24\n",
+
+      "\tOutputs=image_example1/activation/Relu;image_example1/batch_normalization/FusedBatchNormV3;image_example1/conv2d_2/BiasAdd/ReadVariableOp/resource;image_example1/conv2d_2/BiasAdd;image_example1/conv2d_2/Conv2D1, dtype:int8, shape:1x9x9x24\n",
+
+      "Layer op4-average_pool_2d:\n",
+
+      "\tInputs=image_example1/activation/Relu;image_example1/batch_normalization/FusedBatchNormV3;image_example1/conv2d_2/BiasAdd/ReadVariableOp/resource;image_example1/conv2d_2/BiasAdd;image_example1/conv2d_2/Conv2D1, dtype:int8, shape:1x9x9x24\n",
+
+      "\tOutputs=image_example1/average_pooling2d_1/AvgPool, dtype:int8, shape:1x4x4x24\n",
+
+      "Layer op5-reshape:\n",
+
+      "\tInputs=image_example1/average_pooling2d_1/AvgPool, dtype:int8, shape:1x4x4x24,image_example1/flatten/Const, dtype:int32, shape:2\n",
+
+      "\tOutputs=image_example1/flatten/Reshape, dtype:int8, shape:1x384\n",
+
+      "Layer op6-fully_connected:\n",
+
+      "\tInputs=image_example1/flatten/Reshape, dtype:int8, shape:1x384,image_example1/dense/MatMul, dtype:int8, shape:3x384,image_example1/dense/BiasAdd/ReadVariableOp/resource, dtype:int32, shape:3\n",
+
+      "\tOutputs=image_example1/dense/MatMul;image_example1/dense/BiasAdd, dtype:int8, shape:1x3\n",
+
+      "Layer op7-softmax:\n",
+
+      "\tInputs=image_example1/dense/MatMul;image_example1/dense/BiasAdd, dtype:int8, shape:1x3\n",
+
+      "\tOutputs=Identity_int8, dtype:int8, shape:1x3\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "# Import the TfliteModel class\n",
+
+    "from mltk.core import TfliteModel \n",
+
+    "\n",
+
+    "# Load the .tflite\n",
+
+    "tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)\n",
+
+    "\n",
+
+    "# Iterate over each layer in the .tflite\n",
+
+    "for layer in tflite_model.layers:\n",
+
+    "    print(f'Layer {layer.name}:\\n\\tInputs={\",\".join(str(x) for x in layer.inputs)}\\n\\tOutputs={\",\".join(str(x) for x in layer.outputs)}')"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 3: Add meta data to .tflite\n",
+
+    "\n",
+
+    "This example loads `.tflite` model file and adds \"metadata\" to the .tflite. "
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 8,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "my_metadata=b'This is some arbitrary metadata that will be embedded into the .tflite'\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "# Import the TfliteModel class\n",
+
+    "from mltk.core import TfliteModel \n",
+
+    "\n",
+
+    "# Load the .tflite\n",
+
+    "tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)\n",
+
+    "\n",
+
+    "# Add meta data with the key: \"my_metadata\"\n",
+
+    "tflite_model.add_metadata('my_metadata', b'This is some arbitrary metadata that will be embedded into the .tflite')\n",
+
+    "\n",
+
+    "# At this point, the metadata is only cached in RAM\n",
+
+    "# Save the model back to the .tflite file so that the added metadata persists\n",
+
+    "tflite_model.save()\n",
+
+    "\n",
+
+    "# At a later time, the .tflite can be loaded from the .tflite file again\n",
+
+    "tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)\n",
+
+    "\n",
+
+    "# Retrieve the metadata from the model\n",
+
+    "my_metadata = tflite_model.get_metadata('my_metadata')\n",
+
+    "print(f'my_metadata={my_metadata}')\n"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 4: Add model parameters to the .tflite\n",
+
+    "\n",
+
+    "This example loads `.tflite` model file and adds [model parameters](../../docs/guides/model_parameters.md) to it."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 9,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "name = image_example1\n",
+
+      "version = 1\n",
+
+      "classes = ['rock', 'paper', 'scissor']\n",
+
+      "hash = e8463b1e31855c5e6319493226b8b582\n",
+
+      "date = 2021-08-18T16:51:34.028Z\n",
+
+      "samplewise_norm.rescale = 0\n",
+
+      "samplewise_norm.mean = True\n",
+
+      "samplewise_norm.std = True\n",
+
+      "my_bool = True\n",
+
+      "my_int = 42\n",
+
+      "my_float = 3.140000104904175\n",
+
+      "my_str = This is a string parameter\n",
+
+      "my_list_int = [1, 2, 3]\n",
+
+      "my_list_float = [1.100000023841858, 2.200000047683716, 3.299999952316284]\n",
+
+      "my_list_str = ['This', 'is', 'a', 'string', 'list']\n",
+
+      "my_bytes = b'\\x01\\x02\\x03\\x04'\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "# Import the TfliteModel class\n",
+
+    "from mltk.core import TfliteModel, TfliteModelParameters \n",
+
+    "\n",
+
+    "# Load the .tflite\n",
+
+    "tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)\n",
+
+    "\n",
+
+    "# Load the model parameters\n",
+
+    "tflite_model_params = TfliteModelParameters.load_from_tflite_model(tflite_model)\n",
+
+    "\n",
+
+    "# Add some parameters\n",
+
+    "tflite_model_params['my_bool'] = True \n",
+
+    "tflite_model_params['my_int'] = 42\n",
+
+    "tflite_model_params['my_float'] = 3.14\n",
+
+    "tflite_model_params['my_str'] = 'This is a string parameter'\n",
+
+    "tflite_model_params['my_list_int'] = [1, 2, 3]\n",
+
+    "tflite_model_params['my_list_float'] = [1.1, 2.2, 3.3]\n",
+
+    "tflite_model_params['my_list_str'] = ['This', 'is', 'a', 'string', 'list']\n",
+
+    "tflite_model_params['my_bytes'] = bytearray([1, 2, 3, 4])\n",
+
+    "\n",
+
+    "# Add the new model parameters to the tflite model\n",
+
+    "tflite_model_params.add_to_tflite_model(tflite_model)\n",
+
+    "\n",
+
+    "# At this point, the model parameters are only cached in RAM\n",
+
+    "# Save the model back to the .tflite file so that the added metadata persists\n",
+
+    "tflite_model.save()\n",
+
+    "\n",
+
+    "# At a later time, the .tflite can be loaded from the .tflite file again\n",
+
+    "tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)\n",
+
+    "\n",
+
+    "# Load the model parameters\n",
+
+    "tflite_model_params = TfliteModelParameters.load_from_tflite_model(tflite_model)\n",
+
+    "\n",
+
+    "# This point, tflite_model_params is just a Python dictionary\n",
+
+    "# NOTE: .tflite models generated by the MLTK add additional model parameters by default\n",
+
+    "#       See: https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html\n",
+
+    "for key, value in tflite_model_params.items():\n",
+
+    "    print(f'{key} = {value}')\n"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Example 5: Run inference\n",
+
+    "\n",
+
+    "This package also allows for running inference on the .tflite."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "code",
+
+   "execution_count": 19,
+
+   "metadata": {},
+
+   "outputs": [
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Rock prediction: [ 127 -128 -128]\n",
+
+      "Paper prediction: [-128  122 -122]\n",
+
+      "Scissors prediction: [-128 -127  127]\n"
+
+     ]
+
+    }
+
+   ],
+
+   "source": [
+
+    "import tensorflow as tf\n",
+
+    "import numpy as np\n",
+
+    "# Import the TfliteModel class\n",
+
+    "from mltk.core import TfliteModel \n",
+
+    "# By default, this example uses the image_example1.tflite model\n",
+
+    "# which was train using the Rock,Paper,Scissors dataset\n",
+
+    "# You must change this to match your model's dataset\n",
+
+    "from mltk.datasets.image import rock_paper_scissors_v2\n",
+
+    "\n",
+
+    "# Load the .tflite\n",
+
+    "tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)\n",
+
+    "\n",
+
+    "\n",
+
+    "dataset_dir = rock_paper_scissors_v2.load_data()\n",
+
+    "\n",
+
+    "def _load_sample(class_name):\n",
+
+    "    base_dir = f'{dataset_dir}/{class_name}'\n",
+
+    "    # Retrieve the first sample filename for the give class \n",
+
+    "    filename = os.listdir(base_dir)[0]\n",
+
+    "    image_path = f'{base_dir}/{filename}'\n",
+
+    "    # Load the sample image\n",
+
+    "    img = tf.keras.preprocessing.image.load_img(image_path, color_mode = 'grayscale')\n",
+
+    "    # Convert the image to a numpy array\n",
+
+    "    img_array = tf.keras.preprocessing.image.img_to_array(img, dtype='uint8')\n",
+
+    "\n",
+
+    "    # Normalize the image array\n",
+
+    "    # NOTE: This is how the image_example1.tflite model was trained\n",
+
+    "    #       This must be modified as necessary for your .tflite\n",
+
+    "    norm_img = (img_array - np.mean(img_array)) / np.std(img_array)\n",
+
+    "\n",
+
+    "    # Ensure the data type if float32\n",
+
+    "    norm_img = norm_img.astype('float32')\n",
+
+    "    return norm_img\n",
+
+    "\n",
+
+    "# Load a sample for each class type \n",
+
+    "rock_sample = _load_sample('rock')\n",
+
+    "paper_sample = _load_sample('paper')\n",
+
+    "scissors_sample = _load_sample('scissor')\n",
+
+    "\n",
+
+    "# Run inference on the \"rock\" sample\n",
+
+    "prep = tflite_model.predict(rock_sample)\n",
+
+    "print(f'Rock prediction: {prep}')\n",
+
+    "\n",
+
+    "# Run inference on the \"paper\" sample\n",
+
+    "prep = tflite_model.predict(paper_sample)\n",
+
+    "print(f'Paper prediction: {prep}')\n",
+
+    "\n",
+
+    "# Run inference on the \"scissor\" sample\n",
+
+    "prep = tflite_model.predict(scissors_sample)\n",
+
+    "print(f'Scissors prediction: {prep}')\n"
+
+   ]
+
+  }
+
+ ],
+
+ "metadata": {
+
+  "kernelspec": {
+
+   "display_name": "Python 3.9.7 ('.venv': venv)",
+
+   "language": "python",
+
+   "name": "python3"
+
+  },
+
+  "language_info": {
+
+   "codemirror_mode": {
+
+    "name": "ipython",
+
+    "version": 3
+
+   },
+
+   "file_extension": ".py",
+
+   "mimetype": "text/x-python",
+
+   "name": "python",
+
+   "nbconvert_exporter": "python",
+
+   "pygments_lexer": "ipython3",
+
+   "version": "3.9.7"
+
+  },
+
+  "orig_nbformat": 4,
+
+  "vscode": {
+
+   "interpreter": {
+
+    "hash": "600e22ae316f8c315f552eaf99bb679bc9438a443c93affde9ac001991b79c8f"
+
+   }
+
+  }
+
+ },
+
+ "nbformat": 4,
+
+ "nbformat_minor": 2
+
+}
+

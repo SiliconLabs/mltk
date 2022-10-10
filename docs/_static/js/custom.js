@@ -1,6 +1,6 @@
 
 window.SURVEY_URL = 'https://www.surveymonkey.com/r/JDGSDJC';
-window.SHOW_SURVEY_AFTER_SECONDS = 20*60; // Show the survey after 20min of activity
+window.SHOW_SURVEY_AFTER_SECONDS = 3*60; // Show the survey after 3min of activity
 
 window.dataLayer = window.dataLayer || [];
 window.loadingSurvey = false;
@@ -10,6 +10,7 @@ window.tookSurvey = localStorage.surveyUrl === window.SURVEY_URL
 
 // Open external links in a new tab
 $(document).ready(function () {
+    addScrollToTopButton();
     checkIfAcceptedCookies();
     $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
 });
@@ -118,4 +119,30 @@ function updateSurveyActivity() {
     if(totalSeconds >= window.SHOW_SURVEY_AFTER_SECONDS) {
         showSurvey();
     }
+}
+
+
+function addScrollToTopButton() {
+    $(window).scroll(function() {
+        var footertotop = ($('footer').position().top);
+        var scrolltop = $(document).scrollTop() + window.innerHeight;
+        var difference = scrolltop-footertotop - 30;
+
+        if (scrolltop > footertotop) {
+            $('.go-top').css({'bottom' : difference});
+        }else{
+            $('.go-top').css({'bottom' : 10});
+        };   
+
+        if ($(this).scrollTop() > 200) {
+            $('.go-top').fadeIn(200);
+        } else {
+            $('.go-top').fadeOut(200);
+        }
+    });
+
+    $('.go-top').click(function(event) {
+        event.preventDefault();
+        $('html, body').animate({scrollTop: 0}, 300);
+    })
 }
