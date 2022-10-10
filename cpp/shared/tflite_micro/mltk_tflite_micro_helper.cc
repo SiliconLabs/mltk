@@ -53,6 +53,14 @@ extern "C" void issue_unsupported_kernel_message(const char* fmt, ...)
 
   get_logger().warn("%s", buffer);
 }
+
+/*************************************************************************************************/
+extern "C" void mltk_tflite_micro_get_current_layer_opcode_and_index(int* opcode, int* index)
+{
+    *opcode = mltk::_current_kernel_op_code;
+    *index = mltk::_current_kernel_index;
+}
+
 #endif // MLTK_DLL_IMPORT
 
 /*************************************************************************************************/
@@ -198,7 +206,7 @@ bool get_tflite_flatbuffer_from_end_of_flash(const uint8_t** flatbuffer, uint32_
     flash_end_addr = (flash_end_addr==nullptr) ? (const uint32_t*)(FLASH_BASE + FLASH_SIZE) : flash_end_addr;
 
     const uint32_t tflite_length = *(flash_end_addr-1);
-    if(tflite_length == 0 || tflite_length > 1024*1024)
+    if(tflite_length == 0 || tflite_length >= FLASH_SIZE)
     {
         return false;
     }

@@ -38,6 +38,9 @@ Commands
    # Run this model in the audio classifier application
    mltk classify_audio audio_example1 --device --verbose
 
+   # Directly invoke the model script
+   python audio_example1.py
+
 Model Summary
 --------------
 
@@ -184,13 +187,7 @@ from tensorflow.keras.layers import (
 )
 
 
-from mltk.core import (
-    MltkModel,
-    TrainMixin,
-    AudioDatasetMixin,
-    EvaluateClassifierMixin,
-    TrainingResults
-)
+import mltk.core as mltk_core
 from mltk.core.preprocess.audio.parallel_generator import ParallelAudioDataGenerator
 from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings
 from mltk.datasets.audio.speech_commands import speech_commands_v2
@@ -202,10 +199,10 @@ from mltk.datasets.audio.speech_commands import speech_commands_v2
 # - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    AudioDatasetMixin, 
-    EvaluateClassifierMixin
+    mltk_core.MltkModel, 
+    mltk_core.TrainMixin, 
+    mltk_core.AudioDatasetMixin, 
+    mltk_core.EvaluateClassifierMixin
 ):
     pass
 my_model = MyModel()
@@ -228,7 +225,22 @@ my_model.loss = 'categorical_crossentropy'
 #################################################
 # Training callback Settings
 
-my_model.tensorboard['write_images'] = True 
+my_model.tensorboard = dict(
+    histogram_freq=0,       # frequency (in epochs) at which to compute activation and weight histograms 
+                            # for the layers of the model. If set to 0, histograms won't be computed. 
+                            # Validation data (or split) must be specified for histogram visualizations.
+    write_graph=False,       # whether to visualize the graph in TensorBoard. The log file can become quite large when write_graph is set to True.
+    write_images=False,     # whether to write model weights to visualize as image in TensorBoard.
+    update_freq="batch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics 
+                            # to TensorBoard after each batch. The same applies for 'epoch'. 
+                            # If using an integer, let's say 1000, the callback will write the metrics and losses 
+                            # to TensorBoard every 1000 batches. Note that writing too frequently to 
+                            # TensorBoard can slow down your training.
+    profile_batch=(51,51),        # Profile the batch(es) to sample compute characteristics. 
+                            # profile_batch must be a non-negative integer or a tuple of integers. 
+                            # A pair of positive integers signify a range of batches to profile. 
+                            # By default, it will profile the second batch. Set profile_batch=0 to disable profiling.
+) 
 
 my_model.checkpoint['monitor'] =  'val_accuracy'
 
@@ -374,7 +386,7 @@ my_model.build_model_function = my_model_builder
 
 
 
-def _on_training_complete(results: TrainingResults):
+def _on_training_complete(results: mltk_core.TrainingResults):
     """This callback is invoked after training successfully completes
     
     Here is where custom quantization or .tflite model generation could be done
@@ -429,3 +441,37 @@ my_model.model_parameters['latency_ms'] = 100
 
 # Enable verbose inference results
 my_model.model_parameters['verbose_model_output_logs'] = False
+
+
+
+##########################################################################################
+# The following allows for running this model training script directly, e.g.: 
+# python audio_example1.py
+#
+# Note that this has the same functionality as:
+# mltk train audio_example1
+#
+if __name__ == '__main__':
+    from mltk import cli
+
+    # Setup the CLI logger
+    cli.get_logger(verbose=False)
+
+    # If this is true then this will do a "dry run" of the model testing
+    # If this is false, then the model will be fully trained
+    test_mode_enabled = True
+
+    # Train the model
+    # This does the same as issuing the command: mltk train audio_example1-test --clean
+    train_results = mltk_core.train_model(my_model, clean=True, test=test_mode_enabled)
+    print(train_results)
+
+    # Evaluate the model against the quantized .h5 (i.e. float32) model
+    # This does the same as issuing the command: mltk evaluate audio_example1-test
+    tflite_eval_results = mltk_core.evaluate_model(my_model, verbose=True, test=test_mode_enabled)
+    print(tflite_eval_results)
+
+    # Profile the model in the simulator
+    # This does the same as issuing the command: mltk profile audio_example1-test
+    profiling_results = mltk_core.profile_model(my_model, test=test_mode_enabled)
+    print(profiling_results)

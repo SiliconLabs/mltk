@@ -1,6 +1,6 @@
 
 window.SURVEY_URL = 'https://www.surveymonkey.com/r/JDGSDJC';
-window.SHOW_SURVEY_AFTER_SECONDS = 3*60; // Show the survey after 3min of activity
+window.SHOW_SURVEY_AFTER_SECONDS = 20*60; // Show the survey after 20min of activity
 
 window.dataLayer = window.dataLayer || [];
 window.loadingSurvey = false;

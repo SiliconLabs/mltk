@@ -6,7 +6,7 @@ import importlib
 import copy
 import threading
 import inspect
-from typing import Union, List, Dict
+from typing import Union, List, Dict, Tuple
 import numpy as np
 
 from mltk.core.tflite_model import TfliteModel, TfliteLayer
@@ -15,7 +15,7 @@ from mltk.utils.python import (as_list, get_case_insensitive, import_module_at_p
 from mltk.utils.path import (fullpath, get_user_setting)
 from ..profiling_results import ProfilingModelResults, ProfilingLayerResult
 from .tflite_micro_accelerator import TfliteMicroAccelerator
-from .tflite_micro_model import TfliteMicroModel
+from .tflite_micro_model import TfliteMicroModel, TfliteMicroModelDetails
 
 
 
@@ -259,7 +259,7 @@ class TfliteMicro:
         enable_accelerator_recorder = False,
         disable_simulator_backend=False,
         return_model_details=False
-    ) -> List[TfliteLayer]:
+    ) -> Union[List[TfliteLayer], Tuple[List[TfliteLayer],TfliteMicroModelDetails]]:
         """Run one inference and record each model layer's input/output tensors
         
         Args:
@@ -272,7 +272,7 @@ class TfliteMicro:
                 Each layers' recorded data is a dictionary with the entries specific to the hardware accelerator.
             disable_simulator_backend: Disable the simulator backend while running the accelerator recorder.
                 This can greatly improve execution time, however, the generated data output (i.e. output tensors) is invalid
-            return_model_details: Also return the recorded model's TfliteModelDetails
+            return_model_details: Also return the recorded model's TfliteMicroModelDetails
         Return:
             Return a list of TfliteLayers with the tensor data
             updated with the recorded values from the previous inference

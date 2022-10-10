@@ -12,34 +12,34 @@ class AudioFeatureGeneratorSettings(dict):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         
-        self['fe.sample_rate_hz'] = 16000
-        self['fe.sample_length_ms'] = 1000
-        self['fe.window_size_ms'] = 25
-        self['fe.window_step_ms'] = 10
+        self.sample_rate_hz = 16000
+        self.sample_length_ms = 1000
+        self.window_size_ms = 25
+        self.window_step_ms = 10
 
-        self['fe.filterbank_n_channels'] = 32
-        self['fe.filterbank_upper_band_limit'] = 7500.0
-        self['fe.filterbank_lower_band_limit'] = 125.0
-        self['fe.noise_reduction_enable'] = False
-        self['fe.noise_reduction_smoothing_bits'] = 10
-        self['fe.noise_reduction_even_smoothing'] = 0.025
-        self['fe.noise_reduction_odd_smoothing'] =  0.06
-        self['fe.noise_reduction_min_signal_remaining'] = 0.05
-        self['fe.pcan_enable'] = False
-        self['fe.pcan_strength'] = 0.95
-        self['fe.pcan_offset'] = 80.0
-        self['fe.pcan_gain_bits'] = 21
-        self['fe.log_scale_enable'] = True
-        self['fe.log_scale_shift'] = 6
-        self['fe.activity_detection_enable'] = False
-        self['fe.activity_detection_alpha_a'] = 0.5
-        self['fe.activity_detection_alpha_b'] = 0.8
-        self['fe.activity_detection_arm_threshold'] = 0.75
-        self['fe.activity_detection_trip_threshold'] = 0.8
-        self['fe.dc_notch_filter_enable'] = False
-        self['fe.dc_notch_filter_coefficient'] = 0.95
-        self['fe.quantize_dynamic_scale_enable'] = False
-        self['fe.quantize_dynamic_scale_range_db'] = 40.0
+        self.filterbank_n_channels = 32
+        self.filterbank_upper_band_limit = 7500.0
+        self.filterbank_lower_band_limit = 125.0
+        self.noise_reduction_enable = False
+        self.noise_reduction_smoothing_bits = 10
+        self.noise_reduction_even_smoothing = 0.025
+        self.noise_reduction_odd_smoothing =  0.06
+        self.noise_reduction_min_signal_remaining = 0.05
+        self.pcan_enable = False
+        self.pcan_strength = 0.95
+        self.pcan_offset = 80.0
+        self.pcan_gain_bits = 21
+        self.log_scale_enable = True
+        self.log_scale_shift = 6
+        self.activity_detection_enable = False
+        self.activity_detection_alpha_a = 0.5
+        self.activity_detection_alpha_b = 0.8
+        self.activity_detection_arm_threshold = 0.75
+        self.activity_detection_trip_threshold = 0.8
+        self.dc_notch_filter_enable = False
+        self.dc_notch_filter_coefficient = 0.95
+        self.quantize_dynamic_scale_enable = False
+        self.quantize_dynamic_scale_range_db = 40.0
 
 
 
@@ -56,10 +56,11 @@ class AudioFeatureGeneratorSettings(dict):
     @property
     def sample_rate_hz(self) -> int:
         """The sample rate of the audio in Hz, default 16000"""
-        return self['fe.sample_rate_hz']
+        return self.get('fe.sample_rate_hz', 0)
     @sample_rate_hz.setter
     def sample_rate_hz(self, v: int):
         self['fe.sample_rate_hz'] = int(v)
+        self._update_fft_length()
 
     @property
     def sample_length_ms(self) -> int:
@@ -72,10 +73,11 @@ class AudioFeatureGeneratorSettings(dict):
     @property
     def window_size_ms(self) -> int:
         """length of desired time frames in ms, default 25"""
-        return self['fe.window_size_ms']
+        return self.get('fe.window_size_ms', 0)
     @window_size_ms.setter
     def window_size_ms(self, v: int):
         self['fe.window_size_ms'] = int(v)
+        self._update_fft_length()
 
     @property
     def window_step_ms(self) -> int:
@@ -293,3 +295,19 @@ class AudioFeatureGeneratorSettings(dict):
     @quantize_dynamic_scale_range_db.setter
     def quantize_dynamic_scale_range_db(self, v: float):
         self['fe.quantize_dynamic_scale_range_db'] = float(v)  
+
+
+    @property
+    def fft_length(self) -> int:
+        """The calculated size required to do an FFT. 
+        This is dependent on the window_size_ms and sample_rate_hz values"""
+        return self['fe.fft_length']
+
+    def _update_fft_length(self):
+        windows_size = int((self.window_size_ms * self.sample_rate_hz) / 1000)
+        # The FFT length is the smallest power of 2 that
+        # is larger than the window size
+        fft_length = 1 
+        while fft_length < windows_size:
+            fft_length <<= 1
+        self['fe.fft_length'] = fft_length

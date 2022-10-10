@@ -187,7 +187,7 @@ from mltk.core.tflite_model.tflite_model import TfliteModel
 from mltk.core.preprocess.image.parallel_generator import ParallelImageDataGenerator, ParallelProcessParams
 from mltk.core.keras.losses import ContrastiveLoss
 
-from .fingerprint_signature_generator_dataset import (
+from mltk.models.siliconlabs.fingerprint_signature_generator_dataset import (
     FingerprintSignatureGeneratorDataset,
     euclidean_distance
 )
@@ -853,3 +853,35 @@ def preprocess_custom_command(
     print(f'Images dumped to {dump_dir}')
    
 
+##########################################################################################
+# The following allows for running this model training script directly, e.g.: 
+# python fingerprint_signature_generator.py
+#
+# Note that this has the same functionality as:
+# mltk train fingerprint_signature_generator
+#
+if __name__ == '__main__':
+    import mltk.core as mltk_core
+    from mltk import cli
+
+    # Setup the CLI logger
+    cli.get_logger(verbose=False)
+
+    # If this is true then this will do a "dry run" of the model testing
+    # If this is false, then the model will be fully trained
+    test_mode_enabled = True
+
+    # Train the model
+    # This does the same as issuing the command: mltk train fingerprint_signature_generator-test --clean
+    train_results = mltk_core.train_model(my_model, clean=True, test=test_mode_enabled)
+    print(train_results)
+
+    # Evaluate the model against the quantized .h5 (i.e. float32) model
+    # This does the same as issuing the command: mltk evaluate fingerprint_signature_generator-test
+    tflite_eval_results = mltk_core.evaluate_model(my_model, verbose=True, test=test_mode_enabled)
+    print(tflite_eval_results)
+
+    # Profile the model in the simulator
+    # This does the same as issuing the command: mltk profile fingerprint_signature_generator-test
+    profiling_results = mltk_core.profile_model(my_model, test=test_mode_enabled)
+    print(profiling_results)

@@ -1,8 +1,8 @@
 from __future__ import annotations
 from typing import List, Tuple, Dict, TypeVar
 import numpy as np
-import tensorflow_lite_support.metadata.schema_py_generated as _tflite_schema_fb
-from tensorflow_lite_support.metadata.schema_py_generated import BuiltinOperator as TfliteOpCode
+from . import tflite_schema as _tflite_schema_fb
+from .tflite_schema import BuiltinOperator as TfliteOpCode
 from .tflite_tensor import TfliteTensor
 
 
@@ -23,7 +23,7 @@ class TfliteLayer:
         fb_opcode = model.flatbuffer_model.operatorCodes[fb_operation.opcodeIndex]
         # See: https://github.com/tensorflow/community/pull/285/files
         # for why we return the max(DeprecatedBuiltinCode, BuiltinCode)
-        opcode = max(fb_opcode.deprecatedBuiltinCode, fb_opcode.builtinCode)
+        opcode = max(getattr(fb_opcode, 'deprecatedBuiltinCode', -1), fb_opcode.builtinCode)
         opcode_version = fb_opcode.version
 
         if opcode == TfliteOpCode.ADD:

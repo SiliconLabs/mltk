@@ -394,6 +394,16 @@ static void calculate_relu(const TfLiteContext* context,
     metrics.ops = input_shape.FlatSize() * 2; // 2 ops, one for matching upper and lower limits
 }
 
+/*************************************************************************************************/
+static void calculate_multiply(const TfLiteContext* context,
+                           const tflite::NodeAndRegistration& node_and_registration,
+                           profiling::Metrics& metrics)
+{
+    const auto output = GetOutput(0);
+    const auto output_shape = tflite::micro::GetTensorShape(output);
+    // This assumes element-wise multiplication with all tensors the same shape
+    metrics.ops = output_shape.FlatSize();
+}
 
 
 
@@ -463,6 +473,10 @@ bool calculate_op_metrics(const TfLiteContext* context,
     else if(builtin_code == tflite::BuiltinOperator_RESHAPE)
     {
         calculate_reshape(context, node_and_registration, metrics);
+    }
+    else if(builtin_code == tflite::BuiltinOperator_MUL)
+    {
+        calculate_multiply(context, node_and_registration, metrics);
     }
     else if(builtin_code == tflite::BuiltinOperator_SHAPE ||
             builtin_code == tflite::BuiltinOperator_STRIDED_SLICE ||

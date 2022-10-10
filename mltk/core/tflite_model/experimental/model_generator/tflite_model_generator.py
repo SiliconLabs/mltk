@@ -1,6 +1,6 @@
 from typing import List
-import tensorflow_lite_support.metadata.schema_py_generated as tflite_fb
-from tensorflow_lite_support.metadata.schema_py_generated import flatbuffers
+from mltk.core.tflite_model import tflite_schema as tflite_fb
+from mltk.core.tflite_model.tflite_schema import flatbuffers
 
 from .tflite_layer_generator import (
     TfliteOpCode,

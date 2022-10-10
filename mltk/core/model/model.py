@@ -7,7 +7,7 @@ import typer
 from mltk.utils.path import clean_directory, create_user_dir
 from mltk.core.utils import get_mltk_logger
 from mltk.utils.logger import get_logger
-
+from mltk.utils.string_formatting import format_units
 
 from .mixins.archive_mixin import ArchiveMixin
 from .mixins.tflite_model_metadata_mixin import TfliteModelMetadataMixin
@@ -195,7 +195,7 @@ class MltkModel(
             # pylint: disable=raise-missing-from
             raise Exception(
                 'Model does not specify the dataset\'s classes.\n'
-                'It must either be manually specified or inherit a mixin that supports an classes, e.g.: ImageDatasetMixin')
+                'It must either be manually specified, e.g. my_model.classes = ["dog", "cat"] or inherit a mixin that supports an classes, e.g.: ImageDatasetMixin')
     @classes.setter
     def classes(self, v: List[str]):
         try:
@@ -220,7 +220,7 @@ class MltkModel(
             # pylint: disable=raise-missing-from
             raise Exception(
                 'Model does not specify the dataset\'s input_shape.\n'
-                'It must either be manually specified or inherit a mixin that supports an input_shape, e.g.: ImageDatasetMixin'
+                'It must either be manually specified, e.g. my_model.input_shape = (96,96,3) or inherit a mixin that supports an input_shape, e.g.: ImageDatasetMixin'
             )
     @input_shape.setter 
     def input_shape(self, v: Tuple[int]):
@@ -263,7 +263,7 @@ class MltkModel(
         s += f'Description: {self.description}\n'
 
         params = self.model_parameters
-        exclude_params = ['name', 'version']
+        exclude_params = ['name', 'version', 'classes', 'runtime_memory_size']
 
         try:
             classes = self.classes
@@ -276,7 +276,6 @@ class MltkModel(
         if classes:
             classes = ', '.join(classes)
             s += f'Classes: {classes}\n'
-            exclude_params.append('classes')
 
         try:
             input_shape = 'x'.join(self.input_shape)
@@ -291,8 +290,11 @@ class MltkModel(
         except:
             pass
 
+        if 'runtime_memory_size' in params and params['runtime_memory_size']:
+            s += f'Runtime memory size (RAM): {format_units(params["runtime_memory_size"])}\n'
+
         for key, value in params.items():
-            if key in exclude_params:
+            if (key in ('hash', 'date') and not value) or key in exclude_params:
                 continue 
             s += f'{key}: {value}\n'
 

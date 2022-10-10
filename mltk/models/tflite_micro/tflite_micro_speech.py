@@ -377,3 +377,40 @@ my_model.model_parameters['latency_ms'] = 100
 
 # Enable verbose inference results
 my_model.model_parameters['verbose_model_output_logs'] = False
+
+
+
+
+
+##########################################################################################
+# The following allows for running this model training script directly, e.g.: 
+# python tflite_micro_speech.py
+#
+# Note that this has the same functionality as:
+# mltk train tflite_micro_speech
+#
+if __name__ == '__main__':
+    import mltk.core as mltk_core
+    from mltk import cli
+
+    # Setup the CLI logger
+    cli.get_logger(verbose=False)
+
+    # If this is true then this will do a "dry run" of the model testing
+    # If this is false, then the model will be fully trained
+    test_mode_enabled = True
+
+    # Train the model
+    # This does the same as issuing the command: mltk train tflite_micro_speech-test --clean
+    train_results = mltk_core.train_model(my_model, clean=True, test=test_mode_enabled)
+    print(train_results)
+
+    # Evaluate the model against the quantized .h5 (i.e. float32) model
+    # This does the same as issuing the command: mltk evaluate tflite_micro_speech-test
+    tflite_eval_results = mltk_core.evaluate_model(my_model, verbose=True, test=test_mode_enabled)
+    print(tflite_eval_results)
+
+    # Profile the model in the simulator
+    # This does the same as issuing the command: mltk profile tflite_micro_speech-test
+    profiling_results = mltk_core.profile_model(my_model, test=test_mode_enabled)
+    print(profiling_results)

@@ -196,13 +196,6 @@ class MyModel(
         if subset == 'evaluation':
             self.x = test_data.batch(batch_size)
             self.eval_steps_per_epoch = int((len(test_data) - 1) / batch_size + 1)
-            # Convert the  test "y" values to a numpy array
-            # which is required by the eval scripts
-            self.y = np.zeros((self.eval_steps_per_epoch*batch_size, ), dtype=np.int32)
-            for batch_id, batch in enumerate(test_data.batch(batch_size).take(self.eval_steps_per_epoch)):
-                batch_offset = batch_id * batch_size
-                self.y[batch_offset: batch_offset + batch_size] = batch[1].numpy()
-
         else:
             self.x = train_data.batch(batch_size).repeat()
             self.validation_data = validation_data.batch(batch_size)
@@ -291,3 +284,38 @@ def my_model_builder(model: MyModel):
     return keras_model
 
 my_model.build_model_function = my_model_builder
+
+
+
+##########################################################################################
+# The following allows for running this model training script directly, e.g.: 
+# python tflite_micro_magic_wand.py
+#
+# Note that this has the same functionality as:
+# mltk train tflite_micro_magic_wand
+#
+if __name__ == '__main__':
+    import mltk.core as mltk_core
+    from mltk import cli
+
+    # Setup the CLI logger
+    cli.get_logger(verbose=False)
+
+    # If this is true then this will do a "dry run" of the model testing
+    # If this is false, then the model will be fully trained
+    test_mode_enabled = True
+
+    # Train the model
+    # This does the same as issuing the command: mltk train tflite_micro_magic_wand-test --clean
+    train_results = mltk_core.train_model(my_model, clean=True, test=test_mode_enabled)
+    print(train_results)
+
+    # Evaluate the model against the quantized .h5 (i.e. float32) model
+    # This does the same as issuing the command: mltk evaluate tflite_micro_magic_wand-test
+    tflite_eval_results = mltk_core.evaluate_model(my_model, verbose=True, test=test_mode_enabled)
+    print(tflite_eval_results)
+
+    # Profile the model in the simulator
+    # This does the same as issuing the command: mltk profile tflite_micro_magic_wand-test
+    profiling_results = mltk_core.profile_model(my_model, test=test_mode_enabled)
+    print(profiling_results)

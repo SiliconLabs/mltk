@@ -41,11 +41,13 @@ def train_model(
     quantize:bool=True,
     create_archive:bool=True,
     show:bool=False,
+    test:bool=False,
 ) -> TrainingResults:
     """Train a model using Keras and Tensorflow
     
     .. seealso::
        * `Model Training Guide <https://siliconlabs.github.io/mltk/docs/guides/model_training.html>`_
+       * `Model Training API Examples <https://siliconlabs.github.io/mltk/mltk/examples/train_model.html>`_
        * `KerasModel.fit() <https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit>`_
 
     Args:
@@ -59,12 +61,15 @@ def train_model(
         quantize: Optional, quantize the model after training successfully completes
         create_archive: Optional, create an archive (.mltk.zip) of the training results and generated model files
         show: Optional, show the training results diagram
+        test: Optional, load the model in "test mode" if true.
 
     Returns:
         The model TrainingResults
     """
     if isinstance(model, MltkModel):
         mltk_model = model
+        if test:
+            mltk_model.enable_test_mode()
 
     elif isinstance(model, str):
         if model.endswith(('.tflite', '.h5', '.zip')):
@@ -72,7 +77,7 @@ def train_model(
                 'Must provide name of MLTK model '
                 'or path model specification script(.py)'
             )
-        mltk_model = load_mltk_model(model)
+        mltk_model = load_mltk_model(model, test=test)
     else:
         raise ValueError(
             'Must provide MltkModel instance, name of MLTK model, or path to '
@@ -98,6 +103,11 @@ def train_model(
     logger = mltk_model.create_logger('train', parent=logger)
     gpu.initialize(logger=logger)
 
+    try:
+        mltk_model.load_dataset(subset='training', logger=logger, test=mltk_model.test_mode_enabled)
+    except Exception as e:
+        prepend_exception_msg(e, 'Failed to load model training dataset')
+        raise
 
     # Build the MLTK model's corresponding Keras model
     try:
@@ -121,11 +131,6 @@ def train_model(
     except Exception as e:
         logger.debug(f'Failed to generate model summary, err: {e}', exc_info=e)
 
-    try:
-        mltk_model.load_dataset(subset='training', logger=logger, test=mltk_model.test_mode_enabled)
-    except Exception as e:
-        prepend_exception_msg(e, 'Failed to load model training dataset')
-        raise
 
     logger.info(mltk_model.summarize_dataset())
 
@@ -263,6 +268,7 @@ def _get_keras_callbacks(
         logger.debug(f'{pprint.pformat(kwargs)}')
         cb = keras.callbacks.TensorBoard(**kwargs)
         keras_callbacks.append(cb)
+        logger.info(f'Tensorboard logdir: {tb_log_dir}')
     
 
     if mltk_model.checkpoint and not contains_class_type(keras_callbacks, keras.callbacks.ModelCheckpoint):
@@ -430,13 +436,30 @@ def _compute_class_weights_unsafe(
                 raise RuntimeError(f'Invalid my_model.class_weights argument given: {class_weights}')
 
 
-            if hasattr(mltk_model, 'datagen_context'):
-                y = mltk_model.datagen_context.train_labels
-            else:
-                y = mltk_model.y
-        
-            weights = compute_class_weight(class_weights, classes=class_ids, y=y)
-            return dict(zip(class_ids, weights))
+            if hasattr(mltk_model, 'class_counts'):
+                class_counts = mltk_model.class_counts
+                if 'training' in class_counts:
+                    class_counts = class_counts['training']
+                n_samples = sum(x for x in class_counts.values())
+
+                if n_samples > 0:
+                    n_classes = mltk_model.n_classes
+                    weights = []
+                    for class_name in mltk_model.classes:
+                        weights.append(n_samples / (n_classes * class_counts[class_name]))
+
+                    return dict(zip(class_ids, weights))
+
+            y = mltk_model.y
+            if y is not None:
+                weights = compute_class_weight(class_weights, classes=class_ids, y=y)
+                return dict(zip(class_ids, weights))
+
+            raise RuntimeError(
+                'my_model.class_weights=balanced not supported if my_model.y or mltk_model.class_counts not provided. \n'
+                'Must manually set class weights in my_model.class_weights'
+            )
+            
 
         if isinstance(class_weights, dict):
             weights = {}

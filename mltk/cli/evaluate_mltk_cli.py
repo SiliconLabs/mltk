@@ -99,8 +99,6 @@ This option places an upper limit on the number of samples per class that are us
             'with the --tflite option as running quantized models on the PC can be slow'
         )
 
-    if not verbose:
-        logger.console_level = 'ERROR'
 
     if classes:
         classes = classes.split(',')

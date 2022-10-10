@@ -16,7 +16,9 @@ def get_logger(
     console=False, 
     log_file=None, 
     log_file_mode='w',
-    parent:logging.Logger=None
+    parent:logging.Logger=None,
+    base_level='DEBUG',
+    file_level='DEBUG'
 ):
     """Get or create a logger, optionally adding a console and/or file handler"""
     logger = logging.getLogger(name)
@@ -27,7 +29,7 @@ def get_logger(
             logger.parent = parent
             logger.propagate = True 
         
-        logger.setLevel('DEBUG')
+        logger.setLevel(base_level)
 
         if console:
             add_console_logger(logger, level=level)
@@ -38,7 +40,7 @@ def get_logger(
                 os.makedirs(log_dir, exist_ok=True)
 
             fh = logging.FileHandler(log_file, mode=log_file_mode)
-            fh.setLevel('DEBUG')
+            fh.setLevel(file_level)
             logger.addHandler(fh)
 
     if not hasattr(logger, 'close'):

@@ -1,11 +1,11 @@
 
 import types
-from typing import List, Tuple, Callable, Union
+from typing import List, Tuple, Union, Dict, Callable
 
 import numpy as np
 
 
-from mltk.utils.python import forward_method_kwargs, prepend_exception_msg
+from mltk.utils.python import prepend_exception_msg
 from mltk.utils.process_pool_manager import ProcessPoolManager
 from mltk.core.utils import (convert_y_to_labels, get_mltk_logger)
 
@@ -21,7 +21,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
     @property
     def dataset(self) -> Union[types.ModuleType,Callable,str]:
         """Path to the image dataset's python module, a function 
-        that manually loads the datset, or the file path to a directory of samples.
+        that manually loads the dataset, or the file path to a directory of samples.
 
         If a Python module is provided, it must implement the function:
 
@@ -40,11 +40,10 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         OR it should return the path to a directory containing the dataset's samples.
 
         """
-        return self._attributes.get_value('image.dataset', default=None)
+        return self._attributes.get_value('dataset.dataset', default=None)
     @dataset.setter
     def dataset(self, v: Union[types.ModuleType,Callable,str]):
-        self._attributes['image.dataset'] = v
-
+        self._attributes['dataset.dataset'] = v
 
     @property
     def follow_links(self) -> bool:
@@ -200,7 +199,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         **kwargs
     ): # pylint: disable=arguments-differ
         """Pre-process the dataset and prepare the model dataset attributes"""
-        super(ImageDatasetMixin, self).load_dataset(**forward_method_kwargs(**locals()))
+        self.loaded_subset = subset
 
         logger = get_mltk_logger()
         ProcessPoolManager.set_logger(logger)
@@ -218,7 +217,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         if self.input_shape is None or len(self.input_shape) != 3:
             raise Exception('Must specify mltk_model.input_shape which must be a tuple (height, width, depth)')
         if self.datagen is None:
-            raise Exception('Must specify mltk_model.datgen')
+            raise Exception('Must specify mltk_model.datagen')
 
         if not hasattr(self, 'batch_size'):
             logger.warning('MltkModel does not define batch_size, defaulting to 32')
@@ -265,9 +264,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
 
         train_datagen = None 
-        train_labels = None 
         validation_datagen = None
-        validation_labels = None
 
         if self.loaded_subset == 'training':
             training_datagen_creator = self.get_datagen_creator('training')
@@ -313,11 +310,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
                     batch_size=batch_size,
                     shuffle=True
                 )
-                if self.class_mode == 'categorical':
-                    # Convert from 1-hot encoded to 1D list of class IDs
-                    train_labels = convert_y_to_labels(train_datagen.y)
-                else:
-                    train_labels = train_datagen.y 
+                self.class_counts['training'] = _get_class_counts(train_datagen.y, classes=classes, class_mode=self.class_mode)
 
             if max_samples_per_class != -1 and self.class_mode == 'categorical':
                 x_test, y_test = _clamp_max_samples_per_class(x_test, y_test, max_samples_per_class)
@@ -328,14 +321,12 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
                 batch_size=batch_size,
                 shuffle=eval_shuffle if self.loaded_subset == 'evaluation' else True
             )
-            if self.class_mode == 'categorical':
-                # Convert from 1-hot encoded to 1D list of class IDs
-                validation_labels = convert_y_to_labels(validation_datagen.y)
-            else:
-                validation_labels = validation_datagen.y
+            self.class_counts['validation'] = _get_class_counts(validation_datagen.y, classes=classes, class_mode=self.class_mode)
 
         # If a directory was specified
         elif isinstance(dataset_data, str):
+            from mltk.core.preprocess.image.parallel_generator import ParallelImageDataGenerator
+
             shuffle_index_dir = None
             if self.shuffle_dataset_enabled:
                 shuffle_index_dir = self.get_shuffle_index_dir()
@@ -359,47 +350,40 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
             if self.loaded_subset == 'training':
                 training_datagen_creator.max_samples_per_class = max_samples_per_class
+                if isinstance(training_datagen_creator, ParallelImageDataGenerator):
+                    kwargs['class_counts'] = self.class_counts['training']
+
                 train_datagen = training_datagen_creator.flow_from_directory(
                     subset='training',
                     shuffle=True,
                     **kwargs
                 )
-                train_labels = train_datagen.classes
+                kwargs.pop('class_counts', None)
 
             if self.loaded_subset in ('training', 'validation'):
                 validation_datagen_creator.max_samples_per_class = max_samples_per_class
+                if isinstance(validation_datagen_creator, ParallelImageDataGenerator):
+                    kwargs['class_counts'] = self.class_counts['validation']
+                
                 validation_datagen = validation_datagen_creator.flow_from_directory(
                     subset='validation',
                     shuffle=True,
                     **kwargs
                 )
+                kwargs.pop('class_counts', None)
 
             if self.loaded_subset == 'evaluation':
                 validation_datagen_creator.max_samples_per_class = max_samples_per_class
                 validation_datagen_creator.validation_augmentation_enabled = eval_augmentation_enabled
+
+                if isinstance(validation_datagen_creator, ParallelImageDataGenerator):
+                    kwargs['class_counts'] = self.class_counts['validation']
                 validation_datagen = validation_datagen_creator.flow_from_directory(
                     subset='validation',
                     shuffle=eval_shuffle,
                     **kwargs
                 )
-
-            # Retrieve all the y samples into a list
-            # NOTE: The length of this will be a multiple of the batch_size rounded up
-            validation_labels = []
-            for _, batch_y in validation_datagen:
-                if self.class_mode == 'categorical':
-                    if len(batch_y.shape) != 2:
-                        raise RuntimeError('The model must have only 1 output when my_model.class_mode=categorical, update the class_mode to something else for multiple output models')
-                    
-                    batch_y = np.argmax(batch_y, -1)
-                validation_labels.extend(batch_y)
-
-            validation_labels = np.asarray(validation_labels, dtype=np.int32)
-
-            try:
-                validation_datagen.reset()
-            except:
-                pass
+                kwargs.pop('class_counts', None)
          
         else:
             raise Exception(
@@ -411,7 +395,11 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         # Fix issue with:
         # tensorflow.keras.preprocessing.image.ImageDataGenerator 
         _patch_image_iterator(validation_datagen)
-        validation_datagen.max_samples = len(validation_labels)
+        if self.class_counts['validation']:
+            validation_datagen.max_samples = sum(self.class_counts['validation'].values())
+
+        self.x = None
+        self.validation_data = None
 
         if self.loaded_subset == 'training':
             self.x = train_datagen
@@ -424,13 +412,11 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
 
         self.datagen_context = DataGeneratorContext(
-            classes=self.classes,
-            class_mode=self.class_mode,
             subset = self.loaded_subset,
             train_datagen = train_datagen,
-            train_labels = train_labels,
+            train_class_counts = self.class_counts['training'],
             validation_datagen = validation_datagen,
-            validation_labels = validation_labels
+            validation_class_counts = self.class_counts['validation']
         )
 
 
@@ -440,7 +426,6 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         from mltk.core.preprocess.image.parallel_generator import ParallelImageDataGenerator
         from tensorflow.keras.preprocessing.image import ImageDataGenerator
         
-        self._attributes.register('image.dataset', dtype=(types.ModuleType,str,CallableType,object))
         self._attributes.register('image.follow_links', dtype=bool)
         self._attributes.register('image.shuffle_dataset_enabled', dtype=bool)
         self._attributes.register('image.input_shape', dtype=(list,tuple))
@@ -568,3 +553,21 @@ def _clamp_max_samples_per_class(x, y, max_samples_per_class):
         index += 1
 
     return x_truncated, y_truncated
+
+
+def _get_class_counts(y, classes:List[str], class_mode:str) -> Dict[str,int]:
+    class_counts = {}
+
+    if class_mode == 'categorical':
+       y = convert_y_to_labels(y)
+   
+    if class_mode != 'input':
+        for i, class_name in enumerate(classes):
+            class_counts[class_name] = 0
+
+        counts = np.bincount(y)
+        for i, count in enumerate(counts):
+            class_name = classes[i]
+            class_counts[class_name] = count
+
+    return class_counts

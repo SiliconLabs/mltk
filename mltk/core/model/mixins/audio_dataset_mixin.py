@@ -2,7 +2,7 @@ from typing import Union, Tuple, List, Callable
 import types
 import numpy as np
 
-from mltk.utils.python import forward_method_kwargs, prepend_exception_msg
+from mltk.utils.python import prepend_exception_msg
 from mltk.utils.process_pool_manager import ProcessPoolManager
 from mltk.core.utils import get_mltk_logger
 
@@ -18,7 +18,6 @@ class AudioDatasetMixin(DataGeneratorDatasetMixin):
        - `AudioFeatureGenerator documentation <https://siliconlabs.github.io/mltk/docs/audio/audio_feature_generator.html>`_ 
        - `AudioFeatureGenerator API docs <https://siliconlabs.github.io/mltk/docs/python_api/data_preprocessing/audio_feature_generator.html>`_
        - `ParallelAudioDataGenerator API docs <https://siliconlabs.github.io/mltk/docs/python_api/data_preprocessing/audio_data_generator.html>`_
-    
     """
 
     @property
@@ -39,11 +38,11 @@ class AudioDatasetMixin(DataGeneratorDatasetMixin):
         If a function is provided, the function  should return
         the path to a directory containing the dataset's samples.
         """
-        return self._attributes['audio.dataset']
+        return self._attributes['dataset.dataset']
     @dataset.setter
     def dataset(self, v: Union[str,types.ModuleType]):
-        self._attributes['audio.dataset'] = v
-    
+        self._attributes['dataset.dataset'] = v
+
 
     @property
     def follow_links(self) -> bool:
@@ -202,8 +201,7 @@ class AudioDatasetMixin(DataGeneratorDatasetMixin):
         Args:
             subset: Data subset name
         """
-
-        super(AudioDatasetMixin, self).load_dataset(**forward_method_kwargs(**locals()))
+        self.loaded_subset = subset
 
         logger = get_mltk_logger()
         ProcessPoolManager.set_logger(logger)
@@ -254,9 +252,7 @@ class AudioDatasetMixin(DataGeneratorDatasetMixin):
                 max_samples_per_class = self.eval_max_samples_per_class
         
         train_datagen = None 
-        train_labels = None 
         validation_datagen = None
-        validation_labels = None
 
         if self.loaded_subset == 'training':
             training_datagen_creator = self.get_datagen_creator('training')
@@ -284,14 +280,14 @@ class AudioDatasetMixin(DataGeneratorDatasetMixin):
             train_datagen = training_datagen_creator.flow_from_directory(
                 subset='training',
                 shuffle=True,
+                class_counts=self.class_counts['training'],
                 **kwargs
             )
-            train_labels = train_datagen.classes
-
         if self.loaded_subset in ('training', 'validation'):
             validation_datagen = validation_datagen_creator.flow_from_directory(
                 subset='validation',
                 shuffle=True,
+                class_counts=self.class_counts['validation'],
                 **kwargs
             )
 
@@ -300,17 +296,12 @@ class AudioDatasetMixin(DataGeneratorDatasetMixin):
             validation_datagen = validation_datagen_creator.flow_from_directory(
                 subset='validation',
                 shuffle=eval_shuffle,
+                class_counts=self.class_counts['validation'],
                 **kwargs
             )
 
-        # Retrieve all the y samples into a list
-        # NOTE: The length of this will be a multiple of the batch_size rounded up
-        validation_labels = []
-        for _, batch_y in validation_datagen:
-            if self.class_mode == 'categorical':
-                batch_y = np.argmax(batch_y, -1)
-            validation_labels.extend(batch_y)
-        validation_labels = np.asarray(validation_labels, dtype=np.int32)
+        self.x = None
+        self.validation_data = None
 
         if self.loaded_subset == 'training':
             self.x = train_datagen
@@ -322,13 +313,11 @@ class AudioDatasetMixin(DataGeneratorDatasetMixin):
             self.x = train_datagen if validation_datagen is None else validation_datagen
 
         self.datagen_context = DataGeneratorContext(
-            classes=self.classes,
-            class_mode=self.class_mode,
             subset = self.loaded_subset,
             train_datagen = train_datagen,
-            train_labels = train_labels,
             validation_datagen = validation_datagen,
-            validation_labels = validation_labels
+            train_class_counts=self.class_counts['training'],
+            validation_class_counts=self.class_counts['validation']
         )
 
 
@@ -336,7 +325,6 @@ class AudioDatasetMixin(DataGeneratorDatasetMixin):
     def _register_attributes(self):
         from mltk.core.preprocess.audio.parallel_generator import ParallelAudioDataGenerator
 
-        self._attributes.register('audio.dataset', dtype=(str,types.ModuleType,object))
         self._attributes.register('audio.follow_links', dtype=bool)
         self._attributes.register('audio.shuffle_dataset_enabled', dtype=bool)
         self._attributes.register('audio.class_mode', dtype=str)
@@ -374,14 +362,6 @@ class AudioDatasetMixin(DataGeneratorDatasetMixin):
             parameters['samplewise_norm.rescale'] = float(self.datagen.rescale or 0)
             parameters['samplewise_norm.mean_and_std'] = self.datagen.samplewise_center and self.datagen.samplewise_std_normalization
             parameters.update(self.frontend_settings)
-
-            windows_size = int((self.frontend_settings.window_size_ms * self.frontend_settings.sample_rate_hz) / 1000)
-            # The FFT length is the smallest power of 2 that
-            # is larger than the window size
-            fft_length = 1 
-            while fft_length < windows_size:
-                fft_length <<= 1
-            parameters['fe.fft_length'] = fft_length
 
 
 def _load_dataset(dataset) -> Union[str,tuple]:

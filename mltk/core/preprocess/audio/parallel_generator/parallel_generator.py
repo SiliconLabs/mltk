@@ -6,6 +6,7 @@ Refer to `ParallelAudioDataGenerator` for more details
 import warnings
 import os
 import copy
+from typing import Dict
 
 import numpy as np
 
@@ -17,11 +18,16 @@ except Exception as e:
         append_exception_msg(e, '\n\nTry running: sudo apt-get install libsndfile1\n')
     raise
 
-from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings, AudioFeatureGenerator
+from mltk.core.preprocess.audio.audio_feature_generator import (
+    AudioFeatureGeneratorSettings, 
+    AudioFeatureGenerator
+)
+from mltk.core.preprocess import utils as data_utils
+from mltk.core.preprocess.utils import audio as audio_utils
 from .directory_iterator import ParallelDirectoryIterator
 
 
-class ParallelAudioDataGenerator(object):
+class ParallelAudioDataGenerator:
     '''Parallel Audio Data Generator
     
     This class as a similar functionality to the `Keras ImageDataGenerator <https://keras.io/preprocessing/image>`_
@@ -388,6 +394,7 @@ class ParallelAudioDataGenerator(object):
         subset=None,
         max_samples_per_class=-1,
         list_valid_filenames_in_directory_function=None,
+        class_counts:Dict[str,int]=None,
         **kwargs
     ):
         """Create the ParallelAudioGenerator with the given dataset directory
@@ -447,7 +454,7 @@ class ParallelAudioDataGenerator(object):
                             base_directory:str, 
                             search_class:str, 
                             white_list_formats:List[str], 
-                            split:float, 
+                            split:Tuple[float,float], 
                             follow_links:bool, 
                             shuffle_index_directory:str
                     ) -> Tuple[str, List[str]]
@@ -458,7 +465,7 @@ class ParallelAudioDataGenerator(object):
         Returns:
 
             A DirectoryIterator yielding tuples of (x, y) where x is a numpy array containing a batch of images with 
-            shape (batch_size, *target_size, channels) and y is a numpy array of corresponding labels.
+            shape (batch_size, target_size, channels) and y is a numpy array of corresponding labels.
 
         """
         
@@ -506,7 +513,8 @@ class ParallelAudioDataGenerator(object):
             max_samples_per_class=max_samples_per_class,
             frontend_enabled=self.frontend_enabled,
             disable_gpu_in_subprocesses=self.disable_gpu_in_subprocesses,
-            add_channel_dimension=self.add_channel_dimension
+            add_channel_dimension=self.add_channel_dimension,
+            class_counts=class_counts
         )
     
     
@@ -590,36 +598,22 @@ class ParallelAudioDataGenerator(object):
         """Adjust the audio sample length to fit the sample_length_seconds parameter
         This will pad with zeros or crop the input sample as necessary
         """
-        if orignal_sr != self.sample_rate_hz:
-            sample = librosa.core.resample(sample, orig_sr=orignal_sr, target_sr=self.sample_rate_hz)
 
         if whole_sample:
+            if orignal_sr != self.sample_rate_hz:
+                sample = librosa.core.resample(sample, orig_sr=orignal_sr, target_sr=self.sample_rate_hz)
             return sample
-        
-        sample_trimmed, _ = librosa.effects.trim(sample, top_db=int(self.trim_threshold_db))
-        
-        in_length = len(sample_trimmed)
-        if out_length is None:
-            out_length = self.sample_length
 
-        if in_length > out_length:
-            diff = in_length - out_length
-            before = int(diff*offset)
-            sample = sample_trimmed[before : before + out_length]
-        
-        elif in_length < out_length:
-            diff = out_length - in_length
-            before = int(diff * offset)
-            
-            pad_before = np.zeros((before,), dtype=sample.dtype)
-            pad_after = np.zeros((diff - before,), dtype=sample.dtype)
-            
-            sample = np.concatenate((pad_before, sample_trimmed, pad_after), axis=0)
-            
-        if len(sample) != out_length:
-            sample = sample[:out_length]
-            
-        return sample 
+        out_length = out_length or self.sample_length
+
+        return audio_utils.adjust_length(
+            sample=sample, 
+            target_sr=self.sample_rate_hz,
+            original_sr=orignal_sr,
+            out_length=out_length,
+            offset=offset,
+            trim_threshold_db=self.trim_threshold_db
+        )
     
 
     def apply_transform(self, sample, orignal_sr, params, whole_sample=False):
@@ -659,67 +653,35 @@ class ParallelAudioDataGenerator(object):
 
     def apply_frontend(self, sample, dtype=np.float32) -> np.ndarray:
         """Send the audio sample through the AudioFeatureGenerator and return the generated spectrogram"""
-        if np.issubdtype(sample.dtype, np.floating):
-            # Convert the floating point data to int16
-            # which is what the AudioFeatureGenerator expects it to be
-            # sample = librosa.util.normalize(sample, norm=np.inf, axis=None) 
-            sample = sample * 32768
-            sample = sample.astype(np.int16)
-
-        frontend = AudioFeatureGenerator(self.frontend_settings)
-    
-        return frontend.process_sample(sample, dtype=dtype)
+        return audio_utils.apply_frontend(
+            sample=sample,
+            settings=self.frontend_settings,
+            dtype=dtype
+        )
 
     
     def standardize(self, sample):
         """Applies the normalization configuration in-place to a batch of inputs.
 
-        ``x`` is changed in-place since the function is mainly used internally
-        to standarize images and feed them to your network. If a copy of ``x``
-        would be created instead it would have a significant performance cost.
-        If you want to apply this method without changing the input in-place
-        you can call the method creating a copy before:
-
-        standarize(np.copy(x))
-
-        Attributes:
-            x: Batch of inputs to be normalized.
-
+        Args:
+            sample: Input sample to normalize
+            rescale: ``sample *= rescale``
+            samplewise_center: ``sample -= np.mean(sample, keepdims=True)``
+            samplewise_std_normalization: ``sample /= (np.std(sample, keepdims=True) + 1e-6)``
+            samplewise_normalize_range: ``sample = diff * (sample - np.min(sample)) / np.ptp(sample) + lower``
+            dtype: The output dtype, if not dtype if given then sample is converted to float32
         Returns:
-            The inputs, normalized.
+            The normalized value of sample
         """
+        return data_utils.normalize(
+            x=sample, 
+            rescale=self.rescale,
+            samplewise_center=self.samplewise_center,
+            samplewise_std_normalization=self.samplewise_std_normalization,
+            samplewise_normalize_range=self.samplewise_normalize_range,
+            dtype=self.dtype
+        )
 
-        # If we're not doing standardization
-        if not (self.rescale or \
-                self.samplewise_center or \
-                self.samplewise_std_normalization or \
-                self.samplewise_normalize_range):
-            # Ensure the sample's data-type is as expected
-            # and convert if it's not
-            if sample.dtype != self.dtype:
-                sample = sample.astype(self.dtype)
-            
-            # Return the non-standardized sample
-            return sample
-
-        # Otherwise, convert the sample to float32 before
-        # doing the standardization (if necessary)
-        if sample.dtype != np.floating:
-            sample = sample.astype(np.float32)
-
-        if self.rescale:
-            sample *= self.rescale
-        if self.samplewise_center:
-            sample -= np.mean(sample, keepdims=True)
-        if self.samplewise_std_normalization:
-            sample /= (np.std(sample, keepdims=True) + 1e-6)
-        if self.samplewise_normalize_range:
-            lower = float(self.samplewise_normalize_range[0])
-            upper = float(self.samplewise_normalize_range[1])
-            diff = upper - lower
-            sample = diff * (sample - np.min(sample)) / np.ptp(sample) + lower
-
-        return sample.astype(self.dtype)
 
 
         

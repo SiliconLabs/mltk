@@ -61,6 +61,7 @@ def build_docs_command(
     install_pip_package('git+https://github.com/linkchecker/linkchecker.git', 'linkcheck', logger=logger)
     install_pip_package('git+https://github.com/bashtage/sphinx-material.git', 'sphinx_material', logger=logger)
 
+    _patch_sphinx_autosummary_generate_py()
     
     repo_project_name = get_user_setting('repo_project_name', 'siliconlabs')
 
@@ -117,9 +118,9 @@ def build_docs_command(
 
     cmd.extend([ '-b', 'html', source_dir, build_dir])
 
-    retcode, _ = run_shell_cmd(cmd, outfile=logger, env=env)
+    retcode, retmsg = run_shell_cmd(cmd, outfile=logger, env=env, logger=logger)
     if retcode != 0:
-        cli.abort(msg='Failed to build docs')
+        cli.abort(msg=f'Failed to build docs: {retmsg}')
 
     # Copy the generated docs from build directory
     # to the docs directory
@@ -144,6 +145,9 @@ def build_docs_command(
             '--check-extern', 
             '--ignore-url', r'.*assets\.slid\.es.*', 
             '--ignore-url', r'.*assets-v2\.slid\.es.*', 
+            '--ignore-url', r'.*linuxize\.com.*', 
+            '--ignore-url', r'.*timeseriesclassification\.com.*', 
+            '--ignore-url', r'http\:\/\/localhost.*',
             index_path], 
             outfile=logger,
             logger=logger
@@ -229,3 +233,36 @@ def _revert_docs_dir(logger:logging.Logger):
         cwd=f'{MLTK_ROOT_DIR}/docs',
         logger=logger
     )
+
+
+
+def _patch_sphinx_autosummary_generate_py():
+    """This patches:
+    <python site packages>/sphinx/ext/autosummary/generate.py
+
+    It makes it so the generated auto summary file is generated in given table-of-contents file.
+
+    e.g.:
+    
+    .. autosummary::
+       :toctree: audio_data_generator_params
+       :template: custom-class-template.rst
+
+    Then the auto summary will be generated in <directory containing rst>/audio_data_generator_params.rst
+
+    """
+    from sphinx.ext.autosummary import generate
+
+    data = ''
+    updated = False
+    with open(generate.__file__, 'r') as f:
+        for line in f:
+            if 'filename = os.path.join(path, filename_map.get(name, name) + suffix)' in line.strip():
+                line = line.replace('filename = os.path.join(path, filename_map.get(name, name) + suffix)', 'filename = path + suffix # Patched by the MLTK # os.path.join(path, filename_map.get(name, name) + suffix)')
+                updated = True
+            data += line
+    
+    if updated:
+        with open(generate.__file__, 'w') as f:
+            print(f'Patched {generate.__file__}')
+            f.write(data)

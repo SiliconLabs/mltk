@@ -35,6 +35,8 @@ Commands
    # Profile the model on a physical development board
    mltk profile autoencoder_example --accelerator MVP --device
 
+   # Directly invoke the model script
+   python autoencoder_example.py
 
 Model Summary
 --------------
@@ -150,12 +152,7 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 
-from mltk.core.model import (
-    MltkModel,
-    TrainMixin,
-    DatasetMixin,
-    EvaluateAutoEncoderMixin
-)
+import mltk.core as mltk_core
 from mltk.utils.path import create_user_dir
 from mltk.utils.archive_downloader import download_url
 
@@ -167,19 +164,23 @@ from mltk.utils.archive_downloader import download_url
 # - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    DatasetMixin, 
-    EvaluateAutoEncoderMixin
+    mltk_core.MltkModel, 
+    mltk_core.TrainMixin, 
+    mltk_core.DatasetMixin, 
+    mltk_core.EvaluateAutoEncoderMixin
 ):
     def load_dataset(
         self, 
         subset: str,  
         classes:List[str]=None,
         max_samples_per_class=None,
+        test:bool=False,
         **kwargs
     ):
         super().load_dataset(subset) 
+
+        if test:
+            max_samples_per_class = 3
 
         # Download the dataset (if necessary)
         dataset_path = f'{create_user_dir()}/datasets/ecg500.csv'
@@ -321,3 +322,36 @@ def my_model_builder(model: MyModel):
 my_model.build_model_function = my_model_builder
 
 
+
+
+##########################################################################################
+# The following allows for running this model training script directly, e.g.: 
+# python autoencoder_example.py
+#
+# Note that this has the same functionality as:
+# mltk train autoencoder_example
+#
+if __name__ == '__main__':
+    from mltk import cli
+
+    # Setup the CLI logger
+    cli.get_logger(verbose=False)
+
+    # If this is true then this will do a "dry run" of the model testing
+    # If this is false, then the model will be fully trained
+    test_mode_enabled = True
+
+    # Train the model
+    # This does the same as issuing the command: mltk train autoencoder_example-test --clean
+    train_results = mltk_core.train_model(my_model, clean=True, test=test_mode_enabled)
+    print(train_results)
+
+    # Evaluate the model against the quantized .h5 (i.e. float32) model
+    # This does the same as issuing the command: mltk evaluate autoencoder_example-test
+    tflite_eval_results = mltk_core.evaluate_model(my_model, verbose=True, test=test_mode_enabled)
+    print(tflite_eval_results)
+
+    # Profile the model in the simulator
+    # This does the same as issuing the command: mltk profile autoencoder_example-test
+    profiling_results = mltk_core.profile_model(my_model, test=test_mode_enabled)
+    print(profiling_results)

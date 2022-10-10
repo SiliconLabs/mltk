@@ -4,6 +4,7 @@ import stat
 import re
 import multiprocessing
 import pytest 
+import warnings
 
 from mltk import MLTK_ROOT_DIR
 from mltk.utils.test_helper import get_logger, run_mltk_command
@@ -20,7 +21,7 @@ if os.name == 'nt':
     SIMPLICITY_STUDIO_MYSYS_BIN_PATH = f'{SIMPLICITY_STUDIO_PATH}/support/common/build/msys/1.0/bin'
 
     if not os.path.exists(SIMPLICITY_STUDIO_PATH):
-        raise RuntimeWarning(
+        warnings.warn(
             'Simplicity Studio not found.\n'
             'You may download and install Simplicity Studio from here:\n'
             'https://www.silabs.com/developers/simplicity-studio\n'
@@ -29,10 +30,11 @@ if os.name == 'nt':
             'simplicity_studio_path: <path to Simplicity Studio>\n'
             'where <path to Simplicity Studio> points to the Simplicity Studio directory'
         )
+        pytest.skip('Simplicity Studio not found', allow_module_level=True)
 else:
     SIMPLICITY_STUDIO_PATH = get_user_setting('simplicity_studio_path')
     if not SIMPLICITY_STUDIO_PATH:
-        raise RuntimeWarning(
+        warnings.warn(
             'Simplicity Studio not found.\n'
             'Create/update the file: ~/.mltk/user_settings.yaml\n'
             'and add the following:\n\n'
@@ -40,6 +42,7 @@ else:
             'where <path to Simplicity Studio> points to the extracted directory of the archive downloaded from:\n'
             'https://www.silabs.com/developers/simplicity-studio'
         )
+        pytest.skip('Simplicity Studio not found', allow_module_level=True)
 
 
 

@@ -31,7 +31,10 @@ def summarize_model(
     """Generate a summary of the given model 
     and return the summary as a string
 
-    Refer to the `Model Summary <https://siliconlabs.github.io/mltk/docs/guides/model_summary.html>`_ guide for more details.
+    .. seealso::
+       * `Model Summary Guide <https://siliconlabs.github.io/mltk/docs/guides/model_summary.html>`_
+       * `Model summary API examples <https://siliconlabs.github.io/mltk/mltk/examples/summarize_model.html>`_
+
 
     Args:
         model: Either 

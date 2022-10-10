@@ -16,6 +16,10 @@ if current_process().name != 'MainProcess':
 else:
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0' # Otherwise set the log level to debug (we use redirect_stream() to redirect the log to the cli logger)
 
+# If it's not already specified, then  GPU uses threads dedicated to this device
+# More details here:
+# https://github.com/NVIDIA/DeepLearningExamples/issues/57
+os.environ['TF_GPU_THREAD_MODE'] = os.environ.get('TF_GPU_THREAD_MODE', 'gpu_private') 
 
 
 def main():

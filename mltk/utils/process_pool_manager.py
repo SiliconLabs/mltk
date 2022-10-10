@@ -5,6 +5,7 @@ import traceback
 import functools
 import os
 import multiprocessing
+import warnings
 from multiprocessing import Pool 
 from multiprocessing.pool import ThreadPool
 import threading
@@ -17,6 +18,7 @@ from .logger import get_logger
 
 class ProcessPoolManager(object):
     """This allows for running Python functions across multiple, independent processes"""
+    warnings.warn("The mltk.utils.ProcessPoolManager class has been deprecated. See mltk.utils.process_pool.ProcessPool for a more optimal implementation", DeprecationWarning)
 
     @staticmethod
     def set_logger(logger: logging.Logger):

@@ -6,7 +6,7 @@ from mltk.utils.logger import get_logger as _get_logger
 from mltk.utils.logger import make_filelike
 from mltk.utils.shell_cmd import run_shell_cmd
 from mltk.utils.path import create_user_dir
-
+from mltk.core.model.model_utils import find_model_specification_file
 
 _lock = threading.Lock()
 
@@ -25,7 +25,7 @@ def get_logger(name='utest', console=False):
     return logger
 
 
-def run_mltk_command(*args, update_model_path=False, logger=None, env=None) -> str:
+def run_mltk_command(*args, update_model_path=False, logger=None, env=None, exe_path=None) -> str:
     if logger is None:
         logger_name = args[0]
         if logger_name.startswith('-'):
@@ -34,10 +34,10 @@ def run_mltk_command(*args, update_model_path=False, logger=None, env=None) -> s
     env = env or os.environ.copy()
 
     python_bin_dir = os.path.dirname(os.path.abspath(sys.executable))
-    mltk_exe_path = os.path.join(python_bin_dir, 'mltk')
+    exe_path = exe_path or os.path.join(python_bin_dir, 'mltk')
 
     env['MLTK_UNIT_TEST'] = '1'
-    cmd = [mltk_exe_path]
+    cmd = [exe_path]
     cmd.extend(args)
     cmd_str = ' '.join([str(x) for x in cmd])
 
@@ -61,7 +61,8 @@ def generate_run_model_params(
     quantize=None,
     view=None,
     build=None,
-    tflite=None
+    tflite=None,
+    run_directly=True
 ):
     use_basic_model_params = os.environ.get('MLTK_UTEST_BASIC_MODEL_PARAMS', '0') == '1'
     if use_basic_model_params:
@@ -81,6 +82,9 @@ def generate_run_model_params(
     params = []
     tflite_str = 'tflite' if tflite else 'no_tflite'
     build_str = 'build' if build else 'no_build'
+
+    if run_directly:
+        params.append(('run-directly', 'na', 'na'))
 
     if train:
         params.append(('train', 'na', 'na'))
@@ -156,7 +160,11 @@ def run_model_operation(
     name_no_test = name_or_archive.replace('-test', '')
     update_archive_arg = '--update-archive' if name_or_archive.endswith('-test') else '--no-update-archive'
 
-    if op == 'train':
+    if op == 'run-directly':
+        model_spec_path = find_model_specification_file(name_or_archive)
+        run_mltk_command(model_spec_path, logger=logger, exe_path=sys.executable) 
+
+    elif op == 'train':
         run_mltk_command('train', name_or_archive, '--clean', '--verbose', '--test', logger=logger)
     
     elif op == 'evaluate':
@@ -194,3 +202,6 @@ def run_model_operation(
                 run_mltk_command('view', name_or_archive, '--tflite', '--verbose', logger=logger)
             else:
                 run_mltk_command('view', name_or_archive, '--verbose', logger=logger)
+
+    else:
+        raise ValueError(f'Unknown test op: {op}')

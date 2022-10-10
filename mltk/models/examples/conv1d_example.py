@@ -28,6 +28,9 @@ Commands
    # Profile the model on a physical development board
    mltk profile conv1d_example --accelerator MVP --device
 
+   # Directly invoke the model script
+   python conv1d_example.py
+
 
 Model Summary
 --------------
@@ -151,12 +154,7 @@ from tensorflow.keras.layers import Dense, Activation, Flatten, Dropout, BatchNo
 from tensorflow.keras.layers import Conv1D, MaxPooling1D
 from tensorflow.keras import regularizers
 
-from mltk.core.model import (
-    MltkModel,
-    TrainMixin,
-    AudioDatasetMixin,
-    EvaluateClassifierMixin
-)
+import mltk.core as mltk_core
 from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings
 from mltk.core.preprocess.audio.parallel_generator import ParallelAudioDataGenerator, ParallelProcessParams
 from mltk.utils.archive_downloader import download_verify_extract
@@ -168,10 +166,10 @@ from mltk.utils.archive_downloader import download_verify_extract
 # - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    AudioDatasetMixin, 
-    EvaluateClassifierMixin
+    mltk_core.MltkModel, 
+    mltk_core.TrainMixin, 
+    mltk_core.AudioDatasetMixin, 
+    mltk_core.EvaluateClassifierMixin
 ):
     pass
 my_model = MyModel()
@@ -352,3 +350,37 @@ def my_model_builder(model: MyModel):
 
 
 my_model.build_model_function = my_model_builder
+
+
+
+##########################################################################################
+# The following allows for running this model training script directly, e.g.: 
+# python conv1d_example.py
+#
+# Note that this has the same functionality as:
+# mltk train conv1d_example
+#
+if __name__ == '__main__':
+    from mltk import cli
+
+    # Setup the CLI logger
+    cli.get_logger(verbose=False)
+
+    # If this is true then this will do a "dry run" of the model testing
+    # If this is false, then the model will be fully trained
+    test_mode_enabled = True
+
+    # Train the model
+    # This does the same as issuing the command: mltk train conv1d_example-test --clean
+    train_results = mltk_core.train_model(my_model, clean=True, test=test_mode_enabled)
+    print(train_results)
+
+    # Evaluate the model against the quantized .h5 (i.e. float32) model
+    # This does the same as issuing the command: mltk evaluate conv1d_example-test
+    tflite_eval_results = mltk_core.evaluate_model(my_model, verbose=True, test=test_mode_enabled)
+    print(tflite_eval_results)
+
+    # Profile the model in the simulator
+    # This does the same as issuing the command: mltk profile conv1d_example-test
+    profiling_results = mltk_core.profile_model(my_model, test=test_mode_enabled)
+    print(profiling_results)

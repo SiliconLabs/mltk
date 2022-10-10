@@ -124,6 +124,9 @@ May be one of the following:
     except Exception as e:
         cli.handle_exception('Failed to load model', e)
 
+
+    logger.info(f'HINT: View more training logs by running the command: mltk tensorboard {model}')
+
     # Train the model
     try:
         train_model(
@@ -144,6 +147,7 @@ May be one of the following:
                     h5_eval_results = evaluate_model( 
                         mltk_model,
                         tflite=False,
+                        verbose=True
                     )
                 logger.info(f'{h5_eval_results}')
                 
@@ -156,6 +160,7 @@ May be one of the following:
                         tflite_eval_results = evaluate_model( 
                             mltk_model,
                             tflite=True,
+                            verbose=True
                         )
                     logger.info(f'{tflite_eval_results}')
 

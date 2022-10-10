@@ -587,7 +587,7 @@ my_model.tflite_converter['representative_dataset'] = 'generate'
 # Specify the dataset 
 # NOTE: This can also be an absolute path to a directory
 #       or a Python function
-# See: https://siliconlabs.github.io/mltk/docs/python_api/core/mltk_model.html#mltk.core.AudioDatasetMixin.dataset
+# See: https://siliconlabs.github.io/mltk/docs/python_api/mltk_model/audio_dataset_mixin.html#mltk.core.AudioDatasetMixin.dataset
 my_model.dataset = speech_commands_v2
 # We're using a 'categorical_crossentropy' loss
 # so must also use a `categorical` class mode for the data generation
@@ -878,3 +878,38 @@ my_model.model_parameters['latency_ms'] = 100
 
 # Enable verbose inference results
 my_model.model_parameters['verbose_model_output_logs'] = False
+
+
+
+##########################################################################################
+# The following allows for running this model training script directly, e.g.: 
+# python keyword_spotting_mobilenetv2.py
+#
+# Note that this has the same functionality as:
+# mltk train keyword_spotting_mobilenetv2
+#
+if __name__ == '__main__':
+    import mltk.core as mltk_core
+    from mltk import cli
+
+    # Setup the CLI logger
+    cli.get_logger(verbose=False)
+
+    # If this is true then this will do a "dry run" of the model testing
+    # If this is false, then the model will be fully trained
+    test_mode_enabled = True
+
+    # Train the model
+    # This does the same as issuing the command: mltk train keyword_spotting_mobilenetv2-test --clean
+    train_results = mltk_core.train_model(my_model, clean=True, test=test_mode_enabled)
+    print(train_results)
+
+    # Evaluate the model against the quantized .h5 (i.e. float32) model
+    # This does the same as issuing the command: mltk evaluate keyword_spotting_mobilenetv2-test
+    tflite_eval_results = mltk_core.evaluate_model(my_model, verbose=True, test=test_mode_enabled)
+    print(tflite_eval_results)
+
+    # Profile the model in the simulator
+    # This does the same as issuing the command: mltk profile keyword_spotting_mobilenetv2-test
+    profiling_results = mltk_core.profile_model(my_model, test=test_mode_enabled)
+    print(profiling_results)

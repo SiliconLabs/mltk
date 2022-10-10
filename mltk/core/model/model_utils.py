@@ -300,8 +300,10 @@ def load_tflite_model(
     if isinstance(model, MltkModel):
         mltk_model = model
         model_name = mltk_model.name
+        model = mltk_model.tflite_archive_path
 
-    elif isinstance(model, TfliteModel):
+    
+    if isinstance(model, TfliteModel):
         if build:
             raise RuntimeError('Cannot use build option with TfliteModel instance')
         tflite_model = model
@@ -314,8 +316,9 @@ def load_tflite_model(
             raise ValueError('Must provide .tflite or .mltk.zip model file type')
 
         if model.endswith('.tflite'):
+            model = fullpath(model) 
             if return_tflite_path:
-                return fullpath(model) 
+                return model
             
             tflite_model = TfliteModel.load_flatbuffer_file(model)
             model_name = tflite_model.filename[:-len('.tflite')]
@@ -339,7 +342,10 @@ def load_tflite_model(
                 if model_spec_path is None:
                     raise ValueError(f'Failed to find model specification file with name: {model}.py')
 
-                model = model_spec_path[:-len('.py')] + '.mltk.zip'
+                model = model_spec_path[:-len('.py')]
+                if test:
+                    model += '-test'
+                model += '.mltk.zip'
         
 
         if model.endswith('.mltk.zip'):
@@ -369,7 +375,7 @@ def load_tflite_model(
             build=True,
             output='tflite_model'
         )
-    
+
 
     if return_tflite_path:
         tflite_path = create_tempdir('tmp_models') + f'/{model_name}.tflite'
@@ -377,6 +383,7 @@ def load_tflite_model(
         return tflite_path
 
     else:
+        assert tflite_model is not None
         return tflite_model
 
 
@@ -454,6 +461,8 @@ def find_model_specification_file(
     if model.endswith('-test'):
         test = True 
         model = model[:-len('-test')]
+    if model.endswith('.py'):
+        model = fullpath(model)
 
     model_subdir = os.path.dirname(model)
     model_name, _ = os.path.splitext(os.path.basename(model))

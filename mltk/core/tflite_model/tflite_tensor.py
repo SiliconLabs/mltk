@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List, TypeVar, Union
 
 import numpy as np
-import tensorflow_lite_support.metadata.schema_py_generated as _tflite_schema_fb
+from . import tflite_schema as _tflite_schema_fb
 
 
 TfliteModel = TypeVar('TfliteModel')

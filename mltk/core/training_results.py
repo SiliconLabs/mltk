@@ -1,9 +1,9 @@
-from typing import Tuple
+from typing import Tuple, List
 from .model.model_utils import KerasModel 
 
 
 
-class TrainingResults(object):
+class TrainingResults:
     """Container for the model training results"""
     def __init__(self, mltk_model, keras_model:KerasModel, training_history):
         self.mltk_model = mltk_model
@@ -26,6 +26,13 @@ class TrainingResults(object):
                 self.history[key] = [float(x) for x in value]
             else:
                 self.history[key] = value
+
+
+    @property
+    def model_archive_path(self) -> str:
+        """File path to model archive which contains the model training output including trained model file"""
+        return self.mltk_model.archive_path
+
 
     def asdict(self) -> dict:
         """Return the results as a dictionary"""
@@ -64,3 +71,9 @@ class TrainingResults(object):
                 return metric, min(self.history[metric]) 
 
         return None, 0
+
+
+    def __str__(self) -> str:
+       name, value = self.get_best_metric()
+       return f'Best training {name} = {value}'
+

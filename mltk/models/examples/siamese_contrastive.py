@@ -33,6 +33,8 @@ Commands
    # Profile the model on a physical development board
    mltk profile siamese_contrastive --accelerator MVP --device
 
+   # Directly invoke the model script
+   python siamese_contrastive.py
 
 Model Summary
 --------------
@@ -127,19 +129,13 @@ Model Diagram
 
 from typing import Union
 import random
-import functools
 import logging
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 import numpy as np
 
-from mltk.core.model import (
-    MltkModel,
-    TrainMixin,
-    DatasetMixin,
-    EvaluateMixin
-)
+import mltk.core as mltk_core
 from mltk.core import (
     load_tflite_or_keras_model,
     KerasModel,
@@ -156,10 +152,10 @@ from mltk.datasets.image import mnist
 # - DatasetMixin          - Generic data generation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    DatasetMixin,
-    EvaluateMixin
+    mltk_core.MltkModel, 
+    mltk_core.TrainMixin, 
+    mltk_core.DatasetMixin,
+    mltk_core.EvaluateMixin
 ):
     def load_dataset(
         self, 
@@ -600,3 +596,34 @@ def visualize_custom_command(
 
 
 
+##########################################################################################
+# The following allows for running this model training script directly, e.g.: 
+# python siamese_contrastive.py
+#
+# Note that this has the same functionality as:
+# mltk train siamese_contrastive
+#
+if __name__ == '__main__':
+    from mltk import cli
+
+    # Setup the CLI logger
+    cli.get_logger(verbose=False)
+
+    # If this is true then this will do a "dry run" of the model testing
+    # If this is false, then the model will be fully trained
+    test_mode_enabled = True
+
+    # Train the model
+    # This does the same as issuing the command: mltk train siamese_contrastive-test --clean
+    train_results = mltk_core.train_model(my_model, clean=True, test=test_mode_enabled)
+    print(train_results)
+
+    # Evaluate the model against the quantized .h5 (i.e. float32) model
+    # This does the same as issuing the command: mltk evaluate siamese_contrastive-test
+    tflite_eval_results = mltk_core.evaluate_model(my_model, verbose=True, test=test_mode_enabled)
+    print(tflite_eval_results)
+
+    # Profile the model in the simulator
+    # This does the same as issuing the command: mltk profile siamese_contrastive-test
+    profiling_results = mltk_core.profile_model(my_model, test=test_mode_enabled)
+    print(profiling_results)

@@ -1,4 +1,4 @@
-from tensorflow_lite_support.metadata.schema_py_generated import BuiltinOperator
+from mltk.core.tflite_model.tflite_schema import BuiltinOperator
 from .layer import Layer
 
 
@@ -71,6 +71,29 @@ class ZeroPadding2D(Layer):
     def process(self, layer):
         pass
 
+class TFOpLambda(Layer):
+    
+    def __init__(self):
+        Layer.__init__(self, ('TFOpLambda',))
+        
+    def process(self, layer):
+        pass
+
+class GlobalAveragePool2D(Layer):
+    
+    def __init__(self):
+        Layer.__init__(self, ('GlobalAveragePooling2D', BuiltinOperator.MEAN))
+        
+    def process(self, layer):
+        pass
+
+class GlobalMaxPool2D(Layer):
+    
+    def __init__(self):
+        Layer.__init__(self, ('GlobalMaxPool2D', BuiltinOperator.REDUCE_MAX))
+        
+    def process(self, layer):
+        pass
 
 
 Input()
@@ -81,3 +104,6 @@ Dropout()
 Split()
 Concatenate()
 ZeroPadding2D()
+TFOpLambda()
+GlobalAveragePool2D()
+GlobalMaxPool2D()

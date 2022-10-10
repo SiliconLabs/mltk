@@ -204,6 +204,8 @@ def list_valid_filenames_in_directory(
                 for p in file_list:
                     f.write(p + '\n')
 
+    if len(file_list) == 0:
+        raise RuntimeError(f'No samples found for class: {search_class}')
 
     if split:
         get_file_hash = lambda x: re.sub(r'_nohash_.*$', '', os.path.basename(x)) 

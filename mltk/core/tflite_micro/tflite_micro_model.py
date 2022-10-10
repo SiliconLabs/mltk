@@ -151,7 +151,7 @@ class TfliteMicroRecordedLayerResult:
 
 
 class TfliteMicroModel:
-    """"This class wrappers the TF-Lite Micro interpreter loaded with a .tflite model"""
+    """This class wrappers the TF-Lite Micro interpreter loaded with a .tflite model"""
 
     def __init__(
         self, 

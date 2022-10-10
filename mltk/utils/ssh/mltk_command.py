@@ -13,10 +13,11 @@ import paramiko
 
 import mltk
 from mltk.core import MltkModel, load_mltk_model
-from mltk.utils.path import get_user_setting, create_user_dir, fullpath, remove_directory
+from mltk.utils.path import get_user_setting, create_user_dir, fullpath, remove_directory, create_tempdir
 from mltk.utils.python import prepend_exception_msg
 from mltk.utils.logger import DummyLogger
 from mltk.utils.signal_handler import SignalHandler
+from mltk.utils.archive import gzip_directory_files
 
 from .ssh_client import SshClient
 
@@ -219,12 +220,12 @@ def _open_connection(
 ) -> SshClient:
     """Open an SSH connection"""
     try:
+        ssh_config = None
         ssh_config_path = fullpath(get_setting('config_path', '~/.ssh/config'))
         if os.path.exists(ssh_config_path):
             logger.debug(f'SSH config path: {ssh_config_path}')
             ssh_config = paramiko.SSHConfig.from_path(ssh_config_path)
     except Exception as e:
-        ssh_config = None
         logger.warning(f'Failed to parse SSH config file: {ssh_config_path}, err: {e}')
 
     remote_dir = remote_dir or get_setting('remote_dir', '.')
@@ -322,12 +323,27 @@ def _start_command(
         except:
             pass
 
+    sync_local_mltk = get_setting('sync_local_mltk', False)
     combined_upload_files = get_setting('upload_files', [])
     combined_upload_files.extend(upload_files or [])
 
     combined_startup_cmds = get_setting('startup_cmds', [])
     combined_startup_cmds.extend(startup_cmds or [])
     remote_dir = ssh_client.remote_dir
+
+    # If we want to sync to local MLTK with the remote, then:
+    # 1) .tar.gz all the python files in the local MLTK
+    # 2) Upload the .tar.gz archive to the remote
+    # 3) After installing the MLTK on the remote, untar the archive into the remote MLTK directory
+    if sync_local_mltk:
+        logger.warning('Syncing local MLTK with remote')
+        local_mltk_archive_path = gzip_directory_files(
+            src_dir=mltk.MLTK_DIR,
+            dst_archive=create_tempdir('tmp') + '/local_mltk.tar.gz',
+            regex=r'.*\.py$'
+        )
+        logger.debug(f'Generated {local_mltk_archive_path} from {mltk.MLTK_DIR}')
+        combined_upload_files.append(f'{local_mltk_archive_path}|.mltk_tmp/local_mltk.tar.gz')
 
     # Create to remote_dir and resolve the actual path (this includes any additional settings specified in ~/.bash_profile on remote)
     logger.info(f'Changing remote working directory to: {remote_dir}')
@@ -346,7 +362,11 @@ def _start_command(
         ssh_client.execute_command(f'cd "{remote_dir}" && python3 -m venv .venv', log_level=logging.DEBUG)
 
         logger.info('Installing the MLTK into the remote virtual environment')
-        ssh_client.execute_command(f'cd "{remote_dir}" && . ./.venv/bin/activate && pip3 install wheel silabs-mltk=={mltk.__version__}', log_level=logging.DEBUG)
+        try:
+            ssh_client.execute_command(f'cd "{remote_dir}" && . ./.venv/bin/activate && pip3 install wheel silabs-mltk=={mltk.__version__}', log_level=logging.DEBUG)
+        except:
+            # If we failed to install the current MLTK version, then try just installing the latest on pypi
+            ssh_client.execute_command(f'cd "{remote_dir}" && . ./.venv/bin/activate && pip3 install --upgrade wheel silabs-mltk', log_level=logging.DEBUG)
 
     # Uploading any local files to the remote server
     logger.info('Copying files from local machine to remote server')
@@ -362,6 +382,9 @@ def _start_command(
         activate_venv=create_venv
     )
     batch_cmds.append('which mltk') # This is useful for debugging
+
+    if sync_local_mltk:
+        batch_cmds.append('python3 -c "import os;import mltk;os.system(\'tar -xf .mltk_tmp/local_mltk.tar.gz -C \' + mltk.MLTK_DIR);"')
 
     mltk_cmd_str = 'mltk ' + ' '.join(cmd)
     batch_cmds.append(f'rm -rf "{proc_context.remote_cmd_log_file}"')

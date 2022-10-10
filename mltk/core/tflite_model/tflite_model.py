@@ -10,9 +10,9 @@ import numpy as np
 # Disable the "DeprecationWarning" found in the flatbuffer package
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-import tensorflow_lite_support.metadata.schema_py_generated as _tflite_schema_fb
-from tensorflow_lite_support.metadata.schema_py_generated import BuiltinOperator as TfliteOpCode # pylint: disable=unused-import
-from tensorflow_lite_support.metadata.schema_py_generated import flatbuffers
+from . import tflite_schema as _tflite_schema_fb
+from .tflite_schema import BuiltinOperator as TfliteOpCode # pylint: disable=unused-import
+from .tflite_schema import flatbuffers
 
 from .tflite_tensor import TfliteTensor
 from .tflite_layer import TfliteLayer
@@ -585,7 +585,7 @@ class TfliteModel:
                 # If the generator specifies a "max_samples" property
                 # then break out of the loop once the specified number of samples have been processed
                 try:
-                    if hasattr(x, 'max_samples'):
+                    if hasattr(x, 'max_samples') and x.max_samples > 0:
                         if n_samples >= x.max_samples:
                             break
                 except:
@@ -597,7 +597,7 @@ class TfliteModel:
             batch_size = batch_results[0].shape[0]
             output_shape = batch_results[0].shape[1:]
 
-            if hasattr(x, 'max_samples'):
+            if hasattr(x, 'max_samples') and x.max_samples > 0:
                 n_samples = x.max_samples
 
             y = np.zeros((n_samples, *output_shape), dtype=batch_y.dtype)

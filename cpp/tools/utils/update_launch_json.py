@@ -122,6 +122,10 @@ def main():
     configurations = launch_obj['configurations']
     for i, cfg in enumerate(configurations):
         if cfg['name'] == config_name:
+            # Update to the new toolchain path if necessary
+            if 'armToolchainPath' in configurations[i] and '2020q2' in configurations[i]['armToolchainPath']:
+                configurations[i]['armToolchainPath'] = new_config['armToolchainPath']
+
             if 'program' in configurations[i]:
                 configurations[i]['program'] = new_config['program']
             elif 'executable' in configurations[i]:

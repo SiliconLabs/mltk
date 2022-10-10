@@ -1,8 +1,10 @@
-from typing import List, Union
+from typing import List, Union, Tuple
 import os
 from collections import OrderedDict, defaultdict
 import json
 import functools
+import io
+import csv
 
 from prettytable import PrettyTable
 from mltk.utils.string_formatting import format_units as format_units_func
@@ -11,7 +13,7 @@ from .tflite_model import (TfliteLayer, TfliteModel, TfliteOpCode)
 
 class ProfilingLayerResult(defaultdict):
     """Profiling results for an individual layer of a model"""
-    BASIC_KEYS = ['layer', 'ops', 'macs', 'cpu_cycles', 'accelerator_cycles', 'time', 'energy', 'error_msg']
+    BASIC_KEYS = ['tflite_layer', 'ops', 'macs', 'cpu_cycles', 'accelerator_cycles', 'time', 'energy', 'error_msg']
 
     def __init__(
             self, 
@@ -26,7 +28,7 @@ class ProfilingLayerResult(defaultdict):
             **kwargs
     ):
         defaultdict.__init__(self, lambda: 0, **kwargs)
-        self['layer'] = tflite_layer
+        self['tflite_layer'] = tflite_layer
         self['ops'] = ops
         self['macs'] = macs
         self['cpu_cycles'] = cpu_cycles
@@ -51,7 +53,7 @@ class ProfilingLayerResult(defaultdict):
     @property
     def tflite_layer(self) -> TfliteLayer:
         """Associated TF-Lite layer"""
-        return self['layer']
+        return self['tflite_layer']
     @property
     def index(self) -> int:
         """Index of this layer in the model"""
@@ -172,7 +174,7 @@ class ProfilingLayerResult(defaultdict):
 
 
 
-class ProfilingModelResults(object):
+class ProfilingModelResults:
     """Results from profiling model for specific accelerator"""
 
     def __init__(
@@ -362,17 +364,17 @@ class ProfilingModelResults(object):
 
 
         if full_summary:
-            all_layer_keys = []
+            all_layer_numeric_keys = []
             for layer in self.layers:
                 for key in layer:
-                    if key not in all_layer_keys:
-                        all_layer_keys.append(key)
+                    if key not in all_layer_numeric_keys and isinstance(layer[key], (int,float)):
+                        all_layer_numeric_keys.append(key)
             for layer in self.layers:
-                for key in all_layer_keys:
+                for key in all_layer_numeric_keys:
                     if key not in layer:
                         layer[key] = 0
 
-            for name in all_layer_keys:
+            for name in all_layer_numeric_keys:
                 if name not in ProfilingLayerResult.BASIC_KEYS:
                     total = self.stat_total(name)
                     if total == 0 and exclude_null:
@@ -417,6 +419,7 @@ class ProfilingModelResults(object):
         Arguments
             format_units: Format number values to a string with associated units, e.g. 0.0234 -> 23.4m
             exclude_null: Exclude columns with all number values (e.g. don't include energy if not energy numbers were provided)
+            full_summary: Return all profiled stats. If this this false, then only the basic stats are returned
         """
         summary = self.get_summary(
             include_labels=True, 
@@ -474,7 +477,7 @@ class ProfilingModelResults(object):
         exclude_null=True,
         full_summary=False
     ) -> str:
-        """Return profiling results as JSON
+        """Return profiling results as JSON string
 
         JSON Format:
 
@@ -541,6 +544,7 @@ class ProfilingModelResults(object):
             indent: Amount of indentation to use in JSON formatting
             format_units: Format number values to a string with associated units, e.g. 0.0234 -> 23.4m
             exclude_null: Exclude columns with all number values (e.g. don't include energy if not energy numbers were provided)
+            full_summary: Return all profiled stats. If this this false, then only the basic stats are returned
 
         Returns
             JSON formated string
@@ -554,6 +558,54 @@ class ProfilingModelResults(object):
             indent=indent
         ) 
 
+    def to_csv(
+        self,  
+        format_units=False, 
+        exclude_null=True,
+        full_summary=False,
+        include_header=True,
+        dialect:Union[str,csv.Dialect]='excel',
+    ) -> Tuple[str,str]:
+        """Return profiling results as CSV string
+
+        This returns a tuple of two CSV formatted strings.
+        The first string contains the profiling summary.
+        The second string contain the profiling results for the individual layers.
+
+        Arguments:
+            format_units: Format number values to a string with associated units, e.g. 0.0234 -> 23.4m
+            exclude_null: Exclude columns with all number values (e.g. don't include energy if not energy numbers were provided)
+            full_summary: Return all profiled stats. If this this false, then only the basic stats are returned
+            include_header: Include the header row. If false then only the results are returned with no labels in the first row.
+            dialect: CSV dialect Default is excel. See https://docs.python.org/3/library/csv.html for more details.
+        """
+        results_dict = self.to_dict(
+            format_units=format_units, 
+            exclude_null=exclude_null, 
+            full_summary=full_summary
+        )
+        summary = results_dict['summary']
+        summary_labels = results_dict['summary_labels']
+        layers = results_dict['layers']
+        layer_labels = results_dict['layer_labels']
+
+        summary_buf = io.StringIO()
+        summary_writer = csv.writer(summary_buf, dialect=dialect)
+        if include_header:
+            summary_writer.writerow(summary_labels)
+        summary_writer.writerow(summary.values())
+
+        layers_buf = io.StringIO()
+        layers_writer = csv.writer(layers_buf, dialect=dialect)
+        if include_header:
+            layers_writer.writerow(layer_labels)
+        
+        for layer in layers:
+            layers_writer.writerow(layer.values())
+
+        return summary_buf.getvalue(), layers_buf.getvalue()
+
+
     def to_string(
         self, 
         format_units=True, 
@@ -565,8 +617,13 @@ class ProfilingModelResults(object):
         Arguments
             format_units: Format number values to a string with associated units, e.g. 0.0234 -> 23.4m
             exclude_null: Exclude columns with all number values (e.g. don't include energy if not energy numbers were provided)
+            full_summary: Return all profiled stats. If this this false, then only the basic stats are returned
         """
-        results = self.to_dict(format_units, exclude_null=exclude_null, full_summary=full_summary)
+        results = self.to_dict(
+            format_units, 
+            exclude_null=exclude_null, 
+            full_summary=full_summary
+        )
         summary = results['summary']
         summary_labels = results['summary_labels']
         layers = results['layers']

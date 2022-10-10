@@ -145,10 +145,8 @@ def handle_exception(msg: str, e: Exception, print_stderr=False, no_abort=False)
     if gpu_err:
         err_msg += f'\n\n{gpu_err}\n\n'
 
-    saved_verbose = logger.verbose
-    logger.verbose = False
-    logger.debug(f'{msg}, err: {err_msg}', exc_info=e)
-    logger.verbose = saved_verbose
+    logger.debug(msg, exc_info=e)
+    logger.error(f'{msg}, err: {err_msg}')
     
     if debugger_is_active():
         traceback.print_tb(e.__traceback__)
@@ -156,12 +154,18 @@ def handle_exception(msg: str, e: Exception, print_stderr=False, no_abort=False)
     if print_stderr:
         sys.stderr.write(f'{msg}, err: {err_msg}, for more details see: {log_file}')
     else:
-        print_error(f'{msg}\n{err_msg}\n\nFor more details see: {log_file}')
+        print_error(f'For more details see: {log_file}')
 
     if debugger_is_active():
         breakpoint()
 
     if not no_abort:
+        try:
+            file_handler = logger.file_handler
+            if file_handler is not None:
+                file_handler.close()
+        except:
+            pass
         abort()
 
 

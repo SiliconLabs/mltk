@@ -5,6 +5,8 @@ import atexit
 import logging
 from collections import namedtuple
 
+from .path import get_user_setting
+
 from .logger import DummyLogger
 from .python import SHORT_VERSION
 
@@ -22,8 +24,6 @@ TENSORFLOW_CUDA_COMPATIBILITY = [
     TensorflowCudaVersions('2.3', '7.6', '10.1', '3.7', '3.8'),
 ]
 
-if '_selected_gpu_id' not in globals():
-    _selected_gpu_id = -1 
 
 
 def disable():
@@ -36,13 +36,24 @@ def initialize(logger=None):
 
     NOTE: The deinitialize() API will automatically be called when the script exits
     """
-    _selected_gpu_id = globals()['_selected_gpu_id']
-    CUDA_VISIBLE_DEVICES = os.getenv('CUDA_VISIBLE_DEVICES', None)
+
+    selected_gpus = globals().get('selected_gpus', [])
+    if selected_gpus:
+        return 
+    globals()['selected_gpus'] = []
+
+
+    CUDA_VISIBLE_DEVICES = get_user_setting(
+        'cuda_visible_devices', 
+            os.getenv('MLTK_CUDA_VISIBLE_DEVICES', 
+                os.getenv('CUDA_VISIBLE_DEVICES', '')
+            )
+        ).strip()
+
+    logger.debug(f'CUDA_VISIBLE_DEVICES={CUDA_VISIBLE_DEVICES}')
+
     if CUDA_VISIBLE_DEVICES == '-1':
         return
-
-    if _selected_gpu_id != -1:
-        return 
 
     logger = logger or DummyLogger()
 
@@ -52,7 +63,7 @@ def initialize(logger=None):
         import GPUtil
         import tensorflow as tf 
 
-        os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
+        os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
         gpus = GPUtil.getGPUs()
         
         if len(gpus) == 0:
@@ -60,32 +71,46 @@ def initialize(logger=None):
             os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
             return
         
-        max_gpu = gpus[0]
-        for gpu in gpus[1:]:
-            if gpu.memoryFree > max_gpu.memoryFree:
-                max_gpu = gpu
+        logger.debug(f"Available GPUs:\n" + "\n".join([f"- {g.name} (id={g.id})" for g in gpus]))
+
+        if not CUDA_VISIBLE_DEVICES:
+            logger.debug('Searching best GPU available')
+            best_gpu = gpus[0]
+            for gpu in gpus[1:]:
+                if gpu.memoryFree > best_gpu.memoryFree:
+                    best_gpu = gpu
+            CUDA_VISIBLE_DEVICES = str(best_gpu.id)
+
+        elif CUDA_VISIBLE_DEVICES == 'all':
+            logger.debug('Using all available GPUs')
+            CUDA_VISIBLE_DEVICES = ','.join(str(x.id) for x in gpus)
         
-        os.environ['CUDA_VISIBLE_DEVICES'] = str(max_gpu.id)
-        globals()['_selected_gpu_id'] = max_gpu.id
+        
+        os.environ['CUDA_VISIBLE_DEVICES'] = CUDA_VISIBLE_DEVICES
 
         # Enable dynamic memory growth for GPU
         try:
             tf_gpus = tf.config.list_physical_devices('GPU')
             if len(tf_gpus) == 0:
                 _print_warning_msg(logger)
-                os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
                 deinitialize(force=True)
+                os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
                 return 
 
-            tf.config.experimental.set_memory_growth(tf_gpus[max_gpu.id], True)
+            gpu_ids = [int(x) for x in CUDA_VISIBLE_DEVICES.split(',')]
+            for gpu_id in gpu_ids:
+                globals()['selected_gpus'].append(gpu_id)
+                for tf_gpu in tf_gpus:
+                    if tf_gpu.name.endswith(f'GPU:{gpu_id}'):
+                        tf.config.experimental.set_memory_growth(tf_gpu, True)
+                        logger.info(f"Selecting GPU : {gpus[gpu_id].name} (id={gpu_id})")
+                
         except Exception as e:
-            logger.debug(f'tf.config.experimental.set_memory_growth() failed, err: {e}')
+            logger.debug(f'Error configuring GPU(s),  err: {e}')
 
         # The TfLiteConverter adds a StreamHandler to the root logger, 
         # remove it so we don't double print everything to the console
         logging.getLogger().handlers.clear()
-
-        logger.debug(f"Selected GPU : {max_gpu.name} (id={max_gpu.id})")
         atexit.register(deinitialize)
 
     except Exception as e:
@@ -94,8 +119,9 @@ def initialize(logger=None):
         if 'Driver/library version mismatch' in err_msg:
             _print_warning_msg(logger)
         logger.info("Using CPU for training")
-        os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
         deinitialize()
+        os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
+      
 
 
 def deinitialize(force=False):
@@ -103,21 +129,18 @@ def deinitialize(force=False):
 
     NOTE: This is automatically called when the script exits
     """
-    _selected_gpu_id = -1 if '_selected_gpu_id' not in globals() else globals()['_selected_gpu_id']
+    selected_gpus = globals().get('selected_gpus', [])
 
-    if _selected_gpu_id != -1:
-        try:
-            from numba import cuda
+    try:
+        from numba import cuda
 
-            cuda.select_device(_selected_gpu_id)
+        for gpu_id in selected_gpus:
+            cuda.select_device(gpu_id)
             cuda.close()
-        except:
-            pass
-
-        globals()['_selected_gpu_id'] = -1
-
-
-
+    except:
+        pass
+    finally:
+        selected_gpus.clear()
 
 
 def get_tensorflow_version_with_cudnn_version(cudnn_ver:str) -> TensorflowCudaVersions:

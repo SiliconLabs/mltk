@@ -2,13 +2,14 @@ from typing import List, Tuple,Union
 import logging
 import json
 
+import tqdm
+import tensorflow as tf
 from sklearn.metrics import (precision_recall_curve, confusion_matrix)
 from sklearn.preprocessing import label_binarize
 import numpy as np 
 import matplotlib.pyplot as plt
 from mltk.utils import gpu
 from mltk.utils.python import prepend_exception_msg
-from .keras.callbacks import import_tqdm_progressbar_callback
 from .model import (
     MltkModel,
     KerasModel,
@@ -183,8 +184,8 @@ def evaluate_classifier(
     classes:List[str]=None,
     verbose:bool=False,
     show:bool=False,
-    callbacks:list=None,
-    update_archive:bool=True
+    update_archive:bool=True,
+    **kwargs
 ) -> ClassifierEvaluationResults:
     """Evaluate a trained classification model
     
@@ -194,9 +195,8 @@ def evaluate_classifier(
         weights: Optional weights to load before evaluating (only valid for a keras model)
         max_samples_per_class: Maximum number of samples per class to evaluate. This is useful for large datasets
         classes: Specific classes to evaluate
-        verbose: Enable verbose log messages
+        verbose: Enable progress bar
         show: Show the evaluation results diagrams
-        callbacks: Optional callbacks to invoke while evaluating
         update_archive: Update the model archive with the eval results
 
     Returns:
@@ -217,6 +217,19 @@ def evaluate_classifier(
     if update_archive:
         update_archive = mltk_model.check_archive_file_is_writable()
     gpu.initialize(logger=logger)
+
+
+    try:
+        mltk_model.load_dataset(
+            subset='evaluation', 
+            max_samples_per_class=max_samples_per_class,
+            classes=classes,
+            test=mltk_model.test_mode_enabled
+        )
+    except Exception as e:
+        prepend_exception_msg(e, 'Failed to load model evaluation dataset')
+        raise
+    
 
     # Build the MLTK model's corresponding as a Keras model or .tflite
     try:
@@ -239,44 +252,30 @@ def evaluate_classifier(
         logger.debug(f'Failed to generate model summary, err: {e}', exc_info=e)
         logger.warning(f'Failed to generate model summary, err: {e}')
 
-    try:
-        mltk_model.load_dataset(
-            subset='evaluation', 
-            max_samples_per_class=max_samples_per_class,
-            classes=classes,
-            test=mltk_model.test_mode_enabled
-        )
-    except Exception as e:
-        prepend_exception_msg(e, 'Failed to load model evaluation dataset')
-        raise
+    logger.info(mltk_model.summarize_dataset())
 
+    y_pred = []
+    y_label = []
 
-    if verbose:
-        callbacks = callbacks or []
-        TQDMNotebookProgressBar = import_tqdm_progressbar_callback()
-        if TQDMNotebookProgressBar is not None:
-            # If we're using a Jupyter notebook,
-            # then we use the TQDMNotebookCallback, otherwise use the default ProgressBarCallback 
-            # (note: verbose=True then ProgressBarCallback is used automatically)
-            verbose = False
-            callbacks.append(TQDMNotebookProgressBar(show_overall_progress=True))
+    progbar = tqdm.tqdm(unit='prediction', desc='Evaluating') if verbose else None
 
-    if isinstance(built_model, KerasModel):
-        y_pred = built_model.predict(
-            x = mltk_model.x,
-            batch_size=mltk_model.batch_size,
-            steps=mltk_model.eval_steps_per_epoch,
-            callbacks=callbacks,
-            verbose=1 if verbose else 0,
-        )
-    else:
-        y_pred = built_model.predict(mltk_model.x, y_dtype=np.float32)
+    for batch_x, batch_y in _iterate_evaluation_data(mltk_model):
+        if isinstance(built_model, KerasModel):
+            pred = built_model.predict(batch_x, verbose=0)
+        else:
+            pred = built_model.predict(batch_x, y_dtype=np.float32)
 
+        if progbar is not None:
+            progbar.update(len(pred))
+        
+        y_pred.extend(pred)
+        if batch_y.shape[-1] == 1 or len(batch_y.shape) == 1:
+            y_label.extend(batch_y)
+        else:
+            y_label.extend(np.argmax(batch_y, -1))
 
-    if hasattr(mltk_model, 'datagen_context'):
-        y_label = mltk_model.datagen_context.evaluation_labels
-    else:
-        y_label = mltk_model.y
+    if progbar is not None:
+        progbar.close()
 
     mltk_model.unload_dataset()
 
@@ -284,6 +283,9 @@ def evaluate_classifier(
         name=mltk_model.name,
         classes=None if not hasattr(mltk_model, 'classes') else mltk_model.classes
     )
+
+    y_pred = _list_to_numpy_array(y_pred)
+    y_label = np.asarray(y_label, dtype=np.int32)
 
     results.calculate(
         y=y_label,
@@ -410,7 +412,7 @@ def calculate_auc(y_pred:np.ndarray, y_label:np.ndarray, threshold=.01) -> Tuple
 
     y_pred contains model predictions [n_samples, n_classes]
     y_label list of each correct class id per sample [n_samples]
-    thresholds Optional list of thesholds to consider
+    thresholds Optional list of thresholds to consider
 
     Return tuple:
     false positive rate, true positive rate, list ROC AUC for each class, list of thresholds 
@@ -749,3 +751,66 @@ def _normalize_class_name(label:str) -> str:
     if label.endswith('_'):
         label = label[:-1]
     return label
+
+
+def _iterate_evaluation_data(mltk_model:MltkModel):
+    x = mltk_model.validation_data
+    if x is None:
+        x = mltk_model.x
+
+    y = mltk_model.y
+
+    if y is not None:
+        if isinstance(x, tf.Tensor):
+            x = x.numpy()
+            y = y.numpy()
+
+        if isinstance(x, np.ndarray):
+            yield x, y
+
+        else:
+            for batch_x, batch_y in zip(x, y):
+                batch_x = _convert_tf_tensor_to_numpy_array(batch_x, expand_dim=0)
+                batch_y = _convert_tf_tensor_to_numpy_array(batch_y, expand_dim=0)
+                yield batch_x, batch_y 
+    
+    else:
+        for batch in x:
+            batch_x, batch_y, _ = tf.keras.utils.unpack_x_y_sample_weight(batch)
+            batch_x = _convert_tf_tensor_to_numpy_array(batch_x)
+            batch_y = _convert_tf_tensor_to_numpy_array(batch_y)
+            yield batch_x, batch_y
+            
+
+def _list_to_numpy_array(python_list:List[np.ndarray], dtype=None) -> np.ndarray:
+    n_samples = len(python_list)
+    if len(python_list[0].shape) > 0:
+        numpy_array_shape = (n_samples,) + python_list[0].shape
+    else:
+        numpy_array_shape = (n_samples,)
+    
+    numpy_array = np.empty(numpy_array_shape, dtype=dtype or python_list[0].dtype)
+    for i, pred in enumerate(python_list):
+        numpy_array[i] = pred
+
+    return numpy_array
+
+
+def _convert_tf_tensor_to_numpy_array(x, expand_dim=None):
+    if isinstance(x, tf.Tensor):
+        x = x.numpy()
+        
+    elif isinstance(x, (list,tuple)):
+        if isinstance(x[0], np.ndarray) and expand_dim is not None:
+            return x
+        
+        retval = []
+        for i in x:
+            retval.append(_convert_tf_tensor_to_numpy_array(i, expand_dim=expand_dim))
+
+        return tuple(retval)
+
+    if expand_dim is not None:
+        x = np.expand_dims(x, axis=expand_dim)
+    
+    return x

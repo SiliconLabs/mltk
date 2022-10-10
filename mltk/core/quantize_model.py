@@ -5,6 +5,7 @@ import copy
 from typing import Union, List, Tuple
 
 import numpy as np 
+import tensorflow as tf
 from tensorflow import keras
 
 from mltk.utils import gpu
@@ -35,7 +36,9 @@ def quantize_model(
     This uses the Tensorflow `TfliteConverter <https://www.tensorflow.org/lite/convert>`_ internally.
     This will also add any metadata to the generated `.tflite` model file.
 
-    Refer to the `Model Quantization <https://siliconlabs.github.io/mltk/docs/guides/model_quantization.html>`_ guide for more details.
+    .. seealso::
+       * `Model Quantization Guide <https://siliconlabs.github.io/mltk/docs/guides/model_quantization.html>`_
+       * `Model quantization API examples <https://siliconlabs.github.io/mltk/mltk/examples/quantize_model.html>`_
 
     Args:
         model: :py:class:`mltk.core.MltkModel` instance, name of MLTK model, path to model archive (.mltk.zip) or specification script (.py)
@@ -249,28 +252,38 @@ def create_representative_dataset_generator(mltk_model: MltkModel, logger: loggi
     logger.debug('Generating representative dataset using validation data')
 
     # Try to use the validation data if available, otherwise use the training data
-    validation_data = mltk_model.x if mltk_model.validation_data is None else mltk_model.validation_data
+    validation_data = mltk_model.validation_data
+    if validation_data is None:
+        validation_data = mltk_model.x
 
     def _representative_dataset_generator():
         for i, batch in enumerate(validation_data):
             batch_x, _, _ = keras.utils.unpack_x_y_sample_weight(batch)
+            if isinstance(batch_x, tf.Tensor):
+                if batch_x.dtype != tf.float32:
+                    batch_x = tf.cast(batch_x, dtype=tf.float32)
 
-            # The TF-Lite converter expects the input to be a float32 data type
-            if isinstance(batch_x, np.ndarray) and batch_x.dtype != np.float32:
-                batch_x = batch_x.astype(np.float32)
-            
-            elif isinstance(batch_x, (list,tuple)):
-                batch_x_norm = []
-                for batch_xi in batch_x:
-                    if isinstance(batch_xi, np.ndarray) and batch_xi.dtype != np.float32:
-                        batch_x_norm.append(batch_xi.astype(np.float32))
-                    else:
-                        batch_x_norm.append(batch_xi)
-                batch_x = batch_x_norm
+                # The TF-Lite converter expects 1 sample batches
+                for x in batch_x:
+                    yield [tf.expand_dims(x, axis=0)]  
 
-            # The TF-Lite converter expects 1 sample batches
-            for x in batch_x:
-                yield [np.expand_dims(x, axis=0)]  
+            else:
+                # The TF-Lite converter expects the input to be a float32 data type
+                if isinstance(batch_x, np.ndarray) and batch_x.dtype != np.float32:
+                    batch_x = batch_x.astype(np.float32)
+                
+                elif isinstance(batch_x, (list,tuple)):
+                    batch_x_norm = []
+                    for batch_xi in batch_x:
+                        if isinstance(batch_xi, np.ndarray) and batch_xi.dtype != np.float32:
+                            batch_x_norm.append(batch_xi.astype(np.float32))
+                        else:
+                            batch_x_norm.append(batch_xi)
+                    batch_x = batch_x_norm
+
+                # The TF-Lite converter expects 1 sample batches
+                for x in batch_x:
+                    yield [np.expand_dims(x, axis=0)]  
         
             # 100 batches should be enough
             # for the converter to determine the valid ranges

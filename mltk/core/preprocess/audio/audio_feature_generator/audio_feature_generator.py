@@ -15,6 +15,10 @@ class AudioFeatureGenerator:
     """
 
     def __init__(self, settings: AudioFeatureGeneratorSettings):
+        """
+        Args:
+            settings: The settings to use for processing the audio sample
+        """
         try:
             wrapper_module = importlib.import_module('mltk.core.preprocess.audio.audio_feature_generator._audio_feature_generator_wrapper')
         except (ImportError, ModuleNotFoundError) as e:

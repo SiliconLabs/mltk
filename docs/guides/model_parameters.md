@@ -26,7 +26,7 @@ assurance that the `.tflite` model file and the processing settings are synchron
 
 The basic flow for enabling model parameters is as follows:   
 1. Custom parameters are configured into Python dictionary using [MltkModel.model_parameters](mltk.core.MltkModel.model_parameters) (this is typically done in a [model specification](./model_specification.md) script)
-2. Python dictionary serialized using the [Google Flatbuffer](https://google.github.io/flatbuffers) schema: [dictionary.fbs](../python_api/core/dictionary.fbs)
+2. Python dictionary serialized using the [Google Flatbuffer](https://google.github.io/flatbuffers) schema: [dictionary.fbs](../python_api/tflite_model/dictionary.fbs)
 3. Serialized parameters added to [metadata](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/schema/schema.fbs#L1244) section of the corresponding `.tflite` model file
 4. At a later time, the parameters are retrieved from the `.tflite` model file's metadata section and de-serialized by either Python or the embedded device at runtime
 5. The de-serialized parameters are used to configure the software to run the machine learning model

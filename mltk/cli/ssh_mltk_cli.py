@@ -141,17 +141,21 @@ The currently supported commands are: train
     if len( mltk_cmd_args.args) == 0:
         cli.abort(msg='Must provide model argument, e.g.: mltk ssh train my_model')
 
+    cmd  = [mltk_command] + list(mltk_cmd_args.args)
 
     try:
         if not verbose:
             cli.print_info(f'HINT: For verbose remote server logs, see: {log_file}')
         
+        else:
+            cmd.append('--verbose')
+
         ssh.run_mltk_command(
             ssh_host=host,
             ssh_port=port,
             ssh_key_path=identity_file,
             ssh_password=password,
-            cmd=[mltk_command] + list(mltk_cmd_args.args),
+            cmd=cmd,
             clean=clean,
             force=force, 
             resume_only=resume, 

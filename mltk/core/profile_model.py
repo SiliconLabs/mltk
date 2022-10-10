@@ -28,6 +28,7 @@ def profile_model(
     build:bool=False, 
     platform:str=None,
     runtime_buffer_size=-1,
+    test:bool=False,
     **kwargs
 ) -> ProfilingModelResults:
     """Profile a model for the given accelerator
@@ -35,7 +36,9 @@ def profile_model(
     This will profile the given model in either a
     hardware simulator or on a physical device.
 
-    Refer to the `Model Profiler <https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html>`_ guide for more details.
+    .. seealso::
+       * `Model Profiler Guide <https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html>`_
+       * `Model Profiler API examples <https://siliconlabs.github.io/mltk/mltk/examples/profile_model.html>`_
 
     Args:
         model: The model to profile as either a :py:class:`mltk.core.MltkModel` or :py:class:`mltk.core.TfliteModel` instance,
@@ -48,13 +51,14 @@ def profile_model(
             If greater than 0, use the size given. If the given size is too small then loading the model will fail.
             If equal to 0, try to use the size built into the model's parameters, if the model size is not available or too small, find the optimal size
             If less than 0, automatically find the optimal tensor arena size, ignore the size built into the model parameters  
-
+        test: If a "test" model is provided
+    
     Returns:
         The results of model profiling
     """
     #accelerator = TfliteMicro.normalize_accelerator_name(accelerator)
     try:
-        tflite_model = load_tflite_model(model=model, build=build)
+        tflite_model = load_tflite_model(model=model, build=build, test=test)
     except ArchiveFileNotFoundError as e:
         append_exception_msg(e,
             '\nAlternatively, add the --build option to profile the model without training it first'

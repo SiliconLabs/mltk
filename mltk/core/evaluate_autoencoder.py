@@ -677,10 +677,10 @@ def _retrieve_data(x):
         return x.numpy()
 
     data = []
-    if hasattr(x, 'max_samples'):
-        max_samples = getattr(x, 'max_samples')
-    elif hasattr(x, 'samples'):
-        max_samples = getattr(x, 'samples')
+    if hasattr(x, 'max_samples') and x.max_samples > 0:
+        max_samples = x.max_samples
+    elif hasattr(x, 'samples') and x.samples > 0:
+        max_samples = x.samples
     else:
         max_samples = 10000
 
@@ -707,7 +707,10 @@ def _save_decoded_image(out_path, orig, decoded, score):
     except:
         return 
 
-    from cv2 import cv2 
+    try:
+        from cv2 import cv2 
+    except:
+        import cv2
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
 

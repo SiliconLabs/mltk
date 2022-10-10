@@ -158,6 +158,10 @@ void AudioFeatureGeneratorWrapper::process_sample(const py::array_t<int16_t>& in
     throw std::invalid_argument("Output data type must be a int8, uint16, or float32");
   }
 
+  // Release the Python Global Interpreter Lock (GIL)
+  // While generating the spectrogram
+  // This way, other Python threads may execute concurrently
+  py::gil_scoped_release release;
 
   FrontendReset(&_frontend_state);
 

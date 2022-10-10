@@ -32,6 +32,7 @@ def evaluate_model(
     verbose: bool=None,
     callbacks:List=None,
     update_archive:bool=True,
+    test:bool=False
 ) -> EvaluationResults:
     """Evaluate a trained model
 
@@ -42,7 +43,10 @@ def evaluate_model(
 
     based on the given :py:class:`mltk.core.MltkModel` instance.
 
-    Refer to the `Model Evaluation <https://siliconlabs.github.io/mltk/docs/guides/model_evaluation.html>`_ guide for more details.
+    .. seealso::
+       * `Model Evaluation Guide <https://siliconlabs.github.io/mltk/docs/guides/model_evaluation.html>`_
+       * `Model Evaluation API Examples <https://siliconlabs.github.io/mltk/mltk/examples/evaluate_model.html>`_
+
     
     Args:
         model: :py:class:`mltk.core.MltkModel` instance, name of MLTK model, path to
@@ -71,6 +75,7 @@ def evaluate_model(
         verbose: Enable verbose console logs
         callbacks: List of Keras callbacks to use for evaluation
         update_archive: Update the model archive with the evaluation results
+        test: Optional, load the model in "test mode" if true.
 
     Returns:
         Dictionary of evaluation results
@@ -78,6 +83,8 @@ def evaluate_model(
 
     if isinstance(model, MltkModel):
         mltk_model = model 
+        if test:
+            mltk_model.enable_test_mode()
 
     elif isinstance(model, str):
         if model.endswith(('.tflite', '.h5')):
@@ -85,7 +92,7 @@ def evaluate_model(
                 'Must provide name of MLTK model, '
                 'path to model archive (.mltk.zip) or model specification script(.py)'
             )
-        mltk_model = load_mltk_model(model)
+        mltk_model = load_mltk_model(model, test=test)
     else:
         raise ValueError(
             'Must provide MltkModel instance, name of MLTK model, path to '
@@ -173,6 +180,15 @@ def evaluate_custom(
         update_archive = mltk_model.check_archive_file_is_writable()
     gpu.initialize(logger=logger)
 
+    try:
+        mltk_model.load_dataset(
+            subset='evaluation', 
+            test=mltk_model.test_mode_enabled
+        )
+    except Exception as e:
+        prepend_exception_msg(e, 'Failed to load model evaluation dataset')
+        raise
+
     # Build the MLTK model's corresponding as a Keras model or .tflite
     try:
         built_model = load_tflite_or_keras_model(
@@ -194,14 +210,8 @@ def evaluate_custom(
         logger.debug(f'Failed to generate model summary, err: {e}', exc_info=e)
         logger.warning(f'Failed to generate model summary, err: {e}')
 
-    try:
-        mltk_model.load_dataset(
-            subset='evaluation', 
-            test=mltk_model.test_mode_enabled
-        )
-    except Exception as e:
-        prepend_exception_msg(e, 'Failed to load model evaluation dataset')
-        raise
+    logger.info(mltk_model.summarize_dataset())
+
 
     eval_custom_function = mltk_model.eval_custom_function
 
@@ -220,8 +230,12 @@ def evaluate_custom(
                 raise
 
         elif isinstance(built_model, KerasModel):
+            validation_data = mltk_model.validation_data
+            if validation_data is None:
+                validation_data = mltk_model.x
+            
             eval_loss, eval_accuracy = built_model.evaluate(
-                x=mltk_model.x, 
+                x=validation_data, 
                 y=mltk_model.y,
                 batch_size=mltk_model.batch_size, 
                 verbose=1 if verbose else 0,

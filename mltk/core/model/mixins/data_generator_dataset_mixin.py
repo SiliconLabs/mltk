@@ -1,96 +1,12 @@
+from __future__ import annotations
 import copy
-from typing import List
+from typing import List, Dict
 
 import numpy as np
 
 from .dataset_mixin import DatasetMixin
 
 from ..model_attributes import MltkModelAttributesDecorator
-
-
-
-
-
-class DataGeneratorContext(object):
-    """Loaded data generator context"""
-
-    def __init__(
-        self, 
-        classes: List[str], 
-        class_mode:str,
-        subset:str,
-        train_datagen, 
-        train_labels, 
-        validation_datagen, 
-        validation_labels
-    ):
-        self.classes = copy.deepcopy(classes)
-        """List of string labels for each class in dataset"""
-        self.class_mode = class_mode
-        """How the label data if formatted"""
-
-        self.subset = subset
-        """Data subset"""
-
-        self.train_datagen = train_datagen
-        """Training data generator"""
-        self.train_labels = train_labels
-        """Array or list of "ground-truth" label for each training sample"""
-
-        self.validation_datagen = validation_datagen
-        """Validation data generator"""
-        self.validation_labels = validation_labels
-        """Array or list of "ground-truth" label for each validation sample"""
-
-        self.evaluation_datagen =  train_datagen if validation_datagen is None else validation_datagen
-        """Evaluation data generator which is the same as validation_datagen is provided else train_datagen"""
-        self.evaluation_labels = train_labels if validation_labels is None else  validation_labels
-        """Array or list of "ground-truth" label for each evaluation sample"""
-
-
-    def shutdown(self):
-        """Shutdown the data generators (if necessary)"""
-        try:
-            self.train_datagen.shutdown()
-        except :
-            pass
-        try:
-            self.validation_datagen.shutdown()
-        except:
-            pass
-
-
-    def __str__(self):
-        """Return a printable summary of the dataset"""
-
-        s = ''
-        if self.subset == 'training':
-            s += self._get_datagen_summary('Training', self.train_labels)
-
-        if self.subset == 'training' or self.subset == 'validation':
-            s += self._get_datagen_summary('Validation', self.validation_labels)
-
-        if self.subset == 'evaluation':
-            s += self._get_datagen_summary('Evaluation', self.evaluation_labels)
-
-        return s.strip()
-
-
-    def _get_datagen_summary(self, name, labels):
-        try:
-            if self.class_mode == 'categorical':
-                _, class_counts = np.unique(labels, return_counts=True)
-                s = f'{name.title()} dataset: Found {len(labels)} samples belonging to {len(self.classes)} classes:\n'
-                for i, count in enumerate(class_counts):
-                    class_label = self.classes[i]
-                    s += f'{class_label.rjust(10, " ")} = {count}\n'
-            else:
-                s = f'{name.title()} dataset: Found {len(labels)} samples belonging to {len(self.classes)} classes\n'
-        except:
-            # If something fails, then silently ignore the error
-            s = ''
-
-        return s
 
 
 
@@ -171,3 +87,85 @@ class DataGeneratorDatasetMixin(DatasetMixin):
 
     def _register_attributes(self):
         self._attributes.register('datagen.context', dtype=DataGeneratorContext)
+
+
+
+
+
+
+class DataGeneratorContext:
+    """Loaded data generator context"""
+
+    def __init__(
+        self, 
+        subset:str,
+        train_datagen, 
+        validation_datagen, 
+        train_class_counts:Dict[str,int],
+        validation_class_counts:Dict[str,int]
+    ):
+        self.subset = subset
+        """Data subset"""
+
+        self.train_datagen = train_datagen
+        """Training data generator"""
+
+        self.validation_datagen = validation_datagen
+        """Validation data generator"""
+
+        self.evaluation_datagen =  train_datagen if validation_datagen is None else validation_datagen
+        """Evaluation data generator which is the same as validation_datagen is provided else train_datagen"""
+
+        self.train_class_counts = train_class_counts
+        """Dictionary containing the number of samples for each class in the training subset"""
+
+        self.validation_class_counts = validation_class_counts
+        """Dictionary containing the number of samples for each class in the validation subset"""
+
+        self.evaluation_class_counts = validation_class_counts or train_class_counts
+        """Dictionary containing the number of samples for each class in the evaluation subset"""
+
+
+    def shutdown(self):
+        """Shutdown the data generators (if necessary)"""
+        try:
+            self.train_datagen.shutdown()
+        except :
+            pass
+        try:
+            self.validation_datagen.shutdown()
+        except:
+            pass
+
+
+    def __str__(self):
+        """Return a printable summary of the dataset"""
+
+        s = ''
+        if self.subset == 'training':
+            s += self._get_datagen_summary('Training', self.train_class_counts)
+
+        if self.subset == 'training' or self.subset == 'validation':
+            s += self._get_datagen_summary('Validation', self.validation_class_counts)
+
+        if self.subset == 'evaluation':
+            s += self._get_datagen_summary('Evaluation', self.evaluation_class_counts)
+
+        return s.strip()
+
+
+    def _get_datagen_summary(self, name:str, class_counts:Dict[str,int]):
+        try:
+            if not class_counts:
+                return ''
+
+            total_samples = sum(x for x in class_counts.values())
+            s = f'{name.title()} dataset: Found {total_samples} samples belonging to {len(class_counts)} classes:\n'
+            for class_label,sample_count in class_counts.items():
+                s += f'{class_label.rjust(10, " ")} = {sample_count}\n'
+        except:
+            # If something fails, then silently ignore the error
+            s = ''
+
+        return s
+

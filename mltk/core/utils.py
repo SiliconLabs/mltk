@@ -50,7 +50,7 @@ def convert_y_to_labels(y: np.ndarray) -> np.ndarray:
 
     labels = np.zeros(y.shape[0], dtype=int)
     for i in range(len(labels)): # pylint: disable=consider-using-enumerate
-        labels[i] = np.where(y[i,:] == 1)[0]
+        labels[i] = np.argmax(y[i])
     return labels
 
 

@@ -40,6 +40,10 @@ Commands
    # Use the model custom command to dump the augmented samples to ~/.mltk/models/image_example1/datagen_dump
    mltk custom image_example1 datagen_dump --count 20
 
+   # Directly invoke the model script
+   python image_example1.py
+
+
 
 Model Summary
 --------------
@@ -162,13 +166,7 @@ from tensorflow.keras.layers import (
     AveragePooling2D
 )
 
-from mltk.core.model import (
-    MltkModel,
-    TrainMixin,
-    ImageDatasetMixin,
-    EvaluateClassifierMixin
-)
-
+import mltk.core as mltk_core
 # By default, we use the ParallelImageDataGenerator
 # We could use the Keras ImageDataGenerator but it is slower
 from mltk.core.preprocess.image.parallel_generator import ParallelImageDataGenerator
@@ -184,10 +182,10 @@ from mltk.datasets.image import rock_paper_scissors_v1
 # - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    ImageDatasetMixin, 
-    EvaluateClassifierMixin
+    mltk_core.MltkModel, 
+    mltk_core.TrainMixin, 
+    mltk_core.ImageDatasetMixin, 
+    mltk_core.EvaluateClassifierMixin
 ):
     pass
 my_model = MyModel()
@@ -351,3 +349,39 @@ def datagen_dump_custom_command(
     my_model.unload_dataset()
 
     print(f'Generated data dump to: {my_model.datagen.save_to_dir}')
+
+
+
+
+
+##########################################################################################
+# The following allows for running this model training script directly, e.g.: 
+# python image_example1.py
+#
+# Note that this has the same functionality as:
+# mltk train image_example1
+#
+if __name__ == '__main__':
+    from mltk import cli
+
+    # Setup the CLI logger
+    cli.get_logger(verbose=False)
+
+    # If this is true then this will do a "dry run" of the model testing
+    # If this is false, then the model will be fully trained
+    test_mode_enabled = True
+
+    # Train the model
+    # This does the same as issuing the command: mltk train image_example1-test --clean
+    train_results = mltk_core.train_model(my_model, clean=True, test=test_mode_enabled)
+    print(train_results)
+
+    # Evaluate the model against the quantized .h5 (i.e. float32) model
+    # This does the same as issuing the command: mltk evaluate image_example1-test
+    tflite_eval_results = mltk_core.evaluate_model(my_model, verbose=True, test=test_mode_enabled)
+    print(tflite_eval_results)
+
+    # Profile the model in the simulator
+    # This does the same as issuing the command: mltk profile image_example1-test
+    profiling_results = mltk_core.profile_model(my_model, test=test_mode_enabled)
+    print(profiling_results)

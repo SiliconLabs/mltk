@@ -4,6 +4,8 @@
 The follow are common model "architectures". i.e. They are generic, non-application-specific
 models that may be applied to a variety of ML problems. 
 
+__NOTE:__ You may find additional model architectures at [tf.keras.applications](https://www.tensorflow.org/api_docs/python/tf/keras/applications)
+
 
 ## ARM DepthwiseConv2D
 

@@ -350,7 +350,9 @@ class TrainMixin(BaseMixin):
     def tensorboard(self) -> dict:
         """Enable visualizations for TensorBoard
 
-        Default:
+        Default: ``None``
+
+        Possible values:
 
         .. highlight:: python
         .. code-block:: python
@@ -393,14 +395,7 @@ class TrainMixin(BaseMixin):
            * `TensorBoard Callback <https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard>`_
 
         """
-        return self._attributes.get_value('train.tensorboard',
-            default=DefaultDict(
-                histogram_freq=1,
-                write_graph=True,
-                write_images=False,
-                update_freq="epoch",
-                profile_batch=2,
-        ))
+        return self._attributes.get_value('train.tensorboard', default=None)
     @tensorboard.setter
     def tensorboard(self, v: dict):
         self._attributes['train.tensorboard'] = DefaultDict(v)
@@ -713,7 +708,7 @@ class TrainMixin(BaseMixin):
 
     @property
     def train_kwargs(self) -> dict:
-        """Additional arguments to pass the the `model.fit <https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit>`_ API.
+        """Additional arguments to pass the the `model fit <https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit>`_ API.
         These keyword arguments will override the other model properties passed to fit().
         """
         return self._attributes.get_value('train.kwargs', default={})

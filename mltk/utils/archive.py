@@ -1,5 +1,6 @@
 
 import os 
+import re
 import tarfile
 import gzip
 import struct
@@ -65,6 +66,15 @@ def extract_archive(
 
 
 def gzip_file(src_path : str, dst_path: str=None) -> str:
+    """GZip file and return path to gzip archive
+    
+    Args:
+        src_path: Path to local file to gzip
+        dst_path: Optional path to destination gzip file. If omitted then use src_path + .gz
+
+    Return:
+        Path to generated .gz file
+    """
     if not dst_path:
         dst_path = src_path + '.gz'
     
@@ -76,18 +86,48 @@ def gzip_file(src_path : str, dst_path: str=None) -> str:
 
 
 
-def gzip_directory_files(src_dir: str, dst_archive: str = None) -> str:
+def gzip_directory_files(
+    src_dir:str,
+    dst_archive:str = None, 
+    regex:Union[str,re.Pattern,Callable[[str],bool]]=None,
+) -> str:
+    """Recursively gzip all files in given directory. 
+    The generated .tar.gz contains the same directory structure as the src_dir.
+
+    Args:
+        src_dir: Path to directory to generated .tar.gz archive
+        dst_archive: Path to generated .tar.gz. If omitted then use src_dir + .tar.gz
+        regex: Optional regex of file paths to INCLUDE in the returned list
+            This can either be a string, re.Pattern, or a callback function
+            The tested path is the relative path to src_dir with forward slashes
+            If a callback function is given, if the function returns True then the path is INCLUDED, else it is excluded
+    Return:
+        Path to generated .tar.gz
+    """
     if not dst_archive:
         dst_archive = f'{os.path.dirname(os.path.abspath(src_dir))}/{os.path.basename(src_dir)}.tar.gz'
+
+    if regex is not None:
+        if isinstance(regex, str):
+            regex = re.compile(regex)
+            regex_func = regex.match
+        elif isinstance(regex, re.Pattern):
+            regex_func = regex.match
+        else:
+            regex_func = regex
+    else:
+        regex_func = lambda p: True 
 
     with tarfile.open(dst_archive, 'w:gz') as dst:
         for root, _, files in os.walk(src_dir):
             for fn in files:
                 if fn == os.path.basename(dst_archive):
                     continue
-                p = os.path.join(root, fn)
-                retval = os.path.relpath(p, src_dir).replace('\\', '/')
-                dst.add(p, arcname=retval)
+                abs_path = os.path.join(root, fn)
+                rel_path = os.path.relpath(abs_path, src_dir).replace('\\', '/')
+                if not regex_func(rel_path):
+                    continue
+                dst.add(abs_path, arcname=rel_path)
 
     return dst_archive
 

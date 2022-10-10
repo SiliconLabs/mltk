@@ -38,4 +38,4 @@ def load_layers():
     from . import pad
     from . import reshape
     from . import ignored
-
+    from . import multiply

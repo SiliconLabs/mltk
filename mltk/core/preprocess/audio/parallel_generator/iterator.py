@@ -1,22 +1,19 @@
 """Utilities for real-time data augmentation on image data.
 """
-from typing import List, Tuple
 import os
+import sys
+import random
+import time
 import threading
-import queue
 import inspect
-import multiprocessing
-import atexit
-
-
-import joblib
-from joblib.externals.loky.process_executor import ShutdownExecutorError
-
+import queue
+from typing import List, Tuple
 import numpy as np
 
 from mltk.core import get_mltk_logger
 from mltk.core.keras import DataSequence
-
+from mltk.core.preprocess.utils import audio as audio_utils
+from mltk.utils.process_pool import ProcessPool, calculate_n_jobs
 
 
 
@@ -41,50 +38,63 @@ class ParallelIterator(DataSequence):
         self.batch_index = 0
         self.shuffle = shuffle
         self.process_params = process_params
+        self.check_reuse_batch_zero = True
 
-        self.pool = _create_processing_pool(
-            cores=self.cores, 
-            debug=self.debug, 
-            disable_gpu_in_subprocesses=self.disable_gpu_in_subprocesses
+        get_batch_function = self.process_params.get_batch_function or get_batches_of_transformed_samples
+        n_jobs = calculate_n_jobs(self.cores)
+        # Use half the number of jobs for the validation subset
+        if process_params.validation_split and process_params.subset == 'validation':
+            n_jobs = max(int(n_jobs*.5), 1)
+
+        self.pool = ProcessPool(
+            name=self.process_params.subset,
+            entry_point=get_batch_function,
+            n_jobs=n_jobs,
+            debug=self.debug,
+            disable_gpu_in_subprocesses=self.disable_gpu_in_subprocesses,
+            logger=get_mltk_logger()
         )
-        
-        self.running_flag = threading.Event()
-        self.shutdown_flag = threading.Event()
+
         self.batch_generation_started = threading.Event()
-        self.batch_data = BatchData(len(self), self.shuffle, shutdown_event=self.shutdown_flag)
-        
+        self.current_batch_finished = threading.Event()
+        self.current_batch_finished.set()
+
+        self.batch_data = BatchData(
+            len(self), 
+            shuffle,
+            pool=self.pool
+        )
+       
         self.batch_thread = threading.Thread(
             target=self._generate_batch_data_safe, 
-            name=f'Batch data generator:{process_params.subset}'
+            name=f'Batch data generator:{process_params.subset}',
+            daemon=True
         )
-        self.batch_thread.setDaemon(True)
-        self.running_flag.set()
         self.batch_thread.start()
 
-
-    
+ 
     @property
     def is_shutdown(self) -> bool:
-        return self.shutdown_flag.is_set()
+        return not self.pool.is_running
 
     @property
     def is_running(self) -> bool:
-        return self.running_flag.is_set() and not self.is_shutdown
+        return not self.is_shutdown
 
+        
     def reset(self):
         self.batch_generation_started.clear()
+        self.current_batch_finished.set()
         self.batch_data.reset()
-        self.batch_data.reset()
-
-
+        self.batch_index = 0
+    
+    
     def shutdown(self, wait=True):
-        self.running_flag.clear()
         if wait:
-            self.batch_thread.join(timeout=30.0)
-
-        self.shutdown_flag.set()
+            self.current_batch_finished.wait(30)
         self.reset()
-
+        self.pool.shutdown()
+       
 
 
     def __getitem__(self, idx):
@@ -93,16 +103,32 @@ class ParallelIterator(DataSequence):
                 f'Asked to retrieve element {idx}, but the Sequence has length {len(self)}'
             )
 
+        # Some TF APIs use a "peek_and_restore" operation on the first batch.
+        # To account for this, we check the callback stack for a function that has "peek" in it
+        # If so, we notify the batch_data.get() API that it should save this batch as it will be re-used
+        save_batch_zero = False
+        if idx == 0 and self.check_reuse_batch_zero:
+            self.check_reuse_batch_zero = False
+            callback_function_name = sys._getframe(1).f_code.co_name
+            if 'peek' in callback_function_name:
+                save_batch_zero = True
+
         self.batch_generation_started.set()
+        self.current_batch_finished.clear()
         
-        return self.batch_data.get(idx)
+        retval, is_last = self.batch_data.get(idx, save_batch_zero=save_batch_zero)
+        if is_last:
+            self.current_batch_finished.set()
+        return retval
+
 
     def __len__(self):
-        return (self.n + self.batch_size - 1) // self.batch_size  # round up
+        return (self.n + self.batch_size -1) // self.batch_size  # round up
 
 
     def on_epoch_end(self):
         pass
+
 
     def __iter__(self):
         # Needed if we want to do something like:
@@ -110,8 +136,10 @@ class ParallelIterator(DataSequence):
         self.batch_index = 0
         return self
 
+
     def __next__(self, *args, **kwargs):
         return self.next(*args, **kwargs)
+
 
     def next(self):
         """For python 2.x.
@@ -127,7 +155,11 @@ class ParallelIterator(DataSequence):
             raise StopIteration()
         
         self.batch_generation_started.set()
-        retval = self.batch_data.get(self.batch_index)
+        self.current_batch_finished.clear()
+        retval, is_last = self.batch_data.get(self.batch_index)
+        if is_last:
+            self.current_batch_finished.set()
+        
         self.batch_index += 1
         
         return retval
@@ -137,43 +169,50 @@ class ParallelIterator(DataSequence):
         try:
             self._generate_batch_data()
         except Exception as e:
-            if not self.is_shutdown and not isinstance(e, (ShutdownExecutorError, joblib.my_exceptions.WorkerInterrupt)):
+            if not self.is_shutdown:
                 get_mltk_logger().error(f'Exception during batch data processing, err: {e}', exc_info=e)
+                return
             self.shutdown(wait=False)
-
-
+    
+    
     def _generate_batch_data(self):
         while self.is_running:
             # Wait for training to start
             if not self.batch_generation_started.wait(timeout=0.1):
                 continue
-           
+        
             if self.seed is not None:
                 np.random.seed(self.seed + self.total_batches_seen)
             
+            # If the number of samples is not a multiple of the batch size
+            # then the last batch needs to wrap to the beginning of the sample indices
+            wrap_length = (len(self) * self.batch_size) - self.n
             if self.shuffle:
                 index_array = np.random.permutation(self.n)
+                if wrap_length > 0:
+                    index_array = np.concatenate((index_array, np.random.permutation(wrap_length))) 
             else:
                 index_array = np.arange(self.n)
+                if wrap_length > 0:
+                    index_array = np.concatenate((index_array, np.arange(wrap_length))) 
             
+
+            self.batch_data.start_batch()
     
-            all_indices = []
-            all_filenames = []
-            all_classes = []
-
-            max_chunk_size = min(self.max_batches_pending, self.pool.n_jobs*10)
-
             while self.batch_data.have_more_indices:
                 while self.batch_data.request_count == 0 and self.batch_data.qsize() > self.max_batches_pending:
+                    if self.is_shutdown:
+                        return
+                    if not self.batch_generation_started.is_set():
+                        break
                     self.batch_data.wait()
- 
+                
                 if not self.batch_generation_started.is_set():
                     break
                 
-                idx = self.batch_data.next_index()
-               
+                current_batch_index = self.batch_data.next_index()
                 self.total_batches_seen += 1
-                offset = idx*self.batch_size
+                offset = current_batch_index*self.batch_size
                 batch_index_chunk = index_array[offset:offset+self.batch_size]
                 
                 batch_filenames = []
@@ -183,47 +222,32 @@ class ParallelIterator(DataSequence):
                     batch_filenames.append(self.filenames[batch_index])
                     batch_classes.append(self.classes[batch_index])
 
-                all_indices.append(idx)
-                all_filenames.append(batch_filenames)
-                all_classes.append(batch_classes)
+                self._invoke_processing(current_batch_index, batch_filenames, batch_classes)
+    
 
-                if len(all_indices) >= max_chunk_size:
-                    self._invoke_processing(all_indices, all_filenames, all_classes)
-                    all_indices = []
-                    all_filenames = []
-                    all_classes = []
-                    continue
-
-            self._invoke_processing(all_indices, all_filenames, all_classes)
-            self.batch_data.reset_indices()
-
-
-    def _invoke_processing(self, indices, filenames, classes):
-        if len(indices) == 0:
-            return 
-        
-        pool = self.pool
-        get_batch_function = self.process_params.get_batch_function or get_batches_of_transformed_samples
-
-        def _iterator():
-            for idx, fn, cn in zip(indices,filenames,classes):
-                if self.is_shutdown or pool.shutdown_flag.is_set():
-                    return
-                yield idx, fn, cn
-        
-        with self.pool.preprocessing_lock:
-            if self.is_shutdown:
-                return
-            results = pool(joblib.delayed(get_batch_function)(idx, fn, cls, self.process_params) for idx, fn, cls in _iterator())
-
-        if not self.is_shutdown:
-            try:
-                for idx, res in results:
-                    self.batch_data.put(idx, res)
-            except:
-                pass
+    def _invoke_processing(
+        self, 
+        batch_index:int, 
+        batch_filenames:List[str], 
+        batch_classes:List[int]
+    ):
+        try:
+            self.pool(
+                batch_index, 
+                batch_filenames, 
+                batch_classes, 
+                params=self.process_params,
+                pool_callback=self._pool_callback
+            )
+        except Exception as e:
+            if not self.is_running:
+                raise
 
 
+    def _pool_callback(self, results):
+        if results is not None:
+            self.batch_data.put(results[0], results[1])
+            
 
 class ParallelProcessParams():
     """Adds methods related to getting batches from filenames
@@ -275,6 +299,7 @@ class ParallelProcessParams():
         self.save_to_dir = save_to_dir
         self.save_prefix = save_prefix
         self.save_format = save_format
+        self.validation_split = audio_data_generator.validation_split
 
         if subset is not None:
             validation_split = audio_data_generator.validation_split
@@ -311,18 +336,21 @@ def get_batches_of_transformed_samples(
     # Returns
         A batch of transformed samples: batch_index, (batch_x, batch_y)
     """
-    import librosa
-    
     batch_shape = (len(filenames),) + params.sample_shape
     batch_x = np.zeros(batch_shape, dtype=params.dtype)
     # build batch of image data
+
+    # Ensure the RNG is unique for each batch
+    if params.subset != 'validation' or params.audio_data_generator.validation_augmentation_enabled:
+        random.seed(batch_index + int(time.time()))
+        np.random.seed(batch_index + int(time.time()))
 
     for i, filename in enumerate(filenames):
         class_id = classes[i]
 
         if filename:
             filepath = os.path.join(params.directory, filename)
-            x, orignal_sr = librosa.load(filepath, sr=None, mono=True, dtype='float32')
+            x, orignal_sr = audio_utils.read_audio_file(filepath, return_sample_rate=True, return_numpy=True)
             
         else:
             orignal_sr = 16000
@@ -416,25 +444,35 @@ def get_batches_of_transformed_samples(
 
 
 
-class BatchData(object):
+
+
+
+class BatchData:
     
-    def __init__(self, n, shuffle, shutdown_event: threading.Event):
+    def __init__(
+        self, 
+        n:int, 
+        shuffle:bool, 
+        pool:ProcessPool
+    ):
         self.n = n
         self.shuffle = shuffle
+        self.pool = pool
+
         self.batch_data = queue.Queue() if shuffle else {}
         self.batch_data_lock = threading.Condition()
         self.indices_lock = threading.Condition()
-        self.indices = [i for i in range(self.n)]
+        self.indices = []
+        self.batch_counts = []
+        self.saved_batch_zero = None
         self.requests = []
         self.data_event = threading.Event()
-        self.shutdown_event = shutdown_event
-    
+        
     
     @property
     def have_more_indices(self):
         with self.indices_lock:
             return (len(self.indices) + len(self.requests)) > 0
-    
     
     @property
     def request_count(self):
@@ -442,8 +480,9 @@ class BatchData(object):
             return len(self.requests)
     
     
-    def reset_indices(self):
+    def start_batch(self):
         with self.indices_lock:
+            self.batch_counts.append(self.n)
             self.indices = [i for i in range(self.n)]
     
     
@@ -461,10 +500,10 @@ class BatchData(object):
             else:
                 return self.indices.pop(0)
         
-        
+    
     def wait(self):
         self.data_event.clear()
-        while not self.shutdown_event.is_set():
+        while self.pool.is_running:
             if self.data_event.wait(timeout=.1):
                 return True 
         return False
@@ -500,36 +539,67 @@ class BatchData(object):
                 self.batch_data_lock.notify_all()
     
      
-    def get(self, index):
-        if self.shuffle:
+    def get(self, index, save_batch_zero=False):
+        decrement_batch_count = True 
+
+        # If we're returning batch zero and we have a saved one,
+        # then just return that batch
+        if index == 0 and self.saved_batch_zero is not None:
+            retval = self.saved_batch_zero
+            self.saved_batch_zero = None
+
+        elif self.shuffle:
             while True:
-                if self.shutdown_event.is_set():
+                if not self.pool.is_running:
                     raise StopIteration('The data generator has been stopped')
+
                 try:
                     retval = self.batch_data.get(timeout=0.1)
                     break
                 except queue.Empty:
                     continue
-        
+
         else:
             with self.batch_data_lock:
-                if not index in self.batch_data:
+                if index not in self.batch_data:
                     with self.indices_lock:
                         self.requests.append(index)
                         self.data_event.set()
                         
                     while index not in self.batch_data:
-                        if self.shutdown_event.is_set():
+                        if not self.pool.is_running:
                             raise StopIteration('The data generator has been stopped')
                         self.batch_data_lock.wait(timeout=0.1)
                     
                 retval = self.batch_data[index]
                 del self.batch_data[index]
 
+
+        # If this is batch0 and we should save it
+        # then saved a reference to it and do NOt decrement the batch count as it will be returned in a later call
+        if index == 0 and save_batch_zero:
+            self.saved_batch_zero = retval
+            decrement_batch_count = False
+
+        is_last_in_batch = self._decrement_current_batch_count() if decrement_batch_count else False
         self.data_event.set()
 
-        return retval
-    
+        return retval, is_last_in_batch
+
+
+    def _decrement_current_batch_count(self) -> bool:
+        is_last_in_batch = False
+        with self.indices_lock:
+            current_count = self.batch_counts[0]
+            if current_count == 1:
+                is_last_in_batch = True 
+                self.batch_counts.pop(0)
+            else:
+                self.batch_counts[0] = current_count - 1
+            
+        return is_last_in_batch
+
+
 
 def _add_optional_callback_arguments(
     func, 
@@ -554,84 +624,3 @@ def _add_optional_callback_arguments(
 
     return retval
 
-
-
-def _create_processing_pool(
-    cores:int=-1, 
-    debug:bool=False,
-    disable_gpu_in_subprocesses:bool=True 
-) -> joblib.Parallel:
-    if '_pool' not in globals():
-        max_cores = multiprocessing.cpu_count()
-        if debug:
-            n_jobs = 1
-        elif cores == -1:
-            n_jobs = max_cores
-        elif isinstance(cores, float):
-            n_jobs = round(max_cores * cores)
-        else:
-            n_jobs = cores
-        
-        n_jobs = min(max(n_jobs, 1), max_cores)
-
-        get_mltk_logger().info(
-            f'Using {n_jobs} of {max_cores} cores for data preprocessing\n'
-            '(You may need to adjust the "ParallelAudioDataGenerator.cores" parameter if you are seeing performance issues)'
-        
-        )
-        if debug:
-            get_mltk_logger().info('ParallelAudioDataGenerator.debug=True, using threading backend for data preprocessing')
-
-        if disable_gpu_in_subprocesses:
-            # If configured, disable Tensorflow in the job subprocesses
-            try:
-                from joblib._parallel_backends import ParallelBackendBase
-                orig_prepare_worker_env =  ParallelBackendBase._prepare_worker_env
-                def _prepare_worker_env_monkey_patch(self, n_jobs):
-                    env = orig_prepare_worker_env(self, n_jobs)
-                    env['CUDA_VISIBLE_DEVICES'] = '-1'
-                    return env
-                ParallelBackendBase._prepare_worker_env = _prepare_worker_env_monkey_patch
-            except:
-                pass
-
-
-        pool = joblib.Parallel(n_jobs=n_jobs, backend='threading' if debug else None)
-        
-        pool.preprocessing_lock = threading.Lock()
-        pool.shutdown_flag = threading.Event()
-        pool.__enter__() # pylint: disable=unnecessary-dunder-call
-        atexit.register(_shutdown_processing_pool)
-        globals()['_pool'] = pool
-
-    return globals()['_pool']
-
-
-def _shutdown_processing_pool():
-    if '_pool' not in globals():
-        return
-
-    atexit.unregister(_shutdown_processing_pool)
-    pool:joblib.Parallel = globals()['_pool']
-    del globals()['_pool']
-
-    with pool.preprocessing_lock:
-        pool.__exit__(None, None, None)
-
-
-
-# This is a work-around to reduce the verbosity of the generated exception logs
-from joblib.externals.loky import _base # pylint: disable=wrong-import-order,ungrouped-imports
-class Future(_base._BaseFuture): # pylint: disable=protected-access
-    
-    def _invoke_callbacks(self):
-        for callback in self._done_callbacks:
-            try:
-                callback(self)
-            except ShutdownExecutorError:
-                pass
-            except BaseException as e:
-                if 'shutdown' not in f'{e}':
-                    get_mltk_logger().debug('exception calling callback for %r', self, exc_info=e)
-
-_base.Future = Future

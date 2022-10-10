@@ -151,11 +151,11 @@ install_requires=[
     'pyaml<22.0',
     'tensorflow>=2.3,<3.0',
     'tensorflow_probability>=0.12.2',
-    'tflite-support<0.4.2', # 'tflite-support==0.4.2 requires flatbuffers>2.0, but TF requires flatbuffers<2.0
+    'tflite-support', 
     'protobuf>=3.18,<3.20', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
     'onnx',
-    'onnxruntime<1.11',
-    'flatbuffers<2.0', # This is required by TF
+    'onnxruntime<1.13',
+    #'flatbuffers<2.0', # This is required by TF
     'numpy<1.23', # Numba, which is installed by TF, has a requirement of < 1.23
     'scipy<2.0',
     'matplotlib<4.0',
@@ -205,8 +205,9 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ],
-    python_requires='>=3.7,<3.10',
+    python_requires='>=3.7,<3.11',
     setup_requires=['wheel'],
     install_requires=install_requires,
     packages=find_packages(include=['mltk', 'mltk.*']),

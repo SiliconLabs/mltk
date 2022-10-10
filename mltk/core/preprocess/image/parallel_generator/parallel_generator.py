@@ -1,8 +1,8 @@
 
 import random
-import time
 import copy
 import os
+from typing import Dict
 
 import numpy as np
 
@@ -35,30 +35,6 @@ class ParallelImageDataGenerator(ImageDataGenerator):
     (The standard Keras ImageDataGenerator module processes batch images then trains serially)
     
     From the outside, this module works the exact same as `Keras ImageDataGenerator <https://keras.io/preprocessing/image>`_.
-    
-    .. note::
-       Since this uses the standard Python `multiprocessing <https://docs.python.org/3.7/library/multiprocessing.html>`_ module,
-       the 'main' part of your Python script needs a:
-    
-    .. highlight:: python
-    .. code-block:: python
-
-       if __name__ == '__main__':
-          ...
-
-    to function correctly.
-
-    It is also recommended to add something like:
-    
-    .. highlight:: python
-    .. code-block:: python
-       
-       if current_process().name != 'MainProcess':
-           # Disable the GPU and logging if this is a subprocess
-           os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-           os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-    to the top of the script to ensure that the GPU is not used in any subprocesses.
 
     Args:
         cores: The number of CPU cores to use for spawned image batch processes.
@@ -300,6 +276,7 @@ class ParallelImageDataGenerator(ImageDataGenerator):
         subset=None,
         interpolation='bilinear',
         list_valid_filenames_in_directory_function=None,
+        class_counts:Dict[str,int]=None,
     ):
         """Create the ParallelImageDataGenerator with the given dataset directory
         
@@ -372,7 +349,7 @@ class ParallelImageDataGenerator(ImageDataGenerator):
                 
             Returns:
                 A DirectoryIterator yielding tuples of (x, y) where x is a numpy array containing a batch of images with
-                shape (batch_size, *target_size, channels) and y is a numpy array of corresponding labels.
+                shape (batch_size, target_size, channels) and y is a numpy array of corresponding labels.
 
         """
 
@@ -427,7 +404,8 @@ class ParallelImageDataGenerator(ImageDataGenerator):
             noaug_preprocessing_function=self.parallel_noaug_preprocessing_function,
             list_valid_filenames_in_directory_function=list_valid_filenames_in_directory_function,
             max_samples_per_class=self.max_samples_per_class,
-            disable_gpu_in_subprocesses=self.disable_gpu_in_subprocesses
+            disable_gpu_in_subprocesses=self.disable_gpu_in_subprocesses,
+            class_counts=class_counts
         )
         
     def flow(

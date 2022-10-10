@@ -82,7 +82,8 @@ templates_path = ['_static/templates']
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = [
     '_static',
-    '*lib/site-packages'
+    '*lib/site-packages',
+    '*lib\\site-packages'
 ]
 
 
@@ -104,7 +105,8 @@ html_domain_indices = True
 html_static_path = ['_static']
 
 html_js_files = [
-    'js/custom.js'
+    'js/custom.js',
+    'js/apitoc.js'
 ]
 html_css_files = [
     'css/custom.css',
@@ -189,7 +191,7 @@ source_suffix = ['.rst', '.md']
 pygments_style = 'trac'
 
 autosummary_generate = True 
-autosummary_imported_members = True
+#autosummary_imported_members = True
 
 numpydoc_show_class_members = False 
 typehints_fully_qualified = False
@@ -204,7 +206,7 @@ panels_css_variables = {
 }
 
 autodoc_member_order = 'bysource'
-#autoclass_content = "class"
+autoclass_content = "class"
 autosectionlabel_prefix_document = True
 #autosectionlabel_maxdepth = 1
 myst_heading_anchors = 3
@@ -303,7 +305,7 @@ url_re = re.compile(r'.*\((https:\/\/siliconlabs\.github\.io\/mltk\/).*', re.I)
 url_re2 = re.compile(r'.*\((https:\/\/siliconlabs\.github\.io\/mltk\/).*(\.html).*', re.I)
 docs_img_re = re.compile(r'.*\((https:\/\/github.com\/SiliconLabs\/mltk\/raw\/master\/docs\/img\/).*', re.I)
 # If the line contains something like:
-# (https://siliconlabs.github.io/mltk/docs/python_api/core/mltk_model.html#mltk.core.TrainMixin.tflite_converter)
+# (https://siliconlabs.github.io/mltk/docs/python_api/mltk_model.html#mltk.core.TrainMixin.tflite_converter)
 # Then we cannot convert it to it's corresponding relative markdown URL, so it's not supported
 not_supported_url_re = re.compile(r'.*\(https:\/\/siliconlabs\.github\.io\/mltk\/.*\.html#.*[\.\-].*\)', re.I)
 
@@ -340,9 +342,25 @@ for src_dir, dst_dir in zip((examples_src_dir, tutorials_src_dir), (examples_dst
 # Copy the <mltk root>/mltk/core/tflite_model_parameters/schema/dictionary.fbs
 # to the docs build directory
 dictionary_fbs_src = f'{MLTK_DIR}/core/tflite_model_parameters/schema/dictionary.fbs'
-dictionary_fbs_dst = f'{docs_dst_dir}/python_api/core/dictionary.fbs'
-dictionary_fbs_build_dir = f'{build_dir}/docs/python_api/core/dictionary.fbs'
+dictionary_fbs_dst = f'{docs_dst_dir}/python_api/tflite_model/dictionary.fbs'
+dictionary_fbs_build_dir = f'{build_dir}/docs/python_api/tflite_model/dictionary.fbs'
 shutil.copy(dictionary_fbs_src, dictionary_fbs_dst)
 os.makedirs(os.path.dirname(dictionary_fbs_build_dir), exist_ok=True)
 shutil.copy(dictionary_fbs_src, dictionary_fbs_build_dir)
 
+def autodoc_skip_member(app, what, name, obj, skip, opts):
+    # we can document otherwise excluded entities here by returning False
+    # or skip otherwise included entities by returning True
+    qual_name = getattr(obj, '__qualname__', '')
+    module = getattr(obj, '__module__', '')
+    fullname = f'{module}.{qual_name}'
+
+    if 'keras_preprocessing.image.image_data_generator.ImageDataGenerator.flow_from_dataframe' in fullname:
+        return True
+
+    return None
+
+
+
+def setup(app):
+    app.connect('autodoc-skip-member', autodoc_skip_member)

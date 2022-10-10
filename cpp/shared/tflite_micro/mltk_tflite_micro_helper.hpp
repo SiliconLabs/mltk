@@ -105,6 +105,7 @@ extern const char* TFLITE_MICRO_VERSION;
 extern "C" DLL_EXPORT void issue_unsupported_kernel_message(const char* fmt, ...);
 extern "C" DLL_EXPORT void mltk_tflite_micro_set_accelerator(const TfliteMicroAccelerator* accelerator);
 extern "C" DLL_EXPORT const TfliteMicroAccelerator* mltk_tflite_micro_get_registered_accelerator();
+extern "C" DLL_EXPORT void mltk_tflite_micro_get_current_layer_opcode_and_index(int* opcode, int* index);
 extern "C" void mltk_tflite_micro_register_accelerator();
 
 
