@@ -1,7 +1,7 @@
 
-window.SURVEY_URL = 'https://www.surveymonkey.com/r/JDGSDJC';
+window.SURVEY_URL = 'https://www.surveymonkey.com/r/8KCP7P5';
 window.SHOW_SURVEY_AFTER_SECONDS = 3*60; // Show the survey after 3min of activity
-
+window.IGNORED_SURVEY_TIMEOUT = 30*24*60*60; // Reshow the survey after 1 month if it was previously ignored
 window.dataLayer = window.dataLayer || [];
 window.loadingSurvey = false;
 window.showingSurvey = false;
@@ -54,6 +54,16 @@ function initializeSurvey() {
         showSurvey();
     });
 
+    let now = Date.now() / 1000;
+
+    if(localStorage.ignoredSurveyTimestamp && (now - parseFloat(localStorage.ignoredSurveyTimestamp)) > window.IGNORED_SURVEY_TIMEOUT) {
+        console.log('Reshowing survey since last time it was ignored');
+        window.tookSurvey = false;
+        localStorage.removeItem('surveyUrl');
+        localStorage.removeItem('ignoredSurveyTimestamp');
+        localStorage.activeSeconds = window.SHOW_SURVEY_AFTER_SECONDS;
+    }
+
     if(!window.tookSurvey) {
         // If the survey was previously taken, but a new survey URL is available
         // then reset the activity counter
@@ -66,7 +76,7 @@ function initializeSurvey() {
             localStorage.activeSeconds = 0;
         }
 
-        localStorage.lastActivityTimestamp = Date.now() / 1000;
+        localStorage.lastActivityTimestamp = now;
 
         // Track mouse movement and scrolling
         $(window).scroll(updateSurveyActivity);
@@ -80,7 +90,9 @@ function showSurvey() {
         window.loadingSurvey = true;
 
         $('#iframe-survey').on('load', function() {
+            // This is invoked when the survey is completed
             if(window.showingSurvey) {
+                localStorage.removeItem('ignoredSurveyTimestamp');
                 closeSurvey();
             } else {
                 window.showingSurvey = true;
@@ -88,12 +100,17 @@ function showSurvey() {
             }
         });
         $('#iframe-survey').attr('src', window.SURVEY_URL);
-        $("#dlg-survey-close").on("click", closeSurvey);
+
+        // This is invoked when the survey is ignored by clicking the exit button
+        $("#dlg-survey-close").on("click", function() {
+            localStorage.ignoredSurveyTimestamp = Date.now() / 1000;
+            closeSurvey();
+        });
     }
 }
 
 function closeSurvey() {
-    console.info('Took survey');
+    console.info('Took or ignored survey');
     window.tookSurvey = true;
     localStorage.surveyUrl = window.SURVEY_URL;
     $('#dlg-survey').css('display', 'none');
