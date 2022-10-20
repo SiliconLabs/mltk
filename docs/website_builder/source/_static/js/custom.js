@@ -47,6 +47,13 @@ function onAcceptedCookies() {
 
 
 function initializeSurvey() {
+    // TODO: Move this to the templates/survey_dialog.html template
+    // This is currently here so that only this file needs to modified,
+    // instead of re-generating the entire documentation site
+    $('#dlg-survey').prepend(
+        '<div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>'
+    );
+
     $('#survey-link').on('click', function() {
         window.tookSurvey = false;
         window.loadingSurvey = false;

@@ -47,6 +47,10 @@ function onAcceptedCookies() {
 
 
 function initializeSurvey() {
+    $('#dlg-survey').prepend(
+        '<div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>'
+    );
+
     $('#survey-link').on('click', function() {
         window.tookSurvey = false;
         window.loadingSurvey = false;
