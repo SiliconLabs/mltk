@@ -11,7 +11,7 @@ window.tookSurvey = localStorage.surveyUrl === window.SURVEY_URL
 // Open external links in a new tab
 $(document).ready(function () {
     addScrollToTopButton();
-    checkIfAcceptedCookies();
+    determineIfCookieConsentRequired();
     $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
 });
 
@@ -26,12 +26,76 @@ function initialiseGoogleAnalytics() {
     gtag('config', gTrackingId, {'anonymize_ip': true});
 }
 
+function determineIfCookieConsentRequired() {
+    const EU_TIMEZONES = [
+        'Europe/Vienna',
+        'Europe/Brussels',
+        'Europe/Sofia',
+        'Europe/Zagreb',
+        'Asia/Famagusta',
+        'Asia/Nicosia',
+        'Europe/Prague',
+        'Europe/Copenhagen',
+        'Europe/Tallinn',
+        'Europe/Helsinki',
+        'Europe/Paris',
+        'Europe/Berlin',
+        'Europe/Busingen',
+        'Europe/Athens',
+        'Europe/Budapest',
+        'Europe/Dublin',
+        'Europe/Rome',
+        'Europe/Riga',
+        'Europe/Vilnius',
+        'Europe/Luxembourg',
+        'Europe/Malta',
+        'Europe/Amsterdam',
+        'Europe/Warsaw',
+        'Atlantic/Azores',
+        'Atlantic/Madeira',
+        'Europe/Lisbon',
+        'Europe/Bucharest',
+        'Europe/Bratislava',
+        'Europe/Ljubljana',
+        'Africa/Ceuta',
+        'Atlantic/Canary',
+        'Europe/Madrid',
+        'Europe/Stockholm'
+      ];
+
+    var dayjs_script = document.createElement('script');
+    var dayjs_tz_script = document.createElement('script');
+
+    dayjs_script.onload = function(e) {
+        document.head.appendChild(dayjs_tz_script);
+    }
+    dayjs_tz_script.onload = function () {
+        dayjs.extend(dayjs_plugin_timezone);
+        var tz = dayjs.tz.guess();
+        if(EU_TIMEZONES.includes(tz)) {
+            checkIfAcceptedCookies();
+        } else {
+            onAcceptedCookies();
+        }
+    };
+    dayjs_script.onerror = function() {
+        checkIfAcceptedCookies();
+    }
+    dayjs_tz_script.onerror = function() {
+        checkIfAcceptedCookies();
+    }
+
+    dayjs_tz_script.src = 'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.6/plugin/timezone.min.js';
+    dayjs_script.src = 'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.6/dayjs.min.js';
+    document.head.appendChild(dayjs_script);
+    
+}
+
 function checkIfAcceptedCookies() {
     if (!localStorage.acceptedCookies) {
         $('.privacy-banner').show();
         $('.privacy-banner-accept').click(function() {
             $('.privacy-banner').hide()
-            localStorage.acceptedCookies = 'true';
             onAcceptedCookies();
         });
         
@@ -41,19 +105,13 @@ function checkIfAcceptedCookies() {
 }
 
 function onAcceptedCookies() {
+    localStorage.acceptedCookies = 'true';
     initialiseGoogleAnalytics();
     initializeSurvey();
 }
 
 
 function initializeSurvey() {
-    // TODO: Move this to the templates/survey_dialog.html template
-    // This is currently here so that only this file needs to modified,
-    // instead of re-generating the entire documentation site
-    $('#dlg-survey').prepend(
-        '<div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>'
-    );
-
     $('#survey-link').on('click', function() {
         window.tookSurvey = false;
         window.loadingSurvey = false;
