@@ -1,0 +1,1192 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, machine-learning, machinelearning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tensorflow-lite-micro, keras-tensorflow, keras, tflite, embedded, embedded-systems, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HZ5MW943WF"></script>
+<script>
+    window.gTrackingId = 'G-HZ5MW943WF';
+</script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
+  
+  
+    <title>TrainMixin &#8212; MLTK 0.13.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/clipboard.min.js"></script>
+    <script src="../../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/apitoc.js"></script>
+    <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="DatasetMixin" href="dataset_mixin.html" />
+    <link rel="prev" title="MltkModel" href="model.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#docs/python_api/mltk_model/train_mixin" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../../index.html" title="MLTK 0.13.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../../_static/logo.png"
+                   alt="MLTK 0.13.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> TrainMixin </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../index.html" class="md-tabs__link">API Reference</a></li>
+          <li class="md-tabs__item"><a href="index.html" class="md-tabs__link">MLTK Model</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../../index.html"
+       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../tutorials.html" class="md-nav__link">Tutorials</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../index.html" class="md-nav__link">API Reference</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="../operations/index.html" class="md-nav__link">Model Operations</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="index.html" class="md-nav__link">MLTK Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tflite_micro_model/index.html" class="md-nav__link">Tensorflow-Lite Micro Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tflite_model/index.html" class="md-nav__link">Tensorflow-Lite Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../keras_model.html" class="md-nav__link">Keras Model</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../data_preprocessing/index.html" class="md-nav__link">Data Preprocessing</a>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../../index.html"><i class="md-icon">home</i></a></li>
+                <li><a href="../index.html" >API Reference</a></li>
+                <li><a href="index.html" accesskey="U">MLTK Model</a></li>
+
+              <li class="activate"><a>TrainMixin</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="trainmixin">
+<h1 id="docs-python-api-mltk-model-train-mixin--page-root">TrainMixin<a class="headerlink" href="#docs-python-api-mltk-model-train-mixin--page-root" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mltk.core.</span></span><span class="sig-name descname"><span class="pre">TrainMixin</span></span><a class="reference internal" href="../../../_modules/mltk/core/model/mixins/train_mixin.html#TrainMixin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.TrainMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Provides training properties and methods to the base <a class="reference internal" href="model.html#mltk.core.MltkModel" title="mltk.core.MltkModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">MltkModel</span></code></a></p>
+<p>Refer to the <a class="reference external" href="../../../docs/guides/model_training.html">Model Training</a> guide for more details.</p>
+<p class="rubric">Properties</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%"/>
+<col style="width: 90%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.batch_size" title="mltk.core.TrainMixin.batch_size"><code class="xref py py-obj docutils literal notranslate"><span class="pre">batch_size</span></code></a></p></td>
+<td><p>Number of samples per gradient update</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.build_model_function" title="mltk.core.TrainMixin.build_model_function"><code class="xref py py-obj docutils literal notranslate"><span class="pre">build_model_function</span></code></a></p></td>
+<td><p>Function that builds and returns a compiled <a class="reference internal" href="../keras_model.html#mltk.core.KerasModel" title="mltk.core.KerasModel"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mltk.core.KerasModel</span></code></a> instance</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.checkpoint" title="mltk.core.TrainMixin.checkpoint"><code class="xref py py-obj docutils literal notranslate"><span class="pre">checkpoint</span></code></a></p></td>
+<td><p>Callback to save the Keras model or model weights at some frequency</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.checkpoints_dir" title="mltk.core.TrainMixin.checkpoints_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">checkpoints_dir</span></code></a></p></td>
+<td><p>Return path to directory containing training checkpoints</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.checkpoints_enabled" title="mltk.core.TrainMixin.checkpoints_enabled"><code class="xref py py-obj docutils literal notranslate"><span class="pre">checkpoints_enabled</span></code></a></p></td>
+<td><p>If true, enable saving a checkpoint after each training epoch.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.early_stopping" title="mltk.core.TrainMixin.early_stopping"><code class="xref py py-obj docutils literal notranslate"><span class="pre">early_stopping</span></code></a></p></td>
+<td><p>Stop training when a monitored metric has stopped improving</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.epochs" title="mltk.core.TrainMixin.epochs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">epochs</span></code></a></p></td>
+<td><p>Number of epochs to train the model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.loss" title="mltk.core.TrainMixin.loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">loss</span></code></a></p></td>
+<td><p>String (name of objective function), objective function</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.lr_schedule" title="mltk.core.TrainMixin.lr_schedule"><code class="xref py py-obj docutils literal notranslate"><span class="pre">lr_schedule</span></code></a></p></td>
+<td><p>Learning rate scheduler</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.metrics" title="mltk.core.TrainMixin.metrics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">metrics</span></code></a></p></td>
+<td><p>List of metrics to be evaluated by the model during training and testing</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.on_save_keras_model" title="mltk.core.TrainMixin.on_save_keras_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_save_keras_model</span></code></a></p></td>
+<td><p>Callback to be invoked after the model has been trained to save the KerasModel.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.on_training_complete" title="mltk.core.TrainMixin.on_training_complete"><code class="xref py py-obj docutils literal notranslate"><span class="pre">on_training_complete</span></code></a></p></td>
+<td><p>Callback to be invoked after the model has been successfully trained</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.optimizer" title="mltk.core.TrainMixin.optimizer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optimizer</span></code></a></p></td>
+<td><p>String (name of optimizer) or optimizer instance</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.reduce_lr_on_plateau" title="mltk.core.TrainMixin.reduce_lr_on_plateau"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reduce_lr_on_plateau</span></code></a></p></td>
+<td><p>Reduce learning rate when a metric has stopped improving</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.tensorboard" title="mltk.core.TrainMixin.tensorboard"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tensorboard</span></code></a></p></td>
+<td><p>Enable visualizations for TensorBoard</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.tflite_converter" title="mltk.core.TrainMixin.tflite_converter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tflite_converter</span></code></a></p></td>
+<td><p>Converts a TensorFlow model into TensorFlow Lite model</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.train_callbacks" title="mltk.core.TrainMixin.train_callbacks"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_callbacks</span></code></a></p></td>
+<td><p>List of keras.callbacks.Callback instances.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.train_kwargs" title="mltk.core.TrainMixin.train_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">train_kwargs</span></code></a></p></td>
+<td><p>//www.tensorflow.org/api_docs/python/tf/keras/Model#fit&gt;`_ API.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.weights_dir" title="mltk.core.TrainMixin.weights_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weights_dir</span></code></a></p></td>
+<td><p>Return path to directory contianing training weights</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.weights_file_format" title="mltk.core.TrainMixin.weights_file_format"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weights_file_format</span></code></a></p></td>
+<td><p>Return the file format used to generate model weights files during training</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mltk.core.TrainMixin.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable docutils align-default">
+<colgroup>
+<col style="width: 10%"/>
+<col style="width: 90%"/>
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.__init__" title="mltk.core.TrainMixin.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.get_checkpoint_path" title="mltk.core.TrainMixin.get_checkpoint_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_checkpoint_path</span></code></a></p></td>
+<td><p>Return the file path to the checkpoint weights for the given epoch</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.core.TrainMixin.get_weights_path" title="mltk.core.TrainMixin.get_weights_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_weights_path</span></code></a></p></td>
+<td><p>Return the path to a Keras .h5 weights file</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.build_model_function">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build_model_function</span></span><a class="headerlink" href="#mltk.core.TrainMixin.build_model_function" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that builds and returns a compiled <a class="reference internal" href="../keras_model.html#mltk.core.KerasModel" title="mltk.core.KerasModel"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mltk.core.KerasModel</span></code></a> instance</p>
+<p>Your model definition MUST provide this setting.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a MltkModel instance with the 'train' mixin</span>
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+    <span class="n">MltkModel</span><span class="p">,</span>
+    <span class="n">TrainMixin</span><span class="p">,</span>
+    <span class="n">ImageDatasetMixin</span><span class="p">,</span>
+    <span class="n">EvaluateClassifierMixin</span>
+<span class="p">):</span>
+    <span class="k">pass</span>
+<span class="n">mltk_model</span> <span class="o">=</span> <span class="n">MyModel</span><span class="p">()</span>
+
+<span class="c1"># Define the model build function</span>
+<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">):</span>
+    <span class="n">keras_model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="s1">'valid'</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">))</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Flatten</span><span class="p">())</span>
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">'softmax'</span><span class="p">))</span>
+
+    <span class="n">keras_model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">loss</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">metrics</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">keras_model</span>
+
+<span class="c1"># Set the MltkModel's build_model function</span>
+<span class="n">mltk_model</span><span class="o">.</span><span class="n">build_model_function</span> <span class="o">=</span> <span class="n">my_model_builder</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#compile">Keras Model compile()</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.on_training_complete">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_training_complete</span></span><a class="headerlink" href="#mltk.core.TrainMixin.on_training_complete" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback to be invoked after the model has been successfully trained</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_on_training_completed</span><span class="p">(</span><span class="n">results</span><span class="p">:</span><span class="n">TrainingResults</span><span class="p">):</span>
+    <span class="o">...</span>
+
+<span class="n">my_model</span><span class="o">.</span><span class="n">on_training_complete</span> <span class="o">=</span> <span class="n">_on_training_completed</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is invoked after the Keras and .tflite model files are saved</p>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.on_save_keras_model">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_save_keras_model</span></span><a class="headerlink" href="#mltk.core.TrainMixin.on_save_keras_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback to be invoked after the model has been trained to
+save the KerasModel.</p>
+<p>This callback may be used to modified the KerasModel that gets saved,
+e.g. Remove layers of the model that were used for training.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_on_save_keras_model</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">:</span><span class="n">MltkModel</span><span class="p">,</span> <span class="n">keras_model</span><span class="p">:</span><span class="n">KerasModel</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KerasModel</span><span class="p">:</span>
+    <span class="o">...</span>
+    <span class="k">return</span> <span class="n">keras_model</span>
+
+<span class="n">my_model</span><span class="o">.</span><span class="n">on_save_keras_model</span> <span class="o">=</span> <span class="n">_on_save_keras_model</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is invoked before the model is quantized. Quantization will use the KerasModel returned by this callback.</p>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.epochs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">epochs</span></span><a class="headerlink" href="#mltk.core.TrainMixin.epochs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of epochs to train the model.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">100</span></code></p>
+<p>An epoch is an iteration over the entire x and y data provided. Note that  epochs is to be understood as “final epoch”.
+The model is not trained for a number of iterations given by epochs, but merely until the epoch of index epochs is reached.</p>
+<p>If this is set to <code class="docutils literal notranslate"><span class="pre">-1</span></code> then the epochs will be set to an arbitrarily large value.
+In this case, the <a class="reference internal" href="#mltk.core.TrainMixin.early_stopping" title="mltk.core.TrainMixin.early_stopping"><code class="xref py py-attr docutils literal notranslate"><span class="pre">early_stopping</span></code></a> calback should be used to determine
+when to stop training the model.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The larger this value is, the longer the model will take to train</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit">Keras Model fit()</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.batch_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_size</span></span><a class="headerlink" href="#mltk.core.TrainMixin.batch_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of samples per gradient update</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">32</span></code></p>
+<p>Typical values are: 16, 32, 64.</p>
+<p>Typically, the larger this value is, the more RAM that is required during
+training.</p>
+<blockquote>
+<div><div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit">Keras Model fit()</a></p></li>
+</ul>
+</div>
+</div></blockquote>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.optimizer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">optimizer</span></span><a class="headerlink" href="#mltk.core.TrainMixin.optimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>String (name of optimizer) or optimizer instance</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">adam</span></code></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/optimizers">Keras Optimizers</a></p></li>
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#compile">Keras Model compile()</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.metrics">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">metrics</span></span><a class="headerlink" href="#mltk.core.TrainMixin.metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of metrics to be evaluated by the model during training and testing</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">['accuracy']</span></code></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Metric">Keras Metrics</a></p></li>
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#compile">Keras Model compile()</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.loss">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loss</span></span><a class="headerlink" href="#mltk.core.TrainMixin.loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>String (name of objective function), objective function</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">categorical_crossentropy</span></code></p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/losses">Keras Loss Functions</a></p></li>
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/Model#compile">Keras Model compile()</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.checkpoints_enabled">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">checkpoints_enabled</span></span><a class="headerlink" href="#mltk.core.TrainMixin.checkpoints_enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>If true, enable saving a checkpoint after each training epoch.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+<p>This is useful as it allows for resuming training sessions with the <code class="docutils literal notranslate"><span class="pre">--resume</span></code>
+argument to the <code class="docutils literal notranslate"><span class="pre">train</span></code> command.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is independent of <a class="reference internal" href="#mltk.core.TrainMixin.checkpoint" title="mltk.core.TrainMixin.checkpoint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">checkpoint</span></code></a>.
+This saves each epoch’s weights to the logdir/train/checkpoints directory regardless
+of the what’s configured in <a class="reference internal" href="#mltk.core.TrainMixin.checkpoint" title="mltk.core.TrainMixin.checkpoint"><code class="xref py py-attr docutils literal notranslate"><span class="pre">checkpoint</span></code></a></p>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.train_callbacks">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">train_callbacks</span></span><a class="headerlink" href="#mltk.core.TrainMixin.train_callbacks" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of keras.callbacks.Callback instances.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">[]</span></code></p>
+<p>List of callbacks to apply during training.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a callback is found in this list, then the corresponding callback setting is ignore.
+e.g.: If <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/LearningRateScheduler">LearningRateScheduler Callback</a>
+is found in this list, then <a class="reference internal" href="#mltk.core.TrainMixin.lr_schedule" title="mltk.core.TrainMixin.lr_schedule"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lr_schedule</span></code></a> is ignored.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks">keras.callbacks.Callback</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.lr_schedule">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">lr_schedule</span></span><a class="headerlink" href="#mltk.core.TrainMixin.lr_schedule" title="Permalink to this definition">¶</a></dt>
+<dd><p>Learning rate scheduler</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">dict</span><span class="p">(</span>
+    <span class="n">schedule</span><span class="p">,</span> <span class="c1"># a function that takes an epoch index (integer, indexed from 0)</span>
+              <span class="c1"># and current learning rate (float) as inputs and returns a new learning rate as output (float).</span>
+
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span> <span class="c1"># int. 0: quiet, 1: update messages.</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Set to <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable</p>
+</div>
+<p>At the beginning of every epoch, the this callback gets the updated learning rate value from <code class="docutils literal notranslate"><span class="pre">schedule</span></code> function provided,
+with the current epoch and current learning rate, and applies the updated learning rate on the optimizer.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Set to <cite>None</cite> to disable this callback</p></li>
+<li><p>By default, this is disabled in favor of the <a class="reference internal" href="#mltk.core.TrainMixin.reduce_lr_on_plateau" title="mltk.core.TrainMixin.reduce_lr_on_plateau"><code class="xref py py-attr docutils literal notranslate"><span class="pre">reduce_lr_on_plateau</span></code></a> callback</p></li>
+<li><p>If this callback is enabled, then <a class="reference internal" href="#mltk.core.TrainMixin.reduce_lr_on_plateau" title="mltk.core.TrainMixin.reduce_lr_on_plateau"><code class="xref py py-attr docutils literal notranslate"><span class="pre">reduce_lr_on_plateau</span></code></a> is automatically disabled</p></li>
+</ul>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/LearningRateScheduler">LearningRateScheduler Callback</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.reduce_lr_on_plateau">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_lr_on_plateau</span></span><a class="headerlink" href="#mltk.core.TrainMixin.reduce_lr_on_plateau" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reduce learning rate when a metric has stopped improving</p>
+<p>Default:  <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<p>Possible values:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">dict</span><span class="p">(</span>
+    <span class="n">monitor</span><span class="o">=</span><span class="s2">"val_loss"</span><span class="p">,</span>   <span class="c1"># quantity to be monitored.</span>
+
+    <span class="n">factor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>           <span class="c1"># factor by which the learning rate will be reduced. new_lr = lr * factor.</span>
+
+    <span class="n">patience</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>          <span class="c1"># number of epochs with no improvement after which learning rate will be reduced.</span>
+
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>          <span class="c1"># one of {'auto', 'min', 'max'}. In 'min' mode, the learning rate will be reduced</span>
+                          <span class="c1"># when the quantity monitored has stopped decreasing; in 'max' mode it will be reduced</span>
+                          <span class="c1"># when the quantity monitored has stopped increasing; in 'auto' mode, the direction is</span>
+                          <span class="c1"># automatically inferred from the name of the monitored quantity.</span>
+
+    <span class="n">min_delta</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span>     <span class="c1"># threshold for measuring the new optimum, to only focus on significant changes.</span>
+
+    <span class="n">cooldown</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>           <span class="c1"># number of epochs to wait before resuming normal operation after lr has been reduced.</span>
+
+    <span class="n">min_lr</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>             <span class="c1"># lower bound on the learning rate.</span>
+
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>            <span class="c1"># int. 0: quiet, 1: update messages.</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Models often benefit from reducing the learning rate by a factor of 2-10 once learning stagnates.
+This callback monitors a quantity and if no improvement is seen for a ‘patience’ number of epochs, the learning rate is reduced.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Set to <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable this callback</p></li>
+<li><p>If <a class="reference internal" href="#mltk.core.TrainMixin.lr_schedule" title="mltk.core.TrainMixin.lr_schedule"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lr_schedule</span></code></a> is enabled then this callback is automatically disabled</p></li>
+</ul>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ReduceLROnPlateau">ReduceLROnPlateau Callback</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.tensorboard">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tensorboard</span></span><a class="headerlink" href="#mltk.core.TrainMixin.tensorboard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Enable visualizations for TensorBoard</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<p>Possible values:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">dict</span><span class="p">(</span>
+     <span class="n">histogram_freq</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>       <span class="c1"># frequency (in epochs) at which to compute activation and weight histograms</span>
+                             <span class="c1"># for the layers of the model. If set to 0, histograms won't be computed.</span>
+                             <span class="c1"># Validation data (or split) must be specified for histogram visualizations.</span>
+
+     <span class="n">write_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>       <span class="c1"># whether to visualize the graph in TensorBoard. The log file can become quite large when write_graph is set to True.</span>
+
+     <span class="n">write_images</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>     <span class="c1"># whether to write model weights to visualize as image in TensorBoard.</span>
+
+     <span class="n">update_freq</span><span class="o">=</span><span class="s2">"epoch"</span><span class="p">,</span>    <span class="c1"># 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics</span>
+                             <span class="c1"># to TensorBoard after each batch. The same applies for 'epoch'.</span>
+                             <span class="c1"># If using an integer, let's say 1000, the callback will write the metrics and losses</span>
+                             <span class="c1"># to TensorBoard every 1000 batches. Note that writing too frequently to</span>
+                             <span class="c1"># TensorBoard can slow down your training.</span>
+
+     <span class="n">profile_batch</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>        <span class="c1"># Profile the batch(es) to sample compute characteristics.</span>
+                             <span class="c1"># profile_batch must be a non-negative integer or a tuple of integers.</span>
+                             <span class="c1"># A pair of positive integers signify a range of batches to profile.</span>
+                             <span class="c1"># By default, it will profile the second batch. Set profile_batch=0 to disable profiling.</span>
+ <span class="p">)</span>
+</pre></div>
+</div>
+<p>This callback logs events for <a class="reference external" href="https://www.tensorflow.org/tensorboard/get_started">TensorBoard</a>, including:</p>
+<ul class="simple">
+<li><p>Metrics summary plots</p></li>
+<li><p>Training graph visualization</p></li>
+<li><p>Activation histograms</p></li>
+<li><p>Sampled profiling</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Set to <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable this callback</p></li>
+<li><p>Tensorboard logs are saved to <a class="reference internal" href="model.html#mltk.core.MltkModel.log_dir" title="mltk.core.MltkModel.log_dir"><code class="xref py py-attr docutils literal notranslate"><span class="pre">mltk.core.MltkModel.log_dir</span></code></a>/train/tensorboard</p></li>
+</ul>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard">TensorBoard Callback</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.checkpoint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">checkpoint</span></span><a class="headerlink" href="#mltk.core.TrainMixin.checkpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Callback to save the Keras model or model weights at some frequency</p>
+<p>Default:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">dict</span><span class="p">(</span>
+     <span class="n">monitor</span><span class="o">=</span><span class="s2">"val_accuracy"</span><span class="p">,</span>   <span class="c1"># The metric name to monitor. Typically the metrics are set by the Model.compile method.</span>
+                               <span class="c1"># Note:</span>
+                               <span class="c1"># - Prefix the name with "val_" to monitor validation metrics.</span>
+                               <span class="c1"># - Use "loss" or "val_loss" to monitor the model's total loss.</span>
+                               <span class="c1"># - If you specify metrics as strings, like "accuracy", pass the same string (with or without the "val_" prefix).</span>
+                               <span class="c1"># - If you pass metrics.Metric objects, monitor should be set to metric.name</span>
+                               <span class="c1"># - If you're not sure about the metric names you can check the contents of the history.history dictionary returned by history = model.fit()</span>
+                               <span class="c1"># - Multi-output models set additional prefixes on the metric names.</span>
+
+     <span class="n">save_best_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>      <span class="c1"># if save_best_only=True, it only saves when the model is considered the "best"</span>
+                               <span class="c1"># and the latest best model according to the quantity monitored will not be overwritten.</span>
+                               <span class="c1"># If filepath doesn't contain formatting options like {epoch} then filepath will be overwritten by each new better model.</span>
+
+     <span class="n">save_weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>   <span class="c1"># if True, then only the model's weights will be saved (model.save_weights(filepath)),</span>
+                               <span class="c1"># else the full model is saved (model.save(filepath)).</span>
+
+     <span class="n">mode</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>              <span class="c1"># one of {'auto', 'min', 'max'}. If save_best_only=True, the decision to overwrite</span>
+                               <span class="c1"># the current save file is made based on either the maximization or the minimization of the</span>
+                               <span class="c1"># monitored quantity. For val_acc, this should be max, for val_loss this should be min, etc.</span>
+                               <span class="c1"># In auto mode, the direction is automatically inferred from the name of the monitored quantity.</span>
+
+     <span class="n">save_freq</span><span class="o">=</span><span class="s2">"epoch"</span><span class="p">,</span>        <span class="c1"># 'epoch' or integer. When using 'epoch', the callback saves the model after each epoch.</span>
+                               <span class="c1"># When using integer, the callback saves the model at end of this many batches.</span>
+                               <span class="c1"># If the Model is compiled with steps_per_execution=N, then the saving criteria will be</span>
+                               <span class="c1"># checked every Nth batch. Note that if the saving isn't aligned to epochs,</span>
+                               <span class="c1"># the monitored metric may potentially be less reliable (it could reflect as little</span>
+                               <span class="c1"># as 1 batch, since the metrics get reset every epoch). Defaults to 'epoch'.</span>
+
+     <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>             <span class="c1"># Optional tf.train.CheckpointOptions object if save_weights_only is true or optional</span>
+                               <span class="c1"># tf.saved_model.SaveOptions object if save_weights_only is false.</span>
+
+     <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>                <span class="c1"># verbosity mode, 0 or 1.</span>
+ <span class="p">)</span>
+</pre></div>
+</div>
+<p>ModelCheckpoint callback is used in conjunction with training using model.fit()
+to save a model or weights (in a checkpoint file) at some interval,
+so the model or weights can be loaded later to continue the training from the state saved.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Set to <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable this callback</p></li>
+<li><p>Tensorboard logs are saved to <cite>MltkModel.log_dir</cite>/train/weights</p></li>
+<li><p>This is independent of <a class="reference internal" href="#mltk.core.TrainMixin.checkpoints_enabled" title="mltk.core.TrainMixin.checkpoints_enabled"><code class="xref py py-attr docutils literal notranslate"><span class="pre">checkpoints_enabled</span></code></a>.</p></li>
+</ul>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ModelCheckpoint">ModelCheckpoint Callback</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.early_stopping">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">early_stopping</span></span><a class="headerlink" href="#mltk.core.TrainMixin.early_stopping" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop training when a monitored metric has stopped improving</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<p>Possible values:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">dict</span><span class="p">(</span>
+    <span class="n">monitor</span><span class="o">=</span><span class="s2">"val_accuracy"</span><span class="p">,</span>     <span class="c1"># Quantity to be monitored.</span>
+
+    <span class="n">min_delta</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>                <span class="c1"># Minimum change in the monitored quantity to qualify as an improvement,</span>
+                                <span class="c1"># i.e. an absolute change of less than min_delta, will count as no improvement.</span>
+
+    <span class="n">patience</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>                <span class="c1"># Number of epochs with no improvement after which training will be stopped.</span>
+
+    <span class="n">mode</span><span class="o">=</span><span class="s2">"auto"</span><span class="p">,</span>                <span class="c1"># One of {"auto", "min", "max"}. In min mode, training will stop when the quantity</span>
+                                <span class="c1"># monitored has stopped decreasing; in "max" mode it will stop when the quantity monitored</span>
+                                <span class="c1"># has stopped increasing; in "auto" mode, the direction is automatically inferred from</span>
+                                <span class="c1"># the name of the monitored quantity.</span>
+
+    <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>              <span class="c1"># Baseline value for the monitored quantity. Training will stop if</span>
+                                <span class="c1"># the model doesn't show improvement over the baseline.</span>
+
+    <span class="n">restore_best_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># Whether to restore model weights from the epoch with the best value of the monitored quantity.</span>
+                                <span class="c1"># If False, the model weights obtained at the last step of training are used.</span>
+
+    <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>                  <span class="c1"># verbosity mode.</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Assuming the goal of a training is to minimize the loss. With this, the metric to be monitored would be ‘loss’,
+and mode would be ‘min’. A model.fit() training loop will check at end of every epoch whether the loss is
+no longer decreasing, considering the min_delta and patience if applicable. Once it’s found no longer decreasing,
+model.stop_training is marked True and the training terminates.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<ul class="simple">
+<li><p>Set to <code class="docutils literal notranslate"><span class="pre">None</span></code> to disable this callback</p></li>
+<li><p>Set <a class="reference internal" href="#mltk.core.TrainMixin.epochs" title="mltk.core.TrainMixin.epochs"><code class="xref py py-attr docutils literal notranslate"><span class="pre">epochs</span></code></a> to <code class="docutils literal notranslate"><span class="pre">-1</span></code> to always train until early stopping is triggered</p></li>
+</ul>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/EarlyStopping">EarlyStopping Callback</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.tflite_converter">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tflite_converter</span></span><a class="headerlink" href="#mltk.core.TrainMixin.tflite_converter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a TensorFlow model into TensorFlow Lite model</p>
+<p>Default:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">dict</span><span class="p">(</span>
+    <span class="n">optimizations</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">Optimize</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">],</span>             <span class="c1"># Experimental flag, subject to change.</span>
+                                                            <span class="c1"># A list of optimizations to apply when converting the model. E.g. [Optimize.DEFAULT]</span>
+
+    <span class="n">supported_ops</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">OpsSet</span><span class="o">.</span><span class="n">TFLITE_BUILTINS_INT8</span><span class="p">],</span>  <span class="c1"># Experimental flag, subject to change. Set of OpsSet options supported by the device.</span>
+                                                            <span class="c1"># Add to the 'target_spec' option</span>
+                                                            <span class="c1"># https://www.tensorflow.org/api_docs/python/tf/lite/TargetSpec</span>
+
+    <span class="n">inference_input_type</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>                      <span class="c1"># Data type of the input layer. Note that integer types (tf.int8 and tf.uint8) are</span>
+                                                            <span class="c1"># currently only supported for post training integer quantization and quantization aware training.</span>
+                                                            <span class="c1"># (default tf.float32, must be in {tf.float32, tf.int8, tf.uint8})</span>
+
+    <span class="n">inference_output_type</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>                     <span class="c1"># Data type of the output layer. Note that integer types (tf.int8 and tf.uint8) are currently only</span>
+                                                            <span class="c1"># supported for post training integer quantization and quantization aware training.</span>
+                                                            <span class="c1"># (default tf.float32, must be in {tf.float32, tf.int8, tf.uint8})</span>
+
+    <span class="n">representative_dataset</span> <span class="o">=</span> <span class="s1">'generate'</span><span class="p">,</span>                    <span class="c1"># A representative dataset that can be used to generate input and output samples</span>
+                                                            <span class="c1"># for the model. The converter can use the dataset to evaluate different optimizations.</span>
+                                                            <span class="c1"># Note that this is an optional attribute but it is necessary if INT8 is the only</span>
+                                                            <span class="c1"># support builtin ops in target ops.</span>
+                                                            <span class="c1"># If the keyword 'generate' is used, then use update to 1000 samples from the model's</span>
+                                                            <span class="c1"># validation dataset as the representative dataset</span>
+
+    <span class="n">allow_custom_ops</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                               <span class="c1"># Boolean indicating whether to allow custom operations. When False, any unknown operation is an error.</span>
+                                                            <span class="c1"># When True, custom ops are created for any op that is unknown. The developer needs to provide these to the</span>
+                                                            <span class="c1"># TensorFlow Lite runtime with a custom resolver. (default False)</span>
+
+    <span class="n">experimental_new_converter</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>                      <span class="c1"># Experimental flag, subject to change. Enables MLIR-based conversion instead of TOCO conversion. (default True)</span>
+
+    <span class="n">experimental_new_quantizer</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>                      <span class="c1"># Experimental flag, subject to change. Enables MLIR-based quantization conversion instead of Flatbuffer-based conversion. (default True)</span>
+
+    <span class="n">experimental_enable_resource_variables</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>         <span class="c1"># Experimental flag, subject to change. Enables resource variables to be converted by this converter.</span>
+                                                            <span class="c1"># This is only allowed if from_saved_model interface is used. (default False)</span>
+
+    <span class="n">generate_unquantized</span> <span class="o">=</span> <span class="kc">True</span>                             <span class="c1"># Also generate a float32/unquantized .tflite model in addition to the quantized .tflite model</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>This is used after the model finishes training.
+The trained Keras .h5 model file is converted to a .tflite file using the TFLiteConverter
+using the settings specified by this field.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">generate_unquantized=True</span></code> then a quantized .tflite AND an unquantized .tflite model files with be generated.
+If you ONLY want to generate an unquantized model, then  <code class="docutils literal notranslate"><span class="pre">supported_ops</span> <span class="pre">=</span> <span class="pre">TFLITE_BUILTINS</span></code></p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>See <a class="reference internal" href="#mltk.core.TrainMixin.on_training_complete" title="mltk.core.TrainMixin.on_training_complete"><code class="xref py py-attr docutils literal notranslate"><span class="pre">on_training_complete</span></code></a> to invoke a custom callback which may be
+used to perform custom quantization</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="../../../docs/guides/model_quantization.html">Model Quantization</a> guide</p></li>
+<li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter">tf.lite.TFLiteConverter</a></p></li>
+<li><p><a class="reference external" href="https://www.tensorflow.org/lite/performance/post_training_integer_quant">Post-training integer quantization</a></p></li>
+</ul>
+</div>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.checkpoints_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">checkpoints_dir</span></span><a class="headerlink" href="#mltk.core.TrainMixin.checkpoints_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return path to directory containing training checkpoints</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.get_checkpoint_path">
+<span class="sig-name descname"><span class="pre">get_checkpoint_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">epoch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/model/mixins/train_mixin.html#TrainMixin.get_checkpoint_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.TrainMixin.get_checkpoint_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the file path to the checkpoint weights for the given epoch</p>
+<p>If no epoch is provided then return the best checkpoint weights file is return.
+Return None if no checkpoint is found.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Checkpoints are only generated if <a class="reference internal" href="#mltk.core.TrainMixin.checkpoints_enabled" title="mltk.core.TrainMixin.checkpoints_enabled"><code class="xref py py-attr docutils literal notranslate"><span class="pre">checkpoints_enabled</span></code></a> is True.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.weights_dir">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weights_dir</span></span><a class="headerlink" href="#mltk.core.TrainMixin.weights_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return path to directory contianing training weights</p>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.weights_file_format">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">weights_file_format</span></span><a class="headerlink" href="#mltk.core.TrainMixin.weights_file_format" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the file format used to generate model weights files during training</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.get_weights_path">
+<span class="sig-name descname"><span class="pre">get_weights_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/model/mixins/train_mixin.html#TrainMixin.get_weights_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.TrainMixin.get_weights_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the path to a Keras .h5 weights file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="mltk.core.TrainMixin.train_kwargs">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">train_kwargs</span></span><a class="headerlink" href="#mltk.core.TrainMixin.train_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>//www.tensorflow.org/api_docs/python/tf/keras/Model#fit&gt;`_ API.
+These keyword arguments will override the other model properties passed to fit().</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>Additional arguments to pass the the <a href="#id6"><span class="problematic" id="id7">`</span></a>model fit &lt;https</p>
+</dd>
+</dl>
+</dd></dl>
+</dd></dl>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="model.html" title="MltkModel"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> MltkModel </span>
+              </div>
+            </a>
+          
+          
+            <a href="dataset_mixin.html" title="DatasetMixin"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> DatasetMixin </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Nov 14, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> We use cookies only for functional and traffic analytics. <br />
+        We DO NOT use cookies for any marketing purposes. By using our site you acknowledge you have read and understood our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>.
+      </p>
+      <a class="privacy-banner-accept" href="#">Got it</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

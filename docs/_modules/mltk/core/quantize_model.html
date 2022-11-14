@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.quantize_model &#8212; MLTK 0.10.0 documentation</title>
+    <title>mltk.core.quantize_model &#8212; MLTK 0.13.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
@@ -78,6 +78,7 @@
     <script src="../../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -104,11 +105,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.10.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.13.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.10.0 documentation logo">
+                   alt="MLTK 0.13.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.10.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.10.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -405,11 +406,7 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
-  <ul class="md-nav__list" data-md-scrollfix="">
-    
-
-<li id="searchbox" class="md-nav__item"></li>
-
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
   </ul>
 </nav>
               </div>
@@ -423,7 +420,9 @@
             <ul class="breadcrumb">
               <li></li>
               <li><a href="../../../index.html"><i class="md-icon">home</i></a></li>
-                <li class="active"><a href="../../index.html" accesskey="U">Module code</a></li>
+                <li><a href="../../index.html" accesskey="U">Module code</a></li>
+
+              <li class="activate"><a>mltk.core.quantize_model</a></li>
             </ul>
           </div>
           
@@ -434,11 +433,10 @@
 <span></span>
 <span class="kn">import</span> <span class="nn">pprint</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
-<span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 
 <span class="kn">from</span> <span class="nn">mltk.utils</span> <span class="kn">import</span> <span class="n">gpu</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">prepend_exception_msg</span><span class="p">,</span> <span class="n">append_exception_msg</span>
@@ -454,7 +452,7 @@
 <span class="kn">from</span> <span class="nn">.update_model_parameters</span> <span class="kn">import</span> <span class="n">add_default_parameters</span>
 
 
-<div class="viewcode-block" id="quantize_model"><a class="viewcode-back" href="../../../docs/python_api/operations.html#mltk.core.quantize_model">[docs]</a><span class="k">def</span> <span class="nf">quantize_model</span><span class="p">(</span>
+<div class="viewcode-block" id="quantize_model"><a class="viewcode-back" href="../../../docs/python_api/operations/quantize.html#mltk.core.quantize_model">[docs]</a><span class="k">def</span> <span class="nf">quantize_model</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">MltkModel</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">keras_model</span><span class="p">:</span><span class="n">KerasModel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">output</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -468,7 +466,9 @@
 <span class="sd">    This uses the Tensorflow `TfliteConverter &lt;https://www.tensorflow.org/lite/convert&gt;`_ internally.</span>
 <span class="sd">    This will also add any metadata to the generated `.tflite` model file.</span>
 
-<span class="sd">    Refer to the `Model Quantization &lt;https://siliconlabs.github.io/mltk/docs/guides/model_quantization.html&gt;`_ guide for more details.</span>
+<span class="sd">    .. seealso::</span>
+<span class="sd">       * `Model Quantization Guide &lt;https://siliconlabs.github.io/mltk/docs/guides/model_quantization.html&gt;`_</span>
+<span class="sd">       * `Model quantization API examples &lt;https://siliconlabs.github.io/mltk/mltk/examples/quantize_model.html&gt;`_</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        model: :py:class:`mltk.core.MltkModel` instance, name of MLTK model, path to model archive (.mltk.zip) or specification script (.py)</span>
@@ -496,11 +496,6 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        The file path to the generated `.tflite` OR TfliteModel object if output='tflite_model'</span>
 <span class="sd">    """</span>
-    <span class="c1"># NOTE: Tensorflow can take a long time to import</span>
-    <span class="c1">#       So we import it here when it's actually needed</span>
-    <span class="c1">#       instead of importing globally </span>
-    <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">):</span>
         <span class="n">mltk_model</span> <span class="o">=</span> <span class="n">model</span>
 
@@ -582,6 +577,8 @@
         <span class="n">retval</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">tflite_log_dir_path</span>
 
 
+    <span class="n">_update_absl_log_level</span><span class="p">(</span><span class="s1">'ERROR'</span><span class="p">)</span>
+    
     <span class="c1"># If we should generate an unquantized/float32 .tflite model</span>
     <span class="c1"># NOTE: Run this IF a "representative_dataset" converter setting was provided</span>
     <span class="n">float32_tflite_path</span> <span class="o">=</span> <span class="kc">None</span>
@@ -647,6 +644,7 @@
 
 
     <span class="n">mltk_model</span><span class="o">.</span><span class="n">unload_dataset</span><span class="p">()</span>
+    <span class="n">_update_absl_log_level</span><span class="p">()</span>
 
     <span class="n">retval</span><span class="p">,</span> <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">_save_flatbuffer_file</span><span class="p">(</span>
         <span class="n">mltk_model</span><span class="o">=</span><span class="n">mltk_model</span><span class="p">,</span>
@@ -682,28 +680,38 @@
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Generating representative dataset using validation data'</span><span class="p">)</span>
 
     <span class="c1"># Try to use the validation data if available, otherwise use the training data</span>
-    <span class="n">validation_data</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">x</span> <span class="k">if</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">validation_data</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">validation_data</span>
+    <span class="n">validation_data</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">validation_data</span>
+    <span class="k">if</span> <span class="n">validation_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">validation_data</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">x</span>
 
     <span class="k">def</span> <span class="nf">_representative_dataset_generator</span><span class="p">():</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">batch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">validation_data</span><span class="p">):</span>
-            <span class="n">batch_x</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">unpack_x_y_sample_weight</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+            <span class="n">batch_x</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">unpack_x_y_sample_weight</span><span class="p">(</span><span class="n">batch</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_x</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">batch_x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+                    <span class="n">batch_x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">batch_x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 
-            <span class="c1"># The TF-Lite converter expects the input to be a float32 data type</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">batch_x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
-                <span class="n">batch_x</span> <span class="o">=</span> <span class="n">batch_x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-            
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">)):</span>
-                <span class="n">batch_x_norm</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">batch_xi</span> <span class="ow">in</span> <span class="n">batch_x</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_xi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">batch_xi</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
-                        <span class="n">batch_x_norm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">batch_xi</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">batch_x_norm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">batch_xi</span><span class="p">)</span>
-                <span class="n">batch_x</span> <span class="o">=</span> <span class="n">batch_x_norm</span>
+                <span class="c1"># The TF-Lite converter expects 1 sample batches</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batch_x</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>  
 
-            <span class="c1"># The TF-Lite converter expects 1 sample batches</span>
-            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batch_x</span><span class="p">:</span>
-                <span class="k">yield</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>  
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># The TF-Lite converter expects the input to be a float32 data type</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">batch_x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+                    <span class="n">batch_x</span> <span class="o">=</span> <span class="n">batch_x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+                
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">)):</span>
+                    <span class="n">batch_x_norm</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">batch_xi</span> <span class="ow">in</span> <span class="n">batch_x</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_xi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">batch_xi</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
+                            <span class="n">batch_x_norm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">batch_xi</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">))</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">batch_x_norm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">batch_xi</span><span class="p">)</span>
+                    <span class="n">batch_x</span> <span class="o">=</span> <span class="n">batch_x_norm</span>
+
+                <span class="c1"># The TF-Lite converter expects 1 sample batches</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batch_x</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>  
         
             <span class="c1"># 100 batches should be enough</span>
             <span class="c1"># for the converter to determine the valid ranges</span>
@@ -758,8 +766,6 @@
 
 
 <span class="k">def</span> <span class="nf">_populate_converter_options</span><span class="p">(</span><span class="n">converter</span><span class="p">,</span> <span class="n">tflite_converter_settings</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-
     <span class="n">optimizations</span> <span class="o">=</span> <span class="n">tflite_converter_settings</span><span class="p">[</span><span class="s1">'optimizations'</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">optimizations</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">opt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">optimizations</span><span class="p">):</span>
@@ -796,35 +802,48 @@
 
 
 <span class="k">def</span> <span class="nf">_convert_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
-    <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">tf</span><span class="p">,</span> <span class="n">dtype</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">DType</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dtype</span>
 
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'uint8'</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'uint8'</span><span class="p">),</span> <span class="s1">'uint8'</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">uint8</span>
 
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'int8'</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'int8'</span><span class="p">),</span> <span class="s1">'int8'</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">int8</span>
 
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'int16'</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'int16'</span><span class="p">),</span> <span class="s1">'int16'</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">int16</span>
 
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'int32'</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'int32'</span><span class="p">),</span> <span class="s1">'int32'</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">int32</span>
     
-    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'float32'</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'float32'</span><span class="p">),</span> <span class="s1">'float32'</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span>
     
     <span class="k">return</span> <span class="n">dtype</span>
+
+
+<span class="k">def</span> <span class="nf">_update_absl_log_level</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">"""The ABSL package prints a bunch of warnings while doing the conversion which may be ignore"""</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">absl.logging</span>
+        <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">globals</span><span class="p">()[</span><span class="s1">'absl_log_level'</span><span class="p">]</span> <span class="o">=</span> <span class="n">absl</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">get_verbosity</span><span class="p">()</span>
+            <span class="n">absl</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">absl</span><span class="o">.</span><span class="n">logging</span><span class="p">,</span> <span class="n">level</span><span class="p">))</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">absl</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">set_verbosity</span><span class="p">(</span><span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'absl_log_level'</span><span class="p">,</span> <span class="n">absl</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">get_verbosity</span><span class="p">()))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
 </pre></div>
 
           </article>
         </div>
       </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
     </main>
   </div>
   <footer class="md-footer">
@@ -844,7 +863,7 @@
               
           </div>
             Last updated on
-              Aug 22, 2022.
+              Nov 14, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
@@ -864,16 +883,16 @@
   <div class="privacy-banner">
     <div class="privacy-banner-wrapper">
       <p>
-        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
-        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
-        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+        <b>Important:</b> We use cookies only for functional and traffic analytics. <br />
+        We DO NOT use cookies for any marketing purposes. By using our site you acknowledge you have read and understood our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>.
       </p>
-      <a class="privacy-banner-accept" href="#">Accept</a>
+      <a class="privacy-banner-accept" href="#">Got it</a>
     </div>
 </div>
   
 <div class="survey-container" id="dlg-survey"> 
     <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
     <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
 </div>
   

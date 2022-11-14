@@ -14,7 +14,7 @@
 
     "\n",
 
-    "This demonstrates how to use the [summarize_model](../../docs/python_api/operations.md#summarize_model) API.\n",
+    "This demonstrates how to use the [summarize_model](../../docs/python_api/operations/summarize.md) API.\n",
 
     "\n",
 
@@ -84,7 +84,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 2,
+   "execution_count": 1,
 
    "metadata": {},
 
@@ -122,7 +122,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 3,
+   "execution_count": 2,
 
    "metadata": {},
 
@@ -140,47 +140,55 @@
 
       "_________________________________________________________________\n",
 
-      "Layer (type)                 Output Shape              Param #   \n",
+      " Layer (type)                Output Shape              Param #   \n",
 
       "=================================================================\n",
 
-      "conv2d (Conv2D)              (None, 48, 48, 24)        240       \n",
+      " conv2d (Conv2D)             (None, 48, 48, 24)        240       \n",
 
-      "_________________________________________________________________\n",
+      "                                                                 \n",
 
-      "average_pooling2d (AveragePo (None, 24, 24, 24)        0         \n",
+      " average_pooling2d (AverageP  (None, 24, 24, 24)       0         \n",
 
-      "_________________________________________________________________\n",
+      " ooling2D)                                                       \n",
 
-      "conv2d_1 (Conv2D)            (None, 11, 11, 16)        3472      \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " conv2d_1 (Conv2D)           (None, 11, 11, 16)        3472      \n",
 
-      "conv2d_2 (Conv2D)            (None, 9, 9, 24)          3480      \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " conv2d_2 (Conv2D)           (None, 9, 9, 24)          3480      \n",
 
-      "batch_normalization (BatchNo (None, 9, 9, 24)          96        \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " batch_normalization (BatchN  (None, 9, 9, 24)         96        \n",
 
-      "activation (Activation)      (None, 9, 9, 24)          0         \n",
+      " ormalization)                                                   \n",
 
-      "_________________________________________________________________\n",
+      "                                                                 \n",
 
-      "average_pooling2d_1 (Average (None, 4, 4, 24)          0         \n",
+      " activation (Activation)     (None, 9, 9, 24)          0         \n",
 
-      "_________________________________________________________________\n",
+      "                                                                 \n",
 
-      "flatten (Flatten)            (None, 384)               0         \n",
+      " average_pooling2d_1 (Averag  (None, 4, 4, 24)         0         \n",
 
-      "_________________________________________________________________\n",
+      " ePooling2D)                                                     \n",
 
-      "dense (Dense)                (None, 3)                 1155      \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " flatten (Flatten)           (None, 384)               0         \n",
 
-      "activation_1 (Activation)    (None, 3)                 0         \n",
+      "                                                                 \n",
+
+      " dense (Dense)               (None, 3)                 1155      \n",
+
+      "                                                                 \n",
+
+      " activation_1 (Activation)   (None, 3)                 0         \n",
+
+      "                                                                 \n",
 
       "=================================================================\n",
 
@@ -204,11 +212,7 @@
 
       "Description: Image classifier example for detecting Rock/Paper/Scissors hand gestures in images\n",
 
-      "Classes: rock, paper, scissor\n",
-
-      "hash: None\n",
-
-      "date: None\n"
+      "Classes: rock, paper, scissor\n"
 
      ]
 
@@ -248,7 +252,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 4,
+   "execution_count": 3,
 
    "metadata": {},
 
@@ -262,51 +266,55 @@
 
      "text": [
 
-      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+      "+-------+-----------------+-------------------+-----------------+-----------------------------------------------------+\n",
 
-      "| Index | OpCode          | Input(s)        | Output(s)       | Config                                              |\n",
+      "| Index | OpCode          | Input(s)          | Output(s)       | Config                                              |\n",
 
-      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+      "+-------+-----------------+-------------------+-----------------+-----------------------------------------------------+\n",
 
-      "| 0     | conv_2d         | 96x96x1 (int8)  | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |\n",
+      "| 0     | quantize        | 96x96x1 (float32) | 96x96x1 (int8)  | Type=none                                           |\n",
 
-      "|       |                 | 3x3x1 (int8)    |                 |                                                     |\n",
+      "| 1     | conv_2d         | 96x96x1 (int8)    | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |\n",
 
-      "|       |                 | 24 (int32)      |                 |                                                     |\n",
+      "|       |                 | 3x3x1 (int8)      |                 |                                                     |\n",
 
-      "| 1     | average_pool_2d | 48x48x24 (int8) | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "|       |                 | 24 (int32)        |                 |                                                     |\n",
 
-      "| 2     | conv_2d         | 24x24x24 (int8) | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |\n",
+      "| 2     | average_pool_2d | 48x48x24 (int8)   | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
 
-      "|       |                 | 3x3x24 (int8)   |                 |                                                     |\n",
+      "| 3     | conv_2d         | 24x24x24 (int8)   | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |\n",
 
-      "|       |                 | 16 (int32)      |                 |                                                     |\n",
+      "|       |                 | 3x3x24 (int8)     |                 |                                                     |\n",
 
-      "| 3     | conv_2d         | 11x11x16 (int8) | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |\n",
+      "|       |                 | 16 (int32)        |                 |                                                     |\n",
 
-      "|       |                 | 3x3x16 (int8)   |                 |                                                     |\n",
+      "| 4     | conv_2d         | 11x11x16 (int8)   | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |\n",
 
-      "|       |                 | 24 (int32)      |                 |                                                     |\n",
+      "|       |                 | 3x3x16 (int8)     |                 |                                                     |\n",
 
-      "| 4     | average_pool_2d | 9x9x24 (int8)   | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "|       |                 | 24 (int32)        |                 |                                                     |\n",
 
-      "| 5     | reshape         | 4x4x24 (int8)   | 384 (int8)      | BuiltinOptionsType=0                                |\n",
+      "| 5     | average_pool_2d | 9x9x24 (int8)     | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
 
-      "|       |                 | 2 (int32)       |                 |                                                     |\n",
+      "| 6     | reshape         | 4x4x24 (int8)     | 384 (int8)      | Type=none                                           |\n",
 
-      "| 6     | fully_connected | 384 (int8)      | 3 (int8)        | Activation:none                                     |\n",
+      "|       |                 | 2 (int32)         |                 |                                                     |\n",
 
-      "|       |                 | 384 (int8)      |                 |                                                     |\n",
+      "| 7     | fully_connected | 384 (int8)        | 3 (int8)        | Activation:none                                     |\n",
 
-      "|       |                 | 3 (int32)       |                 |                                                     |\n",
+      "|       |                 | 384 (int8)        |                 |                                                     |\n",
 
-      "| 7     | softmax         | 3 (int8)        | 3 (int8)        | BuiltinOptionsType=9                                |\n",
+      "|       |                 | 3 (int32)         |                 |                                                     |\n",
 
-      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+      "| 8     | softmax         | 3 (int8)          | 3 (int8)        | Type=softmaxoptions                                 |\n",
+
+      "| 9     | dequantize      | 3 (int8)          | 3 (float32)     | Type=none                                           |\n",
+
+      "+-------+-----------------+-------------------+-----------------+-----------------------------------------------------+\n",
 
       "Total MACs: 1.197 M\n",
 
-      "Total OPs: 2.524 M\n",
+      "Total OPs: 2.561 M\n",
 
       "Name: image_example1\n",
 
@@ -316,15 +324,17 @@
 
       "Classes: rock, paper, scissor\n",
 
-      "hash: 8bf54869131182b072b9ac3d65757a11\n",
+      "Runtime memory size (RAM): 71.512 k\n",
 
-      "date: 2021-10-19T18:50:46.802Z\n",
+      "hash: 0242764704ebb6643ae7df4a6536bb83\n",
 
-      "samplewise_norm.rescale: 0\n",
+      "date: 2022-10-06T16:32:48.472Z\n",
+
+      "samplewise_norm.rescale: 0.0\n",
 
       "samplewise_norm.mean_and_std: True\n",
 
-      ".tflite file size: 14.9kB\n"
+      ".tflite file size: 15.4kB\n"
 
      ]
 
@@ -366,7 +376,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 5,
+   "execution_count": 4,
 
    "metadata": {},
 
@@ -412,7 +422,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 6,
+   "execution_count": 5,
 
    "metadata": {},
 
@@ -438,7 +448,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 1     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 1     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -450,7 +460,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 3     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 3     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -462,7 +472,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 5     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 5     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -474,7 +484,7 @@
 
       "|       |                   | 64 (int32)     |                |                                                       |\n",
 
-      "| 7     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multipler:1 padding:same stride:1x1 activation:relu   |\n",
+      "| 7     | depthwise_conv_2d | 25x5x64 (int8) | 25x5x64 (int8) | Multiplier:1 padding:same stride:1x1 activation:relu  |\n",
 
       "|       |                   | 3x3x64 (int8)  |                |                                                       |\n",
 
@@ -488,7 +498,7 @@
 
       "| 9     | average_pool_2d   | 25x5x64 (int8) | 1x1x64 (int8)  | Padding:valid stride:5x25 filter:5x25 activation:none |\n",
 
-      "| 10    | reshape           | 1x1x64 (int8)  | 64 (int8)      | BuiltinOptionsType=0                                  |\n",
+      "| 10    | reshape           | 1x1x64 (int8)  | 64 (int8)      | Type=none                                             |\n",
 
       "|       |                   | 2 (int32)      |                |                                                       |\n",
 
@@ -498,7 +508,7 @@
 
       "|       |                   | 12 (int32)     |                |                                                       |\n",
 
-      "| 12    | softmax           | 12 (int8)      | 12 (int8)      | BuiltinOptionsType=9                                  |\n",
+      "| 12    | softmax           | 12 (int8)      | 12 (int8)      | Type=softmaxoptions                                   |\n",
 
       "+-------+-------------------+----------------+----------------+-------------------------------------------------------+\n",
 
@@ -511,12 +521,6 @@
       "Version: 1\n",
 
       "Description: Generated by Silicon Lab's MLTK Python package\n",
-
-      "classes: []\n",
-
-      "hash: None\n",
-
-      "date: None\n",
 
       ".tflite file size: 53.9kB\n"
 
@@ -570,7 +574,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 8,
+   "execution_count": 6,
 
    "metadata": {},
 
@@ -586,51 +590,63 @@
 
       "Enabling test mode\n",
 
+      "training is using 1 subprocesses\n",
+
+      "validation is using 1 subprocesses\n",
+
       "Model: \"image_example1\"\n",
 
       "_________________________________________________________________\n",
 
-      "Layer (type)                 Output Shape              Param #   \n",
+      " Layer (type)                Output Shape              Param #   \n",
 
       "=================================================================\n",
 
-      "conv2d_3 (Conv2D)            (None, 48, 48, 24)        240       \n",
+      " conv2d (Conv2D)             (None, 48, 48, 24)        240       \n",
 
-      "_________________________________________________________________\n",
+      "                                                                 \n",
 
-      "average_pooling2d_2 (Average (None, 24, 24, 24)        0         \n",
+      " average_pooling2d (AverageP  (None, 24, 24, 24)       0         \n",
 
-      "_________________________________________________________________\n",
+      " ooling2D)                                                       \n",
 
-      "conv2d_4 (Conv2D)            (None, 11, 11, 16)        3472      \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " conv2d_1 (Conv2D)           (None, 11, 11, 16)        3472      \n",
 
-      "conv2d_5 (Conv2D)            (None, 9, 9, 24)          3480      \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " conv2d_2 (Conv2D)           (None, 9, 9, 24)          3480      \n",
 
-      "batch_normalization_1 (Batch (None, 9, 9, 24)          96        \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " batch_normalization (BatchN  (None, 9, 9, 24)         96        \n",
 
-      "activation_2 (Activation)    (None, 9, 9, 24)          0         \n",
+      " ormalization)                                                   \n",
 
-      "_________________________________________________________________\n",
+      "                                                                 \n",
 
-      "average_pooling2d_3 (Average (None, 4, 4, 24)          0         \n",
+      " activation (Activation)     (None, 9, 9, 24)          0         \n",
 
-      "_________________________________________________________________\n",
+      "                                                                 \n",
 
-      "flatten_1 (Flatten)          (None, 384)               0         \n",
+      " average_pooling2d_1 (Averag  (None, 4, 4, 24)         0         \n",
 
-      "_________________________________________________________________\n",
+      " ePooling2D)                                                     \n",
 
-      "dense_1 (Dense)              (None, 3)                 1155      \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " flatten (Flatten)           (None, 384)               0         \n",
 
-      "activation_3 (Activation)    (None, 3)                 0         \n",
+      "                                                                 \n",
+
+      " dense (Dense)               (None, 3)                 1155      \n",
+
+      "                                                                 \n",
+
+      " activation_1 (Activation)   (None, 3)                 0         \n",
+
+      "                                                                 \n",
 
       "=================================================================\n",
 
@@ -656,12 +672,6 @@
 
       "Classes: rock, paper, scissor\n",
 
-      "hash: None\n",
-
-      "date: None\n",
-
-      "Test mode enabled, forcing max_samples_per_class=3, batch_size=3\n",
-
       "Training dataset: Found 9 samples belonging to 3 classes:\n",
 
       "      rock = 3\n",
@@ -678,15 +688,43 @@
 
       "   scissor = 3\n",
 
-      "Forcing epochs=1 since test=true\n",
+      "Running cmd: c:\\Users\\reed\\workspace\\silabs\\mltk\\.venv\\Scripts\\python.exe -m pip install -U tensorflow-addons\n",
+
+      "(This may take awhile, please be patient ...)\n",
+
+      "Requirement already satisfied: tensorflow-addons in c:\\users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages (0.18.0)\n",
+
+      "\n",
+
+      "Requirement already satisfied: packaging in c:\\users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages (from tensorflow-addons) (21.3)\n",
+
+      "\n",
+
+      "Requirement already satisfied: typeguard>=2.7 in c:\\users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages (from tensorflow-addons) (2.13.3)\n",
+
+      "\n",
+
+      "Requirement already satisfied: pyparsing!=3.0.5,>=2.0.2 in c:\\users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages (from packaging->tensorflow-addons) (3.0.9)\n",
+
+      "\n",
+
+      "WARNING: You are using pip version 21.2.3; however, version 22.2.2 is available.\n",
+
+      "\n",
+
+      "You should consider upgrading via the 'c:\\Users\\reed\\workspace\\silabs\\mltk\\.venv\\Scripts\\python.exe -m pip install --upgrade pip' command.\n",
+
+      "\n",
+
+      "Forcing epochs=3 since test=true\n",
 
       "Class weights:\n",
 
-      "- rock = 1.00\n",
+      "   rock = 1.00\n",
 
-      "- paper = 1.00\n",
+      "  paper = 1.00\n",
 
-      "- scissor = 1.00\n",
+      "scissor = 1.00\n",
 
       "Starting model training ...\n"
 
@@ -700,7 +738,7 @@
 
       "application/vnd.jupyter.widget-view+json": {
 
-       "model_id": "3831d3e6c0844e46a20ed778c58b5f68",
+       "model_id": "d4c15c1c90e6402799c4227d73419f19",
 
        "version_major": 2,
 
@@ -710,7 +748,7 @@
 
       "text/plain": [
 
-       "Training:   0%|           0/1 ETA: ?s,  ?epochs/s"
+       "Training:   0%|           0/3 ETA: ?s,  ?epochs/s"
 
       ]
 
@@ -730,7 +768,7 @@
 
      "text": [
 
-      "Epoch 1/1\n"
+      "Epoch 1/3\n"
 
      ]
 
@@ -742,7 +780,91 @@
 
       "application/vnd.jupyter.widget-view+json": {
 
-       "model_id": "a50f8a887d0941728af5d15eb856d0e5",
+       "model_id": "3fa4aae73aba44ea9f9e116e0ac0393c",
+
+       "version_major": 2,
+
+       "version_minor": 0
+
+      },
+
+      "text/plain": [
+
+       "0/3           ETA: ?s - "
+
+      ]
+
+     },
+
+     "metadata": {},
+
+     "output_type": "display_data"
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Epoch 2/3\n"
+
+     ]
+
+    },
+
+    {
+
+     "data": {
+
+      "application/vnd.jupyter.widget-view+json": {
+
+       "model_id": "ca5a852b93584fa0b58220173099f75e",
+
+       "version_major": 2,
+
+       "version_minor": 0
+
+      },
+
+      "text/plain": [
+
+       "0/3           ETA: ?s - "
+
+      ]
+
+     },
+
+     "metadata": {},
+
+     "output_type": "display_data"
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Epoch 3/3\n"
+
+     ]
+
+    },
+
+    {
+
+     "data": {
+
+      "application/vnd.jupyter.widget-view+json": {
+
+       "model_id": "56500ee1c4f546558431091e36e52938",
 
        "version_major": 2,
 
@@ -778,7 +900,7 @@
 
       "\n",
 
-      "*** Best training val_accuracy = 0.222\n",
+      "*** Best training val_accuracy = 0.333\n",
 
       "\n",
 
@@ -788,61 +910,93 @@
 
       "Training logs here: C:/Users/reed/.mltk/models/image_example1-test\n",
 
-      "Trained model files here: c:/users/reed/workspace/silabs/mltk/mltk/models/examples/image_example1-test.mltk.zip\n",
+      "validation is using 1 subprocesses\n",
 
-      "ProcessPoolManager using 7 of 24 CPU cores\n",
+      "Generating tflite_model\n"
 
-      "NOTE: You may need to adjust the \"cores\" parameter of the data generator if you're experiencing performance issues\n",
+     ]
 
-      "Generating tflite_model\n",
+    },
 
-      "INFO:tensorflow:Assets written to: E:\\tmpevbj7v09\\assets\n",
+    {
 
-      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+     "name": "stderr",
 
-      "| Index | OpCode          | Input(s)        | Output(s)       | Config                                              |\n",
+     "output_type": "stream",
 
-      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+     "text": [
 
-      "| 0     | conv_2d         | 96x96x1 (int8)  | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |\n",
+      "WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op while saving (showing 3 of 3). These functions will not be directly callable after loading.\n"
 
-      "|       |                 | 3x3x1 (int8)    |                 |                                                     |\n",
+     ]
 
-      "|       |                 | 24 (int32)      |                 |                                                     |\n",
+    },
 
-      "| 1     | average_pool_2d | 48x48x24 (int8) | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+    {
 
-      "| 2     | conv_2d         | 24x24x24 (int8) | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |\n",
+     "name": "stdout",
 
-      "|       |                 | 3x3x24 (int8)   |                 |                                                     |\n",
+     "output_type": "stream",
 
-      "|       |                 | 16 (int32)      |                 |                                                     |\n",
+     "text": [
 
-      "| 3     | conv_2d         | 11x11x16 (int8) | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |\n",
+      "INFO:tensorflow:Assets written to: E:\\tmpv8h9r1ze\\assets\n",
 
-      "|       |                 | 3x3x16 (int8)   |                 |                                                     |\n",
+      "Using Tensorflow-Lite Micro version: b13b48c (2022-06-08)\n",
 
-      "|       |                 | 24 (int32)      |                 |                                                     |\n",
+      "Searching for optimal runtime memory size ...\n",
 
-      "| 4     | average_pool_2d | 9x9x24 (int8)   | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "Determined optimal runtime memory size to be 72320\n",
 
-      "| 5     | reshape         | 4x4x24 (int8)   | 384 (int8)      | BuiltinOptionsType=0                                |\n",
+      "+-------+-----------------+-------------------+-----------------+-----------------------------------------------------+\n",
 
-      "|       |                 | 2 (int32)       |                 |                                                     |\n",
+      "| Index | OpCode          | Input(s)          | Output(s)       | Config                                              |\n",
 
-      "| 6     | fully_connected | 384 (int8)      | 3 (int8)        | Activation:none                                     |\n",
+      "+-------+-----------------+-------------------+-----------------+-----------------------------------------------------+\n",
 
-      "|       |                 | 384 (int8)      |                 |                                                     |\n",
+      "| 0     | quantize        | 96x96x1 (float32) | 96x96x1 (int8)  | Type=none                                           |\n",
 
-      "|       |                 | 3 (int32)       |                 |                                                     |\n",
+      "| 1     | conv_2d         | 96x96x1 (int8)    | 48x48x24 (int8) | Padding:same stride:2x2 activation:relu             |\n",
 
-      "| 7     | softmax         | 3 (int8)        | 3 (int8)        | BuiltinOptionsType=9                                |\n",
+      "|       |                 | 3x3x1 (int8)      |                 |                                                     |\n",
 
-      "+-------+-----------------+-----------------+-----------------+-----------------------------------------------------+\n",
+      "|       |                 | 24 (int32)        |                 |                                                     |\n",
+
+      "| 2     | average_pool_2d | 48x48x24 (int8)   | 24x24x24 (int8) | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 3     | conv_2d         | 24x24x24 (int8)   | 11x11x16 (int8) | Padding:valid stride:2x2 activation:relu            |\n",
+
+      "|       |                 | 3x3x24 (int8)     |                 |                                                     |\n",
+
+      "|       |                 | 16 (int32)        |                 |                                                     |\n",
+
+      "| 4     | conv_2d         | 11x11x16 (int8)   | 9x9x24 (int8)   | Padding:valid stride:1x1 activation:relu            |\n",
+
+      "|       |                 | 3x3x16 (int8)     |                 |                                                     |\n",
+
+      "|       |                 | 24 (int32)        |                 |                                                     |\n",
+
+      "| 5     | average_pool_2d | 9x9x24 (int8)     | 4x4x24 (int8)   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+
+      "| 6     | reshape         | 4x4x24 (int8)     | 384 (int8)      | Type=none                                           |\n",
+
+      "|       |                 | 2 (int32)         |                 |                                                     |\n",
+
+      "| 7     | fully_connected | 384 (int8)        | 3 (int8)        | Activation:none                                     |\n",
+
+      "|       |                 | 384 (int8)        |                 |                                                     |\n",
+
+      "|       |                 | 3 (int32)         |                 |                                                     |\n",
+
+      "| 8     | softmax         | 3 (int8)          | 3 (int8)        | Type=softmaxoptions                                 |\n",
+
+      "| 9     | dequantize      | 3 (int8)          | 3 (float32)     | Type=none                                           |\n",
+
+      "+-------+-----------------+-------------------+-----------------+-----------------------------------------------------+\n",
 
       "Total MACs: 1.197 M\n",
 
-      "Total OPs: 2.524 M\n",
+      "Total OPs: 2.561 M\n",
 
       "Name: image_example1\n",
 
@@ -852,15 +1006,33 @@
 
       "Classes: rock, paper, scissor\n",
 
-      "hash: 0dd2d415f9fedd530c149e0ba870b44d\n",
+      "Runtime memory size (RAM): 71.512 k\n",
 
-      "date: 2021-10-19T18:55:40.561Z\n",
+      "hash: f84b0517005c8392d9746f6c6dae1f50\n",
 
-      "samplewise_norm.rescale: 0\n",
+      "date: 2022-10-06T16:34:05.327Z\n",
+
+      "samplewise_norm.rescale: 0.0\n",
 
       "samplewise_norm.mean_and_std: True\n",
 
-      ".tflite file size: 14.9kB\n"
+      ".tflite file size: 15.3kB\n"
+
+     ]
+
+    },
+
+    {
+
+     "name": "stderr",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "c:\\Users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages\\tensorflow\\lite\\python\\convert.py:766: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.\n",
+
+      "  warnings.warn(\"Statistics for quantized inputs were expected, but not \"\n"
 
      ]
 
@@ -882,15 +1054,11 @@
 
  "metadata": {
 
-  "interpreter": {
-
-   "hash": "d2cfb25ea30f37ddda2085817c91f6bd2a4a914387b5b179eb21bf4600b69cf8"
-
-  },
-
   "kernelspec": {
 
-   "display_name": "Python 3.9.7 64-bit ('.venv': venv)",
+   "display_name": "Python 3.9.7 ('.venv': venv)",
+
+   "language": "python",
 
    "name": "python3"
 
@@ -920,7 +1088,17 @@
 
   },
 
-  "orig_nbformat": 4
+  "orig_nbformat": 4,
+
+  "vscode": {
+
+   "interpreter": {
+
+    "hash": "600e22ae316f8c315f552eaf99bb679bc9438a443c93affde9ac001991b79c8f"
+
+   }
+
+  }
 
  },
 

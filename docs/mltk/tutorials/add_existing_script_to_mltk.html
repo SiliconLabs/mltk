@@ -1,0 +1,1191 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, machine-learning, machinelearning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tensorflow-lite-micro, keras-tensorflow, keras, tflite, embedded, embedded-systems, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HZ5MW943WF"></script>
+<script>
+    window.gTrackingId = 'G-HZ5MW943WF';
+</script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
+  
+  
+    <title>Add an Existing Script to the MLTK &#8212; MLTK 0.13.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/apitoc.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API Examples" href="../../docs/examples.html" />
+    <link rel="prev" title="Model Debugging" href="model_debugging.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/tutorials/add_existing_script_to_mltk" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.13.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.13.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Add an Existing Script to the MLTK </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_on_off.html" class="md-nav__link">Keyword Spotting - On/Off</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_pacman.html" class="md-nav__link">Keyword Spotting - Pac-Man</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="image_classification.html" class="md-nav__link">Image Classification - Rock, Paper, Scissors</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="cloud_training_with_vast_ai.html" class="md-nav__link">Cloud Training with vast.ai</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_optimization.html" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_with_transfer_learning.html" class="md-nav__link">Keyword Spotting with Transfer Learning</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="fingerprint_authentication.html" class="md-nav__link">Fingerprint Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="onnx_to_tflite.html" class="md-nav__link">ONNX to TF-Lite Model Conversion</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_debugging.html" class="md-nav__link">Model Debugging</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Add an Existing Script to the MLTK </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Add an Existing Script to the MLTK</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#mltk-tutorials-add-existing-script-to-mltk--page-root" class="md-nav__link">Add an Existing Script to the MLTK</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#setup" class="md-nav__link">Setup</a>
+        </li>
+        <li class="md-nav__item"><a href="#existing-script" class="md-nav__link">Existing Script</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#original-mnist-convnet-py" class="md-nav__link">Original mnist_convnet.py</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#mltk-modifications" class="md-nav__link">MLTK Modifications</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#modified-mnist-convnet-py" class="md-nav__link">Modified mnist_convnet.py</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#run-the-modified-script" class="md-nav__link">Run the modified script</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#run-from-command-line" class="md-nav__link">Run from command-line</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#recommended-modifications" class="md-nav__link">Recommended Modifications</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#basic-example-py" class="md-nav__link">basic_example.py</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#next-steps" class="md-nav__link">Next Steps</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../_static/js/apitoc.js></script>
+  </ul>
+</nav>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#mltk-tutorials-add-existing-script-to-mltk--page-root" class="md-nav__link">Add an Existing Script to the MLTK</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#setup" class="md-nav__link">Setup</a>
+        </li>
+        <li class="md-nav__item"><a href="#existing-script" class="md-nav__link">Existing Script</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#original-mnist-convnet-py" class="md-nav__link">Original mnist_convnet.py</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#mltk-modifications" class="md-nav__link">MLTK Modifications</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#modified-mnist-convnet-py" class="md-nav__link">Modified mnist_convnet.py</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#run-the-modified-script" class="md-nav__link">Run the modified script</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#run-from-command-line" class="md-nav__link">Run from command-line</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#recommended-modifications" class="md-nav__link">Recommended Modifications</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#basic-example-py" class="md-nav__link">basic_example.py</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#next-steps" class="md-nav__link">Next Steps</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../_static/js/apitoc.js></script>
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li><a href="../../docs/tutorials.html" accesskey="U">Tutorials</a></li>
+
+              <li class="activate"><a>Add an Existing Script to the MLTK</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="add-an-existing-script-to-the-mltk">
+<h1 id="mltk-tutorials-add-existing-script-to-mltk--page-root">Add an Existing Script to the MLTK<a class="headerlink" href="#mltk-tutorials-add-existing-script-to-mltk--page-root" title="Permalink to this headline">¶</a></h1>
+<p>The MLTK is a collection of tools to aid the development of machine learning models for Silicon Labs embedded devices.
+As part of its offering, the MLTK features an <em>optional</em> Python <a class="reference internal" href="../../docs/python_api/index.html"><span class="doc std std-doc">API</span></a> to simplify ML model development using the <a class="reference external" href="https://tensorflow.org/api_docs/python/tf">Tensorflow</a> framework. The MLTK Python <a class="reference internal" href="../../docs/python_api/index.html"><span class="doc std std-doc">API</span></a> combines and simplifies several different ML model development tasks including:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/python_api/data_preprocessing/index.html"><span class="doc std std-doc">Data preprocessing</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/guides/model_training.html"><span class="doc std std-doc">Model training</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/guides/model_quantization.html"><span class="doc std std-doc">Model quantization</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/guides/model_evaluation.html"><span class="doc std std-doc">Model evaluation</span></a></p></li>
+<li><p><a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">Model profiling</span></a></p></li>
+</ul>
+<p>The MLTK Python <a class="reference internal" href="../../docs/python_api/index.html"><span class="doc std std-doc">API</span></a> is effectively a light wrapper around the <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf">Tensorflow API</a>.
+As such, very little needs to be done to convert an existing Tensorflow model training script to support the MLTK, and, thus, gain the additional MLTK features (quantization, evaluation, profiling).</p>
+<p><strong>NOTE:</strong> Converting your existing model script to the MLTK is <strong>not required</strong>. The only hard requirement to use your model on a Silicon Labs embedded device is that your model be converted to the <a class="reference external" href="https://www.tensorflow.org/lite/models/convert/convert_models">.tflite</a> format with <code class="docutils literal notranslate"><span class="pre">int8</span></code> quantization.</p>
+<section id="setup">
+<h2 id="setup">Setup<a class="headerlink" href="#setup" title="Permalink to this headline">¶</a></h2>
+<p>Before continuing with this tutorial, ensure you have the MLTK Python package <a class="reference external" href="../../docs/installation.html#standard-python-package">installed</a> and that the virtual environment is activated (if applicable).</p>
+</section>
+<section id="existing-script">
+<h2 id="existing-script">Existing Script<a class="headerlink" href="#existing-script" title="Permalink to this headline">¶</a></h2>
+<p>For this tutorial, we use the Keras example: <a class="reference external" href="https://keras.io/examples/vision/mnist_convnet/">Simple MNIST convnet</a></p>
+<p>The source code for the model training script may be found on <a class="reference external" href="https://github.com/keras-team/keras-io/blob/master/examples/vision/mnist_convnet.py">GitHub</a>.</p>
+<p>It has also been copy &amp; pasted as follows:</p>
+<section id="original-mnist-convnet-py">
+<h3 id="original-mnist-convnet-py">Original mnist_convnet.py<a class="headerlink" href="#original-mnist-convnet-py" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
+
+<span class="sd">"""</span>
+<span class="sd">## Prepare the data</span>
+<span class="sd">"""</span>
+
+<span class="c1"># Model / data parameters</span>
+<span class="n">num_classes</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Load the data and split it between train and test sets</span>
+<span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+
+<span class="c1"># Scale images to the [0, 1] range</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">x_test</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+<span class="c1"># Make sure images have shape (28, 28, 1)</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"x_train shape:"</span><span class="p">,</span> <span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"train samples"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"test samples"</span><span class="p">)</span>
+
+
+<span class="c1"># convert class vectors to binary class matrices</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+<span class="n">y_test</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+
+<span class="sd">"""</span>
+<span class="sd">## Build the model</span>
+<span class="sd">"""</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"softmax"</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+
+<span class="sd">"""</span>
+<span class="sd">## Train the model</span>
+<span class="sd">"""</span>
+
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">15</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s2">"categorical_crossentropy"</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s2">"adam"</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">"accuracy"</span><span class="p">])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="sd">"""</span>
+<span class="sd">## Evaluate the trained model</span>
+<span class="sd">"""</span>
+
+<span class="n">score</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Test loss:"</span><span class="p">,</span> <span class="n">score</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Test accuracy:"</span><span class="p">,</span> <span class="n">score</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="mltk-modifications">
+<h2 id="mltk-modifications">MLTK Modifications<a class="headerlink" href="#mltk-modifications" title="Permalink to this headline">¶</a></h2>
+<p>Download the <a class="reference external" href="https://raw.githubusercontent.com/keras-team/keras-io/master/examples/vision/mnist_convnet.py">mnist_convnet.py</a> script to your local PC, and add the following modifications to it so that it we can execute it in the MLTK.</p>
+<p>All modifications are prefixed with the comment: <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">Modified</span> <span class="pre">for</span> <span class="pre">the</span> <span class="pre">MLTK</span></code></p>
+<p>Copy &amp; paste the following into the <code class="docutils literal notranslate"><span class="pre">mnist_convnet.py</span></code> script on your local PC:</p>
+<section id="modified-mnist-convnet-py">
+<h3 id="modified-mnist-convnet-py">Modified mnist_convnet.py<a class="headerlink" href="#modified-mnist-convnet-py" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
+
+<span class="sd">"""</span>
+<span class="sd">## Prepare the data</span>
+<span class="sd">"""</span>
+
+<span class="c1"># Model / data parameters</span>
+<span class="n">num_classes</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Load the data and split it between train and test sets</span>
+<span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+
+<span class="c1"># Scale images to the [0, 1] range</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">x_test</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+<span class="c1"># Make sure images have shape (28, 28, 1)</span>
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"x_train shape:"</span><span class="p">,</span> <span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"train samples"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">x_test</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">"test samples"</span><span class="p">)</span>
+
+
+<span class="c1"># convert class vectors to binary class matrices</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+<span class="n">y_test</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+
+<span class="sd">"""</span>
+<span class="sd">## Build the model</span>
+<span class="sd">"""</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"softmax"</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+
+<span class="sd">"""</span>
+<span class="sd">## Train the model</span>
+<span class="sd">"""</span>
+
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">15</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s2">"categorical_crossentropy"</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s2">"adam"</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">"accuracy"</span><span class="p">])</span>
+
+<span class="c1"># Modified for the MLTK</span>
+<span class="c1"># We only want to train when calling the train_model() API</span>
+<span class="c1">#model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, validation_split=0.1)</span>
+
+<span class="sd">"""</span>
+<span class="sd">## Evaluate the trained model</span>
+<span class="sd">"""</span>
+
+<span class="c1"># Modified for the MLTK</span>
+<span class="c1"># We only want to evaluate when calling teh evaluate_model() API</span>
+<span class="c1">#score = model.evaluate(x_test, y_test, verbose=0)</span>
+<span class="c1">#print("Test loss:", score[0])</span>
+<span class="c1">#print("Test accuracy:", score[1])</span>
+
+
+<span class="c1"># Modified for the MLTK</span>
+<span class="c1"># The follow allows for running this existing model training script in the MLTK</span>
+
+<span class="c1"># Import the MLTK Python package</span>
+<span class="kn">import</span> <span class="nn">mltk.core</span> <span class="k">as</span> <span class="nn">mltk_core</span> 
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+
+<span class="c1"># Instantiate the MltkModel object</span>
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+    <span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">,</span>
+    <span class="n">mltk_core</span><span class="o">.</span><span class="n">TrainMixin</span><span class="p">,</span>
+    <span class="n">mltk_core</span><span class="o">.</span><span class="n">DatasetMixin</span><span class="p">,</span>
+    <span class="n">mltk_core</span><span class="o">.</span><span class="n">EvaluateClassifierMixin</span><span class="p">,</span> 
+<span class="p">):</span>
+    <span class="k">pass</span>
+<span class="n">my_model</span> <span class="o">=</span> <span class="n">MyModel</span><span class="p">()</span>
+
+<span class="c1"># This simply returns the previously built KerasModel</span>
+<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+<span class="c1"># This callback allows for loading the training or testing dataset</span>
+<span class="k">def</span> <span class="nf">my_dataset_loader</span><span class="p">(</span>
+    <span class="n">subset</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
+    <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> 
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="n">subset</span> <span class="o">==</span> <span class="s1">'training'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span> 
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span>
+
+<span class="c1"># This is used by the TfliteConverter when generating the quantized .tflite</span>
+<span class="k">def</span> <span class="nf">my_representative_dataset_generator</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">input_value</span> <span class="ow">in</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">my_model</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="p">[</span><span class="n">input_value</span><span class="p">]</span>
+
+
+<span class="c1"># Populate the various MltkModel properties</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">build_model_function</span> <span class="o">=</span> <span class="n">my_model_builder</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">my_dataset_loader</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="n">epochs</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span> 
+<span class="n">my_model</span><span class="o">.</span><span class="n">validation_split</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'0'</span><span class="p">,</span><span class="s1">'1'</span><span class="p">,</span><span class="s1">'2'</span><span class="p">,</span><span class="s1">'3'</span><span class="p">,</span><span class="s1">'4'</span><span class="p">,</span><span class="s1">'5'</span><span class="p">,</span><span class="s1">'6'</span><span class="p">,</span><span class="s1">'7'</span><span class="p">,</span><span class="s1">'8'</span><span class="p">,</span><span class="s1">'9'</span><span class="p">]</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'representative_dataset'</span><span class="p">]</span> <span class="o">=</span> <span class="n">my_representative_dataset_generator</span>
+
+<span class="c1"># If this script is being invoked from the command-line then execute it now, e.g.:</span>
+<span class="c1"># python mnist_convnet.py</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">train_results</span> <span class="o">=</span> <span class="n">mltk_core</span><span class="o">.</span><span class="n">train_model</span><span class="p">(</span><span class="n">my_model</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">train_results</span><span class="p">)</span>
+
+    <span class="n">tflite_eval_results</span> <span class="o">=</span> <span class="n">mltk_core</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="n">my_model</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tflite_eval_results</span><span class="p">)</span>
+
+    <span class="n">profiling_results</span> <span class="o">=</span> <span class="n">mltk_core</span><span class="o">.</span><span class="n">profile_model</span><span class="p">(</span><span class="n">my_model</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">profiling_results</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="run-the-modified-script">
+<h2 id="run-the-modified-script">Run the modified script<a class="headerlink" href="#run-the-modified-script" title="Permalink to this headline">¶</a></h2>
+<p>If you invoke the modified script with the command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python mnist_convnet.py
+</pre></div>
+</div>
+<p>Then, instead of just using Tensorflow for model training like the original script used, the modified script will use the MLTK and perform the following:</p>
+<ol class="arabic simple">
+<li><p>Train the model using Tensorflow</p></li>
+<li><p>Generate a quantized <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file</p></li>
+<li><p>Evaluate the quantized <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model</p></li>
+<li><p>Profile the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model in the Tensorflow-Lite Micro simulator</p></li>
+</ol>
+<section id="run-from-command-line">
+<h3 id="run-from-command-line">Run from command-line<a class="headerlink" href="#run-from-command-line" title="Permalink to this headline">¶</a></h3>
+<p>Additionally, the model script can either directly invoke the model script from Python (e.g. <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">mnist_convnet.py</span></code> ) or use the <code class="docutils literal notranslate"><span class="pre">mltk</span></code> command, e.g.:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Train the model using the "mltk train" command</span>
+mltk train mnist_convnet.py
+<span class="c1"># Evaluate the model using the "mltk evaluate" command</span>
+mltk evaluate mnist_convnet.py
+<span class="c1"># Profile the model using the "mltk profile" command</span>
+mltk profile mnist_convnet.py
+</pre></div>
+</div>
+</section>
+</section>
+<section id="recommended-modifications">
+<h2 id="recommended-modifications">Recommended Modifications<a class="headerlink" href="#recommended-modifications" title="Permalink to this headline">¶</a></h2>
+<p>While the above script works with minimal changes to the original script, it does have some deficiencies.</p>
+<p>For instance, the dataset is always loaded each time the model script is loaded. Ideally, the dataset would only be loaded when it is actually needed before training or evaluation.
+Similarly, the Keras model is always built each time the model script is loaded. Ideally, the model would only be built before training is invoked.</p>
+<p>To account for these issues, the MLTK features the callbacks:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="../../docs/python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin.build_model_function">my_model.build_model_function</a></p></li>
+<li><p><a class="reference external" href="../../docs/python_api/mltk_model/dataset_mixin.html#mltk.core.DatasetMixin.dataset">my_model.dataset</a></p></li>
+</ul>
+<p>The MLTK will invoke these callbacks at the necessary time for the given model task.</p>
+<p>These changes may be found in the <a class="reference internal" href="../../docs/python_api/models/examples/basic_example.html"><span class="doc std std-doc">basic_example.py</span></a> reference model.
+This model is based on <a class="reference external" href="https://github.com/keras-team/keras-io/blob/master/examples/vision/mnist_convnet.py">mnist_convnet.py</a> but has been refactored to better align with the MLTK development.</p>
+<section id="basic-example-py">
+<h3 id="basic-example-py">basic_example.py<a class="headerlink" href="#basic-example-py" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">core</span> <span class="k">as</span> <span class="n">mltk_core</span>
+
+<span class="c1">##########################################################################</span>
+<span class="c1"># Prepare the model parameters</span>
+<span class="n">classes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'0'</span><span class="p">,</span><span class="s1">'1'</span><span class="p">,</span><span class="s1">'2'</span><span class="p">,</span><span class="s1">'3'</span><span class="p">,</span><span class="s1">'4'</span><span class="p">,</span><span class="s1">'5'</span><span class="p">,</span><span class="s1">'6'</span><span class="p">,</span><span class="s1">'7'</span><span class="p">,</span><span class="s1">'8'</span><span class="p">,</span><span class="s1">'9'</span><span class="p">]</span>
+<span class="n">num_classes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
+<span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">28</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">15</span>
+<span class="n">validation_split</span> <span class="o">=</span> <span class="mf">0.1</span>
+
+<span class="c1">##########################################################################</span>
+<span class="c1"># Prepare the dataset</span>
+<span class="k">def</span> <span class="nf">my_dataset_loader</span><span class="p">(</span>
+    <span class="n">subset</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
+    <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> 
+    <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+    <span class="sd">"""Load the dataset subset</span>
+<span class="sd">    </span>
+<span class="sd">    This is called automatically by the MLTK before training</span>
+<span class="sd">    or evaluation.</span>
+<span class="sd">    </span>
+<span class="sd">    Args:</span>
+<span class="sd">        subset: The dataset subset to return: 'training' or 'evaluation'</span>
+<span class="sd">        test: This is optional, it is used when invoking a training "dryrun", e.g.: mltk train basic_example-test</span>
+<span class="sd">            If this is true, then only return a small portion of the dataset for testing purposes</span>
+
+<span class="sd">    Return:</span>
+<span class="sd">        A tuple (x,y) for the subset</span>
+<span class="sd">    """</span>
+    <span class="c1"># Load the data and split it between train and test sets</span>
+    <span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+
+    <span class="c1"># Scale images to the [0, 1] range</span>
+    <span class="n">x_train</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+    <span class="n">x_test</span> <span class="o">=</span> <span class="n">x_test</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"float32"</span><span class="p">)</span> <span class="o">/</span> <span class="mi">255</span>
+    <span class="c1"># Make sure images have shape (28, 28, 1)</span>
+    <span class="n">x_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">x_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># If we're just testing, then truncate the dataset</span>
+    <span class="k">if</span> <span class="n">test</span><span class="p">:</span>
+        <span class="n">x_test</span> <span class="o">=</span> <span class="n">x_test</span><span class="p">[:</span><span class="mi">64</span><span class="p">]</span>
+        <span class="n">x_train</span> <span class="o">=</span> <span class="n">x_train</span><span class="p">[:</span><span class="mi">64</span><span class="p">]</span>
+        <span class="n">y_train</span> <span class="o">=</span> <span class="n">y_train</span><span class="p">[:</span><span class="mi">64</span><span class="p">]</span>
+        <span class="n">y_test</span> <span class="o">=</span> <span class="n">y_test</span><span class="p">[:</span><span class="mi">64</span><span class="p">]</span>
+
+
+    <span class="c1"># This is optional, but useful for automatically generating a summary of the dataset</span>
+    <span class="k">if</span> <span class="n">subset</span> <span class="o">==</span> <span class="s1">'training'</span><span class="p">:</span>
+        <span class="n">my_model</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'training'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="n">my_model</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">class_id</span><span class="p">]:</span> <span class="n">count</span> <span class="k">for</span> <span class="p">(</span><span class="n">class_id</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">y_train</span><span class="p">))</span> <span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">my_model</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'evaluation'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="n">my_model</span><span class="o">.</span><span class="n">classes</span><span class="p">[</span><span class="n">class_id</span><span class="p">]:</span> <span class="n">count</span> <span class="k">for</span> <span class="p">(</span><span class="n">class_id</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">y_test</span><span class="p">))</span> <span class="p">}</span>
+
+    <span class="c1"># Convert class vectors to binary class matrices</span>
+    <span class="n">y_train</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">y_train</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+    <span class="n">y_test</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">subset</span> <span class="o">==</span> <span class="s1">'training'</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span>
+    
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span>
+ 
+
+<span class="c1">##########################################################################</span>
+<span class="c1"># Build the model</span>
+<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span> <span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+    <span class="sd">"""Build the Keras model</span>
+<span class="sd">    </span>
+<span class="sd">    This is called by the MLTK just before training starts.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        my_model: The MltkModel instance</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        Compiled Keras model instance</span>
+<span class="sd">    """</span>
+
+    <span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"relu"</span><span class="p">),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">),</span>
+        <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"softmax"</span><span class="p">),</span>
+    <span class="p">])</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+        <span class="n">loss</span><span class="o">=</span><span class="s2">"categorical_crossentropy"</span><span class="p">,</span> 
+        <span class="n">optimizer</span><span class="o">=</span><span class="s2">"adam"</span><span class="p">,</span> 
+        <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s2">"accuracy"</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">model</span>
+
+
+<span class="c1">##########################################################################</span>
+<span class="c1"># Create the MltkModel instance</span>
+<span class="c1"># and set the various properties</span>
+
+<span class="c1"># @mltk_model</span>
+<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+    <span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">,</span>    <span class="c1"># We must inherit the MltkModel class</span>
+    <span class="n">mltk_core</span><span class="o">.</span><span class="n">TrainMixin</span><span class="p">,</span>   <span class="c1"># We also inherit the TrainMixin since we want to train this model</span>
+    <span class="n">mltk_core</span><span class="o">.</span><span class="n">DatasetMixin</span><span class="p">,</span> <span class="c1"># We also need the DatasetMixin mixin to provide the relevant dataset properties</span>
+    <span class="n">mltk_core</span><span class="o">.</span><span class="n">EvaluateClassifierMixin</span><span class="p">,</span>  <span class="c1"># While not required, also inherit EvaluateClassifierMixin to help will generating evaluation for our classification model </span>
+<span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="n">my_model</span> <span class="o">=</span> <span class="n">MyModel</span><span class="p">()</span>
+
+<span class="c1"># These properties are optional </span>
+<span class="c1"># but a useful for tracking the generated .tflite</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="s1">'Basic model specification example'</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">classes</span> <span class="o">=</span> <span class="n">classes</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">class_weights</span> <span class="o">=</span> <span class="s1">'balanced'</span> <span class="c1"># Automatically generate balanced class weights for training</span>
+
+
+<span class="c1"># Required: Set the model build function</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">build_model_function</span> <span class="o">=</span> <span class="n">my_model_builder</span>
+
+<span class="c1"># Set the other model properties</span>
+<span class="c1"># These values are passed directly to the model.fit() API</span>
+<span class="c1"># https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">epochs</span> <span class="o">=</span> <span class="n">epochs</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">validation_split</span> <span class="o">=</span> <span class="n">validation_split</span>
+
+<span class="c1"># NOTE: All the other fit() arguments may also be set in the model, e.g.:</span>
+<span class="c1"># my_model.x = x_train</span>
+<span class="c1"># my_model.y = y_train</span>
+<span class="c1"># my_model.step_per_epoch = 60</span>
+
+
+<span class="c1"># Set the dataset</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">dataset</span> <span class="o">=</span> <span class="n">my_dataset_loader</span>
+<span class="c1"># NOTE: Since my_dataset_loader() returns the x,y</span>
+<span class="c1"># We do not need to manually set the my_model.x, my_model.y properties.</span>
+
+<span class="c1"># NOTE: You can also add the various KerasCallbacks</span>
+<span class="c1"># https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">train_callbacks</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">TerminateOnNaN</span><span class="p">()</span>
+<span class="p">]</span>
+
+<span class="c1">##########################################################################</span>
+<span class="c1"># Specify the .tflite conversion parameters</span>
+<span class="c1"># This is used to convert the float32 model to int8 model </span>
+<span class="c1"># that can run on the embedded device.</span>
+
+<span class="k">def</span> <span class="nf">my_representative_dataset_generator</span><span class="p">():</span>
+    <span class="sd">"""A representative dataset is required generate the .tflite</span>
+<span class="sd">    In this example we just take the first 100 samples from the validation set.</span>
+
+<span class="sd">    For more details, see:</span>
+<span class="sd">    https://www.tensorflow.org/lite/performance/post_training_integer_quant#convert_using_integer-only_quantization</span>
+
+<span class="sd">    NOTE: Quantization is automatically done at the end of training.</span>
+<span class="sd">    It may also be invoked with:</span>
+<span class="sd">    mltk train basic_example</span>
+<span class="sd">    """</span>
+    <span class="k">for</span> <span class="n">input_value</span> <span class="ow">in</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">my_model</span><span class="o">.</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="p">[</span><span class="n">input_value</span><span class="p">]</span>
+
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_input_type'</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_output_type'</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'representative_dataset'</span><span class="p">]</span> <span class="o">=</span> <span class="n">my_representative_dataset_generator</span>
+
+
+
+<span class="c1">##########################################################################################</span>
+<span class="c1"># (Optional) Configure model parameters</span>
+<span class="c1">#</span>
+<span class="c1"># While not required, user-defined parameters may be embedded into the .tflite model file.</span>
+<span class="c1"># These parameters may then be read by the embedded device at runtime.</span>
+<span class="c1"># </span>
+<span class="c1"># This is useful for syncing data preprocessing parameters between the model training</span>
+<span class="c1"># script and embedded device.</span>
+
+<span class="c1"># In my_dataset_loader() we scaled the image data by 1/255.</span>
+<span class="c1"># This same scaling must also happen on the embedded device.</span>
+<span class="c1"># Here, we're embedding the scaling value as "metadata" into the generated .tflite.</span>
+<span class="c1"># At runtime, the embedded device should read this value from the .tflite</span>
+<span class="c1"># and use it accordingly.</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">[</span><span class="s1">'samplewise_norm.rescale'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="o">/</span><span class="mf">255.</span>
+
+<span class="c1"># Most standard Python data types may be embedded</span>
+<span class="c1"># See: https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html </span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">[</span><span class="s1">'my_boolean'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span> 
+<span class="n">my_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">[</span><span class="s1">'my_string'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'This string will be embedded into the .tflite'</span> 
+<span class="n">my_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">[</span><span class="s1">'my_bytes'</span><span class="p">]</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">'This byte string will be embedded also'</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">[</span><span class="s1">'my_float_list'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">4.5</span><span class="p">,</span> <span class="mf">2.</span><span class="p">,</span> <span class="mf">3.14</span><span class="p">]</span>
+
+
+<span class="c1">##########################################################################################</span>
+<span class="c1"># (Optional) The following allows for running this model training script directly, e.g.: </span>
+<span class="c1"># python basic_example.py</span>
+<span class="c1">#</span>
+<span class="c1"># Note that this has the similar functionality to:</span>
+<span class="c1"># mltk train basic_example</span>
+<span class="c1">#</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="c1"># Setup the CLI logger</span>
+    <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># If this is true then this will do a "dry run" of the model testing</span>
+    <span class="c1"># If this is false, then the model will be fully trained</span>
+    <span class="n">test_mode_enabled</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="c1"># Train the model</span>
+    <span class="c1"># This does the same as issuing the command: mltk train basic_example-test --clean</span>
+    <span class="n">train_results</span> <span class="o">=</span> <span class="n">mltk_core</span><span class="o">.</span><span class="n">train_model</span><span class="p">(</span><span class="n">my_model</span><span class="p">,</span> <span class="n">clean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test_mode_enabled</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">train_results</span><span class="p">)</span>
+
+    <span class="c1"># Evaluate the model against the quantized .h5 (i.e. float32) model</span>
+    <span class="c1"># This does the same as issuing the command: mltk evaluate basic_example-test</span>
+    <span class="n">tflite_eval_results</span> <span class="o">=</span> <span class="n">mltk_core</span><span class="o">.</span><span class="n">evaluate_model</span><span class="p">(</span><span class="n">my_model</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test_mode_enabled</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">tflite_eval_results</span><span class="p">)</span>
+
+    <span class="c1"># Profile the model in the simulator</span>
+    <span class="c1"># This does the same as issuing the command: mltk profile basic_example-test</span>
+    <span class="n">profiling_results</span> <span class="o">=</span> <span class="n">mltk_core</span><span class="o">.</span><span class="n">profile_model</span><span class="p">(</span><span class="n">my_model</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test_mode_enabled</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">profiling_results</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="next-steps">
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial demonstrates how minimal modifications can be added to an existing model training script so that it can run in the MLTK.</p>
+<p>For complete, non-trivial models, please see the <a class="reference internal" href="../../docs/python_api/models/index.html"><span class="doc std std-doc">Reference Models</span></a> that come with the MLTK.</p>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="model_debugging.html" title="Model Debugging"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Model Debugging </span>
+              </div>
+            </a>
+          
+          
+            <a href="../../docs/examples.html" title="API Examples"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> API Examples </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Nov 14, 2022.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> We use cookies only for functional and traffic analytics. <br />
+        We DO NOT use cookies for any marketing purposes. By using our site you acknowledge you have read and understood our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>.
+      </p>
+      <a class="privacy-banner-accept" href="#">Got it</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

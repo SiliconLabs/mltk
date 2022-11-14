@@ -14,7 +14,7 @@
 
     "\n",
 
-    "This demonstrates how to use the [view_model](../../docs/python_api/operations.md#view_model) API.\n",
+    "This demonstrates how to use the [view_model](../../docs/python_api/operations/view.md) API.\n",
 
     "\n",
 
@@ -86,7 +86,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 2,
+   "execution_count": 1,
 
    "metadata": {},
 
@@ -384,53 +384,67 @@
 
      "text": [
 
+      "Selecting GPU : NVIDIA GeForce RTX 2060 (id=0)\n",
+
       "Enabling test mode\n",
+
+      "training is using 1 subprocesses\n",
+
+      "validation is using 1 subprocesses\n",
 
       "Model: \"image_example1\"\n",
 
       "_________________________________________________________________\n",
 
-      "Layer (type)                 Output Shape              Param #   \n",
+      " Layer (type)                Output Shape              Param #   \n",
 
       "=================================================================\n",
 
-      "conv2d (Conv2D)              (None, 48, 48, 24)        240       \n",
+      " conv2d (Conv2D)             (None, 48, 48, 24)        240       \n",
 
-      "_________________________________________________________________\n",
+      "                                                                 \n",
 
-      "average_pooling2d (AveragePo (None, 24, 24, 24)        0         \n",
+      " average_pooling2d (AverageP  (None, 24, 24, 24)       0         \n",
 
-      "_________________________________________________________________\n",
+      " ooling2D)                                                       \n",
 
-      "conv2d_1 (Conv2D)            (None, 11, 11, 16)        3472      \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " conv2d_1 (Conv2D)           (None, 11, 11, 16)        3472      \n",
 
-      "conv2d_2 (Conv2D)            (None, 9, 9, 24)          3480      \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " conv2d_2 (Conv2D)           (None, 9, 9, 24)          3480      \n",
 
-      "batch_normalization (BatchNo (None, 9, 9, 24)          96        \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " batch_normalization (BatchN  (None, 9, 9, 24)         96        \n",
 
-      "activation (Activation)      (None, 9, 9, 24)          0         \n",
+      " ormalization)                                                   \n",
 
-      "_________________________________________________________________\n",
+      "                                                                 \n",
 
-      "average_pooling2d_1 (Average (None, 4, 4, 24)          0         \n",
+      " activation (Activation)     (None, 9, 9, 24)          0         \n",
 
-      "_________________________________________________________________\n",
+      "                                                                 \n",
 
-      "flatten (Flatten)            (None, 384)               0         \n",
+      " average_pooling2d_1 (Averag  (None, 4, 4, 24)         0         \n",
 
-      "_________________________________________________________________\n",
+      " ePooling2D)                                                     \n",
 
-      "dense (Dense)                (None, 3)                 1155      \n",
+      "                                                                 \n",
 
-      "_________________________________________________________________\n",
+      " flatten (Flatten)           (None, 384)               0         \n",
 
-      "activation_1 (Activation)    (None, 3)                 0         \n",
+      "                                                                 \n",
+
+      " dense (Dense)               (None, 3)                 1155      \n",
+
+      "                                                                 \n",
+
+      " activation_1 (Activation)   (None, 3)                 0         \n",
+
+      "                                                                 \n",
 
       "=================================================================\n",
 
@@ -456,18 +470,6 @@
 
       "Classes: rock, paper, scissor\n",
 
-      "hash: None\n",
-
-      "date: None\n",
-
-      "Test mode enabled, forcing max_samples_per_class=3, batch_size=3\n",
-
-      "NOTE: ProcessPoolManager using ThreadPool (instead of ProcessPool)\n",
-
-      "ProcessPoolManager using 1 of 24 CPU cores\n",
-
-      "NOTE: You may need to adjust the \"cores\" parameter of the data generator if you're experiencing performance issues\n",
-
       "Training dataset: Found 9 samples belonging to 3 classes:\n",
 
       "      rock = 3\n",
@@ -484,23 +486,45 @@
 
       "   scissor = 3\n",
 
-      "Forcing epochs=1 since test=true\n",
+      "Running cmd: c:\\Users\\reed\\workspace\\silabs\\mltk\\.venv\\Scripts\\python.exe -m pip install -U tensorflow-addons\n",
+
+      "(This may take awhile, please be patient ...)\n",
+
+      "Requirement already satisfied: tensorflow-addons in c:\\users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages (0.18.0)\n",
+
+      "\n",
+
+      "Requirement already satisfied: packaging in c:\\users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages (from tensorflow-addons) (21.3)\n",
+
+      "\n",
+
+      "Requirement already satisfied: typeguard>=2.7 in c:\\users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages (from tensorflow-addons) (2.13.3)\n",
+
+      "\n",
+
+      "Requirement already satisfied: pyparsing!=3.0.5,>=2.0.2 in c:\\users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages (from packaging->tensorflow-addons) (3.0.9)\n",
+
+      "\n",
+
+      "WARNING: You are using pip version 21.2.3; however, version 22.2.2 is available.\n",
+
+      "\n",
+
+      "You should consider upgrading via the 'c:\\Users\\reed\\workspace\\silabs\\mltk\\.venv\\Scripts\\python.exe -m pip install --upgrade pip' command.\n",
+
+      "\n",
+
+      "Forcing epochs=3 since test=true\n",
 
       "Class weights:\n",
 
-      "- rock = 1.00\n",
+      "   rock = 1.00\n",
 
-      "- paper = 1.00\n",
+      "  paper = 1.00\n",
 
-      "- scissor = 1.00\n",
+      "scissor = 1.00\n",
 
-      "Starting model training ...\n",
-
-      "WARNING:tensorflow:From c:\\Users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages\\tensorflow\\python\\ops\\array_ops.py:5043: calling gather (from tensorflow.python.ops.array_ops) with validate_indices is deprecated and will be removed in a future version.\n",
-
-      "Instructions for updating:\n",
-
-      "The `validate_indices` argument has no effect. Indices are always validated on CPU and never validated on GPU.\n"
+      "Starting model training ...\n"
 
      ]
 
@@ -512,7 +536,7 @@
 
       "application/vnd.jupyter.widget-view+json": {
 
-       "model_id": "6b05d5a0cc17481186c24aa2a4ebeda4",
+       "model_id": "565336a826ef45579c4e9d629c52c544",
 
        "version_major": 2,
 
@@ -522,7 +546,7 @@
 
       "text/plain": [
 
-       "Training:   0%|           0/1 ETA: ?s,  ?epochs/s"
+       "Training:   0%|           0/3 ETA: ?s,  ?epochs/s"
 
       ]
 
@@ -542,7 +566,7 @@
 
      "text": [
 
-      "Epoch 1/1\n"
+      "Epoch 1/3\n"
 
      ]
 
@@ -554,7 +578,91 @@
 
       "application/vnd.jupyter.widget-view+json": {
 
-       "model_id": "1f3c150d77554892aac6ca163a268b2f",
+       "model_id": "92f375c7807f4d198e784076ac346386",
+
+       "version_major": 2,
+
+       "version_minor": 0
+
+      },
+
+      "text/plain": [
+
+       "0/3           ETA: ?s - "
+
+      ]
+
+     },
+
+     "metadata": {},
+
+     "output_type": "display_data"
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Epoch 2/3\n"
+
+     ]
+
+    },
+
+    {
+
+     "data": {
+
+      "application/vnd.jupyter.widget-view+json": {
+
+       "model_id": "692ce7cc4543465481ead5beeeb301dc",
+
+       "version_major": 2,
+
+       "version_minor": 0
+
+      },
+
+      "text/plain": [
+
+       "0/3           ETA: ?s - "
+
+      ]
+
+     },
+
+     "metadata": {},
+
+     "output_type": "display_data"
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "Epoch 3/3\n"
+
+     ]
+
+    },
+
+    {
+
+     "data": {
+
+      "application/vnd.jupyter.widget-view+json": {
+
+       "model_id": "582da097aa804192872aa594831210fb",
 
        "version_major": 2,
 
@@ -590,7 +698,7 @@
 
       "\n",
 
-      "*** Best training val_accuracy = 0.667\n",
+      "*** Best training val_accuracy = 0.333\n",
 
       "\n",
 
@@ -600,15 +708,71 @@
 
       "Training logs here: C:/Users/reed/.mltk/models/image_example1-test\n",
 
-      "Trained model files here: c:/users/reed/workspace/silabs/mltk/mltk/models/examples/image_example1-test.mltk.zip\n",
+      "validation is using 1 subprocesses\n",
 
-      "ProcessPoolManager using 7 of 24 CPU cores\n",
+      "Generating E:/reed/mltk/tmp_models/image_example1.tflite\n"
 
-      "NOTE: You may need to adjust the \"cores\" parameter of the data generator if you're experiencing performance issues\n",
+     ]
 
-      "Generating E:/reed/mltk/tmp_models/image_example1.tflite\n",
+    },
 
-      "INFO:tensorflow:Assets written to: E:\\tmp2xfrszzl\\assets\n",
+    {
+
+     "name": "stderr",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op while saving (showing 3 of 3). These functions will not be directly callable after loading.\n"
+
+     ]
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "INFO:tensorflow:Assets written to: E:\\tmpsa1z1ouz\\assets\n",
+
+      "Using Tensorflow-Lite Micro version: b13b48c (2022-06-08)\n",
+
+      "Searching for optimal runtime memory size ...\n",
+
+      "Determined optimal runtime memory size to be 72320\n"
+
+     ]
+
+    },
+
+    {
+
+     "name": "stderr",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "c:\\Users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages\\tensorflow\\lite\\python\\convert.py:766: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.\n",
+
+      "  warnings.warn(\"Statistics for quantized inputs were expected, but not \"\n"
+
+     ]
+
+    },
+
+    {
+
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
 
       "Serving 'E:/reed/mltk/tmp_models/image_example1.tflite' at http://localhost:8080\n",
 
@@ -632,15 +796,11 @@
 
  "metadata": {
 
-  "interpreter": {
-
-   "hash": "d2cfb25ea30f37ddda2085817c91f6bd2a4a914387b5b179eb21bf4600b69cf8"
-
-  },
-
   "kernelspec": {
 
-   "display_name": "Python 3.9.7 64-bit ('.venv': venv)",
+   "display_name": "Python 3.9.7 ('.venv': venv)",
+
+   "language": "python",
 
    "name": "python3"
 
@@ -670,7 +830,17 @@
 
   },
 
-  "orig_nbformat": 4
+  "orig_nbformat": 4,
+
+  "vscode": {
+
+   "interpreter": {
+
+    "hash": "600e22ae316f8c315f552eaf99bb679bc9438a443c93affde9ac001991b79c8f"
+
+   }
+
+  }
 
  },
 

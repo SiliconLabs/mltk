@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.train_model &#8212; MLTK 0.10.0 documentation</title>
+    <title>mltk.core.train_model &#8212; MLTK 0.13.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
@@ -78,6 +78,7 @@
     <script src="../../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../_static/js/custom.js"></script>
+    <script src="../../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
@@ -104,11 +105,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.10.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.13.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.10.0 documentation logo">
+                   alt="MLTK 0.13.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.10.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.10.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -405,11 +406,7 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
-  <ul class="md-nav__list" data-md-scrollfix="">
-    
-
-<li id="searchbox" class="md-nav__item"></li>
-
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
   </ul>
 </nav>
               </div>
@@ -423,7 +420,9 @@
             <ul class="breadcrumb">
               <li></li>
               <li><a href="../../../index.html"><i class="md-icon">home</i></a></li>
-                <li class="active"><a href="../../index.html" accesskey="U">Module code</a></li>
+                <li><a href="../../index.html" accesskey="U">Module code</a></li>
+
+              <li class="activate"><a>mltk.core.train_model</a></li>
             </ul>
           </div>
           
@@ -452,19 +451,17 @@
     <span class="n">DatasetMixin</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">load_mltk_model</span><span class="p">,</span>
-    <span class="n">load_tflite_or_keras_model</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
 <span class="kn">from</span> <span class="nn">.summarize_model</span> <span class="kn">import</span> <span class="n">summarize_model</span>
 <span class="kn">from</span> <span class="nn">.quantize_model</span> <span class="kn">import</span> <span class="n">quantize_model</span>
-<span class="kn">from</span> <span class="nn">.keras.callbacks</span> <span class="kn">import</span> <span class="n">import_tqdm_progressbar_callback</span>
 <span class="kn">from</span> <span class="nn">.training_results</span> <span class="kn">import</span> <span class="n">TrainingResults</span>
 
 
 
 
 
-<div class="viewcode-block" id="train_model"><a class="viewcode-back" href="../../../docs/python_api/operations.html#mltk.core.train_model">[docs]</a><span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span>
+<div class="viewcode-block" id="train_model"><a class="viewcode-back" href="../../../docs/python_api/operations/train.html#mltk.core.train_model">[docs]</a><span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MltkModel</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">weights</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -474,11 +471,13 @@
     <span class="n">quantize</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">create_archive</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">show</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TrainingResults</span><span class="p">:</span>
     <span class="sd">"""Train a model using Keras and Tensorflow</span>
 <span class="sd">    </span>
 <span class="sd">    .. seealso::</span>
 <span class="sd">       * `Model Training Guide &lt;https://siliconlabs.github.io/mltk/docs/guides/model_training.html&gt;`_</span>
+<span class="sd">       * `Model Training API Examples &lt;https://siliconlabs.github.io/mltk/mltk/examples/train_model.html&gt;`_</span>
 <span class="sd">       * `KerasModel.fit() &lt;https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit&gt;`_</span>
 
 <span class="sd">    Args:</span>
@@ -492,12 +491,15 @@
 <span class="sd">        quantize: Optional, quantize the model after training successfully completes</span>
 <span class="sd">        create_archive: Optional, create an archive (.mltk.zip) of the training results and generated model files</span>
 <span class="sd">        show: Optional, show the training results diagram</span>
+<span class="sd">        test: Optional, load the model in "test mode" if true.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The model TrainingResults</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">):</span>
         <span class="n">mltk_model</span> <span class="o">=</span> <span class="n">model</span>
+        <span class="k">if</span> <span class="n">test</span><span class="p">:</span>
+            <span class="n">mltk_model</span><span class="o">.</span><span class="n">enable_test_mode</span><span class="p">()</span>
 
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">'.tflite'</span><span class="p">,</span> <span class="s1">'.h5'</span><span class="p">,</span> <span class="s1">'.zip'</span><span class="p">)):</span>
@@ -505,7 +507,7 @@
                 <span class="s1">'Must provide name of MLTK model '</span>
                 <span class="s1">'or path model specification script(.py)'</span>
             <span class="p">)</span>
-        <span class="n">mltk_model</span> <span class="o">=</span> <span class="n">load_mltk_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+        <span class="n">mltk_model</span> <span class="o">=</span> <span class="n">load_mltk_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s1">'Must provide MltkModel instance, name of MLTK model, or path to '</span>
@@ -531,15 +533,27 @@
     <span class="n">logger</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">create_logger</span><span class="p">(</span><span class="s1">'train'</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
     <span class="n">gpu</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
 
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">mltk_model</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">'training'</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">test_mode_enabled</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'Failed to load model training dataset'</span><span class="p">)</span>
+        <span class="k">raise</span>
 
     <span class="c1"># Build the MLTK model's corresponding Keras model</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">keras_model</span> <span class="o">=</span> <span class="n">load_tflite_or_keras_model</span><span class="p">(</span>
-            <span class="n">mltk_model</span><span class="p">,</span> 
-            <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="n">keras_model</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">build_model_function</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'Failed to build Keras model'</span><span class="p">)</span>
+        <span class="k">raise</span> 
+
+    <span class="c1"># Load the weights into the model if necessary</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">weights</span><span class="p">:</span>
+            <span class="n">weights_path</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">get_weights_path</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Loading weights file: </span><span class="si">{</span><span class="n">weights_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="n">keras_model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="n">weights_path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'Failed to load weights into Keras model'</span><span class="p">)</span>
         <span class="k">raise</span> 
 
     <span class="c1"># Generate a summary of the model</span>
@@ -554,11 +568,6 @@
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to generate model summary, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">mltk_model</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">'training'</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">test_mode_enabled</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'Failed to load model training dataset'</span><span class="p">)</span>
-        <span class="k">raise</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">summarize_dataset</span><span class="p">())</span>
 
@@ -571,14 +580,6 @@
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">class_weights</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Failed to compute class weights</span><span class="se">\n</span><span class="s2">Set my_model.class_weights = 'none' to disable"</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
-        <span class="c1"># If we're using a Jupyter notebook,</span>
-        <span class="c1"># then we use the TQDMNotebookCallback, otherwise use the default ProgressBarCallback </span>
-        <span class="c1"># (note: verbose=True then ProgressBarCallback is used automatically)</span>
-        <span class="n">TQDMProgressBar</span> <span class="o">=</span> <span class="n">import_tqdm_progressbar_callback</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">TQDMProgressBar</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">contains_class_type</span><span class="p">(</span><span class="n">callbacks</span><span class="p">,</span> <span class="n">TQDMProgressBar</span><span class="p">):</span>
-            <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span>
 
    
     <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
@@ -696,6 +697,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">cb</span> <span class="o">=</span> <span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">TensorBoard</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="n">keras_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Tensorboard logdir: </span><span class="si">{</span><span class="n">tb_log_dir</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
     
 
     <span class="k">if</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">checkpoint</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">contains_class_type</span><span class="p">(</span><span class="n">keras_callbacks</span><span class="p">,</span> <span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">):</span>
@@ -740,17 +742,6 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'NOT using mltk_model.reduce_lr_on_plateau since mltk_model.lr_schedule is specified'</span><span class="p">)</span>
 
-
-    <span class="n">TQDMProgressBar</span> <span class="o">=</span> <span class="n">import_tqdm_progressbar_callback</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
-    <span class="c1"># If we're executing in a Jupyter Notebook</span>
-    <span class="c1"># Then we sure to update the progress bar</span>
-    <span class="k">if</span> <span class="n">TQDMProgressBar</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">contains_class_type</span><span class="p">(</span><span class="n">keras_callbacks</span><span class="p">,</span> <span class="n">TQDMProgressBar</span><span class="p">):</span>
-        <span class="n">kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">epochs</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">'show_overall_progress'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="n">cb</span> <span class="o">=</span> <span class="n">TQDMProgressBar</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">keras_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">checkpoints_enabled</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">'Enabling model checkpoints'</span><span class="p">)</span>
@@ -829,7 +820,7 @@
     <span class="sd">"""Compute the given data's class weights"""</span>
     <span class="k">def</span> <span class="nf">_create_weights_dict</span><span class="p">():</span>
         <span class="n">class_weights</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">class_weights</span>
-        <span class="k">if</span> <span class="n">class_weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">class_weights</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="c1"># If a dictionary where the keys directly map to the class ids was given</span>
         <span class="c1"># then just return the class_weights as-is</span>
@@ -863,13 +854,30 @@
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Invalid my_model.class_weights argument given: </span><span class="si">{</span><span class="n">class_weights</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
 
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">,</span> <span class="s1">'datagen_context'</span><span class="p">):</span>
-                <span class="n">y</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">datagen_context</span><span class="o">.</span><span class="n">train_labels</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">y</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">y</span>
-        
-            <span class="n">weights</span> <span class="o">=</span> <span class="n">compute_class_weight</span><span class="p">(</span><span class="n">class_weights</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">class_ids</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
-            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">class_ids</span><span class="p">,</span> <span class="n">weights</span><span class="p">))</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">,</span> <span class="s1">'class_counts'</span><span class="p">):</span>
+                <span class="n">class_counts</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">class_counts</span>
+                <span class="k">if</span> <span class="s1">'training'</span> <span class="ow">in</span> <span class="n">class_counts</span><span class="p">:</span>
+                    <span class="n">class_counts</span> <span class="o">=</span> <span class="n">class_counts</span><span class="p">[</span><span class="s1">'training'</span><span class="p">]</span>
+                <span class="n">n_samples</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">class_counts</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+                <span class="k">if</span> <span class="n">n_samples</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">n_classes</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">n_classes</span>
+                    <span class="n">weights</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">classes</span><span class="p">:</span>
+                        <span class="n">weights</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n_samples</span> <span class="o">/</span> <span class="p">(</span><span class="n">n_classes</span> <span class="o">*</span> <span class="n">class_counts</span><span class="p">[</span><span class="n">class_name</span><span class="p">]))</span>
+
+                    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">class_ids</span><span class="p">,</span> <span class="n">weights</span><span class="p">))</span>
+
+            <span class="n">y</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">y</span>
+            <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">weights</span> <span class="o">=</span> <span class="n">compute_class_weight</span><span class="p">(</span><span class="n">class_weights</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">class_ids</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">)</span>
+                <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">class_ids</span><span class="p">,</span> <span class="n">weights</span><span class="p">))</span>
+
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s1">'my_model.class_weights=balanced not supported if my_model.y or mltk_model.class_counts not provided. </span><span class="se">\n</span><span class="s1">'</span>
+                <span class="s1">'Must manually set class weights in my_model.class_weights'</span>
+            <span class="p">)</span>
+            
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">class_weights</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="n">weights</span> <span class="o">=</span> <span class="p">{}</span>
@@ -903,7 +911,8 @@
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KerasModel</span><span class="p">:</span>
     <span class="sd">"""Save the Keras .h5 model file"""</span>
 
-    <span class="c1"># If a custom callback keras savig callback was given then use that</span>
+    <span class="c1"># If a custom model saving callback was given then invoke that now</span>
+    <span class="c1"># So that we obtain the correct keras model</span>
     <span class="k">if</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">on_save_keras_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">keras_model</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">on_save_keras_model</span><span class="p">(</span>
@@ -911,19 +920,21 @@
                 <span class="n">keras_model</span><span class="o">=</span><span class="n">keras_model</span><span class="p">,</span> 
                 <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
             <span class="p">)</span>
+            <span class="k">if</span> <span class="n">keras_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'my_model.on_save_keras_model must return a keras model instance'</span><span class="p">)</span>
+
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'Error while saving model'</span><span class="p">)</span>
+            <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'Error while saving model using my_model.on_save_keras_model'</span><span class="p">)</span>
             <span class="k">raise</span>
         
-    <span class="c1"># Otherwise just save the Keras model file</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">h5_path</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">h5_log_dir_path</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating </span><span class="si">{</span><span class="n">h5_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-            <span class="n">keras_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">save_format</span><span class="o">=</span><span class="s1">'tf'</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'Error while saving model to </span><span class="si">{</span><span class="n">h5_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-            <span class="k">raise</span>
+    <span class="c1"># Save the keras model as a .h5 file</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">h5_path</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">h5_log_dir_path</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating </span><span class="si">{</span><span class="n">h5_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="n">keras_model</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">h5_path</span><span class="p">,</span> <span class="n">save_format</span><span class="o">=</span><span class="s1">'tf'</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'Error while saving model to </span><span class="si">{</span><span class="n">h5_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+        <span class="k">raise</span>
 
     <span class="k">return</span> <span class="n">keras_model</span>
 
@@ -1060,6 +1071,7 @@
           </article>
         </div>
       </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
     </main>
   </div>
   <footer class="md-footer">
@@ -1079,7 +1091,7 @@
               
           </div>
             Last updated on
-              Aug 22, 2022.
+              Nov 14, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
@@ -1099,16 +1111,16 @@
   <div class="privacy-banner">
     <div class="privacy-banner-wrapper">
       <p>
-        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
-        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
-        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+        <b>Important:</b> We use cookies only for functional and traffic analytics. <br />
+        We DO NOT use cookies for any marketing purposes. By using our site you acknowledge you have read and understood our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>.
       </p>
-      <a class="privacy-banner-accept" href="#">Accept</a>
+      <a class="privacy-banner-accept" href="#">Got it</a>
     </div>
 </div>
   
 <div class="survey-container" id="dlg-survey"> 
     <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
     <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
 </div>
   

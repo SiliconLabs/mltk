@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.tflite_model.tflite_tensor &#8212; MLTK 0.10.0 documentation</title>
+    <title>mltk.core.tflite_model.tflite_tensor &#8212; MLTK 0.13.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
@@ -78,6 +78,7 @@
     <script src="../../../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../../_static/js/custom.js"></script>
+    <script src="../../../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
@@ -104,11 +105,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.10.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.13.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.10.0 documentation logo">
+                   alt="MLTK 0.13.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.10.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.10.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -405,11 +406,7 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
-  <ul class="md-nav__list" data-md-scrollfix="">
-    
-
-<li id="searchbox" class="md-nav__item"></li>
-
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
   </ul>
 </nav>
               </div>
@@ -423,7 +420,9 @@
             <ul class="breadcrumb">
               <li></li>
               <li><a href="../../../../index.html"><i class="md-icon">home</i></a></li>
-                <li class="active"><a href="../../../index.html" accesskey="U">Module code</a></li>
+                <li><a href="../../../index.html" accesskey="U">Module code</a></li>
+
+              <li class="activate"><a>mltk.core.tflite_model.tflite_tensor</a></li>
             </ul>
           </div>
           
@@ -435,79 +434,19 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">tensorflow_lite_support.metadata.schema_py_generated</span> <span class="k">as</span> <span class="nn">_tflite_schema_fb</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">tflite_schema</span> <span class="k">as</span> <span class="n">_tflite_schema_fb</span>
 
 
 <span class="n">TfliteModel</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">'TfliteModel'</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TfliteShape"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteShape">[docs]</a><span class="k">class</span> <span class="nc">TfliteShape</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
-    <span class="sd">"""Wrapper for tensor shape"""</span>
-    <span class="k">def</span> <span class="fm">__new__</span> <span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TfliteShape</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">shape</span><span class="p">]))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TfliteShape</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">shape</span><span class="p">]))</span>
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s1">'x'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
-    
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">flat_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">"""Total number of elements or flatten size"""</span>
-        <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span> 
-        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
-            <span class="n">n</span> <span class="o">*=</span> <span class="n">x</span> 
-        <span class="k">return</span> <span class="n">n</span></div>
 
 
-<div class="viewcode-block" id="TfliteQuantization"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteQuantization">[docs]</a><span class="k">class</span> <span class="nc">TfliteQuantization</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">QuantizationParametersT</span><span class="p">):</span>
-    <span class="sd">"""Wrapper for tensor quantization"""</span>
-
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_quantization</span><span class="p">:</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">QuantizationParametersT</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">QuantizationParametersT</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">fb_quantization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">fb_quantization</span><span class="p">):</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fb_quantization</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span> 
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">]</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeroPoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> 
-            <span class="bp">self</span><span class="o">.</span><span class="n">zeroPoint</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">zeroPoint</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeroPoint</span><span class="p">]</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">zeropoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
-        <span class="sd">"""Quantization zero points"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">zeroPoint</span>
-    <span class="nd">@zeropoint</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">zeropoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">zeroPoint</span> <span class="o">=</span> <span class="n">v</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">quantization_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">"""Quantization dimension"""</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantizedDimension</span>
-    <span class="nd">@quantization_dimension</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">quantization_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">quantizedDimension</span> <span class="o">=</span> <span class="n">v</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="sd">"""Number of channels. This is the number of elements in @ref scale and @ref zeropoint"""</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span></div>
-
-    
-
-
-<div class="viewcode-block" id="TfliteTensor"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteTensor">[docs]</a><span class="k">class</span> <span class="nc">TfliteTensor</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorT</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteTensor"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/tensor.html#mltk.core.TfliteTensor">[docs]</a><span class="k">class</span> <span class="nc">TfliteTensor</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorT</span><span class="p">):</span>
     <span class="sd">"""Wrapper for TFLite flatbuffer tensor"""</span>
 
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="TfliteTensor.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/tensor.html#mltk.core.TfliteTensor.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> 
         <span class="n">model</span><span class="p">:</span><span class="n">TfliteModel</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
@@ -537,7 +476,7 @@
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_data'</span><span class="p">):</span>
             <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span></div>
 
 
     <span class="nd">@property</span>
@@ -607,7 +546,7 @@
 
 
 
-<div class="viewcode-block" id="TfliteTensor.shape_dtype_str"><a class="viewcode-back" href="../../../../docs/python_api/core/tflite_model.html#mltk.core.tflite_model.TfliteTensor.shape_dtype_str">[docs]</a>    <span class="k">def</span> <span class="nf">shape_dtype_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_batch</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteTensor.shape_dtype_str"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/tensor.html#mltk.core.TfliteTensor.shape_dtype_str">[docs]</a>    <span class="k">def</span> <span class="nf">shape_dtype_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">include_batch</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="sd">"""Return the shape and data-type of this tensor as a string: &lt;dim0&gt;x&lt;dim1&gt;x... (&lt;dtype&gt;)"""</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">include_batch</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -620,7 +559,81 @@
 
 
 
+
+
+
+<div class="viewcode-block" id="TfliteShape"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/shape.html#mltk.core.TfliteShape">[docs]</a><span class="k">class</span> <span class="nc">TfliteShape</span><span class="p">(</span><span class="nb">tuple</span><span class="p">):</span>
+    <span class="sd">"""Wrapper for tensor shape. This is a tuple of integer values"""</span>
+    <span class="k">def</span> <span class="fm">__new__</span> <span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TfliteShape</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">shape</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">TfliteShape</span><span class="p">,</span> <span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">shape</span><span class="p">]))</span>
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s1">'x'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">flat_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">"""Total number of elements or flatten size"""</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="mi">1</span> 
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+            <span class="n">n</span> <span class="o">*=</span> <span class="n">x</span> 
+        <span class="k">return</span> <span class="n">n</span></div>
+
+
+<div class="viewcode-block" id="TfliteQuantization"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/quantization.html#mltk.core.TfliteQuantization">[docs]</a><span class="k">class</span> <span class="nc">TfliteQuantization</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">QuantizationParametersT</span><span class="p">):</span>
+    <span class="sd">"""Wrapper for tensor quantization</span>
+<span class="sd">    </span>
+<span class="sd">    Refer to `Quantization Specification &lt;https://www.tensorflow.org/lite/performance/quantization_spec&gt;`_ for more details.</span>
+<span class="sd">    """</span>
+
+<div class="viewcode-block" id="TfliteQuantization.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/quantization.html#mltk.core.TfliteQuantization.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fb_quantization</span><span class="p">:</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">QuantizationParametersT</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">QuantizationParametersT</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fb_quantization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">vars</span><span class="p">(</span><span class="n">fb_quantization</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fb_quantization</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="p">[]</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">zeropoint</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">quantization_dimension</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+        <span class="sd">"""Quantization scalers as list of float values"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'scale'</span><span class="p">)</span>
+    <span class="nd">@scale</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">scale</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">'scale'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+    
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">zeropoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">"""Quantization zero points as list of integers"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'zeroPoint'</span><span class="p">)</span>
+    <span class="nd">@zeropoint</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">zeropoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">v</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">'zeroPoint'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">quantization_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">"""Quantization dimension"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'quantizedDimension'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="nd">@quantization_dimension</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">quantization_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">'quantizedDimension'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">n_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">"""Number of channels. This is the number of elements in :py:attr:`~scale` and :py:attr:`~zeropoint`"""</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span></div>
+
+    
+
+
 <span class="k">def</span> <span class="nf">tflite_to_numpy_dtype</span><span class="p">(</span><span class="n">tflite_type</span><span class="p">:</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+    <span class="sd">"""Convert a tflite schema dtype to numpy dtype"""</span>
+
     <span class="k">if</span> <span class="n">tflite_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="o">.</span><span class="n">FLOAT32</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
     <span class="k">elif</span> <span class="n">tflite_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="o">.</span><span class="n">FLOAT16</span><span class="p">:</span>
@@ -641,6 +654,8 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unsupported .tflite tensor data type: </span><span class="si">{</span><span class="n">tflite_type</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">numpy_to_tflite_type</span><span class="p">(</span><span class="n">dtype</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="p">:</span>
+    <span class="sd">"""Convert numpy dtype to tflite schema dtype"""</span>
+
     <span class="k">if</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="o">.</span><span class="n">FLOAT32</span>
     <span class="k">elif</span> <span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float16</span><span class="p">:</span> 
@@ -664,6 +679,7 @@
           </article>
         </div>
       </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
     </main>
   </div>
   <footer class="md-footer">
@@ -683,7 +699,7 @@
               
           </div>
             Last updated on
-              Aug 22, 2022.
+              Nov 14, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
@@ -703,16 +719,16 @@
   <div class="privacy-banner">
     <div class="privacy-banner-wrapper">
       <p>
-        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
-        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
-        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+        <b>Important:</b> We use cookies only for functional and traffic analytics. <br />
+        We DO NOT use cookies for any marketing purposes. By using our site you acknowledge you have read and understood our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>.
       </p>
-      <a class="privacy-banner-accept" href="#">Accept</a>
+      <a class="privacy-banner-accept" href="#">Got it</a>
     </div>
 </div>
   
 <div class="survey-container" id="dlg-survey"> 
     <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
     <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
 </div>
   

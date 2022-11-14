@@ -566,6 +566,36 @@
 
    "source": [
 
+    "### Configure disk space\n",
+
+    "\n",
+
+    "Next, we need to configure the amount of disk space we want to use on the remote machine. This should be large enough to hold the extracted dataset.\n",
+
+    "By default, the disk space is 10GB but it may need to be increased if you have a larger dataset. __NOTE:__ Increasing this size will increase the hourly cost of using the remote machine.\n",
+
+    "\n",
+
+    "![](../../docs/img/vastai_config_disk_space.gif) \n",
+
+    "\n",
+
+    "1. On the left sidebar of [vast.ai](https://vast.ai/console/create/), select the `Create` entry\n",
+
+    "2. In the `Instance Configuration` section on the top-left, update the `Disk Space to Allocate`"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
     "## Select a Cloud Machine\n",
 
     "\n",
@@ -672,6 +702,8 @@
 
     "- `Max Instance Duration` - The maximum amount of time you may rent the machine. Typically, the smaller this value the cheaper the machine. However, it should be large enough to completely train the model. \n",
 
+    "- `DLPerf` - This a scoring function developed by vast.ai, more details [here](https://vast.ai/faq/#DLPerf)\n",
+
     "\n",
 
     "#### Note about GPU Count\n",
@@ -708,7 +740,11 @@
 
     "\n",
 
-    "These classes parallel process the data augmentations across the available CPUs cores.  \n",
+    "If you're using a the [Tensorflow Dataset API](https://www.tensorflow.org/api_docs/python/tf/data/Dataset), it also features the API [parallel_process](https://siliconlabs.github.io/mltk/docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.tf_dataset.parallel_process) which allows for parallel processing in the Tensorflow dataset.\n",
+
+    "\n",
+
+    "These APIs parallel process the data augmentations across the available CPUs cores.  \n",
 
     "So, the more CPU cores there are, the faster the augmented training data is able to be generated, and thus the faster the model is able to be trained.\n",
 
@@ -838,7 +874,7 @@
 
     "This model uses the [ParallelAudioDataGenerator](../../docs/python_api/data_preprocessing/audio_data_generator.md) to dynamically augment the samples during training. The dynamic augmentations can be computationally expensive which can slow down training.  \n",
 
-    "To speed up the model training, we'll spread the augmentations across 250 cores (in a later step we'll rent a cloud machine with 256 cores). "
+    "To speed up the model training, we'll spread the augmentations across 72 cores (in a later step we'll rent a cloud machine with 128 cores). "
 
    ]
 
@@ -864,13 +900,15 @@
 
     "   We need to adjust two settings to take advantage of the large cloud machine:\n",
 
-    "4. Change the line `cores=0.45,` to `cores=250,`  \n",
+    "4. Change the line `cores=0.45,` to `cores=72,`  \n",
 
-    "   i.e. Instead of using 45% of the available cores, we'll hardcode to using 250 cores.  \n",
+    "   i.e. Instead of using 45% of the available cores, we'll hardcode to using 72 cores.  \n",
 
-    "   Note that we don't want to use all the cores for augmentations, we'll save 6 cores for doing other training tasks (which the system automatically manages)\n",
+    "   Note that we don't want to use all the cores for augmentations, we'll save the cores for doing other training tasks (which the system automatically manages)\n",
 
-    "5. Change the line `max_batches_pending=16,` to `max_batches_pending=10*250`  \n",
+    "   Also, there is an upper limit to the number of processes that can be spun up in the linux environment\n",
+
+    "5. Change the line `max_batches_pending=16,` to `max_batches_pending=256`  \n",
 
     "   The cloud machine we'll rent should have lots of RAM, so we can have lots of preprocessed batches ready to go in RAM to further improve the training time"
 
@@ -1072,7 +1110,7 @@
 
     "  Machines may be cheaper if the \"instance duration\" is low\n",
 
-    "- `256+` CPU cores  \n",
+    "- `128+` CPU cores  \n",
 
     "  Ensure the CPUs are `i7` or better (AMD Threadripper or EPYC is usually a good choice; Xeon can be slow)\n",
 
@@ -1082,7 +1120,7 @@
 
     "\n",
 
-    "(If you already have another cloud instance running that doesn't have 256+ CPU cores, then shut it down first, see [Shutdown Cloud Instance](#shutdown-cloud-instance))\n",
+    "(If you already have another cloud instance running that doesn't have 128+ CPU cores, then shut it down first, see [Shutdown Cloud Instance](#shutdown-cloud-instance))\n",
 
     "\n",
 

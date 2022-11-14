@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.model.mixins.image_dataset_mixin &#8212; MLTK 0.10.0 documentation</title>
+    <title>mltk.core.model.mixins.image_dataset_mixin &#8212; MLTK 0.13.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
@@ -78,6 +78,7 @@
     <script src="../../../../../_static/togglebutton.js"></script>
     <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
     <script src="../../../../../_static/js/custom.js"></script>
+    <script src="../../../../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../../search.html" />
@@ -104,11 +105,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../index.html" title="MLTK 0.10.0 documentation"
+        <a href="../../../../../index.html" title="MLTK 0.13.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../_static/logo.png"
-                   alt="MLTK 0.10.0 documentation logo">
+                   alt="MLTK 0.13.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../index.html" title="MLTK 0.10.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../index.html"
-       title="MLTK 0.10.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -405,11 +406,7 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
-  <ul class="md-nav__list" data-md-scrollfix="">
-    
-
-<li id="searchbox" class="md-nav__item"></li>
-
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
   </ul>
 </nav>
               </div>
@@ -423,7 +420,9 @@
             <ul class="breadcrumb">
               <li></li>
               <li><a href="../../../../../index.html"><i class="md-icon">home</i></a></li>
-                <li class="active"><a href="../../../../index.html" accesskey="U">Module code</a></li>
+                <li><a href="../../../../index.html" accesskey="U">Module code</a></li>
+
+              <li class="activate"><a>mltk.core.model.mixins.image_dataset_mixin</a></li>
             </ul>
           </div>
           
@@ -433,12 +432,12 @@
   <h1 id="modules-mltk-core-model-mixins-image-dataset-mixin--page-root">Source code for mltk.core.model.mixins.image_dataset_mixin</h1><div class="highlight"><pre>
 <span></span>
 <span class="kn">import</span> <span class="nn">types</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Callable</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">forward_method_kwargs</span><span class="p">,</span> <span class="n">prepend_exception_msg</span>
+<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">prepend_exception_msg</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.process_pool_manager</span> <span class="kn">import</span> <span class="n">ProcessPoolManager</span>
 <span class="kn">from</span> <span class="nn">mltk.core.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">convert_y_to_labels</span><span class="p">,</span> <span class="n">get_mltk_logger</span><span class="p">)</span>
 
@@ -447,14 +446,14 @@
 
 
 
-<div class="viewcode-block" id="ImageDatasetMixin"><a class="viewcode-back" href="../../../../../docs/python_api/core/mltk_model.html#mltk.core.ImageDatasetMixin">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
+<div class="viewcode-block" id="ImageDatasetMixin"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/image_dataset_mixin.html#mltk.core.ImageDatasetMixin">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">ImageDatasetMixin</span><span class="p">(</span><span class="n">DataGeneratorDatasetMixin</span><span class="p">):</span>
     <span class="sd">"""Provides image dataset properties to the base :py:class:`~MltkModel`"""</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="n">Callable</span><span class="p">,</span><span class="nb">str</span><span class="p">]:</span>
         <span class="sd">"""Path to the image dataset's python module, a function </span>
-<span class="sd">        that manually loads the datset, or the file path to a directory of samples.</span>
+<span class="sd">        that manually loads the dataset, or the file path to a directory of samples.</span>
 
 <span class="sd">        If a Python module is provided, it must implement the function:</span>
 
@@ -473,11 +472,10 @@
 <span class="sd">        OR it should return the path to a directory containing the dataset's samples.</span>
 
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'image.dataset'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.dataset'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@dataset</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="n">Callable</span><span class="p">,</span><span class="nb">str</span><span class="p">]):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'image.dataset'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.dataset'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">follow_links</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -624,7 +622,7 @@
 
 
 
-<div class="viewcode-block" id="ImageDatasetMixin.load_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/core/mltk_model.html#mltk.core.ImageDatasetMixin.load_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span>
+<div class="viewcode-block" id="ImageDatasetMixin.load_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/image_dataset_mixin.html#mltk.core.ImageDatasetMixin.load_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
         <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -633,7 +631,7 @@
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span> <span class="c1"># pylint: disable=arguments-differ</span>
         <span class="sd">"""Pre-process the dataset and prepare the model dataset attributes"""</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">ImageDatasetMixin</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">load_dataset</span><span class="p">(</span><span class="o">**</span><span class="n">forward_method_kwargs</span><span class="p">(</span><span class="o">**</span><span class="nb">locals</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">=</span> <span class="n">subset</span>
 
         <span class="n">logger</span> <span class="o">=</span> <span class="n">get_mltk_logger</span><span class="p">()</span>
         <span class="n">ProcessPoolManager</span><span class="o">.</span><span class="n">set_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
@@ -651,7 +649,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Must specify mltk_model.input_shape which must be a tuple (height, width, depth)'</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Must specify mltk_model.datgen'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Must specify mltk_model.datagen'</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'batch_size'</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'MltkModel does not define batch_size, defaulting to 32'</span><span class="p">)</span>
@@ -698,9 +696,7 @@
 
 
         <span class="n">train_datagen</span> <span class="o">=</span> <span class="kc">None</span> 
-        <span class="n">train_labels</span> <span class="o">=</span> <span class="kc">None</span> 
         <span class="n">validation_datagen</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="n">validation_labels</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">==</span> <span class="s1">'training'</span><span class="p">:</span>
             <span class="n">training_datagen_creator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_datagen_creator</span><span class="p">(</span><span class="s1">'training'</span><span class="p">)</span>
@@ -746,11 +742,7 @@
                     <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
                     <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
                 <span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_mode</span> <span class="o">==</span> <span class="s1">'categorical'</span><span class="p">:</span>
-                    <span class="c1"># Convert from 1-hot encoded to 1D list of class IDs</span>
-                    <span class="n">train_labels</span> <span class="o">=</span> <span class="n">convert_y_to_labels</span><span class="p">(</span><span class="n">train_datagen</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">train_labels</span> <span class="o">=</span> <span class="n">train_datagen</span><span class="o">.</span><span class="n">y</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'training'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_class_counts</span><span class="p">(</span><span class="n">train_datagen</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">,</span> <span class="n">class_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">class_mode</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="n">max_samples_per_class</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_mode</span> <span class="o">==</span> <span class="s1">'categorical'</span><span class="p">:</span>
                 <span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">_clamp_max_samples_per_class</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">max_samples_per_class</span><span class="p">)</span>
@@ -761,14 +753,12 @@
                 <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
                 <span class="n">shuffle</span><span class="o">=</span><span class="n">eval_shuffle</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">==</span> <span class="s1">'evaluation'</span> <span class="k">else</span> <span class="kc">True</span>
             <span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_mode</span> <span class="o">==</span> <span class="s1">'categorical'</span><span class="p">:</span>
-                <span class="c1"># Convert from 1-hot encoded to 1D list of class IDs</span>
-                <span class="n">validation_labels</span> <span class="o">=</span> <span class="n">convert_y_to_labels</span><span class="p">(</span><span class="n">validation_datagen</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">validation_labels</span> <span class="o">=</span> <span class="n">validation_datagen</span><span class="o">.</span><span class="n">y</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'validation'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_get_class_counts</span><span class="p">(</span><span class="n">validation_datagen</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">,</span> <span class="n">class_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">class_mode</span><span class="p">)</span>
 
         <span class="c1"># If a directory was specified</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset_data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="kn">from</span> <span class="nn">mltk.core.preprocess.image.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelImageDataGenerator</span>
+
             <span class="n">shuffle_index_dir</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle_dataset_enabled</span><span class="p">:</span>
                 <span class="n">shuffle_index_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_shuffle_index_dir</span><span class="p">()</span>
@@ -792,47 +782,40 @@
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">==</span> <span class="s1">'training'</span><span class="p">:</span>
                 <span class="n">training_datagen_creator</span><span class="o">.</span><span class="n">max_samples_per_class</span> <span class="o">=</span> <span class="n">max_samples_per_class</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">training_datagen_creator</span><span class="p">,</span> <span class="n">ParallelImageDataGenerator</span><span class="p">):</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="s1">'class_counts'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'training'</span><span class="p">]</span>
+
                 <span class="n">train_datagen</span> <span class="o">=</span> <span class="n">training_datagen_creator</span><span class="o">.</span><span class="n">flow_from_directory</span><span class="p">(</span>
                     <span class="n">subset</span><span class="o">=</span><span class="s1">'training'</span><span class="p">,</span>
                     <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">)</span>
-                <span class="n">train_labels</span> <span class="o">=</span> <span class="n">train_datagen</span><span class="o">.</span><span class="n">classes</span>
+                <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'class_counts'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'training'</span><span class="p">,</span> <span class="s1">'validation'</span><span class="p">):</span>
                 <span class="n">validation_datagen_creator</span><span class="o">.</span><span class="n">max_samples_per_class</span> <span class="o">=</span> <span class="n">max_samples_per_class</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">validation_datagen_creator</span><span class="p">,</span> <span class="n">ParallelImageDataGenerator</span><span class="p">):</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="s1">'class_counts'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'validation'</span><span class="p">]</span>
+                
                 <span class="n">validation_datagen</span> <span class="o">=</span> <span class="n">validation_datagen_creator</span><span class="o">.</span><span class="n">flow_from_directory</span><span class="p">(</span>
                     <span class="n">subset</span><span class="o">=</span><span class="s1">'validation'</span><span class="p">,</span>
                     <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">)</span>
+                <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'class_counts'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">==</span> <span class="s1">'evaluation'</span><span class="p">:</span>
                 <span class="n">validation_datagen_creator</span><span class="o">.</span><span class="n">max_samples_per_class</span> <span class="o">=</span> <span class="n">max_samples_per_class</span>
                 <span class="n">validation_datagen_creator</span><span class="o">.</span><span class="n">validation_augmentation_enabled</span> <span class="o">=</span> <span class="n">eval_augmentation_enabled</span>
+
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">validation_datagen_creator</span><span class="p">,</span> <span class="n">ParallelImageDataGenerator</span><span class="p">):</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="s1">'class_counts'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'validation'</span><span class="p">]</span>
                 <span class="n">validation_datagen</span> <span class="o">=</span> <span class="n">validation_datagen_creator</span><span class="o">.</span><span class="n">flow_from_directory</span><span class="p">(</span>
                     <span class="n">subset</span><span class="o">=</span><span class="s1">'validation'</span><span class="p">,</span>
                     <span class="n">shuffle</span><span class="o">=</span><span class="n">eval_shuffle</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">kwargs</span>
                 <span class="p">)</span>
-
-            <span class="c1"># Retrieve all the y samples into a list</span>
-            <span class="c1"># NOTE: The length of this will be a multiple of the batch_size rounded up</span>
-            <span class="n">validation_labels</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">batch_y</span> <span class="ow">in</span> <span class="n">validation_datagen</span><span class="p">:</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_mode</span> <span class="o">==</span> <span class="s1">'categorical'</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">batch_y</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-                        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'The model must have only 1 output when my_model.class_mode=categorical, update the class_mode to something else for multiple output models'</span><span class="p">)</span>
-                    
-                    <span class="n">batch_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">batch_y</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-                <span class="n">validation_labels</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">batch_y</span><span class="p">)</span>
-
-            <span class="n">validation_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">validation_labels</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
-
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">validation_datagen</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
-            <span class="k">except</span><span class="p">:</span>
-                <span class="k">pass</span>
+                <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'class_counts'</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
          
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
@@ -844,7 +827,11 @@
         <span class="c1"># Fix issue with:</span>
         <span class="c1"># tensorflow.keras.preprocessing.image.ImageDataGenerator </span>
         <span class="n">_patch_image_iterator</span><span class="p">(</span><span class="n">validation_datagen</span><span class="p">)</span>
-        <span class="n">validation_datagen</span><span class="o">.</span><span class="n">max_samples</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">validation_labels</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'validation'</span><span class="p">]:</span>
+            <span class="n">validation_datagen</span><span class="o">.</span><span class="n">max_samples</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'validation'</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validation_data</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">==</span> <span class="s1">'training'</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">train_datagen</span>
@@ -857,13 +844,11 @@
 
 
         <span class="bp">self</span><span class="o">.</span><span class="n">datagen_context</span> <span class="o">=</span> <span class="n">DataGeneratorContext</span><span class="p">(</span>
-            <span class="n">classes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">,</span>
-            <span class="n">class_mode</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">class_mode</span><span class="p">,</span>
             <span class="n">subset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span><span class="p">,</span>
             <span class="n">train_datagen</span> <span class="o">=</span> <span class="n">train_datagen</span><span class="p">,</span>
-            <span class="n">train_labels</span> <span class="o">=</span> <span class="n">train_labels</span><span class="p">,</span>
+            <span class="n">train_class_counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'training'</span><span class="p">],</span>
             <span class="n">validation_datagen</span> <span class="o">=</span> <span class="n">validation_datagen</span><span class="p">,</span>
-            <span class="n">validation_labels</span> <span class="o">=</span> <span class="n">validation_labels</span>
+            <span class="n">validation_class_counts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'validation'</span><span class="p">]</span>
         <span class="p">)</span></div>
 
 
@@ -873,7 +858,6 @@
         <span class="kn">from</span> <span class="nn">mltk.core.preprocess.image.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelImageDataGenerator</span>
         <span class="kn">from</span> <span class="nn">tensorflow.keras.preprocessing.image</span> <span class="kn">import</span> <span class="n">ImageDataGenerator</span>
         
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'image.dataset'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="nb">str</span><span class="p">,</span><span class="n">CallableType</span><span class="p">,</span><span class="nb">object</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'image.follow_links'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'image.shuffle_dataset_enabled'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'image.input_shape'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">))</span>
@@ -945,10 +929,23 @@
 <span class="sd">    tensorflow.keras.preprocessing.image.ImageDataGenerator </span>
 <span class="sd">    properly iterates while predicting</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">keras_preprocessing.image.iterator</span> <span class="kn">import</span> <span class="n">Iterator</span>
+    <span class="n">is_keras_iterator</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">keras_preprocessing.image.iterator</span> <span class="kn">import</span> <span class="n">Iterator</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datagen</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">):</span>
+            <span class="n">is_keras_iterator</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span> 
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">keras.preprocessing.image</span> <span class="kn">import</span> <span class="n">Iterator</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datagen</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">):</span>
+            <span class="n">is_keras_iterator</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span> 
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datagen</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">is_keras_iterator</span><span class="p">:</span>
         <span class="k">return</span>
+
 
     <span class="n">datagen</span><span class="o">.</span><span class="n">max_samples</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">datagen</span><span class="o">.</span><span class="n">sample_count</span> <span class="o">=</span> <span class="mi">0</span>
@@ -1001,11 +998,30 @@
         <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="k">return</span> <span class="n">x_truncated</span><span class="p">,</span> <span class="n">y_truncated</span>
+
+
+<span class="k">def</span> <span class="nf">_get_class_counts</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">class_mode</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="n">class_counts</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">class_mode</span> <span class="o">==</span> <span class="s1">'categorical'</span><span class="p">:</span>
+       <span class="n">y</span> <span class="o">=</span> <span class="n">convert_y_to_labels</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+   
+    <span class="k">if</span> <span class="n">class_mode</span> <span class="o">!=</span> <span class="s1">'input'</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">class_name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">classes</span><span class="p">):</span>
+            <span class="n">class_counts</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">counts</span><span class="p">):</span>
+            <span class="n">class_name</span> <span class="o">=</span> <span class="n">classes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">class_counts</span><span class="p">[</span><span class="n">class_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">count</span>
+
+    <span class="k">return</span> <span class="n">class_counts</span>
 </pre></div>
 
           </article>
         </div>
       </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
     </main>
   </div>
   <footer class="md-footer">
@@ -1025,7 +1041,7 @@
               
           </div>
             Last updated on
-              Aug 22, 2022.
+              Nov 14, 2022.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
@@ -1045,16 +1061,16 @@
   <div class="privacy-banner">
     <div class="privacy-banner-wrapper">
       <p>
-        <b>Important:</b> This site uses cookies to improve user experience and stores information on your computer. 
-        By continuing to use our site, you consent to our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>. 
-        If you do not want to enable cookies, review our policy and learn how they can be disabled. Note that disabling cookies will disable some features of the site.
+        <b>Important:</b> We use cookies only for functional and traffic analytics. <br />
+        We DO NOT use cookies for any marketing purposes. By using our site you acknowledge you have read and understood our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>.
       </p>
-      <a class="privacy-banner-accept" href="#">Accept</a>
+      <a class="privacy-banner-accept" href="#">Got it</a>
     </div>
 </div>
   
 <div class="survey-container" id="dlg-survey"> 
     <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
     <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
 </div>
   
