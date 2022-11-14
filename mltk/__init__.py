@@ -2,7 +2,7 @@
 import sys
 import os
 
-__version__ = '0.12.0'
+__version__ = '0.13.0'
 
 MLTK_DIR = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
 MLTK_ROOT_DIR = os.path.dirname(MLTK_DIR).replace('\\', '/')

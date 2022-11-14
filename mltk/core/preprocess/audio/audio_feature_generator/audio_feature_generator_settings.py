@@ -1,5 +1,6 @@
+from __future__ import annotations
 from typing import Tuple
-
+import copy
 
 
 
@@ -9,9 +10,8 @@ class AudioFeatureGeneratorSettings(dict):
     See the `Audio Feature Generator <https://siliconlabs.github.io/mltk/docs/audio/audio_feature_generator.html>`_ guide for more details.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
+    def __init__(self, **kwargs):
+        super().__init__()
         self.sample_rate_hz = 16000
         self.sample_length_ms = 1000
         self.window_size_ms = 25
@@ -41,6 +41,10 @@ class AudioFeatureGeneratorSettings(dict):
         self.quantize_dynamic_scale_enable = False
         self.quantize_dynamic_scale_range_db = 40.0
 
+        # Update the dict with the given values 
+        # AFTER setting the defaults
+        super().update(kwargs)
+
 
 
     @property
@@ -59,7 +63,10 @@ class AudioFeatureGeneratorSettings(dict):
         return self.get('fe.sample_rate_hz', 0)
     @sample_rate_hz.setter
     def sample_rate_hz(self, v: int):
-        self['fe.sample_rate_hz'] = int(v)
+        s = int(v)
+        if s <= 0 or s > 10e6:
+            raise ValueError(f'Invalid sample_rate_hz, {v}')
+        self['fe.sample_rate_hz'] = s
         self._update_fft_length()
 
     @property
@@ -68,7 +75,13 @@ class AudioFeatureGeneratorSettings(dict):
         return self['fe.sample_length_ms']
     @sample_length_ms.setter
     def sample_length_ms(self, v: int):
-        self['fe.sample_length_ms'] = int(v)
+        s = int(v)
+        if s <= 0 or s > 10e6:
+            msg = ''
+            if isinstance(v, float) and v < 1:
+                msg = '. You may need to multiply this value by 1000'
+            raise ValueError(f'Invalid sample_length_ms, {v}{msg}')
+        self['fe.sample_length_ms'] = s
 
     @property
     def window_size_ms(self) -> int:
@@ -76,7 +89,13 @@ class AudioFeatureGeneratorSettings(dict):
         return self.get('fe.window_size_ms', 0)
     @window_size_ms.setter
     def window_size_ms(self, v: int):
-        self['fe.window_size_ms'] = int(v)
+        s = int(v)
+        if s <= 0 or s > 10e6:
+            msg = ''
+            if isinstance(v, float) and v < 1:
+                msg = '. You may need to multiply this value by 1000'
+            raise ValueError(f'Invalid window_size_ms, {v}{msg}')
+        self['fe.window_size_ms'] = s
         self._update_fft_length()
 
     @property
@@ -85,7 +104,13 @@ class AudioFeatureGeneratorSettings(dict):
         return self['fe.window_step_ms']
     @window_step_ms.setter
     def window_step_ms(self, v: int):
-        self['fe.window_step_ms'] = int(v)
+        s = int(v)
+        if s <= 0 or s > 10e6:
+            msg = ''
+            if isinstance(v, float) and v < 1:
+                msg = '. You may need to multiply this value by 1000'
+            raise ValueError(f'Invalid window_step_ms, {v}{msg}')
+        self['fe.window_step_ms'] = s
 
     @property
     def filterbank_n_channels(self) -> int:
@@ -93,7 +118,10 @@ class AudioFeatureGeneratorSettings(dict):
         return self['fe.filterbank_n_channels']
     @filterbank_n_channels.setter
     def filterbank_n_channels(self, v: int):
-        self['fe.filterbank_n_channels'] = int(v)
+        s = int(v)
+        if s <= 0 or s > 10e6:
+            raise ValueError(f'Invalid filterbank_n_channels, {v}')
+        self['fe.filterbank_n_channels'] = s
 
     @property
     def filterbank_upper_band_limit(self) -> float:
@@ -302,6 +330,11 @@ class AudioFeatureGeneratorSettings(dict):
         """The calculated size required to do an FFT. 
         This is dependent on the window_size_ms and sample_rate_hz values"""
         return self['fe.fft_length']
+
+
+    def copy(self) -> AudioFeatureGeneratorSettings:
+        """Return a deep copy of the current settings"""
+        return copy.deepcopy(self)
 
     def _update_fft_length(self):
         windows_size = int((self.window_size_ms * self.sample_rate_hz) / 1000)

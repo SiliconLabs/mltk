@@ -1,7 +1,7 @@
 
-window.SURVEY_URL = 'https://www.surveymonkey.com/r/8KCP7P5';
-window.SHOW_SURVEY_AFTER_SECONDS = 3*60; // Show the survey after 3min of activity
-window.IGNORED_SURVEY_TIMEOUT = 30*24*60*60; // Reshow the survey after 1 month if it was previously ignored
+window.SURVEY_URL = 'https://www.surveymonkey.com/r/JDGSDJC';
+window.SHOW_SURVEY_AFTER_SECONDS = 20*60; // Show the survey after 20min of activity
+
 window.dataLayer = window.dataLayer || [];
 window.loadingSurvey = false;
 window.showingSurvey = false;
@@ -10,8 +10,7 @@ window.tookSurvey = localStorage.surveyUrl === window.SURVEY_URL
 
 // Open external links in a new tab
 $(document).ready(function () {
-    addScrollToTopButton();
-    determineIfCookieConsentRequired();
+    checkIfAcceptedCookies();
     $('a[href^="http://"], a[href^="https://"]').not('a[class*=internal]').attr('target', '_blank');
 });
 
@@ -26,76 +25,12 @@ function initialiseGoogleAnalytics() {
     gtag('config', gTrackingId, {'anonymize_ip': true});
 }
 
-function determineIfCookieConsentRequired() {
-    const EU_TIMEZONES = [
-        'Europe/Vienna',
-        'Europe/Brussels',
-        'Europe/Sofia',
-        'Europe/Zagreb',
-        'Asia/Famagusta',
-        'Asia/Nicosia',
-        'Europe/Prague',
-        'Europe/Copenhagen',
-        'Europe/Tallinn',
-        'Europe/Helsinki',
-        'Europe/Paris',
-        'Europe/Berlin',
-        'Europe/Busingen',
-        'Europe/Athens',
-        'Europe/Budapest',
-        'Europe/Dublin',
-        'Europe/Rome',
-        'Europe/Riga',
-        'Europe/Vilnius',
-        'Europe/Luxembourg',
-        'Europe/Malta',
-        'Europe/Amsterdam',
-        'Europe/Warsaw',
-        'Atlantic/Azores',
-        'Atlantic/Madeira',
-        'Europe/Lisbon',
-        'Europe/Bucharest',
-        'Europe/Bratislava',
-        'Europe/Ljubljana',
-        'Africa/Ceuta',
-        'Atlantic/Canary',
-        'Europe/Madrid',
-        'Europe/Stockholm'
-      ];
-
-    var dayjs_script = document.createElement('script');
-    var dayjs_tz_script = document.createElement('script');
-
-    dayjs_script.onload = function(e) {
-        document.head.appendChild(dayjs_tz_script);
-    }
-    dayjs_tz_script.onload = function () {
-        dayjs.extend(dayjs_plugin_timezone);
-        var tz = dayjs.tz.guess();
-        if(EU_TIMEZONES.includes(tz)) {
-            checkIfAcceptedCookies();
-        } else {
-            onAcceptedCookies();
-        }
-    };
-    dayjs_script.onerror = function() {
-        checkIfAcceptedCookies();
-    }
-    dayjs_tz_script.onerror = function() {
-        checkIfAcceptedCookies();
-    }
-
-    dayjs_tz_script.src = 'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.6/plugin/timezone.min.js';
-    dayjs_script.src = 'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.6/dayjs.min.js';
-    document.head.appendChild(dayjs_script);
-    
-}
-
 function checkIfAcceptedCookies() {
     if (!localStorage.acceptedCookies) {
         $('.privacy-banner').show();
         $('.privacy-banner-accept').click(function() {
             $('.privacy-banner').hide()
+            localStorage.acceptedCookies = 'true';
             onAcceptedCookies();
         });
         
@@ -105,7 +40,6 @@ function checkIfAcceptedCookies() {
 }
 
 function onAcceptedCookies() {
-    localStorage.acceptedCookies = 'true';
     initialiseGoogleAnalytics();
     initializeSurvey();
 }
@@ -119,16 +53,6 @@ function initializeSurvey() {
         showSurvey();
     });
 
-    let now = Date.now() / 1000;
-
-    if(localStorage.ignoredSurveyTimestamp && (now - parseFloat(localStorage.ignoredSurveyTimestamp)) > window.IGNORED_SURVEY_TIMEOUT) {
-        console.log('Reshowing survey since last time it was ignored');
-        window.tookSurvey = false;
-        localStorage.removeItem('surveyUrl');
-        localStorage.removeItem('ignoredSurveyTimestamp');
-        localStorage.activeSeconds = window.SHOW_SURVEY_AFTER_SECONDS;
-    }
-
     if(!window.tookSurvey) {
         // If the survey was previously taken, but a new survey URL is available
         // then reset the activity counter
@@ -141,7 +65,7 @@ function initializeSurvey() {
             localStorage.activeSeconds = 0;
         }
 
-        localStorage.lastActivityTimestamp = now;
+        localStorage.lastActivityTimestamp = Date.now() / 1000;
 
         // Track mouse movement and scrolling
         $(window).scroll(updateSurveyActivity);
@@ -155,9 +79,7 @@ function showSurvey() {
         window.loadingSurvey = true;
 
         $('#iframe-survey').on('load', function() {
-            // This is invoked when the survey is completed
             if(window.showingSurvey) {
-                localStorage.removeItem('ignoredSurveyTimestamp');
                 closeSurvey();
             } else {
                 window.showingSurvey = true;
@@ -165,17 +87,12 @@ function showSurvey() {
             }
         });
         $('#iframe-survey').attr('src', window.SURVEY_URL);
-
-        // This is invoked when the survey is ignored by clicking the exit button
-        $("#dlg-survey-close").on("click", function() {
-            localStorage.ignoredSurveyTimestamp = Date.now() / 1000;
-            closeSurvey();
-        });
+        $("#dlg-survey-close").on("click", closeSurvey);
     }
 }
 
 function closeSurvey() {
-    console.info('Took or ignored survey');
+    console.info('Took survey');
     window.tookSurvey = true;
     localStorage.surveyUrl = window.SURVEY_URL;
     $('#dlg-survey').css('display', 'none');
@@ -201,30 +118,4 @@ function updateSurveyActivity() {
     if(totalSeconds >= window.SHOW_SURVEY_AFTER_SECONDS) {
         showSurvey();
     }
-}
-
-
-function addScrollToTopButton() {
-    $(window).scroll(function() {
-        var footertotop = ($('footer').position().top);
-        var scrolltop = $(document).scrollTop() + window.innerHeight;
-        var difference = scrolltop-footertotop - 30;
-
-        if (scrolltop > footertotop) {
-            $('.go-top').css({'bottom' : difference});
-        }else{
-            $('.go-top').css({'bottom' : 10});
-        };   
-
-        if ($(this).scrollTop() > 200) {
-            $('.go-top').fadeIn(200);
-        } else {
-            $('.go-top').fadeOut(200);
-        }
-    });
-
-    $('.go-top').click(function(event) {
-        event.preventDefault();
-        $('html, body').animate({scrollTop: 0}, 300);
-    })
 }

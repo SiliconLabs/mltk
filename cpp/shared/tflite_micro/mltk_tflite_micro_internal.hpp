@@ -8,7 +8,7 @@
 #include "logging/logger.hpp"
 
 #include "mltk_tflite_micro_helper.hpp"
-
+#include "mltk_tflite_micro_recorder.hpp"
 
 
 #define SET_CURRENT_KERNEL(op_idx, op_code) \
@@ -24,7 +24,7 @@ mltk::_current_kernel_op_code = -1;
 #ifdef TFLITE_MICRO_PROFILER_ENABLED
 
 #define ALLOCATE_PROFILERS(subgraph_idx, operators_size) \
-  mltk::allocate_profilers(subgraph_idx, operators_size);
+  FREE_PROFILERS(); mltk::allocate_profilers(subgraph_idx, operators_size);
 
 #define REGISTER_PROFILER(subgraph_idx, op_idx, op_type, context, node_and_registration) \
    mltk::register_profiler(subgraph_idx, op_idx, (tflite::BuiltinOperator)op_type, context, node_and_registration); \
@@ -74,20 +74,6 @@ if(subgraph_idx == 0) \
 #define STOP_OP_PROFILER(subgraph_idx, op_idx) CLEAR_CURRENT_KERNEL()
 
 #endif // TFLITE_MICRO_PROFILER_ENABLED
-
-
-
-#ifdef TFLITE_MICRO_RECORDER_ENABLED
-
-#define RECORD_INPUTS(op_idx, context, node) mltk::record_layer(op_idx, *context, *node, true);
-#define RECORD_OUTPUTS(op_idx, context, node)  mltk::record_layer(op_idx, *context, *node, false);
-
-#else 
-
-#define RECORD_INPUTS(...)
-#define RECORD_OUTPUTS(...)
-
-#endif // TFLITE_MICRO_RECORDER_ENABLED
 
 
 #ifdef TFLITE_MICRO_ACCELERATOR_PROFILER_ENABLED
@@ -152,8 +138,6 @@ bool calculate_op_metrics(
 );
 
 
-void record_layer(int op_idx, const TfLiteContext& context, const TfLiteNode &node, bool record_input);
-void record_tflite_tensor(const TfLiteTensor* tensor, int op_idx, int tensor_idx, bool is_input);
 
 const char* to_str(tflite::BuiltinOperator op_type);
 const char* op_to_str(int op_idx, tflite::BuiltinOperator op_type);

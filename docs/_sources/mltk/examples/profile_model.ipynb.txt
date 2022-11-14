@@ -14,7 +14,7 @@
 
     "\n",
 
-    "This demonstrates how to use the [profile_model](../../docs/python_api/operations/profile.md) API.\n",
+    "This demonstrates how to use the [profile_model](../../docs/python_api/operations.md#profile_model) API.\n",
 
     "\n",
 
@@ -142,7 +142,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 2,
+   "execution_count": 4,
 
    "metadata": {},
 
@@ -196,7 +196,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 3,
+   "execution_count": 5,
 
    "metadata": {},
 
@@ -212,7 +212,7 @@
 
       "Profiling Summary\n",
 
-      "Name: image_example1\n",
+      "Name: kws_ref_model\n",
 
       "Accelerator: None\n",
 
@@ -224,23 +224,25 @@
 
       "Output Data Type: int8\n",
 
-      "Flash, Model File Size (bytes): 15.7k\n",
+      "Model File Size (bytes): 15.7k\n",
 
-      "RAM, Runtime Memory Size (bytes): 71.5k\n",
+      "Runtime Memory Size (bytes): 71.3k\n",
 
-      "Operation Count: 2.6M\n",
+      "# Operations: 2.6M\n",
 
-      "Multiply-Accumulate Count: 1.2M\n",
+      "# Multiply-Accumulates: 1.2M\n",
 
-      "Layer Count: 8\n",
+      "# Layers: 8\n",
 
-      "Unsupported Layer Count: 0\n",
+      "# Unsupported Layers: 0\n",
 
-      "CPU Cycle Count: 13.1M\n",
+      "# CPU Cycles: 13.1M\n",
 
-      "CPU Utilization (%): 0.0\n",
+      "CPU Utilization (%): 100.0\n",
 
-      "Clock Rate (hz): 78.0M\n",
+      "Clock Rate (hz): 80.0M\n",
+
+      "Time (s): 163.3m\n",
 
       "Energy (J): 2.3m\n",
 
@@ -248,33 +250,39 @@
 
       "J/MAC: 2.0n\n",
 
+      "Ops/s: 16.2M\n",
+
+      "MACs/s: 7.3M\n",
+
+      "Inference/s: 6.1\n",
+
       "\n",
 
       "Model Layers\n",
 
-      "+-------+-----------------+--------+--------+------------+------------+-------------------------+--------------+-----------------------------------------------------+\n",
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
 
-      "| Index | OpCode          | # Ops  | # MACs | CPU Cycles | Energy (J) | Input Shape             | Output Shape | Options                                             |\n",
+      "| Index | OpCode          | # Ops  | # MACs | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                             |\n",
 
-      "+-------+-----------------+--------+--------+------------+------------+-------------------------+--------------+-----------------------------------------------------+\n",
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
 
-      "| 0     | conv_2d         | 1.2M   | 497.7k | 10.0M      | 1.9m       | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
+      "| 0     | conv_2d         | 1.2M   | 497.7k | 10.0M      | 1.9m       | 124.8m   | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
 
-      "| 1     | average_pool_2d | 69.1k  | 0      | 985.7k     | 148.0u     | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "| 1     | average_pool_2d | 69.1k  | 0      | 985.7k     | 148.0u     | 12.3m    | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
 
-      "| 2     | conv_2d         | 842.2k | 418.2k | 1.3M       | 187.5u     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
+      "| 2     | conv_2d         | 842.2k | 418.2k | 1.3M       | 187.5u     | 16.7m    | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
 
-      "| 3     | conv_2d         | 565.7k | 279.9k | 718.6k     | 105.7u     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
+      "| 3     | conv_2d         | 565.7k | 279.9k | 718.6k     | 105.7u     | 9.0m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
 
-      "| 4     | average_pool_2d | 1.9k   | 0      | 30.8k      | 9.3u       | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "| 4     | average_pool_2d | 1.9k   | 0      | 30.8k      | 9.3u       | 385.4u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
 
-      "| 5     | reshape         | 0      | 0      | 250.4      | 0.0p       | 1x4x4x24,2              | 1x384        | Type=none                                           |\n",
+      "| 5     | reshape         | 0      | 0      | 250.4      | 0.0p       | 3.1u     | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |\n",
 
-      "| 6     | fully_connected | 2.3k   | 1.2k   | 5.2k       | 21.5n      | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
+      "| 6     | fully_connected | 2.3k   | 1.2k   | 5.2k       | 21.5n      | 64.4u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
 
-      "| 7     | softmax         | 15.0   | 0      | 3.8k       | 16.5n      | 1x3                     | 1x3          | Type=softmaxoptions                                 |\n",
+      "| 7     | softmax         | 15.0   | 0      | 3.8k       | 16.5n      | 48.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |\n",
 
-      "+-------+-----------------+--------+--------+------------+------------+-------------------------+--------------+-----------------------------------------------------+\n"
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n"
 
      ]
 
@@ -322,7 +330,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 4,
+   "execution_count": 6,
 
    "metadata": {},
 
@@ -338,7 +346,7 @@
 
       "Profiling Summary\n",
 
-      "Name: image_example1\n",
+      "Name: kws_ref_model\n",
 
       "Accelerator: MVP\n",
 
@@ -350,59 +358,67 @@
 
       "Output Data Type: int8\n",
 
-      "Flash, Model File Size (bytes): 15.7k\n",
+      "Model File Size (bytes): 15.7k\n",
 
-      "RAM, Runtime Memory Size (bytes): 85.3k\n",
+      "Runtime Memory Size (bytes): 71.3k\n",
 
-      "Operation Count: 2.6M\n",
+      "# Operations: 2.6M\n",
 
-      "Multiply-Accumulate Count: 1.2M\n",
+      "# Multiply-Accumulates: 1.2M\n",
 
-      "Layer Count: 8\n",
+      "# Layers: 8\n",
 
-      "Unsupported Layer Count: 0\n",
+      "# Unsupported Layers: 0\n",
 
-      "Accelerator Cycle Count: 1.1M\n",
+      "# Accelerator Cycles: 2.8M\n",
 
-      "CPU Cycle Count: 81.3k\n",
+      "# CPU Cycles: 80.4k\n",
 
-      "CPU Utilization (%): 0.0\n",
+      "CPU Utilization (%): 2.8\n",
 
-      "Clock Rate (hz): 78.0M\n",
+      "Clock Rate (hz): 80.0M\n",
 
-      "Energy (J): 153.0u\n",
+      "Time (s): 35.5m\n",
 
-      "J/Op: 57.9p\n",
+      "Energy (J): 315.5u\n",
 
-      "J/MAC: 127.8p\n",
+      "J/Op: 119.4p\n",
+
+      "J/MAC: 263.6p\n",
+
+      "Ops/s: 74.5M\n",
+
+      "MACs/s: 33.8M\n",
+
+      "Inference/s: 28.2\n",
 
       "\n",
 
       "Model Layers\n",
 
-      "+-------+-----------------+--------+--------+------------+------------+------------+-------------------------+--------------+-----------------------------------------------------+\n",
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
 
-      "| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Input Shape             | Output Shape | Options                                             |\n",
+      "| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                             |\n",
 
-      "+-------+-----------------+--------+--------+------------+------------+------------+-------------------------+--------------+-----------------------------------------------------+\n",
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
 
-      "| 0     | conv_2d         | 1.2M   | 497.7k | 719.0k     | 11.2k      | 52.4u      | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
+      "| 0     | conv_2d         | 1.2M   | 497.7k | 1.7M       | 11.8k      | 209.7u     | 21.1m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
 
-      "| 1     | average_pool_2d | 69.1k  | 0      | 48.4k      | 22.7k      | 5.4u       | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "| 1     | average_pool_2d | 69.1k  | 0      | 48.4k      | 22.7k      | 5.4u       | 604.8u   | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
 
-      "| 2     | conv_2d         | 842.2k | 418.2k | 223.8k     | 5.9k       | 45.7u      | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
+      "| 2     | conv_2d         | 842.2k | 418.2k | 635.0k     | 5.2k       | 51.0u      | 7.9m     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
 
-      "| 3     | conv_2d         | 565.7k | 279.9k | 148.8k     | 8.0k       | 45.7u      | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
+      "| 3     | conv_2d         | 565.7k | 279.9k | 427.8k     | 7.2k       | 45.7u      | 5.3m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
 
-      "| 4     | average_pool_2d | 1.9k   | 0      | 1.3k       | 27.8k      | 3.7u       | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "| 4     | average_pool_2d | 1.9k   | 0      | 1.3k       | 27.8k      | 3.7u       | 347.8u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
 
-      "| 5     | reshape         | 0      | 0      | 0          | 250.4      | 0.0p       | 1x4x4x24,2              | 1x384        | Type=none                                           |\n",
+      "| 5     | reshape         | 0      | 0      | 0          | 250.4      | 0.0p       | 3.1u     | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |\n",
 
-      "| 6     | fully_connected | 2.3k   | 1.2k   | 1.7k       | 1.5k       | 49.2n      | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
+      "| 6     | fully_connected | 2.3k   | 1.2k   | 1.7k       | 1.5k       | 49.2n      | 21.8u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
 
-      "| 7     | softmax         | 15.0   | 0      | 0          | 3.8k       | 16.5n      | 1x3                     | 1x3          | Type=softmaxoptions                                 |\n",
+      "| 7     | softmax         | 15.0   | 0      | 0          | 3.8k       | 16.5n      | 48.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |\n",
 
-      "+-------+-----------------+--------+--------+------------+------------+------------+-------------------------+--------------+-----------------------------------------------------+\n"
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n"
 
      ]
 
@@ -454,7 +470,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 5,
+   "execution_count": 8,
 
    "metadata": {},
 
@@ -468,13 +484,13 @@
 
      "text": [
 
-      "Conencted device platform: brd2601\n",
+      "Conencted device platform: brd2601a\n",
 
       "Profiling Summary\n",
 
-      "Name: image_example1\n",
+      "Name: kws_ref_model\n",
 
-      "Accelerator: None\n",
+      "Accelerator: MVP\n",
 
       "Input Shape: 1x96x96x1\n",
 
@@ -484,59 +500,61 @@
 
       "Output Data Type: int8\n",
 
-      "Flash, Model File Size (bytes): 15.7k\n",
+      "Model File Size (bytes): 15.7k\n",
 
-      "RAM, Runtime Memory Size (bytes): 71.4k\n",
+      "Runtime Memory Size (bytes): 71.2k\n",
 
-      "Operation Count: 2.6M\n",
+      "# Operations: 2.6M\n",
 
-      "Multiply-Accumulate Count: 1.2M\n",
+      "# Multiply-Accumulates: 1.2M\n",
 
-      "Layer Count: 8\n",
+      "# Layers: 8\n",
 
-      "Unsupported Layer Count: 0\n",
+      "# Unsupported Layers: 0\n",
 
-      "CPU Cycle Count: 9.5M\n",
+      "# Accelerator Cycles: 2.9M\n",
 
-      "CPU Utilization (%): 100.0\n",
+      "# CPU Cycles: 652.5k\n",
 
-      "Clock Rate (hz): 78.0M\n",
+      "CPU Utilization (%): 18.7\n",
 
-      "Time (s): 119.7m\n",
+      "Clock Rate (hz): 80.0M\n",
 
-      "Ops/s: 22.1M\n",
+      "Time (s): 43.6m\n",
 
-      "MACs/s: 10.0M\n",
+      "Ops/s: 60.6M\n",
 
-      "Inference/s: 8.4\n",
+      "MACs/s: 27.5M\n",
+
+      "Inference/s: 22.9\n",
 
       "\n",
 
       "Model Layers\n",
 
-      "+-------+-----------------+--------+--------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
 
-      "| Index | OpCode          | # Ops  | # MACs | CPU Cycles | Time (s) | Input Shape             | Output Shape | Options                                             |\n",
+      "| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape             | Output Shape | Options                                             |\n",
 
-      "+-------+-----------------+--------+--------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
 
-      "| 0     | conv_2d         | 1.2M   | 497.7k | 6.3M       | 80.0m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
+      "| 0     | conv_2d         | 1.2M   | 497.7k | 1.8M       | 14.3k      | 22.2m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
 
-      "| 1     | average_pool_2d | 69.1k  | 0      | 759.4k     | 9.6m     | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "| 1     | average_pool_2d | 69.1k  | 0      | 48.5k      | 570.4k     | 7.5m     | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
 
-      "| 2     | conv_2d         | 842.2k | 418.2k | 1.4M       | 17.6m    | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
+      "| 2     | conv_2d         | 842.2k | 418.2k | 638.9k     | 6.7k       | 7.9m     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
 
-      "| 3     | conv_2d         | 565.7k | 279.9k | 956.1k     | 12.1m    | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
+      "| 3     | conv_2d         | 565.7k | 279.9k | 431.6k     | 8.6k       | 5.3m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
 
-      "| 4     | average_pool_2d | 1.9k   | 0      | 21.9k      | 270.0u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "| 4     | average_pool_2d | 1.9k   | 0      | 1.6k       | 42.5k      | 540.0u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
 
-      "| 5     | reshape         | 0      | 0      | 2.3k       | 30.0u    | 1x4x4x24,2              | 1x384        | Type=none                                           |\n",
+      "| 5     | reshape         | 0      | 0      | 0          | 3.8k       | 30.0u    | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |\n",
 
-      "| 6     | fully_connected | 2.3k   | 1.1k   | 5.1k       | 60.0u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
+      "| 6     | fully_connected | 2.3k   | 1.1k   | 1.8k       | 2.7k       | 60.0u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
 
-      "| 7     | softmax         | 15.0   | 0      | 2.9k       | 60.0u    | 1x3                     | 1x3          | Type=softmaxoptions                                 |\n",
+      "| 7     | softmax         | 15.0   | 0      | 0          | 3.6k       | 60.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |\n",
 
-      "+-------+-----------------+--------+--------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n"
+      "+-------+-----------------+--------+--------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n"
 
      ]
 
@@ -614,7 +632,7 @@
 
     "model will execute on an embedded device before investing time and energy into training it.  \n",
 
-    "For this reason, the MLTK [profile_model](../../docs/python_api/operations/profile.md) API features a `build` argument to build a model and profile it _before_ the model is fully trained.\n",
+    "For this reason, the MLTK [profile_model](../../docs/python_api/operations.md#profile_model) API features a `build` argument to build a model and profile it _before_ the model is fully trained.\n",
 
     "\n",
 
@@ -634,7 +652,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 6,
+   "execution_count": 9,
 
    "metadata": {},
 
@@ -642,11 +660,29 @@
 
     {
 
+     "name": "stdout",
+
+     "output_type": "stream",
+
+     "text": [
+
+      "patool: Extracting C:/Users/reed/.mltk/downloads/rock_paper_scissors.7z ...\n",
+
+      "patool: running \"C:\\Program Files\\7-Zip\\7z.EXE\" x -y -oE:/reed/mltk/tmp_archives/rock_paper_scissors -- C:/Users/reed/.mltk/downloads/rock_paper_scissors.7z\n",
+
+      "patool: ... C:/Users/reed/.mltk/downloads/rock_paper_scissors.7z extracted to `E:/reed/mltk/tmp_archives/rock_paper_scissors'.\n"
+
+     ]
+
+    },
+
+    {
+
      "data": {
 
       "application/vnd.jupyter.widget-view+json": {
 
-       "model_id": "535ae1bb09b142dc8f3b65d6609a56a4",
+       "model_id": "b34aea22b4b34f8cb4fb8770fe8d425c",
 
        "version_major": 2,
 
@@ -688,7 +724,7 @@
 
       "application/vnd.jupyter.widget-view+json": {
 
-       "model_id": "f707079de6504ee1847f127a8bc9b85d",
+       "model_id": "fb1f8d1157974c0d9ab15738f753fa81",
 
        "version_major": 2,
 
@@ -730,7 +766,7 @@
 
       "application/vnd.jupyter.widget-view+json": {
 
-       "model_id": "28c0f14f92704393970e20c8c8bac525",
+       "model_id": "5f80adb4e21a4db6a775e06c902bb460",
 
        "version_major": 2,
 
@@ -759,6 +795,10 @@
      "output_type": "stream",
 
      "text": [
+
+      "WARNING:tensorflow:Callback method `on_train_batch_begin` is slow compared to the batch time (batch time: 0.0126s vs `on_train_batch_begin` time: 0.1070s). Check your callbacks.\n",
+
+      "WARNING:tensorflow:Callback method `on_train_batch_end` is slow compared to the batch time (batch time: 0.0126s vs `on_train_batch_end` time: 0.0687s). Check your callbacks.\n",
 
       "Epoch 3/3\n"
 
@@ -772,7 +812,7 @@
 
       "application/vnd.jupyter.widget-view+json": {
 
-       "model_id": "9ed3e782130e4a9d9c353b25d19725a0",
+       "model_id": "f5e48c4d309a4cddb22f081857fd9ba3",
 
        "version_major": 2,
 
@@ -796,27 +836,13 @@
 
     {
 
-     "name": "stderr",
-
-     "output_type": "stream",
-
-     "text": [
-
-      "WARNING:absl:Found untraced functions such as _jit_compiled_convolution_op, _jit_compiled_convolution_op, _jit_compiled_convolution_op while saving (showing 3 of 3). These functions will not be directly callable after loading.\n"
-
-     ]
-
-    },
-
-    {
-
      "name": "stdout",
 
      "output_type": "stream",
 
      "text": [
 
-      "INFO:tensorflow:Assets written to: E:\\tmpc8yu6n46\\assets\n"
+      "INFO:tensorflow:Assets written to: E:\\tmp76im2ckn\\assets\n"
 
      ]
 
@@ -830,9 +856,7 @@
 
      "text": [
 
-      "INFO:tensorflow:Assets written to: E:\\tmpc8yu6n46\\assets\n",
-
-      "c:\\Users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages\\tensorflow\\lite\\python\\convert.py:766: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.\n",
+      "c:\\Users\\reed\\workspace\\silabs\\mltk\\.venv\\lib\\site-packages\\tensorflow\\lite\\python\\convert.py:746: UserWarning: Statistics for quantized inputs were expected, but not specified; continuing anyway.\n",
 
       "  warnings.warn(\"Statistics for quantized inputs were expected, but not \"\n"
 
@@ -856,69 +880,73 @@
 
       "Input Shape: 1x96x96x1\n",
 
-      "Input Data Type: float32\n",
+      "Input Data Type: int8\n",
 
       "Output Shape: 1x3\n",
 
-      "Output Data Type: float32\n",
+      "Output Data Type: int8\n",
 
-      "Flash, Model File Size (bytes): 15.4k\n",
+      "Model File Size (bytes): 14.7k\n",
 
-      "RAM, Runtime Memory Size (bytes): 85.4k\n",
+      "Runtime Memory Size (bytes): 71.3k\n",
 
-      "Operation Count: 2.7M\n",
+      "# Operations: 2.6M\n",
 
-      "Multiply-Accumulate Count: 1.2M\n",
+      "# Multiply-Accumulates: 1.2M\n",
 
-      "Layer Count: 10\n",
+      "# Layers: 8\n",
 
-      "Unsupported Layer Count: 0\n",
+      "# Unsupported Layers: 0\n",
 
-      "Accelerator Cycle Count: 1.1M\n",
+      "# Accelerator Cycles: 2.8M\n",
 
-      "CPU Cycle Count: 415.3k\n",
+      "# CPU Cycles: 80.4k\n",
 
-      "CPU Utilization (%): 0.0\n",
+      "CPU Utilization (%): 2.8\n",
 
-      "Clock Rate (hz): 78.0M\n",
+      "Clock Rate (hz): 80.0M\n",
 
-      "Energy (J): 219.6u\n",
+      "Time (s): 35.5m\n",
 
-      "J/Op: 82.0p\n",
+      "Energy (J): 315.5u\n",
 
-      "J/MAC: 183.5p\n",
+      "J/Op: 119.4p\n",
+
+      "J/MAC: 263.6p\n",
+
+      "Ops/s: 74.5M\n",
+
+      "MACs/s: 33.8M\n",
+
+      "Inference/s: 28.2\n",
 
       "\n",
 
       "Model Layers\n",
 
-      "+-------+-----------------+--------+--------+------------+------------+------------+-------------------------+--------------+-----------------------------------------------------+\n",
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
 
-      "| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Input Shape             | Output Shape | Options                                             |\n",
+      "| Index | OpCode          | # Ops  | # MACs | Acc Cycles | CPU Cycles | Energy (J) | Time (s) | Input Shape             | Output Shape | Options                                             |\n",
 
-      "+-------+-----------------+--------+--------+------------+------------+------------+-------------------------+--------------+-----------------------------------------------------+\n",
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n",
 
-      "| 0     | quantize        | 36.9k  | 0      | 0          | 332.6k     | 66.4u      | 1x96x96x1               | 1x96x96x1    | Type=none                                           |\n",
+      "| 0     | conv_2d         | 1.2M   | 497.7k | 1.7M       | 11.8k      | 209.7u     | 21.1m    | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
 
-      "| 1     | conv_2d         | 1.2M   | 497.7k | 719.0k     | 11.2k      | 52.4u      | 1x96x96x1,24x3x3x1,24   | 1x48x48x24   | Padding:same stride:2x2 activation:relu             |\n",
+      "| 1     | average_pool_2d | 69.1k  | 0      | 48.4k      | 22.7k      | 5.4u       | 604.8u   | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
 
-      "| 2     | average_pool_2d | 69.1k  | 0      | 48.4k      | 22.7k      | 5.4u       | 1x48x48x24              | 1x24x24x24   | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "| 2     | conv_2d         | 842.2k | 418.2k | 635.0k     | 5.2k       | 51.0u      | 7.9m     | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
 
-      "| 3     | conv_2d         | 842.2k | 418.2k | 223.8k     | 5.9k       | 45.7u      | 1x24x24x24,16x3x3x24,16 | 1x11x11x16   | Padding:valid stride:2x2 activation:relu            |\n",
+      "| 3     | conv_2d         | 565.7k | 279.9k | 427.8k     | 7.2k       | 45.7u      | 5.3m     | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
 
-      "| 4     | conv_2d         | 565.7k | 279.9k | 148.8k     | 8.0k       | 45.7u      | 1x11x11x16,24x3x3x16,24 | 1x9x9x24     | Padding:valid stride:1x1 activation:relu            |\n",
+      "| 4     | average_pool_2d | 1.9k   | 0      | 1.3k       | 27.8k      | 3.7u       | 347.8u   | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
 
-      "| 5     | average_pool_2d | 1.9k   | 0      | 1.3k       | 27.8k      | 3.7u       | 1x9x9x24                | 1x4x4x24     | Padding:valid stride:2x2 filter:2x2 activation:none |\n",
+      "| 5     | reshape         | 0      | 0      | 0          | 250.4      | 0.0p       | 3.1u     | 1x4x4x24,2              | 1x384        | BuiltinOptionsType=0                                |\n",
 
-      "| 6     | reshape         | 0      | 0      | 0          | 250.4      | 0.0p       | 1x4x4x24,2              | 1x384        | Type=none                                           |\n",
+      "| 6     | fully_connected | 2.3k   | 1.2k   | 1.7k       | 1.5k       | 49.2n      | 21.8u    | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
 
-      "| 7     | fully_connected | 2.3k   | 1.2k   | 1.7k       | 1.5k       | 49.2n      | 1x384,3x384,3           | 1x3          | Activation:none                                     |\n",
+      "| 7     | softmax         | 15.0   | 0      | 0          | 3.8k       | 16.5n      | 48.0u    | 1x3                     | 1x3          | BuiltinOptionsType=9                                |\n",
 
-      "| 8     | softmax         | 15.0   | 0      | 0          | 3.8k       | 16.5n      | 1x3                     | 1x3          | Type=softmaxoptions                                 |\n",
-
-      "| 9     | dequantize      | 6.0    | 0      | 0          | 1.4k       | 159.1n     | 1x3                     | 1x3          | Type=none                                           |\n",
-
-      "+-------+-----------------+--------+--------+------------+------------+------------+-------------------------+--------------+-----------------------------------------------------+\n"
+      "+-------+-----------------+--------+--------+------------+------------+------------+----------+-------------------------+--------------+-----------------------------------------------------+\n"
 
      ]
 
@@ -948,11 +976,15 @@
 
  "metadata": {
 
+  "interpreter": {
+
+   "hash": "d2cfb25ea30f37ddda2085817c91f6bd2a4a914387b5b179eb21bf4600b69cf8"
+
+  },
+
   "kernelspec": {
 
-   "display_name": "Python 3.9.7 ('.venv': venv)",
-
-   "language": "python",
+   "display_name": "Python 3.9.7 64-bit ('.venv': venv)",
 
    "name": "python3"
 
@@ -982,17 +1014,7 @@
 
   },
 
-  "orig_nbformat": 4,
-
-  "vscode": {
-
-   "interpreter": {
-
-    "hash": "600e22ae316f8c315f552eaf99bb679bc9438a443c93affde9ac001991b79c8f"
-
-   }
-
-  }
+  "orig_nbformat": 4
 
  },
 

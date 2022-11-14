@@ -22,11 +22,14 @@ find_package(mltk_cpputils REQUIRED)
 find_package(mltk_libsoundio REQUIRED)
 find_package(mltk_gecko_sdk_emulation REQUIRED)
 
-
-# Ensure we link against glibc 2.17 which is what Ubuntu 16
-# For more details, see: https://github.com/wheybags/glibc_version_header
-mltk_info("Force linking to glibc 2.17")
-mltk_append_global_cxx_flags("-include ${CMAKE_CURRENT_LIST_DIR}/force_link_glibc_2.17.h")
+mltk_set(force_link_glibc_2_17_h_path "${CMAKE_CURRENT_LIST_DIR}/force_link_glibc_2.17.h")
+function(mltk_platform_linux_link_legacy_glibc)
+    # Ensure we link against glibc 2.17 which is what Ubuntu 16
+    # For more details, see: https://github.com/wheybags/glibc_version_header
+    mltk_get(force_link_glibc_2_17_h_path)
+    mltk_warn("Force linking to glibc 2.17 at ${force_link_glibc_2_17_h_path}")
+    mltk_append_global_cxx_flags("-include ${force_link_glibc_2_17_h_path}") 
+endfunction()
 
 
 add_library(platform_linux_clib_override STATIC)
@@ -60,9 +63,6 @@ PUBLIC
     mltk::cpputils
     mltk::libsoundio
 )
-
-
-
 
 target_include_directories(${PROJECT_NAME} 
 INTERFACE

@@ -333,7 +333,7 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
                 transforms=[ 
                 audiomentations.PitchShift(min_semitones=-1, max_semitones=1, p=0.5),
                 audiomentations.TimeStretch(min_rate=0.9, max_rate=1.1, p=0.5),
-                audiomentations.Gain(min_gain_in_db=-5, max_gain_in_db=5, p=0.75),
+                audiomentations.Gain(min_gain_in_db=0.95, max_gain_in_db=2, p=0.75),
                 audiomentations.AirAbsorption(
                     min_temperature = 10.0,
                     max_temperature = 20.0,
@@ -343,11 +343,10 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
                     max_distance = 7.0,
                     p=0.5,
                 ),
-                audiomentations.AddGaussianSNR(min_snr_in_db=5, max_snr_in_db=40, p=0.75),
                 audiomentations.AddBackgroundNoise(
                     f'{dataset_dir}/_background_noise_', 
-                    min_snr_in_db=3,
-                    max_snr_in_db=30,
+                    min_snr_in_db=20,
+                    max_snr_in_db=40,
                     noise_rms="relative",
                     lru_cache_size=10,
                     p=0.75
@@ -360,7 +359,7 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
 
         # Convert the sample rate (if necessary)
         if original_sample_rate != frontend_settings.sample_rate_hz:
-            augmented_sample, _ = audio_utils.resample(
+            augmented_sample = audio_utils.resample(
                 augmented_sample, 
                 orig_sr=original_sample_rate, 
                 target_sr=frontend_settings.sample_rate_hz
@@ -379,7 +378,11 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
         # Dump the augmented audio sample AND corresponding spectrogram (if necessary)
         data_dump_dir = globals().get('data_dump_dir', None)
         if data_dump_dir:
-            audio_dump_path = audio_utils.write_audio_file(data_dump_dir, augmented_sample)
+            audio_dump_path = audio_utils.write_audio_file(
+                data_dump_dir, 
+                augmented_sample, 
+                sample_rate=frontend_settings.sample_rate_hz
+            )
             image_dump_path = audio_dump_path.replace('.wav', '.jpg')
             image_utils.write_image_file(image_dump_path, spectrogram)
             

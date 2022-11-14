@@ -478,10 +478,6 @@ def my_keras_model_saver(
     if embedding_network is None:
         raise RuntimeError('Failed to find embedding model in siamese network model, does the embedding model have the name "model" ?')
 
-    # Save the tower as the .h5 model file for this model
-    logger.debug(f'Saving {h5_path}')
-    embedding_network.save(h5_path, save_format='tf')
-
     # Return the keras model
     return embedding_network
 

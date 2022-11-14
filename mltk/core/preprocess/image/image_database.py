@@ -2,16 +2,13 @@
 import collections
 import numpy as np
 
-from mltk.utils.python import install_pip_package
-
 try:
-    install_pip_package('opencv-python', 'cv2')
     from cv2 import cv2
-except Exception as e:
+except Exception:
     try:
         import cv2
     except:
-        raise RuntimeError('Failed import cv2 Python package')
+        raise RuntimeError('Failed import cv2 Python package, try running: pip install opencv-python OR pip install silabs-mltk[full]')
 
 
 

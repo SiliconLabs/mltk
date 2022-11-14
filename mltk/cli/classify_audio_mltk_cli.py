@@ -151,7 +151,6 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
     # to help improve the CLI's responsiveness
 
     from mltk.core import (
-        TfliteModel,
         TfliteModelParameters,
         load_tflite_model,
     )
@@ -161,25 +160,20 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
     from mltk.utils.system import (get_current_os, make_path_executable, send_signal)
     from mltk.utils.shell_cmd import run_shell_cmd
     from mltk.utils.serial_reader import SerialReader
-    from mltk.utils.path import (create_tempdir, fullpath, create_user_dir, clean_directory)
+    from mltk.utils.path import (create_tempdir, create_user_dir, clean_directory)
     from mltk.utils.jlink_stream import (JlinkStream, JLinkDataStream, JlinkStreamOptions)
-    from mltk.utils.python import install_pip_package
     from mltk.utils.logger import get_logger
 
 
     logger = cli.get_logger()
 
-    have_cv2 = False
     try:
-        install_pip_package('opencv-python', 'cv2', logger=logger)
         from cv2 import cv2
-        have_cv2 = True
-    except Exception as e:
+    except Exception:
         try:
             import cv2
-            have_cv2 = True 
         except:
-            pass
+            raise RuntimeError('Failed import cv2 Python package, try running: pip install opencv-python OR pip install silabs-mltk[full]')
 
     accelerator = cli.parse_accelerator_option(accelerator)
 
@@ -352,11 +346,11 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
     ###############################################################
     def _dtype_to_str(dtype:np.dtype) -> str:
-        if dtype == np.int8:
+        if dtype in (np.int8, 'int8'):
             return 'int8'
-        if dtype == np.uint16:
+        if dtype in (np.uint16, 'uint16'):
             return 'uint16'
-        if dtype == np.float32:
+        if dtype in (np.float32, 'float32'):
             return 'float32'
         raise RuntimeError(f'Unsupported dtype {dtype}')
 
@@ -724,34 +718,28 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         ))
     
     if dump_raw_spectrograms:
-        if have_cv2:
-            dump_raw_spectrograms_dir = create_user_dir(f'audio_classifier_recordings/{platform}/raw_spectrograms')
-            dump_raw_spectrograms_bin_dir = create_user_dir(f'audio_classifier_recordings/{platform}/raw_spectrograms/bin')
-            logger.info(f'Dumping spectrograms to {dump_raw_spectrograms_dir}')
-            clean_directory(dump_raw_spectrograms_dir)
-            atexit.register(functools.partial(
-                _generate_video_from_dumped_spectrograms, 
-                dump_dir=dump_raw_spectrograms_dir,
-                dtype='uint16'
-            ))
-            _start_spectrogram_jpg_generator(dump_raw_spectrograms_dir, 'uint16')
-        else:
-            logger.warning('Failed to import opencv-python, NOT dumping spectrograms')
+        dump_raw_spectrograms_dir = create_user_dir(f'audio_classifier_recordings/{platform}/raw_spectrograms')
+        dump_raw_spectrograms_bin_dir = create_user_dir(f'audio_classifier_recordings/{platform}/raw_spectrograms/bin')
+        logger.info(f'Dumping spectrograms to {dump_raw_spectrograms_dir}')
+        clean_directory(dump_raw_spectrograms_dir)
+        atexit.register(functools.partial(
+            _generate_video_from_dumped_spectrograms, 
+            dump_dir=dump_raw_spectrograms_dir,
+            dtype='uint16'
+        ))
+        _start_spectrogram_jpg_generator(dump_raw_spectrograms_dir, 'uint16')
 
     if dump_quantized_spectrograms:
-        if have_cv2:
-            dump_quantized_spectrograms_dir = create_user_dir(f'audio_classifier_recordings/{platform}/quantized_spectrograms')
-            dump_quantized_spectrograms_bin_dir = create_user_dir(f'audio_classifier_recordings/{platform}/quantized_spectrograms/bin')
-            logger.info(f'Dumping spectrograms to {dump_quantized_spectrograms_dir}')
-            clean_directory(dump_quantized_spectrograms_dir)
-            atexit.register(functools.partial(
-                _generate_video_from_dumped_spectrograms, 
-                dump_dir=dump_quantized_spectrograms_dir,
-                dtype=input_dtype
-            ))
-            _start_spectrogram_jpg_generator(dump_quantized_spectrograms_dir, input_dtype)
-        else:
-            logger.warning('Failed to import opencv-python, NOT dumping spectrograms')
+        dump_quantized_spectrograms_dir = create_user_dir(f'audio_classifier_recordings/{platform}/quantized_spectrograms')
+        dump_quantized_spectrograms_bin_dir = create_user_dir(f'audio_classifier_recordings/{platform}/quantized_spectrograms/bin')
+        logger.info(f'Dumping spectrograms to {dump_quantized_spectrograms_dir}')
+        clean_directory(dump_quantized_spectrograms_dir)
+        atexit.register(functools.partial(
+            _generate_video_from_dumped_spectrograms, 
+            dump_dir=dump_quantized_spectrograms_dir,
+            dtype=input_dtype
+        ))
+        _start_spectrogram_jpg_generator(dump_quantized_spectrograms_dir, input_dtype)
 
 
     if use_device:

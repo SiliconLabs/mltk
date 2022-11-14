@@ -22,7 +22,7 @@ public:
         const std::string& flatbuffer_data, 
         void* accelerator,
         bool enable_profiler,
-        bool enable_recorder,
+        bool enable_tensor_recorder,
         bool force_buffer_overlap,
         int runtime_memory_size
     );
@@ -32,7 +32,7 @@ public:
     py::array get_input(int index);
     py::array get_output(int index);
     py::list get_profiling_results() const;
-    py::list get_recorded_data();
+    py::bytes get_recorded_data();
 
 private:
     const void* _accelerator_wrapper;

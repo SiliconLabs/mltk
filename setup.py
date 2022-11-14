@@ -18,7 +18,8 @@ The features of this Python package include:
 - [Python API](https://siliconlabs.github.io/mltk/docs/python_api/python_api.html) - Execute all ML operations from a Python script
 - [Model Profiler](https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html) - Determine how efficient an ML model will execute on an embedded platform
 - [Model Training](https://siliconlabs.github.io/mltk/docs/guides/model_training.html) - Train an ML model using [Google Tensorflow](https://www.tensorflow.org/)
-- [Remote Training via SSH](./docs/guides/model_training_via_ssh.md) - Securely and seamlessly train the model on a remote "cloud" machine
+- [Model Training Monitor](https://siliconlabs.github.io/mltk/docs/guides/model_training_monitor.html) - Monitor/profile the training of a model using [Tensorboard](https://www.tensorflow.org/tensorboard)
+- [Remote Training via SSH](https://siliconlabs.github.io/mltk/docs/guides/model_training_via_ssh.html) - Securely and seamlessly train the model on a remote "cloud" machine
 - [Model Evaluation](https://siliconlabs.github.io/mltk/docs/guides/model_evaluation.html) - Evaluate a trained ML model's accuracy and other metrics
 - [Model Summary](https://siliconlabs.github.io/mltk/docs/guides/model_summary.html) - Generate a summary of the model's contents
 - [Model Visualization](https://siliconlabs.github.io/mltk/docs/guides/model_visualizer.html) - Interactively view the ML model's structure 
@@ -78,7 +79,9 @@ import mltk
 from mltk.utils.path import clean_directory
 
 sys_ver = sys.version_info
-python_version = f'{sys_ver[0]}{sys_ver[1]}'
+python_major_version = sys_ver[0]
+pyhton_minor_version = sys_ver[1]
+python_version = f'{python_major_version}{pyhton_minor_version}'
 if os.name == 'nt':
     wrapper_extension = f'cp{python_version}-*'
 else:
@@ -140,7 +143,7 @@ else:
     subprocess.run([sys.executable, '-m', 'pip', 'uninstall', 'pickle5'])
 
 
-install_requires=[
+install_dependencies = [
     'typer<1.0',
     'pytest',
     'pytest-dependency',
@@ -162,34 +165,45 @@ install_requires=[
     'tqdm<5.0',
     'pillow<9.0',
     'librosa<1.0',
-    'joblib',
     'bincopy<18.0',
     'pyserial<4.0',
     'GPUtil<2.0',
     'patool==1.12',
-    'prettytable>=2.0,<3.0'
+    'prettytable>=2.0,<3.0',
+    'msgpack'
 ] + additional_install_dependencies
 
+extra_dependencies = {
+    'full': [ 
+        'opencv-python',
+        'netron',
+        'paramiko',
+        'cryptography',
+        'tensorboard_plugin_profile'
+    ]
+}
+
+
 setup_dependencies_py = os.environ.get('MLTK_SETUP_PY_DEPS', '').split('|')
-package_name_re = re.compile(f'^(\w+)') # Find everything before the non-alphanumeric characters
+package_name_re = re.compile(r'^(\w+)') # Find everything before the non-alphanumeric characters
 for dep in setup_dependencies_py:
     match = package_name_re.match(dep)
     if not match:
         continue
     dep_name = match.group(1).lower()
     modified = False
-    for i, req in enumerate(install_requires):
+    for i, req in enumerate(install_dependencies):
         # If the MLTK_SETUP_PY_DEPS is already an install requirement, 
         # then just replace it
         if req.lower().startswith(dep_name): 
-            install_requires[i] = dep 
+            install_dependencies[i] = dep 
             print(f'Modifying install requirement: {dep}')
             modified = True 
             break
     # Otherwise add the new MLTK_SETUP_PY_DEPS to the install requirements
     if not modified:
         print(f'Adding install requirement: {dep}')
-        install_requires.append(dep)
+        install_dependencies.append(dep)
 
 
 setup(
@@ -209,7 +223,8 @@ setup(
     ],
     python_requires='>=3.7,<3.11',
     setup_requires=['wheel'],
-    install_requires=install_requires,
+    install_requires=install_dependencies,
+    extras_require=extra_dependencies,
     packages=find_packages(include=['mltk', 'mltk.*']),
     package_dir={'': '.'},
     package_data={ 
@@ -230,6 +245,7 @@ setup(
             'keyword_spotting_mobilenetv2.mltk.zip',
             'keyword_spotting_with_transfer_learning.mltk.zip',
             'keyword_spotting_pacman.mltk.zip',
+            'keyword_spotting_pacman_v2.mltk.zip',
             'rock_paper_scissors.mltk.zip'
         ],
         'mltk.models.tflite_micro': [

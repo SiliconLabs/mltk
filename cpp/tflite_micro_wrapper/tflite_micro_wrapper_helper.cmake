@@ -52,6 +52,7 @@ if(HOST_OS_IS_WINDOWS)
 else()
   # Ensure all source files are built with the Position-Independent-Code (PIC) flag
   mltk_append_global_cxx_flags("-fPIC")
+  mltk_platform_linux_link_legacy_glibc()
 endif()
 
 
@@ -94,13 +95,13 @@ function(tflite_micro_link_python_wrapper target lib_dir)
       tflite_micro_python_wrapper_shared_generate ALL 
       DEPENDS ${tflite_micro_archive_path}
     )
-    target_link_options(${target}
-    PUBLIC 
+    add_library(tflite_micro_python_wrapper_shared INTERFACE)
+    target_link_libraries(tflite_micro_python_wrapper_shared
+    INTERFACE 
         -Wl,--whole-archive ${tflite_micro_archive_path} -Wl,--no-whole-archive
     )
 
-    add_dependencies(${target} tflite_micro_python_wrapper_shared_generate)
-    
+    add_dependencies(tflite_micro_python_wrapper_shared tflite_micro_python_wrapper_shared_generate)
   else()
     add_library(tflite_micro_python_wrapper_shared INTERFACE)
     # The following allows for an accelerator wrapper shared libraries to find symbols
@@ -116,12 +117,12 @@ function(tflite_micro_link_python_wrapper target lib_dir)
       "-Wl,-L${TFLITE_MICRO_WRAPPER_DIR}"
       "-Wl,-l:${TFLITE_MICRO_WRAPPER_FULLNAME}"
     )
-
-    target_link_libraries(${target}
-    PUBLIC 
-      tflite_micro_python_wrapper_shared
-    )
   endif()
+
+  target_link_libraries(${target}
+  PUBLIC 
+    tflite_micro_python_wrapper_shared
+  )
 
   target_include_directories(${target}
   PRIVATE 

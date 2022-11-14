@@ -1,10 +1,19 @@
+# pylint: disable=redefined-builtin
+
 from __future__ import annotations
 from typing import List, Tuple, Dict, TypeVar
 import numpy as np
 from . import tflite_schema as _tflite_schema_fb
 from .tflite_schema import BuiltinOperator as TfliteOpCode
 from .tflite_tensor import TfliteTensor
-
+from .tflite_types import (
+    TfliteActivation, 
+    TflitePadding, 
+    TfliteConvParams, 
+    TfliteDepthwiseConvParams,
+    TfliteFullyConnectedParams,
+    TflitePoolParams
+)
 
 TfliteModel = TypeVar('TfliteModel')
 
@@ -186,10 +195,12 @@ class TfliteLayerOptions:
                 setattr(self, x, getattr(fb_object, x))
     @property
     def options_type(self) -> _tflite_schema_fb.BuiltinOptions:
+        """.tflite schema option code"""
         return self._type
 
     @property
     def options_type_str(self) -> str:
+        """.tflite schema option as a string """
         return _convert_object_value_to_string(_tflite_schema_fb.BuiltinOptions(), self._type)
 
     def __str__(self):
@@ -239,18 +250,30 @@ class TfliteAddLayer(TfliteLayer):
 
 
 class TfliteAddLayerOptions(_tflite_schema_fb.AddOptionsT, TfliteLayerOptions):
+    """Add layer options"""
     def __init__(self, opts=None):
         _tflite_schema_fb.AddOptionsT.__init__(self)
         TfliteLayerOptions.__init__(self, opts,
             type=_tflite_schema_fb.BuiltinOptions.AddOptions
         )
+        self._activation = TfliteActivation(self.fusedActivationFunction)
         
     @property
     def activation_str(self) -> str:
-        return _get_fused_activation_str(self.fusedActivationFunction)
+        """Fused activation as a string"""
+        return self._activation.to_string()
     @activation_str.setter
     def activation_str(self, v):
-        self.fusedActivationFunction = _get_fused_activation_int(v) 
+        self._activation = TfliteActivation(v) 
+
+    @property
+    def activation(self) -> TfliteActivation:
+        """Fused activation"""
+        return self._activation
+    @activation.setter
+    def activation(self, v:int):
+        self._activation = TfliteActivation(v)
+
     def __str__(self):
         return f'Activation:{self.activation_str}'
 
@@ -324,9 +347,15 @@ class TfliteConv2dLayer(TfliteLayer):
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
         return self.output_tensor.data
+    @property
+    def params(self) -> TfliteConvParams:
+        """Calculated layer parameters"""
+        return TfliteConvParams.calculate(self)
+
 
 
 class TfliteConv2DLayerOptions(_tflite_schema_fb.Conv2DOptionsT, TfliteLayerOptions):
+    """Convolution layer options"""
     def __init__(self, opts=None):
         _tflite_schema_fb.Conv2DOptionsT.__init__(self)
         TfliteLayerOptions.__init__(
@@ -334,33 +363,59 @@ class TfliteConv2DLayerOptions(_tflite_schema_fb.Conv2DOptionsT, TfliteLayerOpti
             type=_tflite_schema_fb.BuiltinOptions.Conv2DOptions
         )
        
+        self._activation = TfliteActivation(self.fusedActivationFunction)
+        self._padding = TflitePadding(0 if opts is None else opts.padding)
+        
+    @property
+    def activation_str(self) -> str:
+        """Fused activation as a string"""
+        return self._activation.to_string()
+    @activation_str.setter
+    def activation_str(self, v):
+        self._activation = TfliteActivation(v) 
+
+    @property
+    def activation(self) -> TfliteActivation:
+        """Fused activation"""
+        return self._activation
+    @activation.setter
+    def activation(self, v:int):
+        self._activation = TfliteActivation(v)
+
+    @property
+    def padding_str(self) -> str:
+        """Padding as a string"""
+        return self._padding.to_string()
+    @padding_str.setter
+    def padding_str(self, v):
+        self._padding = TflitePadding(v) 
+
+    @property
+    def padding(self) -> TflitePadding:
+        """Padding type"""
+        return self._padding
+    @padding.setter
+    def padding(self, v:int):
+        self._padding = TflitePadding(v)
+
     @property
     def stride_width(self) -> int:
+        """Kernel stride width"""
         return self.strideW
     @stride_width.setter
     def stride_width(self, v):
         self.strideW = v
     @property
     def stride_height(self) -> int:
+        """Kernel stride height"""
         return self.strideH
     @stride_height.setter
     def stride_height(self, v):
         self.strideH = v
-    @property
-    def padding_str(self) -> str:
-        return _get_padding_str(self.padding)
-    @padding_str.setter
-    def padding_str(self, v):
-        self.padding = _get_padding_int(v)
-    @property
-    def activation_str(self) -> str:
-        return _get_fused_activation_str(self.fusedActivationFunction)
-    @activation_str.setter
-    def activation_str(self, v):
-        self.fusedActivationFunction = _get_fused_activation_int(v)
 
     def __str__(self):
         return f'Padding:{self.padding_str} stride:{self.stride_width}x{self.stride_height} activation:{self.activation_str}'
+
 
 
 class TfliteTransposeConvLayer(TfliteLayer):
@@ -431,30 +486,47 @@ class TfliteTransposeConvLayer(TfliteLayer):
 
 
 class TfliteTransposeConvLayerOptions(_tflite_schema_fb.TransposeConvOptionsT, TfliteLayerOptions):
+    """Transpose convolution layer options"""
     def __init__(self, opts=None):
         _tflite_schema_fb.TransposeConvOptionsT.__init__(self)
         TfliteLayerOptions.__init__(self, opts,
             type=_tflite_schema_fb.BuiltinOptions.TransposeConvOptions
         )
+        self._padding = TflitePadding(0 if opts is None else opts.padding)
         
     @property
     def stride_width(self) -> int:
+        """Kernel stride width"""
         return self.strideW
     @stride_width.setter
     def stride_width(self, v):
         self.strideW = v
+    
     @property
     def stride_height(self) -> int:
+        """"Kernel stride height"""
         return self.strideH
     @stride_height.setter
     def stride_height(self, v):
         self.strideH = v
+
     @property
     def padding_str(self) -> str:
-        return _get_padding_str(self.padding)
+        """Kernel padding as a string"""
+        return self._padding.to_string()
     @padding_str.setter
     def padding_str(self, v):
-        self.padding = _get_padding_int(v) 
+        self._padding = TflitePadding(v) 
+
+    @property
+    def padding(self) -> TflitePadding:
+        """"Kernel padding"""
+        return self._padding
+    @padding.setter
+    def padding(self, v:int):
+        self._padding = TflitePadding(v)
+
+
     def __str__(self):
         return f'Padding:{self.padding_str} stride:{self.stride_width}x{self.stride_height}'
 
@@ -517,20 +589,37 @@ class TfliteFullyConnectedLayer(TfliteLayer):
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
         return self.output_tensor.data
-
+    @property
+    def params(self) -> TfliteFullyConnectedParams:
+        """Calculated layer parameters"""
+        return TfliteFullyConnectedParams.calculate(self)
+    
 
 class TfliteFullyConnectedLayerOptions(_tflite_schema_fb.FullyConnectedOptionsT, TfliteLayerOptions):
+    """Fully connection layer options"""
     def __init__(self, opts=None):
         _tflite_schema_fb.FullyConnectedOptionsT.__init__(self)
         TfliteLayerOptions.__init__(self, opts,
             type=_tflite_schema_fb.BuiltinOptions.FullyConnectedOptions
         )
+        self._activation = TfliteActivation(self.fusedActivationFunction)
+
     @property
     def activation_str(self) -> str:
-        return _get_fused_activation_str(self.fusedActivationFunction) 
+        """Fused activation as a string"""
+        return self._activation.to_string()
     @activation_str.setter
     def activation_str(self, v):
-        self.fusedActivationFunction = _get_fused_activation_int(v) 
+        self._activation = TfliteActivation(v) 
+
+    @property
+    def activation(self) -> TfliteActivation:
+        """Fused activation"""
+        return self._activation
+    @activation.setter
+    def activation(self, v:int):
+        self._activation = TfliteActivation(v)
+
     def __str__(self):
         return f'Activation:{self.activation_str}'
 
@@ -603,45 +692,79 @@ class TfliteDepthwiseConv2dLayer(TfliteLayer):
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
         return self.output_tensor.data
+    @property
+    def params(self) -> TfliteDepthwiseConvParams:
+        """Calculated layer parameters"""
+        return TfliteDepthwiseConvParams.calculate(self)
+
 
 
 class TfliteDepthwiseConv2DLayerOptions(_tflite_schema_fb.DepthwiseConv2DOptionsT, TfliteLayerOptions):
+    """Depthwise Convolution options"""
     def __init__(self, opts=None):
         _tflite_schema_fb.DepthwiseConv2DOptionsT.__init__(self)
         TfliteLayerOptions.__init__(self, opts,
             type=_tflite_schema_fb.BuiltinOptions.DepthwiseConv2DOptions
         )
-       
+        self._activation = TfliteActivation(self.fusedActivationFunction)
+        self._padding = TflitePadding(0 if opts is None else opts.padding)
+
+
     @property
     def stride_width(self) -> int:
+        """Kernel stride width"""
         return self.strideW
     @stride_width.setter
     def stride_width(self, v):
         self.strideW = v
     @property
     def stride_height(self) -> int:
+        """"Kernel stride height"""
         return self.strideH
     @stride_height.setter
     def stride_height(self, v):
         self.strideH = v
     @property
     def multiplier(self) -> int:
+        """"Depth multiplier"""
         return self.depthMultiplier
     @multiplier.setter
     def multiplier(self, v):
         self.depthMultiplier = v
-    @property
-    def padding_str(self) -> str:
-        return _get_padding_str(self.padding)
-    @padding_str.setter
-    def padding_str(self, v):
-        self.padding = _get_padding_int(v)
+
     @property
     def activation_str(self) -> str:
-        return _get_fused_activation_str(self.fusedActivationFunction)
+        """Fused activation as a string"""
+        return self._activation.to_string()
     @activation_str.setter
     def activation_str(self, v):
-        self.fusedActivationFunction = _get_fused_activation_int(v)
+        self._activation = TfliteActivation(v) 
+
+    @property
+    def activation(self) -> TfliteActivation:
+        """Fused activation"""
+        return self._activation
+    @activation.setter
+    def activation(self, v:int):
+        self._activation = TfliteActivation(v)
+
+    @property
+    def padding_str(self) -> str:
+        """Kernel padding as a string"""
+        return self._padding.to_string()
+    @padding_str.setter
+    def padding_str(self, v):
+        self._padding = TflitePadding(v) 
+
+    @property
+    def padding(self) -> TflitePadding:
+        """Kernel padding"""
+        return self._padding
+    @padding.setter
+    def padding(self, v:int):
+        self._padding = TflitePadding(v)
+
+
     def __str__(self):
         return f'Multiplier:{self.multiplier} padding:{self.padding_str} stride:{self.stride_width}x{self.stride_height} activation:{self.activation_str}'
 
@@ -688,51 +811,86 @@ class TflitePooling2dLayer(TfliteLayer):
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
         return self.output_tensor.data
+    @property
+    def params(self) -> TflitePoolParams:
+        """Calculated layer parameters"""
+        return TflitePoolParams.calculate(self)
 
 
 class TflitePool2DLayerOptions(_tflite_schema_fb.Pool2DOptionsT, TfliteLayerOptions):
+    """Pooling layer options"""
     def __init__(self, opts=None):
         _tflite_schema_fb.Pool2DOptionsT.__init__(self)
         TfliteLayerOptions.__init__(self, opts,
             type=_tflite_schema_fb.BuiltinOptions.Pool2DOptions
         )
+        self._activation = TfliteActivation(self.fusedActivationFunction)
+        self._padding = TflitePadding(0 if opts is None else opts.padding)
        
     @property
     def stride_width(self) -> int:
+        """Filter stride width"""
         return self.strideW
     @stride_width.setter
     def stride_width(self, v):
         self.strideW = v
+    
     @property
     def stride_height(self) -> int:
+        """Filter stride height"""
         return self.strideH
     @stride_height.setter
     def stride_height(self, v):
         self.strideH = v
+    
     @property
     def filter_width(self) -> int:
+        """Filter width"""
         return self.filterWidth
     @filter_width.setter
     def filter_width(self, v):
         self.filterWidth = v
+    
     @property
     def filter_height(self) -> int:
+        """Filter height"""
         return self.filterHeight
     @filter_height.setter
     def filter_height(self, v):
         self.filterHeight = v
-    @property
-    def padding_str(self) -> str:
-        return _get_padding_str(self.padding)
-    @padding_str.setter
-    def padding_str(self, v):
-        self.padding = _get_padding_int(v)
+
     @property
     def activation_str(self) -> str:
-        return _get_fused_activation_str(self.fusedActivationFunction)
+        """Fused activation as a string"""
+        return self._activation.to_string()
     @activation_str.setter
     def activation_str(self, v):
-        self.fusedActivationFunction = _get_fused_activation_int(v)
+        self._activation = TfliteActivation(v) 
+
+    @property
+    def activation(self) -> TfliteActivation:
+        """Fused activation"""
+        return self._activation
+    @activation.setter
+    def activation(self, v:int):
+        self._activation = TfliteActivation(v)
+
+    @property
+    def padding_str(self) -> str:
+        """Filter padding as a string"""
+        return self._padding.to_string()
+    @padding_str.setter
+    def padding_str(self, v):
+        self._padding = TflitePadding(v) 
+
+    @property
+    def padding(self) -> TflitePadding:
+        """Filter padding"""
+        return self._padding
+    @padding.setter
+    def padding(self, v:int):
+        self._padding = TflitePadding(v)
+
     def __str__(self):
         return f'Padding:{self.padding_str} stride:{self.stride_width}x{self.stride_height} filter:{self.filter_width}x{self.filter_height} activation:{self.activation_str}'
 
@@ -853,37 +1011,36 @@ class TfliteMulLayer(TfliteLayer):
 
 
 class TfliteMulLayerOptions(_tflite_schema_fb.MulOptionsT, TfliteLayerOptions):
+    """Multiply layer options"""
     def __init__(self, opts=None):
         _tflite_schema_fb.MulOptionsT.__init__(self)
         TfliteLayerOptions.__init__(self, opts,
             type=_tflite_schema_fb.BuiltinOptions.MulOptions
         )
+        self._activation = TfliteActivation(self.fusedActivationFunction)
        
     @property
     def activation_str(self) -> str:
-        return _get_fused_activation_str(self.fusedActivationFunction)
+        """Fused activation as a string"""
+        return self._activation.to_string()
     @activation_str.setter
     def activation_str(self, v):
-        self.fusedActivationFunction = _get_fused_activation_int(v) 
+        self._activation = TfliteActivation(v) 
+
+    @property
+    def activation(self) -> TfliteActivation:
+        """Fused activation"""
+        return self._activation
+    @activation.setter
+    def activation(self, v:int):
+        self._activation = TfliteActivation(v)
+
     def __str__(self):
         return f'Activation:{self.activation_str}'
 
 
 
 
-
-
-def _get_padding_str(padding:int) -> str:
-    return _convert_object_value_to_string(_tflite_schema_fb.Padding(), padding)
-def _get_padding_int(padding:str) -> int:
-    return _convert_object_value_to_int(_tflite_schema_fb.Padding(), padding)
-    
-
-def _get_fused_activation_str(act:int) -> str:
-    return _convert_object_value_to_string(_tflite_schema_fb.ActivationFunctionType(), act)
-def _get_fused_activation_int(act:str) -> int:
-    return _convert_object_value_to_int(_tflite_schema_fb.ActivationFunctionType(), act)
-    
 
 def _convert_object_value_to_string(obj, needle:int) -> str:
     for key in dir(obj):
@@ -892,9 +1049,4 @@ def _convert_object_value_to_string(obj, needle:int) -> str:
         
     return 'None'
 
-def _convert_object_value_to_int(obj, needle:str) -> int:
-    for key in dir(obj):
-        if key.lower() == needle.lower():
-            return getattr(obj, key)
 
-    return -1

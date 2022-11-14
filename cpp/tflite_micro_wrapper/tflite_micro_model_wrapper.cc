@@ -26,7 +26,7 @@ bool TfliteMicroModelWrapper::load(
     const std::string& flatbuffer_data, 
     void* accelerator,
     bool enable_profiler,
-    bool enable_recorder,
+    bool enable_tensor_recorder,
     bool force_buffer_overlap,
     int runtime_memory_size
 )
@@ -41,9 +41,9 @@ bool TfliteMicroModelWrapper::load(
     {
         this->enable_profiler();
     }
-    if(enable_recorder)
+    if(enable_tensor_recorder)
     {
-        this->enable_recorder();
+        this->enable_tensor_recorder();
     }
 
     // If no accelerator is provided,
@@ -193,37 +193,22 @@ py::list TfliteMicroModelWrapper::get_profiling_results() const
 }
 
 /*************************************************************************************************/
-py::list TfliteMicroModelWrapper::get_recorded_data()
+py::bytes TfliteMicroModelWrapper::get_recorded_data()
 {
-    py::list retval;
-    auto& recorded_data = this->recorded_data();
+    const uint8_t* data;
+    uint32_t length;
 
-    for(auto& recorded_layer : recorded_data)
+    if(this->recorded_data(&data, &length)) 
     {
-        py::dict layer;
-        py::list inputs;
-        py::list outputs;
-
-        for(auto& i : recorded_layer.inputs)
-        {
-            std::string buf((const char*)i.data, i.length);
-            inputs.append(py::bytes(buf));
-        }
-        for(auto& i : recorded_layer.outputs)
-        {
-            std::string buf((const char*)i.data, i.length);
-            outputs.append(py::bytes(buf));
-        }
-
-        layer["inputs"] = inputs;
-        layer["outputs"] = outputs;
-        retval.append(layer);
+        std::string buf((const char*)data, length);
+        return py::bytes(buf);
     }
 
-    recorded_data.clear();
-
-    return retval;
+    return py::none();
 }
+
+
+
 
 
 } // namespace mltk

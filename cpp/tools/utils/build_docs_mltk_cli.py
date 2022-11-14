@@ -12,8 +12,12 @@ from mltk import cli
 
 from mltk import MLTK_ROOT_DIR
 from mltk.utils.shell_cmd import run_shell_cmd
-from mltk.utils.python import install_pip_package
-from mltk.utils.path import (fullpath, clean_directory, remove_directory, get_user_setting)
+from mltk.utils.path import (
+    fullpath, 
+    clean_directory, 
+    remove_directory, 
+    get_user_setting
+)
 
 
 
@@ -46,20 +50,10 @@ def build_docs_command(
         _revert_docs_dir(logger)
         return
 
-
-
-    install_pip_package('sphinx==4.5.0', logger=logger)
-    install_pip_package('myst-parser==0.17.2', 'myst_parser', logger=logger)
-    install_pip_package('myst-nb==0.15.0', 'myst_nb', logger=logger)
-    install_pip_package('numpydoc==1.3.1', logger=logger)
-    install_pip_package('sphinx_autodoc_typehints==1.18.2', logger=logger)
-    install_pip_package('sphinx-markdown-tables==0.0.17', 'sphinx_markdown_tables', logger=logger)
-    install_pip_package('sphinx-copybutton==0.5.0', 'sphinx_copybutton', logger=logger)
-    install_pip_package('sphinx-panels==0.6.0', 'sphinx_panels', logger=logger)
-    install_pip_package('nbclient==0.5.13', 'nbclient', logger=logger)
-    
-    install_pip_package('git+https://github.com/linkchecker/linkchecker.git', 'linkcheck', logger=logger)
-    install_pip_package('git+https://github.com/bashtage/sphinx-material.git', 'sphinx_material', logger=logger)
+    try:
+        import sphinx 
+    except:
+        raise RuntimeError('Failed to import python package: sphinx, try running: python ./install_mltk.py --extras dev')
 
     _patch_sphinx_autosummary_generate_py()
     

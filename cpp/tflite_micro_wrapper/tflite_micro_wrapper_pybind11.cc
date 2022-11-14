@@ -82,17 +82,6 @@ PYBIND11_MODULE(MODULE_NAME, m)
     {
         // This allows for printing stack dumps on a segfault
         stacktrace_init();
-
-        // The internal libraries like logging &profiling
-        // have their own heap managment
-        static void* heap = nullptr;
-        constexpr const unsigned heap_size = 64*1024*1024;
-        if(heap == nullptr)
-        {
-            heap = malloc(heap_size);
-            heap_set_buffer(heap, heap_size);
-        }
-
         mltk::get_logger().debug("TF-Lite Micro wrapper initialized");
     });
 

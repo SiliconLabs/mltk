@@ -60,7 +60,7 @@ endif()
 # Use the default model if one wasn't provided on the command-line
 mltk_get(BLE_AUDIO_CLASSIFIER_MODEL)
 if(NOT BLE_AUDIO_CLASSIFIER_MODEL)
-    set(BLE_AUDIO_CLASSIFIER_MODEL "keyword_spotting_pacman")
+    set(BLE_AUDIO_CLASSIFIER_MODEL "keyword_spotting_pacman_v2")
 endif()
 mltk_info("BLE_AUDIO_CLASSIFIER_MODEL=${BLE_AUDIO_CLASSIFIER_MODEL}")
 

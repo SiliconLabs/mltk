@@ -8,6 +8,10 @@ set(MLTK_TOOLCHAIN_NAME linux CACHE INTERNAL "")
 
 include(${CMAKE_CURRENT_LIST_DIR}/../../../cmake/utilities.cmake)
 
+if(NOT GCC_VERSION)
+  set(GCC_VERSION 9 CACHE INTERNAL "")
+endif()
+
 if(NOT MLTK_USER_OPTIONS)
   set(MLTK_USER_OPTIONS ${CMAKE_SOURCE_DIR}/user_options.cmake)
 endif()
@@ -17,14 +21,14 @@ if(EXISTS "${MLTK_USER_OPTIONS}" AND NOT MLTK_NO_USER_OPTIONS)
 endif()
 
 execute_process(
-  COMMAND ${TOOLCHAIN_PREFIX}-gcc-8 --version 
+  COMMAND ${TOOLCHAIN_PREFIX}-gcc-${GCC_VERSION} --version 
   RESULT_VARIABLE result
   OUTPUT_VARIABLE __dummy
 )
 if(result)
-  message(FATAL_ERROR "gcc8 must be installed and available on the exeuctable PATH. \
+  message(FATAL_ERROR "gcc${GCC_VERSION} must be installed and available on the exeuctable PATH. \
   Run the command: \
-  sudo apt-get -y install build-essential g++-8 gdb \
+  sudo apt-get -y install build-essential g++-${GCC_VERSION} ninja-build gdb p7zip-full git-lfs python3-dev python3-venv libusb-1.0-0 libgl1 \
   ")
 endif()
 
@@ -47,9 +51,9 @@ endif()
 
 
 # Toolchain settings
-set(CMAKE_C_COMPILER    ${TOOLCHAIN_PREFIX}-gcc-8 CACHE INTERNAL "")
-set(CMAKE_CXX_COMPILER  ${TOOLCHAIN_PREFIX}-g++-8 CACHE INTERNAL "")
-set(CMAKE_AR            ${TOOLCHAIN_PREFIX}-gcc-ar-8 CACHE INTERNAL "")
+set(CMAKE_C_COMPILER    ${TOOLCHAIN_PREFIX}-gcc-${GCC_VERSION} CACHE INTERNAL "")
+set(CMAKE_CXX_COMPILER  ${TOOLCHAIN_PREFIX}-g++-${GCC_VERSION} CACHE INTERNAL "")
+set(CMAKE_AR            ${TOOLCHAIN_PREFIX}-gcc-ar-${GCC_VERSION} CACHE INTERNAL "")
 set(CMAKE_AS            ${TOOLCHAIN_PREFIX}-as CACHE INTERNAL "")
 set(CMAKE_OBJCOPY       ${TOOLCHAIN_PREFIX}-uobjcopy CACHE INTERNAL "")
 set(CMAKE_OBJDUMP       ${TOOLCHAIN_PREFIX}-objdump CACHE INTERNAL "")
@@ -124,4 +128,9 @@ macro(mltk_toolchain_add_exe_targets target)
     COMMENT "Application ${target} binary size"
   )
 
+  mltk_warn("Statically linking exe, adding ld flags: static-libgcc -static-libstdc++ -pthread -static")
+  target_link_options(${target}
+  PUBLIC
+      -static-libgcc -static-libstdc++ -pthread -static
+  )
 endmacro()

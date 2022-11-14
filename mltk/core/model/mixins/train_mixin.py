@@ -96,6 +96,7 @@ class TrainMixin(BaseMixin):
            
            def _on_save_keras_model(mltk_model:MltkModel, keras_model:KerasModel, logger:logging.Logger) -> KerasModel:
                ...
+               return keras_model
         
            my_model.on_save_keras_model = _on_save_keras_model
 

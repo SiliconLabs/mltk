@@ -73,6 +73,7 @@ INTERFACE
 target_include_directories(mltk_cmsis_nn
 PUBLIC 
     ${cmsis_SOURCE_DIR}
+    ${cmsis_SOURCE_DIR}/CMSIS/NN
     ${cmsis_SOURCE_DIR}/CMSIS/NN/Include
     ${cmsis_SOURCE_DIR}/CMSIS/DSP/Include
 )

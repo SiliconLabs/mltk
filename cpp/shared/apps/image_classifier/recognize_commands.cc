@@ -19,19 +19,17 @@
 #include <cstdio>
 #include <limits>
 
-RecognizeCommands::RecognizeCommands(tflite::ErrorReporter* error_reporter,
-                                     int32_t average_window_duration_ms,
+RecognizeCommands::RecognizeCommands(int32_t average_window_duration_ms,
                                      uint8_t detection_threshold,
                                      int32_t suppression_count,
                                      int32_t minimum_count,
                                      bool ignore_underscore)
-  : error_reporter_(error_reporter),
+  : 
   average_window_duration_ms_(average_window_duration_ms),
   detection_threshold_(detection_threshold),
   suppression_count_(suppression_count),
   minimum_count_(minimum_count),
-  ignore_underscore_(ignore_underscore),
-  previous_results_(error_reporter)
+  ignore_underscore_(ignore_underscore)
 {
   previous_top_label_index_ = 0;
   previous_top_label_time_ = 0;
@@ -46,9 +44,7 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
 
   if ((!previous_results_.empty())
       && (current_time_ms < previous_results_.front().time_)) {
-    TF_LITE_REPORT_ERROR(
-      error_reporter_,
-      "Results must be fed in increasing time order, but received a "
+    MicroPrintf("Results must be fed in increasing time order, but received a "
       "timestamp of %d that was earlier than the previous one of %d",
       current_time_ms, previous_results_.front().time_);
     return kTfLiteError;
@@ -75,7 +71,7 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
   }
   else
   {
-      TF_LITE_REPORT_ERROR(error_reporter_, "Unsupported output tensor data type, must be int8 or float32");
+      MicroPrintf("Unsupported output tensor data type, must be int8 or float32");
       return kTfLiteError;
   }
 

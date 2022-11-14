@@ -8,66 +8,6 @@ from . import tflite_schema as _tflite_schema_fb
 TfliteModel = TypeVar('TfliteModel')
 
 
-class TfliteShape(tuple):
-    """Wrapper for tensor shape"""
-    def __new__ (cls, shape):
-        if isinstance(shape, int):
-            return super(TfliteShape, cls).__new__(cls, tuple([shape]))
-        else:
-            return super(TfliteShape, cls).__new__(cls, tuple([int(x) for x in shape]))
-    def __str__(self):
-        return 'x'.join(f'{x}' for x in self)
-    
-    @property
-    def flat_size(self) -> int:
-        """Total number of elements or flatten size"""
-        n = 1 
-        for x in self:
-            n *= x 
-        return n
-
-
-class TfliteQuantization(_tflite_schema_fb.QuantizationParametersT):
-    """Wrapper for tensor quantization"""
-
-    def __init__(self, fb_quantization: _tflite_schema_fb.QuantizationParametersT=None):
-        _tflite_schema_fb.QuantizationParametersT.__init__(self)
-        if fb_quantization is not None:
-            for x in vars(fb_quantization):
-                setattr(self, x, getattr(fb_quantization, x)) 
-
-        if self.scale is None:
-            self.scale = []
-        else:
-            self.scale = [float(x) for x in self.scale]
-
-        if self.zeroPoint is None: 
-            self.zeroPoint = []
-        else:
-            self.zeroPoint = [int(x) for x in self.zeroPoint]
-
-    @property
-    def zeropoint(self) -> List[int]:
-        """Quantization zero points"""
-        return self.zeroPoint
-    @zeropoint.setter
-    def zeropoint(self, v):
-        self.zeroPoint = v
-
-    @property
-    def quantization_dimension(self) -> int:
-        """Quantization dimension"""
-        return self.quantizedDimension
-    @quantization_dimension.setter
-    def quantization_dimension(self, v:int):
-        self.quantizedDimension = v
-
-    @property
-    def n_channels(self) -> int:
-        """Number of channels. This is the number of elements in @ref scale and @ref zeropoint"""
-        return len(self.scale)
-
-    
 
 
 class TfliteTensor(_tflite_schema_fb.TensorT):
@@ -187,7 +127,81 @@ class TfliteTensor(_tflite_schema_fb.TensorT):
 
 
 
+
+
+
+class TfliteShape(tuple):
+    """Wrapper for tensor shape. This is a tuple of integer values"""
+    def __new__ (cls, shape):
+        if isinstance(shape, int):
+            return super(TfliteShape, cls).__new__(cls, tuple([shape]))
+        else:
+            return super(TfliteShape, cls).__new__(cls, tuple([int(x) for x in shape]))
+    def __str__(self):
+        return 'x'.join(f'{x}' for x in self)
+    
+    @property
+    def flat_size(self) -> int:
+        """Total number of elements or flatten size"""
+        n = 1 
+        for x in self:
+            n *= x 
+        return n
+
+
+class TfliteQuantization(_tflite_schema_fb.QuantizationParametersT):
+    """Wrapper for tensor quantization
+    
+    Refer to `Quantization Specification <https://www.tensorflow.org/lite/performance/quantization_spec>`_ for more details.
+    """
+
+    def __init__(self, fb_quantization: _tflite_schema_fb.QuantizationParametersT=None):
+        _tflite_schema_fb.QuantizationParametersT.__init__(self)
+        if fb_quantization is not None:
+            for x in vars(fb_quantization):
+                setattr(self, x, getattr(fb_quantization, x))
+        else:
+            self.scale = [] 
+            self.zeropoint = []
+            self.quantization_dimension = None
+
+    @property
+    def scale(self) -> List[float]:
+        """Quantization scalers as list of float values"""
+        return self.__dict__.get('scale')
+    @scale.setter
+    def scale(self, v:List[float]):
+        v = [] if v is None else [float(x) for x in v]
+        self.__dict__['scale'] = v
+    
+    @property
+    def zeropoint(self) -> List[int]:
+        """Quantization zero points as list of integers"""
+        return self.__dict__.get('zeroPoint')
+    @zeropoint.setter
+    def zeropoint(self, v):
+        v = [] if v is None else [int(x) for x in v]
+        self.__dict__['zeroPoint'] = v
+
+    @property
+    def quantization_dimension(self) -> int:
+        """Quantization dimension"""
+        return self.__dict__.get('quantizedDimension', None)
+    @quantization_dimension.setter
+    def quantization_dimension(self, v:int):
+        self.__dict__['quantizedDimension'] = v
+
+    @property
+    def n_channels(self) -> int:
+        """Number of channels. This is the number of elements in :py:attr:`~scale` and :py:attr:`~zeropoint`"""
+        return len(self.scale)
+
+    
+
+
 def tflite_to_numpy_dtype(tflite_type:_tflite_schema_fb.TensorType) -> np.dtype:
+    """Convert a tflite schema dtype to numpy dtype"""
+
     if tflite_type == _tflite_schema_fb.TensorType.FLOAT32:
         return np.float32
     elif tflite_type == _tflite_schema_fb.TensorType.FLOAT16:
@@ -208,6 +222,8 @@ def tflite_to_numpy_dtype(tflite_type:_tflite_schema_fb.TensorType) -> np.dtype:
         raise ValueError(f'Unsupported .tflite tensor data type: {tflite_type}')
 
 def numpy_to_tflite_type(dtype:np.dtype) -> _tflite_schema_fb.TensorType:
+    """Convert numpy dtype to tflite schema dtype"""
+
     if dtype == np.float32:
         return _tflite_schema_fb.TensorType.FLOAT32
     elif dtype == np.float16: 

@@ -11,7 +11,6 @@ from multiprocessing.pool import ThreadPool
 from typing import Tuple, Union, Callable, List
 from concurrent.futures import ThreadPoolExecutor
 from mltk.utils.python import (
-    install_pip_package, 
     prepend_exception_msg
 )
 from mltk.utils.path import create_tempdir, fullpath
@@ -19,8 +18,10 @@ from mltk.utils.signal_handler import SignalHandler
 from ..system import is_windows
 
 
-install_pip_package('paramiko')
-import paramiko
+try:
+    import paramiko
+except Exception:
+    raise RuntimeError('Failed import paramiko Python package, try running: pip install paramiko OR pip install silabs-mltk[full]')
 
 
 logging.raiseExceptions = False 

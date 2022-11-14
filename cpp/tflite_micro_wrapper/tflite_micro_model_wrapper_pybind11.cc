@@ -23,7 +23,7 @@ void init_tflite_micro_model(py::module &m)
     .def("invoke", &TfliteMicroModelWrapper::invoke)
     .def("is_profiler_enabled", &TfliteMicroModelWrapper::profiler_is_enabled)
     .def("get_profiling_results", &TfliteMicroModelWrapper::get_profiling_results)
-    .def("is_recorder_enabled", &TfliteMicroModelWrapper::recording_is_enabled)
+    .def("is_tensor_recorder_enabled", &TfliteMicroModelWrapper::is_tensor_recorder_enabled)
     .def("get_recorded_data", &TfliteMicroModelWrapper::get_recorded_data)
     ;
 }

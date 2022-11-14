@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <cstdint>
 
+
+
 #include "stacktrace/stacktrace.h"
 #include "cpputils/heap.hpp"
 
@@ -11,7 +13,7 @@ int _host_argc;
 char** _host_argv;
 
 extern "C" int __real_main(void);
-//extern "C" void* __real_malloc(uint32_t);
+
 
 extern "C" int __wrap_main(int argc, char **argv)
 {
@@ -30,4 +32,3 @@ extern "C" int __wrap_main(int argc, char **argv)
     
     return __real_main();
 }
-

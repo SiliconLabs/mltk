@@ -125,7 +125,8 @@ May be one of the following:
         cli.handle_exception('Failed to load model', e)
 
 
-    logger.info(f'HINT: View more training logs by running the command: mltk tensorboard {model}')
+    if getattr(mltk_model, 'tensorboard', {}):
+        logger.info(f'HINT: View more training logs by running the command: mltk tensorboard {model}')
 
     # Train the model
     try:

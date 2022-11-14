@@ -42,12 +42,18 @@ def main():
         default=False,
         action='store_true'
     )
+    parser.add_argument('--extras', 
+        help='The additional MLTK dependencies to install', 
+        default='full',
+        choices=['full', 'dev', 'none']
+    )
 
     args = parser.parse_args()
     install_mltk_for_local_dev(
         python=args.python, 
         repo_path=args.repo_path,
-        verbose=not args.no_verbose
+        verbose=not args.no_verbose,
+        extras=args.extras
     )
 
 
@@ -56,17 +62,30 @@ def install_mltk_for_local_dev(
     python:str=None, 
     repo_path:str=None,
     verbose:bool=False,
+    extras:str='full'
 ):
     """Install the mltk for local development
     
     Args:
         python: Path to python executable used to install the mltk package. If omitted, use the current python executable
         repo_path: Path to mltk git repo. If omitted, use same directory as this script
+        verbose: Enable verbose logs 
+        extras: Package extra dependencies to install
     """
 
     python = python or sys.executable
     repo_path = repo_path or script_curdir
-    
+    install_dev_requirements = False
+
+    if extras == 'full':
+        extras = '[full]'
+    elif extras == 'dev':
+        install_dev_requirements = True 
+        extras = ''
+    else:
+        extras = ''
+
+
     python = python.replace('\\', '/')
     repo_path = repo_path.replace('\\', '/')
     python_version = get_python_version(python)
@@ -90,7 +109,7 @@ def install_mltk_for_local_dev(
         additional_msg = ''
         if 'ensurepip' in err_msg:
             additional_msg += '\n\nTry running the following commands first:\n'
-            additional_msg += f'sudo apt-get -y install python{python_version}-venv python{python_version}-dev\n\n'
+            additional_msg += f'sudo apt-get -y install build-essential g++-9 ninja-build gdb python{python_version}-dev libportaudio2 pulseaudio p7zip-full git-lfs\n\n'
         raise Exception(f'{err_msg}{additional_msg}') #pylint: disable=raise-missing-from
 
 
@@ -99,10 +118,15 @@ def install_mltk_for_local_dev(
     else:
         python_venv_exe = f'{venv_dir}/bin/python3'
 
-
     # Ensure the wheel package is installed
     logging.info('Installing the "wheel" Python package into the virtual environment')
     issue_shell_command(python_venv_exe, '-m', 'pip', 'install', 'wheel')
+
+
+    if install_dev_requirements:
+        logging.info('Installing development requirements')
+        issue_shell_command(python_venv_exe, '-m', 'pip', 'install', '-r', f'{repo_path}/cpp/tools/utils/dev_requirements.txt')
+
 
     logging.info(f'Installing MLTK into {venv_dir} ...')
     logging.info('(Please be patient, this may take awhile)')
@@ -117,14 +141,15 @@ def install_mltk_for_local_dev(
         env['PATH'] = os.path.dirname(python_venv_exe) + os.pathsep + env['PATH']
 
         cmd.append('-e')
+        cmd.append(f'.{extras}')
 
-        issue_shell_command(*cmd, repo_path, env=env)
+        issue_shell_command(*cmd, env=env, cwd=repo_path)
     except Exception as e:
         err_msg = f'{e}'
         additional_msg = ''
         if os.name != 'nt':
             additional_msg += '\n\nTry running the following commands first:\n'
-            additional_msg += f'sudo apt-get -y install build-essential g++-8 gdb python{python_version}-dev libportaudio2 pulseaudio p7zip-full\n'
+            additional_msg += f'sudo apt-get -y install build-essential g++-9 ninja-build gdb python{python_version}-dev libportaudio2 pulseaudio p7zip-full git-lfs\n'
             additional_msg += '\n\n'
         raise Exception(f'{err_msg}{additional_msg}') #pylint: disable=raise-missing-from
 
@@ -153,7 +178,7 @@ def get_python_version(python:str) -> str:
     return f'{match.group(1)}.{match.group(2)}'
 
 
-def issue_shell_command(*args, env=None):
+def issue_shell_command(*args, env=None, cwd=None):
     cmd = [x for x in args]
     if os.name == 'nt':
         cmd[0] = cmd[0].replace('/', '\\')
@@ -169,7 +194,8 @@ def issue_shell_command(*args, env=None):
             shell=False,
             text=True, # convert the shell output to a string (instead of bytes)
             close_fds=True,
-            env=env
+            env=env,
+            cwd=cwd
         )
     except Exception as e:
         logging.error(f'Failed to issue command: {cmd_str}, err: {e}')
@@ -184,8 +210,8 @@ def issue_shell_command(*args, env=None):
 
     retcode = p.poll()
     if retcode != 0:
-        sys.exit(retcode)
-
+        raise RuntimeError(f'\nCommand failed: {cmd_str}\nSee logs above for more details.')
+    
     return retval
 
 

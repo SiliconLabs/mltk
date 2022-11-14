@@ -87,17 +87,9 @@ struct TfliteMicroAccelerator
   bool (*invoke_simulator)(const std::function<bool()>&func);
 };
 
-class TfliteMicroErrorReporter : public tflite::ErrorReporter
-{
- public:
-  int Report(const char* format, va_list args) override;
-  TF_LITE_REMOVE_VIRTUAL_DELETE
-};
-
-
 
 extern bool model_profiler_enabled;
-extern bool model_recorder_enabled;
+extern bool model_tensor_recorder_enabled;
 extern bool model_error_reporter_enabled;
 extern const char* TFLITE_MICRO_VERSION;
 

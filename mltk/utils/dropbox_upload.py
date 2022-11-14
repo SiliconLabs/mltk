@@ -3,12 +3,6 @@ import gzip
 import shutil
 
 from .path import create_tempdir
-from .python import install_pip_package
-
-install_pip_package('dropbox')
-
-import dropbox # pylint: disable=wrong-import-order
-
 
 
 def upload_file(
@@ -32,6 +26,11 @@ def upload_file(
     Returns:
         Public download link to file on Dropbox
     """
+    try:
+        import dropbox
+    except Exception:
+        raise RuntimeError('Failed import dropbox Python package, try running: pip install dropbox')
+
     d = dropbox.Dropbox(api_token)
 
     if not dst_path:

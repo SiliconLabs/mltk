@@ -31,6 +31,7 @@ def load_audio_directory(
     follow_links=False,
     shuffle_index_directory:str=None,
     list_valid_filenames_in_directory_function:Callable=None,
+    process_samples_function:Callable[[str,Dict[str,str]],None]=None
 ) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
     """Load a directory of audio samples and return a tuple of `Tensorflow Datasets <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_ (samples, label_ids)
     
@@ -106,6 +107,25 @@ def load_audio_directory(
                 ) -> Tuple[str, List[str]]
                     ...
                     return search_class, filenames
+        
+        process_samples_function: This allows for processing the samples BEFORE they're returned by this API.
+            This allows for adding/removing samples.
+            It has the following function signature:
+
+            .. highlight:: python
+            .. code-block:: python
+                
+                def process_samples(
+                    directory:str, # The provided directory to this API
+                    sample_paths:Dict[str,str] # A dictionary: <class name>, [<sample paths relative to directory>],
+                    split:Tuple[float,float],
+                    follow_links:bool,
+                    white_list_formats:List[str],
+                    shuffle:bool,
+                    seed:int,
+                    **kwargs
+                )
+                    ...
 
     Returns:
         Returns a tuple of two tf.data.Dataset, (samples, label_ids)
@@ -129,7 +149,8 @@ def load_audio_directory(
         white_list_formats=white_list_formats,
         return_absolute_paths=True,
         follow_links=follow_links,
-        class_counts=class_counts
+        class_counts=class_counts,
+        process_samples_function=process_samples_function
     )
 
     _update_silence_samples(sample_paths, sample_rate_hz)
@@ -166,6 +187,7 @@ def load_image_directory(
     follow_links=False,
     shuffle_index_directory:str=None,
     list_valid_filenames_in_directory_function=None,
+    process_samples_function=None,
 ) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
     """Load a directory of images samples and return a tuple of `Tensorflow Datasets <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_ (samples, label_ids)
     
@@ -234,6 +256,25 @@ def load_image_directory(
                     ...
                     return search_class, filenames
 
+        process_samples_function: This allows for processing the samples BEFORE they're returned by this API.
+            This allows for adding/removing samples.
+            It has the following function signature:
+
+            .. highlight:: python
+            .. code-block:: python
+                
+                def process_samples(
+                    directory:str, # The provided directory to this API
+                    sample_paths:Dict[str,str] # A dictionary: <class name>, [<sample paths relative to directory>],
+                    split:Tuple[float,float],
+                    follow_links:bool,
+                    white_list_formats:List[str],
+                    shuffle:bool,
+                    seed:int,
+                    **kwargs
+                )
+                    ...
+    
     Returns:
         Returns a tuple of two tf.data.Dataset, (samples, label_ids)
     """
@@ -254,7 +295,8 @@ def load_image_directory(
         white_list_formats=white_list_formats,
         return_absolute_paths=True,
         follow_links=follow_links,
-        class_counts=class_counts
+        class_counts=class_counts,
+        process_samples_function=process_samples_function
     )
 
     label_ds = tf.data.Dataset.from_tensor_slices(np.array(sample_labels, dtype=np.int32))

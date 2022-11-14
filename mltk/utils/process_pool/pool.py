@@ -494,6 +494,7 @@ class _Subprocess(threading.Thread):
                 break
 
             result = self._entry_point(*self._invoke_args, **self._invoke_kwargs)
+            result = result or (None, )
             self._invoke_args = None
             self._invoke_kwargs = None
 

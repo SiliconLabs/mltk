@@ -198,11 +198,31 @@ def load_tflite_or_keras_model(
             if not isinstance(model, TrainMixin):
                 raise Exception('MltkModel must inherit TrainMixin')
             logger.debug('Building Keras model')
+
+            # Ensure test mode is enabled
+            test_mode_enabled = model.attributes['test_mode_enabled']
+            model.attributes['test_mode_enabled'] = True 
+
             built_model = model.build_model_function(model)
             if built_model is None:
-                raise RuntimeError(f'Your "my_model.build_model_function" must return the compiled Keras model (did you forget to add the "return keras_model" statement at the end?')
+                raise RuntimeError('Your "my_model.build_model_function" must return the compiled Keras model (did you forget to add the "return keras_model" statement at the end?')
             elif not isinstance(built_model, KerasModel):
                 raise RuntimeError('Your "my_model.build_model_function" must return the compiled Keras model instance')
+
+            on_save_model = getattr(model, 'on_save_keras_model', None)
+            if on_save_model is not None:
+                try:
+                    built_model = on_save_model(
+                        mltk_model=model,
+                        keras_model=built_model,
+                        logger=logger
+                    )
+                except Exception as e:
+                    prepend_exception_msg(e, 'Error while calling my_model.on_save_keras_model')
+                    raise
+
+            # Restore whatever the test mode state was
+            model.attributes['test_mode_enabled'] = test_mode_enabled 
 
         elif model_type in ('h5', '.h5', 'keras'):
             h5_path = model.h5_archive_path

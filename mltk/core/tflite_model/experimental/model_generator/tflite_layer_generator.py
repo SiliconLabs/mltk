@@ -461,9 +461,23 @@ class TfliteMulLayerGenerator(TfliteLayerGenerator, TfliteMulLayer):
         self._options = TfliteMulLayerOptions()
         self._options.activation_str = config.activation
 
+        # For the MUL broadcasting implementation the shapes of both input 
+        # tensors must be specified
+        input1_shape = config.get_shape_config_entry("input1", 4)
+        input2_shape = config.get_shape_config_entry("input2", 4)
+        output_shape = config.get_shape_config_entry("output", 4)
+
+        # For support of the MUL layer without broadcasting
+        if input1_shape is None or input2_shape is None or output_shape is None:
+            input_shape = config.get_shape_config_entry("input", 4, True)
+            input1_shape = input_shape
+            input2_shape = input_shape
+            output_shape = input_shape
+
         input1_tensor = generate_asymmetric_quantized_tensor(
             config, 
-            'input', 
+            'input1',
+            shape=input1_shape,
             default_scale=0.5,
             default_zeropoint=0,
             is_model_input=True,
@@ -471,7 +485,7 @@ class TfliteMulLayerGenerator(TfliteLayerGenerator, TfliteMulLayer):
         input2_tensor = generate_asymmetric_quantized_tensor(
             config, 
             'input2',
-            shape=input1_tensor.shape,
+            shape=input2_shape,
             default_scale=0.5,
             default_zeropoint=0,
             is_model_input=True,
@@ -479,7 +493,7 @@ class TfliteMulLayerGenerator(TfliteLayerGenerator, TfliteMulLayer):
         output_tensor = generate_asymmetric_quantized_tensor(
             config, 
             'output',
-            shape=input2_tensor.shape,
+            shape=output_shape,
             generate_random=False, 
             default_scale=0.5,
             default_zeropoint=0,

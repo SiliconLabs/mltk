@@ -30,7 +30,7 @@ Comma separated list of unit test types, options are:
     list_only: bool = typer.Option(False, '--list', '-l', 
         help='Only list the available unit tests'
     ),
-    clear_cache: bool = typer.Option(True, 
+    clear_cache: bool = typer.Option(False, 
         help='Clear the MLTK cache directory before running tests'
     ),
 ):

@@ -20,7 +20,7 @@ limitations under the License.
 #include "tensorflow/lite/kernels/internal/compatibility.h"
 #include "tensorflow/lite/micro/flatbuffer_utils.h"
 #include "tensorflow/lite/micro/memory_helpers.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_log.h"
 #include "tensorflow/lite/micro/micro_profiler.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
@@ -52,7 +52,9 @@ MicroGraph::MicroGraph(TfLiteContext* context, const Model* model,
   }
 }
 
-MicroGraph::~MicroGraph() {}
+MicroGraph::~MicroGraph() {
+  FREE_PROFILERS();
+}
 
 TfLiteStatus MicroGraph::InitSubgraphs() {
   int previous_subgraph_idx = current_subgraph_index_;
@@ -144,7 +146,6 @@ TfLiteStatus MicroGraph::FreeSubgraphs() {
     }
   }
   current_subgraph_index_ = previous_subgraph_idx;
-  FREE_PROFILERS()
 
   return kTfLiteOk;
 }
@@ -178,11 +179,11 @@ TfLiteStatus MicroGraph::InvokeSubgraph(int subgraph_idx) {
 #endif
 
     TFLITE_DCHECK(registration->invoke);
-    RECORD_INPUTS(i, context_, node)
+    TFLITE_MICRO_RECORD_INPUTS(i, context_, node)
     START_OP_PROFILER(subgraph_idx, i, registration->builtin_code)
     TfLiteStatus invoke_status = registration->invoke(context_, node);
     STOP_OP_PROFILER(subgraph_idx, i)
-    RECORD_OUTPUTS(i, context_, node)
+    TFLITE_MICRO_RECORD_OUTPUTS(i, context_, node)
 
     // All TfLiteTensor structs used in the kernel are allocated from temp
     // memory in the allocator. This creates a chain of allocations in the

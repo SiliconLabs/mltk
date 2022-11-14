@@ -1,12 +1,10 @@
 
 import pprint
 import logging
-import copy
-from typing import Union, List, Tuple
+from typing import Union, Tuple
 
 import numpy as np 
 import tensorflow as tf
-from tensorflow import keras
 
 from mltk.utils import gpu
 from mltk.utils.python import DefaultDict, prepend_exception_msg, append_exception_msg
@@ -66,11 +64,6 @@ def quantize_model(
     Returns:
         The file path to the generated `.tflite` OR TfliteModel object if output='tflite_model'
     """
-    # NOTE: Tensorflow can take a long time to import
-    #       So we import it here when it's actually needed
-    #       instead of importing globally 
-    import tensorflow as tf
-
     if isinstance(model, MltkModel):
         mltk_model = model
 
@@ -152,6 +145,8 @@ def quantize_model(
         retval = mltk_model.tflite_log_dir_path
 
 
+    _update_absl_log_level('ERROR')
+    
     # If we should generate an unquantized/float32 .tflite model
     # NOTE: Run this IF a "representative_dataset" converter setting was provided
     float32_tflite_path = None
@@ -217,6 +212,7 @@ def quantize_model(
 
 
     mltk_model.unload_dataset()
+    _update_absl_log_level()
 
     retval, tflite_model = _save_flatbuffer_file(
         mltk_model=mltk_model,
@@ -258,7 +254,7 @@ def create_representative_dataset_generator(mltk_model: MltkModel, logger: loggi
 
     def _representative_dataset_generator():
         for i, batch in enumerate(validation_data):
-            batch_x, _, _ = keras.utils.unpack_x_y_sample_weight(batch)
+            batch_x, _, _ = tf.keras.utils.unpack_x_y_sample_weight(batch)
             if isinstance(batch_x, tf.Tensor):
                 if batch_x.dtype != tf.float32:
                     batch_x = tf.cast(batch_x, dtype=tf.float32)
@@ -338,8 +334,6 @@ def _save_flatbuffer_file(
 
 
 def _populate_converter_options(converter, tflite_converter_settings:dict):
-    import tensorflow as tf
-
     optimizations = tflite_converter_settings['optimizations']
     if optimizations:
         for i, opt in enumerate(optimizations):
@@ -376,27 +370,39 @@ def _populate_converter_options(converter, tflite_converter_settings:dict):
 
 
 def _convert_dtype(dtype):
-    import tensorflow as tf
-
     if isinstance(dtype, str):
         return getattr(tf, dtype)
 
     if isinstance(dtype, tf.DType):
         return dtype
 
-    if dtype in (np.uint8, np.dtype('uint8')):
+    if dtype in (np.uint8, np.dtype('uint8'), 'uint8'):
         return tf.uint8
 
-    if dtype in (np.int8, np.dtype('int8')):
+    if dtype in (np.int8, np.dtype('int8'), 'int8'):
         return tf.int8
 
-    if dtype in (np.int16, np.dtype('int16')):
+    if dtype in (np.int16, np.dtype('int16'), 'int16'):
         return tf.int16
 
-    if dtype in (np.int32, np.dtype('int32')):
+    if dtype in (np.int32, np.dtype('int32'), 'int32'):
         return tf.int32
     
-    if dtype in (np.float, np.float32, np.dtype('float32')):
+    if dtype in (np.float, np.float32, np.dtype('float32'), 'float32'):
         return tf.float32
     
     return dtype
+
+
+def _update_absl_log_level(level=None):
+    """The ABSL package prints a bunch of warnings while doing the conversion which may be ignore"""
+    try:
+        import absl.logging
+        if level is not None:
+            globals()['absl_log_level'] = absl.logging.get_verbosity()
+            absl.logging.set_verbosity(getattr(absl.logging, level))
+
+        else:
+            absl.logging.set_verbosity(globals().get('absl_log_level', absl.logging.get_verbosity()))
+    except:
+        pass

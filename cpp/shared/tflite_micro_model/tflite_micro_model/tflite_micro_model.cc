@@ -242,7 +242,7 @@ void TfliteMicroModel::unload()
     _ops_resolver = nullptr;
     parameters.unload();
     _model_details.unload();
-    TFLITE_MICRO_RECORDER_CLEAR();
+    TFLITE_MICRO_RESET_RECORDER();
     if(_interpreter != nullptr)
     {
         _interpreter->~MicroInterpreter();
@@ -274,10 +274,8 @@ bool TfliteMicroModel::invoke() const
         return false;
     }
 
-    if(recording_is_enabled())
-    {
-        TFLITE_MICRO_RECORDER_CLEAR();
-    }
+    TFLITE_MICRO_RESET_RECORDER();
+    
     if(profiler_is_enabled())
     {
         profiling::reset(this->profiler());
@@ -442,7 +440,7 @@ profiling::Profiler* TfliteMicroModel::profiler() const
 }
 
 /*************************************************************************************************/
-bool TfliteMicroModel::enable_recorder()
+bool TfliteMicroModel::enable_tensor_recorder()
 {
 #if TFLITE_MICRO_RECORDER_ENABLED
     if(is_loaded())
@@ -450,7 +448,7 @@ bool TfliteMicroModel::enable_recorder()
         MLTK_ERROR("Model already loaded");
         return false;
     }
-    model_recorder_enabled = true;
+    model_tensor_recorder_enabled = true;
     return true;
 #else
     MLTK_ERROR("C++ library not build with recording support");
@@ -459,16 +457,16 @@ bool TfliteMicroModel::enable_recorder()
 }
 
 /*************************************************************************************************/
-bool TfliteMicroModel::recording_is_enabled() const
+bool TfliteMicroModel::is_tensor_recorder_enabled() const
 {
-    return model_recorder_enabled;
+    return model_tensor_recorder_enabled;
 }
 
 /*************************************************************************************************/
 #ifdef TFLITE_MICRO_RECORDER_ENABLED
-TfliteMicroRecordedData& TfliteMicroModel::recorded_data()
+bool TfliteMicroModel::recorded_data(const uint8_t** buffer_ptr, uint32_t* length_ptr) const
 {
-    return TfliteMicroRecordedData::instance();
+    return get_recorded_data(buffer_ptr, length_ptr);
 }
 #endif
 
@@ -506,25 +504,38 @@ bool TfliteMicroModel::load_interpreter(
     const void* flatbuffer, 
     tflite::MicroOpResolver& op_resolver,
     uint8_t* runtime_buffer,
-    unsigned runtime_buffer_size 
+    unsigned runtime_buffer_size,
+    bool disable_logs
 )
 {
     auto tflite_model = tflite::GetModel(flatbuffer);
     _interpreter = new(_interpreter_buffer)tflite::MicroInterpreter(
         tflite_model,
         op_resolver,
-        runtime_buffer, runtime_buffer_size,
-        &_error_reporter
+        runtime_buffer, runtime_buffer_size
     );
 
+    const auto saved_log_level = get_logger().level();
+
+    if(disable_logs)
+    {
+        get_logger().level(logging::Disabled);
+    }
+
+    bool retval = true;
     if(_interpreter->AllocateTensors() != kTfLiteOk)
     {
         _interpreter->~MicroInterpreter();
         _interpreter = nullptr;
-        return false;
+        retval = false;
     }
 
-    return true;
+    if(disable_logs)
+    {
+        get_logger().level(saved_log_level);
+    }
+
+    return retval;
 }
 
 
@@ -567,7 +578,7 @@ bool TfliteMicroModel::find_optimal_buffer_size(
         }
 
         // Try to load the model with the new buffer
-        if(load_interpreter(flatbuffer, op_resolver, buffer, buffer_size))
+        if(load_interpreter(flatbuffer, op_resolver, buffer, buffer_size, true))
         {
             // The model was successfully loaded
             // Save the buffer size

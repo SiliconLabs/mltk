@@ -62,6 +62,7 @@ macro(mltk_commander_add_download_run_target target)
   mltk_get(MLTK_DOWNLOAD_RUN_PORT)
   mltk_get(MLTK_DOWNLOAD_RUN_BAUD)
   mltk_get(MLTK_DOWNLOAD_RUN_TIMEOUT)
+  mltk_get(MLTK_DOWNLOAD_RUN_RETRIES)
   mltk_get(MLTK_DOWNLOAD_RUN_SSH_HOSTNAME)
   mltk_get(MLTK_DOWNLOAD_RUN_NO_MASSERASE)
   mltk_get(MLTK_DOWNLOAD_RUN_COMPLETED_MSG)
@@ -92,6 +93,10 @@ macro(mltk_commander_add_download_run_target target)
     set(timeout_arg --timeout ${MLTK_DOWNLOAD_RUN_TIMEOUT})
   endif()
 
+  if(MLTK_DOWNLOAD_RUN_RETRIES)
+    set(retries_arg --retries ${MLTK_DOWNLOAD_RUN_RETRIES})
+  endif()
+
   if(MLTK_DOWNLOAD_RUN_SSH_HOSTNAME)
     set(host_arg --host "${MLTK_DOWNLOAD_RUN_SSH_HOSTNAME}")
   endif()
@@ -107,7 +112,7 @@ macro(mltk_commander_add_download_run_target target)
   endif()
 
   add_custom_target(${target}_download_run
-    COMMAND ${PYTHON_EXECUTABLE} -m mltk build download_run "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.s37" --platform ${MLTK_PLATFORM_NAME} ${masserase_arg} ${device_arg} ${setup_script_arg} ${setup_script_args_arg} ${port_arg} ${baud_arg} ${timeout_arg} ${host_arg} ${completed_msg_arg}
+    COMMAND ${PYTHON_EXECUTABLE} -m mltk build download_run "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.s37" --platform ${MLTK_PLATFORM_NAME} ${masserase_arg} ${device_arg} ${setup_script_arg} ${setup_script_args_arg} ${port_arg} ${baud_arg} ${timeout_arg} ${retries_arg} ${host_arg} ${completed_msg_arg}
     DEPENDS ${target}
     COMMENT "Downloading and running ${target}.s37 on ${MLTK_PLATFORM_NAME}'s ..."
     USES_TERMINAL

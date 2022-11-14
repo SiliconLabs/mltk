@@ -61,7 +61,7 @@ class TfliteModelGenerator:
 
             opcode_exists = False
             for i, op in enumerate(opcodes):
-                if layer.opcode == max(op.deprecatedBuiltinCode, op.builtinCode):
+                if layer.opcode == max(getattr(op, 'deprecatedBuiltinCode', -1), op.builtinCode):
                     operator.opcodeIndex = i 
                     opcode_exists = True
                     break
@@ -71,10 +71,10 @@ class TfliteModelGenerator:
                 opcode = tflite_fb.OperatorCodeT()
                 # For mode details on what's going on here, see:
                 # https://github.com/tensorflow/community/pull/285/files
-                if layer.opcode > 127:
-                    opcode.builtinCode = layer.opcode
-                else:
+                if hasattr(opcode, 'deprecatedBuiltinCode') and layer.opcode < 127:
                     opcode.deprecatedBuiltinCode = layer.opcode
+                else:
+                    opcode.builtinCode = layer.opcode
                 
                 opcodes.append(opcode)
 

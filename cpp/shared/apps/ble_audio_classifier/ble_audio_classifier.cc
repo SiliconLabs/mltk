@@ -145,7 +145,7 @@ extern "C" void ble_audio_classifier_init(void)
   }
 
   // Instantiate CommandRecognizer  
-  static RecognizeCommands static_recognizer(model.error_reporter(), SMOOTHING_WINDOW_DURATION_MS,
+  static RecognizeCommands static_recognizer(SMOOTHING_WINDOW_DURATION_MS,
       DETECTION_THRESHOLD, SUPPRESION_TIME_MS, MINIMUM_DETECTION_COUNT, IGNORE_UNDERSCORE_LABELS);
   command_recognizer = &static_recognizer;
 
@@ -378,7 +378,11 @@ static void handle_results(int32_t current_time, int result, uint8_t score, bool
     // Reset the AFG internal state so we can detect a new keyword
     // NOTE: Alternatively, the "suppression" setting can be increased to add a delay
     //       until processing states again (this effectively clears the audio buffer)
-    sl_ml_audio_feature_generation_reset(); 
+    if(SUPPRESION_TIME_MS <= 1)
+    {
+      sl_ml_audio_feature_generation_reset(); 
+    }
+    
     
     printf("Detected class=%d label=%s score=%d @%ldms\n", result, label, score, current_time);
     if(detection_callback != nullptr)

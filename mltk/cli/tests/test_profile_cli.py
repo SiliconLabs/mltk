@@ -34,7 +34,7 @@ def test_profile_output():
     remove_directory(out_dir)
 
 def test_profile_noformat():
-    run_mltk_command('profile', 'image_example1', '--noformat')
+    run_mltk_command('profile', 'image_example1', '--no-format')
 
 def test_profile_device():
     try:

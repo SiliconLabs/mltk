@@ -10,6 +10,9 @@ from mltk.core import (
     TfliteTensor, 
     TfliteOpCode,
     TfliteConv2dLayer,
+    TfliteDepthwiseConv2dLayer,
+    TfliteFullyConnectedLayer,
+    TflitePooling2dLayer
 )
 from mltk.core.tflite_model.tflite_layer import TfliteConv2DLayerOptions
 from mltk.utils.test_helper.data import IMAGE_CLASSIFICATION_TFLITE_PATH
@@ -538,3 +541,147 @@ def test_set_tensor_data_with_save():
         assert np.array_equal(new_filters_data, loaded_conv2d_layer.filters_data)
     finally:
         os.remove(tmp_tflite_path)
+
+
+def test_conv2d_params():
+    from mltk.core.tflite_micro import TfliteMicro
+
+    tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
+    recorded_layers = TfliteMicro.record_model(IMAGE_CLASSIFICATION_TFLITE_PATH)
+
+    for layer_index, recorded_data in enumerate(recorded_layers):
+        tf_layer = tflite_model.layers[layer_index]
+
+        if not isinstance(tf_layer, TfliteConv2dLayer):
+            continue
+
+        expected_params = recorded_data.metadata['params']
+        expected_params['per_channel_multiplier'] = np.frombuffer(expected_params['per_channel_multiplier'], dtype=np.int32)
+        expected_params['per_channel_shift'] = np.frombuffer(expected_params['per_channel_shift'], dtype=np.int32)
+
+        calc_params = tf_layer.params
+    
+        assert calc_params.padding.value == expected_params['padding_type']
+        assert calc_params.padding.width == expected_params['padding_width']
+        assert calc_params.padding.height == expected_params['padding_height']
+        assert calc_params.stride_width == expected_params['stride_width']
+        assert calc_params.stride_height == expected_params['stride_height']
+        assert calc_params.dilation_width_factor == expected_params['dilation_width_factor']
+        assert calc_params.dilation_height_factor == expected_params['dilation_height_factor']
+        assert calc_params.input_offset == expected_params['input_offset']
+        assert calc_params.weights_offset == expected_params['weights_offset']
+        assert calc_params.output_offset == expected_params['output_offset']
+        assert calc_params.quantized_activation_min == expected_params['quantized_activation_min']
+        assert calc_params.quantized_activation_max == expected_params['quantized_activation_max']
+        assert np.allclose(calc_params.per_channel_output_multiplier, expected_params['per_channel_multiplier'])
+        assert np.allclose(calc_params.per_channel_output_shift, expected_params['per_channel_shift'])
+
+
+def test_depthwise_conv2d_params():
+    from mltk.core.tflite_micro import TfliteMicro
+    from mltk.core import load_tflite_model
+
+    tflite_model = load_tflite_model('keyword_spotting')
+    recorded_layers = TfliteMicro.record_model(tflite_model.path)
+
+    for layer_index, recorded_data in enumerate(recorded_layers):
+        tf_layer = tflite_model.layers[layer_index]
+
+        if not isinstance(tf_layer, TfliteDepthwiseConv2dLayer):
+            continue
+
+        expected_params = recorded_data.metadata['params']
+        expected_params['per_channel_multiplier'] = np.frombuffer(expected_params['per_channel_multiplier'], dtype=np.int32)
+        expected_params['per_channel_shift'] = np.frombuffer(expected_params['per_channel_shift'], dtype=np.int32)
+
+        calc_params = tf_layer.params
+    
+        assert calc_params.depth_multiplier == expected_params['depth_multiplier']
+        assert calc_params.padding.value == expected_params['padding_type']
+        assert calc_params.padding.width == expected_params['padding_width']
+        assert calc_params.padding.height == expected_params['padding_height']
+        assert calc_params.stride_width == expected_params['stride_width']
+        assert calc_params.stride_height == expected_params['stride_height']
+        assert calc_params.dilation_width_factor == expected_params['dilation_width_factor']
+        assert calc_params.dilation_height_factor == expected_params['dilation_height_factor']
+        assert calc_params.input_offset == expected_params['input_offset']
+        assert calc_params.weights_offset == expected_params['weights_offset']
+        assert calc_params.output_offset == expected_params['output_offset']
+        assert calc_params.quantized_activation_min == expected_params['quantized_activation_min']
+        assert calc_params.quantized_activation_max == expected_params['quantized_activation_max']
+        assert np.allclose(calc_params.per_channel_output_multiplier, expected_params['per_channel_multiplier'])
+        assert np.allclose(calc_params.per_channel_output_shift, expected_params['per_channel_shift'])
+
+
+def test_fully_connected_params():
+    from mltk.core.tflite_micro import TfliteMicro
+    from mltk.core import load_tflite_model
+
+    tflite_model = load_tflite_model('anomaly_detection')
+    recorded_layers = TfliteMicro.record_model(tflite_model.path)
+
+    for layer_index, recorded_data in enumerate(recorded_layers):
+        tf_layer = tflite_model.layers[layer_index]
+
+        if not isinstance(tf_layer, TfliteFullyConnectedLayer):
+            continue
+
+        expected_params = recorded_data.metadata['params']
+        calc_params = tf_layer.params
+    
+        assert calc_params.input_offset == expected_params['input_offset']
+        assert calc_params.weights_offset == expected_params['weights_offset']
+        assert calc_params.output_offset == expected_params['output_offset']
+        assert calc_params.output_multiplier == expected_params['output_multiplier']
+        assert calc_params.output_shift == expected_params['output_shift']
+        assert calc_params.quantized_activation_min == expected_params['quantized_activation_min']
+        assert calc_params.quantized_activation_max == expected_params['quantized_activation_max']
+
+
+def test_average_pool_params():
+    from mltk.core.tflite_micro import TfliteMicro
+    from mltk.core import load_tflite_model
+
+    tflite_model = load_tflite_model('keyword_spotting')
+    recorded_layers = TfliteMicro.record_model(tflite_model.path)
+
+    for layer_index, recorded_data in enumerate(recorded_layers):
+        tf_layer = tflite_model.layers[layer_index]
+
+        if not isinstance(tf_layer, TflitePooling2dLayer):
+            continue
+
+        expected_params = recorded_data.metadata['params']
+        calc_params = tf_layer.params
+    
+        assert calc_params.padding.value == expected_params['padding_type']
+        assert calc_params.padding.width == expected_params['padding_width']
+        assert calc_params.padding.height == expected_params['padding_height']
+        assert calc_params.stride_width == expected_params['stride_width']
+        assert calc_params.stride_height == expected_params['stride_height']
+        assert calc_params.quantized_activation_min == expected_params['quantized_activation_min']
+        assert calc_params.quantized_activation_max == expected_params['quantized_activation_max']
+
+def test_max_pool_params():
+    from mltk.core.tflite_micro import TfliteMicro
+    from mltk.core import load_tflite_model
+
+    tflite_model = load_tflite_model('keyword_spotting_on_off')
+    recorded_layers = TfliteMicro.record_model(tflite_model.path)
+
+    for layer_index, recorded_data in enumerate(recorded_layers):
+        tf_layer = tflite_model.layers[layer_index]
+
+        if not isinstance(tf_layer, TflitePooling2dLayer):
+            continue
+
+        expected_params = recorded_data.metadata['params']
+        calc_params = tf_layer.params
+    
+        assert calc_params.padding.value == expected_params['padding_type']
+        assert calc_params.padding.width == expected_params['padding_width']
+        assert calc_params.padding.height == expected_params['padding_height']
+        assert calc_params.stride_width == expected_params['stride_width']
+        assert calc_params.stride_height == expected_params['stride_height']
+        assert calc_params.quantized_activation_min == expected_params['quantized_activation_min']
+        assert calc_params.quantized_activation_max == expected_params['quantized_activation_max']

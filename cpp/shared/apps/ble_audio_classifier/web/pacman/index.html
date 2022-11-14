@@ -71,12 +71,12 @@
 					}
 				});
 
-				$("#bluetooth-msg").click(function(e) { 
+				$(".bluetooth-msg").click(function(e) { 
 					e.stopPropagation();
 					bluetoothTryConnect();
 				});
 				
-				$("#help-button").click(function(e) { 
+				$(".help-button").click(function(e) { 
 					e.stopPropagation();
 					if ( $('#help').css("display") === "none") { 
 						$('#help').fadeIn("slow");
@@ -96,7 +96,7 @@
 					$(".buttons").show();
 				});
 
-				$("#install-button").click(function(e) { 
+				$(".install-button").click(function(e) { 
 					e.stopPropagation();
 					if ( $('#install').css("display") === "none") { 
 						$('#install').fadeIn("slow");
@@ -116,7 +116,7 @@
 					closeInstallDialog();
 				});
 
-				$("#docs-button").click(function(e) { 
+				$(".docs-button").click(function(e) { 
 					e.stopPropagation();
 				});
 				
@@ -157,7 +157,7 @@
 					}
 
 					if (HOME) { 
-						$("#bluetooth-msg").fadeOut('slow');
+						$(".bluetooth-msg").fadeOut('slow');
 						initGame(true);
 						
 					} else { 				
@@ -199,7 +199,7 @@
 								}
 							} else if (GAMEOVER) { 
 								initHome();
-								$("#bluetooth-msg").fadeIn('slow');
+								$(".bluetooth-msg").fadeIn('slow');
 							}
 						//}
 					}
@@ -213,45 +213,33 @@
 	<body>
 		<a href="https://siliconlabs.github.io/mltk/" target="_blank"><img class="logo" src="img/logo.png" /></a>
 		<div id="sound"></div>
-		<div id="bluetooth-msg">Press any key to connect to Bluetooth</div>
+		
+
 	
-		<div class="dialog" id="install">
-			<div id="install-close" class="dialog-close-button">X</div>
-			<h2>Installation</h2>
-			<ol>
-				<li>Obtain a BRD2601 development board from <a href="https://www.silabs.com/development-tools/wireless/efr32xg24-dev-kit" target="_blank">HERE</a> and connect to your computer</li>
-				<li>Install the JLink driver by installing <a href="https://www.silabs.com/developers/simplicity-studio" target="_blank">Simplicity Studio</a> OR <a href="https://www.segger.com/downloads/jlink/#J-LinkSoftwareAndDocumentationPack" target="_blank">Segger JLink</a></li>
-				<li>Download the BRD2601 firmware image from <a href="https://www.dropbox.com/s/z2te8bp60ed4hg3/mltk_ble_audio_classifier-pacman.s37?dl=1" target="_blank">HERE</a></li>
-				<li>Download the Silicon Labs Commander utility from <a href="https://community.silabs.com/s/article/simplicity-commander" target="_blank">HERE</a></li>
-				<li>Use Commander to program the firmware image to the development board</li>
-				<li>Click <a href="javascript:closeInstallDialog();">HERE</a> to open a bluetooth connection to development board</li>
-				<li>Play Pac-Man using the keywords: Left, Right, Up, Down</li>
-			</ol>
-
-			<p>See the MLTK <a target="_blank" href="https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_pacman.html">documentation</a> for more details</p>
-		</div>
-
-
-		<div class="dialog" id="help">
-			<div id="help-close" class="dialog-close-button">X</div>
-			<h2>Help</h2>
-			<table align="center" border="0" cellPadding="2" cellSpacing="0">
-				<tbody>
-					<tr><td>Say "Left" : </td><td>Move Left</td></tr>
-					<tr><td>Say "Right" : </td><td>Move Right</td></tr>
-					<tr><td>Say "Down" : </td><td>Move Down</td></tr>
-					<tr><td>Say "Up" : </td><td>Move Up</td></tr>
-					<tr><td colspan="2">&nbsp;</td></tr>
-					<tr><td>Say "Stop" : </td><td>PAUSE</td></tr>
-					<tr><td>Say "Go" : </td><td>RESUME</td></tr>
-				</tbody>
-			</table>
-		</div>
 
 		<div id="home">
 			<div class="title-silabs">Silicon Lab's</div>
 			<div class="title-ml">Machine Learning</div>
 			<h1>pac-man</h1>
+			<div class="bluetooth-msg">Press any key to connect to Bluetooth</div>
+
+			<div class="dialog" id="install">
+				<div id="install-close" class="dialog-close-button">X</div>
+				<h2>Installation</h2>
+				<ol>
+					<li>Obtain a BRD2601 development board from <a href="https://www.silabs.com/development-tools/wireless/efr32xg24-dev-kit" target="_blank">HERE</a> and connect to your computer</li>
+					<li>Install the JLink driver by installing <a href="https://www.silabs.com/developers/simplicity-studio" target="_blank">Simplicity Studio</a> OR <a href="https://www.segger.com/downloads/jlink/#J-LinkSoftwareAndDocumentationPack" target="_blank">Segger JLink</a></li>
+					<li>Download the BRD2601 firmware image from <a href="https://www.dropbox.com/s/z2te8bp60ed4hg3/mltk_ble_audio_classifier-pacman.s37?dl=1" target="_blank">HERE</a></li>
+					<li>Download the Silicon Labs Commander utility from <a href="https://community.silabs.com/s/article/simplicity-commander" target="_blank">HERE</a></li>
+					<li>Use Commander to program the firmware image to the development board</li>
+					<li>Click <a href="javascript:closeInstallDialog();">HERE</a> to open a bluetooth connection to development board</li>
+					<li>Play Pac-Man using the keywords: Left, Right, Up, Down</li>
+				</ol>
+	
+				<p>See the MLTK <a target="_blank" href="https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_pacman.html">documentation</a> for more details</p>
+			</div>
+	
+
 			<canvas id="canvas-home-title-pacman"></canvas>
 			<div id="presentation">
 				<div id="presentation-titles">character &nbsp;/&nbsp; nickname</div>
@@ -261,6 +249,13 @@
 				<canvas id="canvas-presentation-clyde"></canvas><div id="presentation-character-clyde">- pokey</div><div id="presentation-name-clyde">"clyde"</div>
 			</div>
 			<canvas id="trailer"></canvas>
+
+			<div class="buttons buttons-home">
+				<div class="install-button">install</div>|
+				<div class="docs-button"><a href="https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_pacman.html" target="_blank">docs</a></div>
+				<a class="sound" href="javascript:void(0);" data-sound="on"><img src="img/sound-on.png" alt="" border="0"></a>
+			</div>
+	
 
 			<div class="bottom-info">
 				<div id="copyright">
@@ -275,6 +270,7 @@
 				<div>Silicon Lab's</div><em>ML</em><h1>pac-man</h1>
 			    <canvas id="canvas-panel-title-pacman"></canvas>
 			</div>
+			<div class="bluetooth-msg">Press any key to connect to Bluetooth</div>
 			<div id="score"><h2>1UP</h2><span>00</span></div>
 			<div id="highscore"><h2>High Score</h2><span>00</span></div>
 			<div id="board">
@@ -291,13 +287,29 @@
 			<canvas id="canvas-lifes"></canvas>
 			<canvas id="canvas-level-fruits"></canvas>
 			<div id="message"></div>
-		</div>
 
-		<div class="buttons">
-			<div id="install-button">install</div>|
-			<div id="help-button">help</div>|
-			<div id="docs-button"><a href="https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_pacman.html" target="_blank">docs</a></div>
-			<a class="sound" href="javascript:void(0);" data-sound="on"><img src="img/sound-on.png" alt="" border="0"></a>
+			<div class="buttons buttons-panel">
+				<div class="help-button">help</div>|
+				<div class="docs-button"><a href="https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_pacman.html" target="_blank">docs</a></div>
+				<a class="sound" href="javascript:void(0);" data-sound="on"><img src="img/sound-on.png" alt="" border="0"></a>
+			</div>
+
+			<div class="dialog" id="help">
+				<div id="help-close" class="dialog-close-button">X</div>
+				<h2>Help</h2>
+				<table align="center" border="0" cellPadding="2" cellSpacing="0">
+					<tbody>
+						<tr><td>Say "Left" : </td><td>Move Left</td></tr>
+						<tr><td>Say "Right" : </td><td>Move Right</td></tr>
+						<tr><td>Say "Down" : </td><td>Move Down</td></tr>
+						<tr><td>Say "Up" : </td><td>Move Up</td></tr>
+						<tr><td colspan="2">&nbsp;</td></tr>
+						<tr><td>Say "Stop" : </td><td>PAUSE</td></tr>
+						<tr><td>Say "Go" : </td><td>RESUME</td></tr>
+					</tbody>
+				</table>
+			</div>
+	
 		</div>
 
 		<div class="dialog" id="command-log-dialog">

@@ -7,12 +7,13 @@ import re
 import traceback
 import logging
 from typing import List
-
+import subprocess
 
 import typer 
 from typer.core import TyperCommand
 from click.parser import OptionParser
 
+import mltk
 from mltk.utils.logger import add_console_logger, make_filelike, redirect_stream
 from mltk.utils.logger import get_logger as get_base_logger
 from mltk.utils.python import debugger_is_active
@@ -42,12 +43,18 @@ if 'logger' not in globals():
     def _dump_exception(cls, e):
         cls.debug(f'{e}', exc_info=e)
     
-    cmd = ' '.join(sys.argv[1:])
+    _cmd_str = ' '.join(sys.argv[1:])
     logger.debug(f'Time: {pretty_time_str()}')
-    logger.debug(f'Command-line: {cmd}')
+    logger.debug(f'Command-line: {_cmd_str}')
     logger.debug(f'Python version:  {sys.version}')
     logger.debug(f'Python path: {sys.executable}')
-    logger.debug(f'Platform: {platform.platform()}\n')
+    logger.debug(f'Platform: {platform.platform()}')
+    logger.debug(f'MLTK version: {mltk.__version__}')
+    try:
+        _git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=mltk.MLTK_ROOT_DIR).decode('ascii').strip()
+        logger.debug(f'MLTK repo hash: {_git_hash}')
+    except:
+        pass
     logger.dump_exception = types.MethodType(_dump_exception, logger)
 
 

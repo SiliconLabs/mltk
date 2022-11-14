@@ -15,8 +15,20 @@ def process_file_line(lineno: int, line: str, arg: object) -> str:
         line += '\n\n// Patched by MLTK\n'
         line += '#ifdef CMSIS_FORCE_BUILTIN_FUNCTIONS\n'
         line += '#  define memset __builtin_memset\n'
-        line += '#  define memcpy __builtin_memcpy\n'
-        line += '#endif\n\n'
+        line += '#  define memcpy __builtin_memcpy\n\n'
+        line += '#ifdef __cplusplus\n'
+        line += 'namespace std {\n\n'
+        line += 'static inline void* __builtin_memset(void* b, int c, long int l)\n'
+        line += '{\n'
+        line += '  return ::__builtin_memset(b, c, l);\n'
+        line += '}\n\n'
+        line += 'static inline void* __builtin_memcpy(void* a, const void* b, long int l)\n'
+        line += '{\n'
+        line += '  return ::__builtin_memcpy(a, b, l);\n'
+        line += '}\n\n'
+        line += '} // namespace std\n'
+        line += '#endif // __cplusplus\n'
+        line += '#endif // CMSIS_FORCE_BUILTIN_FUNCTIONS\n\n'
     return line
 
 

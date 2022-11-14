@@ -1,3 +1,5 @@
+__NOTE:__ Refer to the [online documentation](https://siliconlabs.github.io/mltk) to properly view this file
+
 Installation
 =================
 
@@ -60,13 +62,13 @@ This step is __highly recommended__ as the MLTK installs other dependencies like
 
     .. code-block:: shell
 
-        pip  install silabs-mltk --upgrade
+        pip  install silabs-mltk[full] --upgrade
 
   .. tabbed:: Linux
 
     .. code-block:: shell
     
-        pip3 install silabs-mltk --upgrade
+        pip3 install silabs-mltk[full] --upgrade
   ```
 
   __OR__
@@ -79,14 +81,19 @@ This step is __highly recommended__ as the MLTK installs other dependencies like
 
     .. code-block:: shell
 
-       pip  install git+https://github.com/siliconlabs/mltk.git
+       pip  install git+https://github.com/siliconlabs/mltk.git[full]
 
   .. tabbed:: Linux
 
     .. code-block:: shell
     
-       pip3 install git+https://github.com/siliconlabs/mltk.git
+       pip3 install git+https://github.com/siliconlabs/mltk.git[full]
   ```
+
+  __NOTE:__ The `[full]` part of the command is _optional_. This will install additional dependencies used by some the the MLTK commands.
+  Omitting this from the command will speedup installation but may cause some of the commands like `classify_audio`, `view`, `tensorboard` 
+  to require additional install step.
+
 
   After the command completes, the MLTK should be available to the current Python environment.  
   You can verify by issuing the command:  
@@ -94,6 +101,7 @@ This step is __highly recommended__ as the MLTK installs other dependencies like
   ```shell
   mltk --help
   ```
+
 
 See the [Command-Line Guide](./command_line.md) for more details on how to use the command-line. 
 
@@ -117,13 +125,13 @@ If the MLTK Python package has already been installed, you may update to the lat
 
    .. code-block:: shell
 
-      pip  install silabs-mltk --upgrade
+      pip  install silabs-mltk[full] --upgrade
 
 .. tabbed:: Linux
 
    .. code-block:: shell
 
-      pip3 install silabs-mltk --upgrade
+      pip3 install silabs-mltk[full] --upgrade
 ```
 
 Alternatively, you can update to a specific version with:
@@ -133,16 +141,16 @@ Alternatively, you can update to a specific version with:
 
    .. code-block:: shell
 
-      pip  install silabs-mltk==0.6.0
+      pip  install silabs-mltk[full]==0.13.0
 
 .. tabbed:: Linux
 
    .. code-block:: shell
 
-      pip3 install silabs-mltk==0.6.0
+      pip3 install silabs-mltk[full]==0.13.0
 ```
 
-and replace `0.6.0` with the desired version.
+and replace `0.13.0` with the desired version.
 
 
 

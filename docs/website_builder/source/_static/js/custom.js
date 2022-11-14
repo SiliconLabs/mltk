@@ -88,7 +88,6 @@ function determineIfCookieConsentRequired() {
     dayjs_tz_script.src = 'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.6/plugin/timezone.min.js';
     dayjs_script.src = 'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.11.6/dayjs.min.js';
     document.head.appendChild(dayjs_script);
-    
 }
 
 function checkIfAcceptedCookies() {

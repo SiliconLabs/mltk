@@ -13,7 +13,6 @@ from mltk import __version__ as mltk_version
 from mltk import MLTK_ROOT_DIR
 from mltk.utils.shell_cmd import run_shell_cmd
 from mltk.utils.path import (create_tempdir, remove_directory, recursive_listdir, get_user_setting, fullpath)
-from mltk.utils.python import install_pip_package
 from mltk.utils.system import is_linux
 
 
@@ -121,8 +120,11 @@ Release for all supported Python versions.
 
 
     if release_all or release_test or release_public:
-        install_pip_package('twine', logger=logger)
-
+        try:
+            import twine 
+        except:
+            raise RuntimeError('Failed to import python package: twine, try running: pip install twine OR python ./install_mltk.py --extras dev')
+            
         retcode, dst_mltk_origin_url = run_shell_cmd(['git', 'config', '--get', 'remote.origin.url'], cwd=MLTK_ROOT_DIR)
         if retcode != 0:
             cli.abort(msg=f'Failed to get remote.origin.url from {MLTK_ROOT_DIR}, err: {dst_mltk_origin_url}')

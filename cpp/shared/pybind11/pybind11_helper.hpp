@@ -4,6 +4,7 @@
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 #include "tensorflow/lite/c/c_api_types.h"
+#include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/kernels/internal/compatibility.h"
 #include "tensorflow/lite/kernels/internal/runtime_shape.h"
 #include "tflite_micro_model/tflite_micro_tensor.hpp"

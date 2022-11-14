@@ -1,3 +1,4 @@
+__NOTE:__ Refer to the [online documentation](https://siliconlabs.github.io/mltk) to properly view this file
 # Command-Line 
 
 This describes how to enable and use the MLTK command-line interface.

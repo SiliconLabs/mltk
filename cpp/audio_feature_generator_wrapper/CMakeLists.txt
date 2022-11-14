@@ -69,6 +69,7 @@ else()
   PUBLIC
     -static-libgcc -static-libstdc++
   )
+  mltk_platform_linux_link_legacy_glibc()
 endif()
 
 

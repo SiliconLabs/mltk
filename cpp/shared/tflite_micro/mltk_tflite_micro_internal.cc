@@ -1,7 +1,6 @@
 #include <cstdarg>
 
 #include "mltk_tflite_micro_internal.hpp"
-#include "mltk_tflite_micro_recorded_data.hpp"
 
 
 namespace mltk
@@ -75,70 +74,6 @@ void register_profiler(
   _kernel_profilers[op_idx] = profiler;
   calculate_op_metrics(context, node_and_registration, profiler->metrics());
 }
-
-/*************************************************************************************************/
-#ifdef TFLITE_MICRO_RECORDER_ENABLED
-void record_layer(int op_idx, const TfLiteContext& context, const TfLiteNode &node, bool record_input)
-{
-  if(!model_recorder_enabled)
-  {
-    return;
-  }
-
-  if(record_input)
-  {
-      for(int i = 0; i < node.inputs->size; ++i)
-      {
-        TfLiteTensor *tensor = nullptr;
-        const int tensor_idx = node.inputs->data[i];
-        if(tensor_idx >= 0)
-        {
-          tensor = context.GetTensor(&context, tensor_idx);
-        }
-        record_tflite_tensor(tensor, op_idx, tensor_idx, true);
-      }
-  }
-  else 
-  {
-      for(int i = 0; i < node.outputs->size; ++i)
-      {
-        TfLiteTensor *tensor = nullptr;
-        const int tensor_idx = node.outputs->data[i];
-        if(tensor_idx >= 0)
-        {
-          tensor = context.GetTensor(&context, tensor_idx);
-        }
-        record_tflite_tensor(tensor, op_idx, tensor_idx, false);
-      }
-  }
-
-}
-#endif
-
-/*************************************************************************************************/
-#ifdef TFLITE_MICRO_RECORDER_ENABLED
-void record_tflite_tensor(const TfLiteTensor* tensor, int op_idx, int tensor_idx, bool is_input)
-{
-    TfliteMicroRecordedTensor data(tensor);
-    auto& recorded_data = TfliteMicroRecordedData::instance();
-
-    if(op_idx >= recorded_data.size())
-    {
-        TfliteMicroRecordedLayer layer;
-        recorded_data.append(layer);
-    }
-
-    auto& layer = recorded_data[op_idx];
-    if(is_input)
-    {
-        layer.inputs.append(data);
-    }
-    else 
-    {
-        layer.outputs.append(data);
-    }
-}
-#endif
 
 /*************************************************************************************************/
 const char* to_str(tflite::BuiltinOperator op_type) 

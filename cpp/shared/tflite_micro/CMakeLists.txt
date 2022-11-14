@@ -16,12 +16,13 @@ mltk_info("Processing Tensorflow-Lite Micro repository (this may take awhile) ..
 # <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_tflite_micro.slcc
 # <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_tflite_micro_cmsis_kernels.slcc
 # <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_tflite_micro_reference_kernels.slcc
-# (Also be sure to update the TFLITE_MICRO_VERSION_STR define in the mltk_tflite_micro.slcc)
-set(_tflm_cache_version "jun8_2022")
+# Also be sure to update the TFLITE_MICRO_VERSION_STR define in the mltk_tflite_micro.slcc
+# Also update the <mltk root>/README.md with the version change
+set(_tflm_cache_version "nov8_2022")
 CPMAddPackage(
 NAME Tensorflow
   GITHUB_REPOSITORY tensorflow/tflite-micro
-  GIT_TAG b13b48cd3dd8e1b7420e0738384d8c4c5286eb9a # latest master as of June 8, 2022
+  GIT_TAG 370d7bbc85f72bdb6004a8bfb7e778c271864ee2 # latest master as of November 8th, 2022
   DOWNLOAD_ONLY ON
   CACHE_SUBDIR tflite_micro
   CACHE_VERSION ${_tflm_cache_version}
@@ -42,7 +43,7 @@ find_package(mltk_logging REQUIRED)
 find_package(mltk_cpputils REQUIRED)
 find_package(mltk_float16 REQUIRED)
 find_package(mltk_cmsis REQUIRED)
-
+find_package(mltk_msgpack REQUIRED)
 
 
 ####################################################
@@ -82,11 +83,14 @@ tensorflow/lite/core/api/tensor_utils.cc
 tensorflow/lite/core/api/error_reporter.cc
 tensorflow/lite/schema/schema_utils.cc
 tensorflow/lite/kernels/internal/quantization_util.cc
+tensorflow/lite/kernels/internal/portable_tensor_utils.cc
+tensorflow/lite/kernels/internal/tensor_utils.cc 
+tensorflow/lite/kernels/internal/reference/portable_tensor_utils.cc
 tensorflow/lite/kernels/kernel_util.cc 
 tensorflow/lite/micro/arena_allocator/non_persistent_arena_buffer_allocator.cc
 tensorflow/lite/micro/arena_allocator/persistent_arena_buffer_allocator.cc
-tensorflow/lite/micro/arena_allocator/recording_simple_memory_allocator.cc
-tensorflow/lite/micro/arena_allocator/simple_memory_allocator.cc
+tensorflow/lite/micro/arena_allocator/recording_single_arena_buffer_allocator.cc
+tensorflow/lite/micro/arena_allocator/single_arena_buffer_allocator.cc
 tensorflow/lite/micro/all_ops_resolver.cc 
 tensorflow/lite/micro/debug_log.cc 
 tensorflow/lite/micro/fake_micro_context.cc
@@ -98,6 +102,7 @@ tensorflow/lite/micro/micro_context.cc
 tensorflow/lite/micro/micro_error_reporter.cc
 #tensorflow/lite/micro/micro_graph.cc # This is overridden to enable recording and profiling
 tensorflow/lite/micro/micro_interpreter.cc
+#tensorflow/lite/micro/micro_log.cc  # This is overridden
 tensorflow/lite/micro/micro_profiler.cc
 tensorflow/lite/micro/micro_resource_variable.cc
 tensorflow/lite/micro/micro_string.cc
@@ -110,6 +115,7 @@ tensorflow/lite/micro/kernels/kernel_runner.cc
 tensorflow/lite/micro/memory_planner/greedy_memory_planner.cc
 tensorflow/lite/micro/memory_planner/linear_memory_planner.cc
 tensorflow/lite/micro/kernels/kernel_util.cc
+tensorflow/lite/micro/kernels/micro_tensor_utils.cc
 tensorflow/lite/micro/kernels/activations.cc
 tensorflow/lite/micro/kernels/activations_common.cc
 tensorflow/lite/micro/kernels/add.cc
@@ -136,6 +142,7 @@ tensorflow/lite/micro/kernels/depthwise_conv_common.cc
 tensorflow/lite/micro/kernels/dequantize.cc
 tensorflow/lite/micro/kernels/dequantize_common.cc
 tensorflow/lite/micro/kernels/detection_postprocess.cc
+tensorflow/lite/micro/kernels/div.cc
 tensorflow/lite/micro/kernels/elementwise.cc
 tensorflow/lite/micro/kernels/elu.cc
 tensorflow/lite/micro/kernels/ethosu.cc
@@ -161,6 +168,7 @@ tensorflow/lite/micro/kernels/logical_common.cc
 tensorflow/lite/micro/kernels/logical.cc
 tensorflow/lite/micro/kernels/logistic_common.cc
 tensorflow/lite/micro/kernels/logistic.cc
+tensorflow/lite/micro/kernels/lstm_eval.cc
 tensorflow/lite/micro/kernels/maximum_minimum.cc
 tensorflow/lite/micro/kernels/mirror_pad.cc
 tensorflow/lite/micro/kernels/mul.cc
@@ -181,6 +189,7 @@ tensorflow/lite/micro/kernels/reshape.cc
 tensorflow/lite/micro/kernels/resize_bilinear.cc
 tensorflow/lite/micro/kernels/resize_nearest_neighbor.cc
 tensorflow/lite/micro/kernels/round.cc
+tensorflow/lite/micro/kernels/select.cc
 tensorflow/lite/micro/kernels/shape.cc
 tensorflow/lite/micro/kernels/slice.cc
 tensorflow/lite/micro/kernels/softmax_common.cc
@@ -189,6 +198,7 @@ tensorflow/lite/micro/kernels/space_to_batch_nd.cc
 tensorflow/lite/micro/kernels/space_to_depth.cc
 tensorflow/lite/micro/kernels/split.cc
 tensorflow/lite/micro/kernels/split_v.cc
+tensorflow/lite/micro/kernels/squared_difference.cc
 tensorflow/lite/micro/kernels/squeeze.cc
 tensorflow/lite/micro/kernels/strided_slice.cc
 tensorflow/lite/micro/kernels/sub.cc
@@ -199,6 +209,7 @@ tensorflow/lite/micro/kernels/tanh.cc
 tensorflow/lite/micro/kernels/unpack.cc
 tensorflow/lite/micro/kernels/transpose_conv.cc
 tensorflow/lite/micro/kernels/transpose.cc
+tensorflow/lite/micro/kernels/unidirectional_sequence_lstm.cc
 tensorflow/lite/micro/kernels/unpack.cc
 tensorflow/lite/micro/kernels/var_handle.cc
 tensorflow/lite/micro/kernels/while.cc
@@ -233,10 +244,11 @@ PRIVATE
     ${tflm_sources}
     ${tflm_overidden_kernels}
     micro_graph.cc
+    micro_log.cc
     mltk_calculate_op_metrics.cc
     mltk_tflite_micro_helper.cc
     mltk_tflite_micro_internal.cc
-    mltk_tflite_micro_recorded_data.cc
+    mltk_tflite_micro_recorder.cc
 )
 
 
@@ -328,6 +340,7 @@ PUBLIC
   mltk::profiling
   mltk::logging
   mltk::float16
+  mltk::msgpack
 PRIVATE 
   ${tflm_kernels_target}
   mltk::cmsis_nn

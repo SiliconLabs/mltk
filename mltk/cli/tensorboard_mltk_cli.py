@@ -77,7 +77,6 @@ One of the following:
     import time
     from mltk.core import load_mltk_model
     from mltk.utils.logger import get_logger
-    from mltk.utils.python import install_pip_package
 
     logger = cli.get_logger(verbose=verbose)
     get_logger('tensorboard', console=False, base_level='WARNING', parent=logger)
@@ -116,17 +115,13 @@ and that the model has been previously trained or is actively being trained,\ne.
 f'mltk train {model}\n'
         )
     logger.info(f'Tensorboard model logdir: {tb_log_dir}')
-
-
-    logger.debug('Installing tensorboard_plugin_profile (if necessary)')
-    try:
-        install_pip_package('tensorboard_plugin_profile', upgrade=True)
-    except Exception as e:
-        logger.debug('Failed to install tensorboard_plugin_profile', exc_info=e)
     
     from tensorboard import default
     from tensorboard import program
-
+    try:
+        import tensorboard_plugin_profile
+    except:
+        raise RuntimeError('Failed import tensorboard_plugin_profile Python package, try running: pip install tensorboard_plugin_profile OR pip install silabs-mltk[full]')
 
     try:
         tb = program.TensorBoard(

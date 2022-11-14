@@ -1,3 +1,4 @@
+__NOTE:__ Refer to the [online documentation](https://siliconlabs.github.io/mltk) to properly view this file
 # API Examples
 
 These examples demonstrate how to use the various MLTK Python APIs.  

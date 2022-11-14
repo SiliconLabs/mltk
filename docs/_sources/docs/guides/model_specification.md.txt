@@ -52,7 +52,7 @@ For example, the following might be added to the top of model specification scri
 class MyModel(
     MltkModel, 
     TrainMixin, 
-    DatasetMixin, 
+    AudioDatasetMixin, 
     EvaluateClassifierMixin
 ):
     """My Model's class object"""
@@ -67,10 +67,9 @@ At a minimum, this class must inherit [MltkModel](mltk.core.MltkModel).
 
 However, to use this model for training or evaluation, it should also inherit others "mixins" such as:  
 - [TrainMixin](mltk.core.TrainMixin) - Enables model training, see [Model Training](./model_training.md)
-- [DatasetMixin](mltk.core.DatasetMixin) - Provides the various properties for configuring the training dataset, see [Data Preprocessing](../python_api/data_preprocessing/index.md)
-- [EvaluateClassifierMixin](mltk.core.EvaluateClassifierMixin) - Optionals, enables automatic classifier model evaluation, see [Model Evaluation](./model_evaluation.md)
-- [ImageDatasetMixin](mltk.core.ImageDatasetMixin) - Optional, helper mixin for using image datasets. Alternatively, you can just use the [mltk.core.DatasetMixin](mltk.core.DatasetMixin)
-- [AudioDatasetMixin](mltk.core.AudioDatasetMixin) - Optional, helper mixin for using audio datasets. Alternatively, you can just use the [mltk.core.DatasetMixin](mltk.core.DatasetMixin)
+- [EvaluateClassifierMixin](mltk.core.EvaluateClassifierMixin) - Enables model evaluation, see [Model Evaluation](./model_evaluation.md)
+- [ImageDatasetMixin](mltk.core.ImageDatasetMixin) - Enables image datasets
+- [AudioDatasetMixin](mltk.core.AudioDatasetMixin) - Enables audio datasets
 
 The rest of the model specification script populates the various parameters of the model instance, e.g.:
 
@@ -319,18 +318,6 @@ my_model.datagen = ParallelImageDataGenerator(
 - [ParallelAudioDataGenerator](mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator)
 - [ParallelImageDataGenerator](mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator)
 ```
-
-### Tensorflow Dataset API
-
-Alternatively, you may use the [Tensorflow Dataset API](https://www.tensorflow.org/api_docs/python/tf/data/Dataset).
-In this case, only the [DatasetMixin](mltk.core.DatasetMixin) is required. 
-Note the MLTK provides additional APIs to aid the creation of the Tensorflow datasets, see [Tensorflow Dataset Utilities](https://siliconlabs.github.io/mltk/docs/python_api/data_preprocessing/utilities.html#tensorflow-dataset).
-
-
-The MLTK comes with reference models using the [Tensorflow Dataset API](https://www.tensorflow.org/api_docs/python/tf/data/Dataset):  
-- [basic_tf_dataset_example](https://siliconlabs.github.io/mltk/docs/python_api/models/examples/basic_tf_dataset_example.html)
-- [image_tf_dataset](https://siliconlabs.github.io/mltk/docs/python_api/models/examples/image_tf_dataset.html)
-- [audio_tf_dataset](https://siliconlabs.github.io/mltk/docs/python_api/models/examples/audio_tf_dataset.html)
 
 
 ### Evaluation Settings

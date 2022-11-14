@@ -10,8 +10,6 @@
 #include "tflite_micro_model/tflite_micro_tensor.hpp"
 
 #include "mltk_tflite_micro_helper.hpp"
-#include "mltk_tflite_micro_recorded_data.hpp"
-
 
 
 namespace mltk
@@ -176,28 +174,21 @@ public:
      * 
      * @return true if recorder enabled, false else
      */
-    bool enable_recorder();
+    bool enable_tensor_recorder();
 
     /**
-     * Return if profiling is enabled
+     * Return if tensor recording is enabled
      * 
-     * @return true if profiler is enabled, false else
+     * @return true if tensor recording is enabled, false else
      */
-    bool recording_is_enabled() const;
+    bool is_tensor_recorder_enabled() const;
 
     /**
      * Return the recorded data from the previous inference
+     * The returned data is msgpack formatted.
      */
-    TfliteMicroRecordedData& recorded_data();
+    bool recorded_data(const uint8_t** buffer_ptr, uint32_t* length_ptr) const;
 
-    /**
-     * Return a pointer to the TfliteMicroErrorReporter
-     * used by the model
-     */
-    TfliteMicroErrorReporter* error_reporter()
-    {
-      return &_error_reporter;
-    }
 
     /**
      * Return a pointer to the TfliteMicroInterpreter
@@ -229,7 +220,6 @@ private:
   tflite::MicroInterpreter* _interpreter = nullptr;
   tflite::MicroOpResolver* _ops_resolver = nullptr;
   TfliteMicroModelDetails _model_details;
-  TfliteMicroErrorReporter _error_reporter;
   const void* _flatbuffer = nullptr;
   void (*_processing_callback)(void*) = nullptr;
   void* _processing_callback_arg = nullptr;
@@ -239,7 +229,8 @@ private:
       const void* flatbuffer, 
       tflite::MicroOpResolver& op_resolver,
       uint8_t *runtime_buffer,
-      unsigned runtime_buffer_size 
+      unsigned runtime_buffer_size,
+      bool disable_logs = false
   );
   bool find_optimal_buffer_size(
       const void* flatbuffer, 

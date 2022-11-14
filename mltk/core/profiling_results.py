@@ -83,18 +83,6 @@ class ProfilingLayerResult(defaultdict):
         """Number of accelerator clock cycles required by this layer"""
         return self['accelerator_cycles']
     @property
-    def accelerator_loads(self) -> int:
-        """The number of times the accelerator was loaded"""
-        return self['accelerator_loads']
-    @property
-    def accelerator_optimized_loads(self) -> int:
-        """The number of times the accelerator was loaded with an optimized program"""
-        return self['accelerator_optimized_loads']
-    @property
-    def accelerator_parallel_loads(self) -> int:
-        """The number of times the accelerator was loaded with an parallelized optimizations"""
-        return self['accelerator_parallel_loads']
-    @property
     def cpu_cycles(self) -> int:
         """Number of CPU clock cycles required by this layer"""
         return self['cpu_cycles']
@@ -367,7 +355,9 @@ class ProfilingModelResults:
             all_layer_numeric_keys = []
             for layer in self.layers:
                 for key in layer:
-                    if key not in all_layer_numeric_keys and isinstance(layer[key], (int,float)):
+                    if key not in all_layer_numeric_keys and \
+                        not isinstance(layer[key], bool) and \
+                            isinstance(layer[key], (int,float)):
                         all_layer_numeric_keys.append(key)
             for layer in self.layers:
                 for key in all_layer_numeric_keys:
@@ -447,21 +437,27 @@ class ProfilingModelResults:
                 excluded_columns.append('supported')
 
         layer_labels = {}
-        for key, e in self.layers[0].get_summary(
-            include_labels=True, 
-            excluded_columns=excluded_columns,
-            full_summary=full_summary
-        ).items():
-            layer_labels[key] = e[0]
+        for layer in self.layers:
+            for key, e in layer.get_summary(
+                include_labels=True, 
+                excluded_columns=excluded_columns,
+                full_summary=full_summary
+            ).items():
+                if key not in layer_labels:
+                    layer_labels[key] = e[0]
 
         layers = []
         for layer in self.layers:
-            layers.append(layer.get_summary(
+            layer_summary = layer.get_summary(
                 include_labels=False, 
                 format_units=format_units, 
                 excluded_columns=excluded_columns,
-                full_summary=full_summary
-            ))
+                full_summary=full_summary,
+            )
+            for key in layer_labels:
+                if key not in layer_summary:
+                    layer_summary[key] = None
+            layers.append(layer_summary)
 
         return dict(
             summary=summary,

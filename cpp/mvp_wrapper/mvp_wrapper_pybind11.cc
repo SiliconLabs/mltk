@@ -85,50 +85,20 @@ PYBIND11_MODULE(MODULE_NAME, m)
     });
    
     /*************************************************************************************************
-     * Enable recording hardware accelerator data/instructions
+     * Enable recording hardware accelerator instructions
      * 
      */
-    m.def("enable_recorder", []() -> void
+    m.def("enable_program_recorder", []() -> void
     {
-       mltk::TfliteMicroAcceleratorRecorder::instance().set_enabled();
+       mltk::TfliteMicroAcceleratorRecorder::instance().set_program_recording_enabled();
     });
 
     /*************************************************************************************************
-     * Return the recorded hardware accelerator data/instructions
+     * Enable recording hardware accelerator data
      * 
-     * This returns: List[Dict[str, List[bytes]]]
      */
-    m.def("get_recorded_data", []() -> py::list
+    m.def("enable_data_recorder", []() -> void
     {
-        py::list ret_list;
-
-        auto& recorder = mltk::TfliteMicroAcceleratorRecorder::instance();
-
-        for(auto& recorded_layer : recorder)
-        {
-            py::dict ret_dict;
-
-            for(auto it = recorded_layer.items(); it != recorded_layer.enditems(); ++it)
-            {
-                const auto dict_item = *it;
-                const auto recorded_buffer_list = dict_item->value;
-                py::list ret_dict_list;
-
-                for(auto& buffer_list_data : *recorded_buffer_list)
-                {
-                    std::string buf((const char*)buffer_list_data.data, buffer_list_data.length);
-                    ret_dict_list.append(py::bytes(buf));
-                }
-                
-                ret_dict[dict_item->key] = ret_dict_list;
-            }
-
-            ret_list.append(ret_dict);
-        }
-
-        recorder.clear();
-
-        return ret_list;
+       mltk::TfliteMicroAcceleratorRecorder::instance().set_data_recording_enabled();
     });
-
 }

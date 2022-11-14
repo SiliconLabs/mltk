@@ -20,20 +20,17 @@
 #include "sl_ml_audio_feature_generation_config.h"
 
 
-RecognizeCommands::RecognizeCommands(tflite::ErrorReporter* error_reporter,
-                                     int32_t average_window_duration_ms,
+RecognizeCommands::RecognizeCommands(int32_t average_window_duration_ms,
                                      uint8_t detection_threshold,
                                      int32_t suppression_ms,
                                      int32_t minimum_count,
                                      bool ignore_underscore)
   : base_timestamp_(0),
-  error_reporter_(error_reporter),
   average_window_duration_ms_(average_window_duration_ms),
   detection_threshold_(detection_threshold),
   suppression_ms_(suppression_ms),
   minimum_count_(minimum_count),
-  ignore_underscore_(ignore_underscore),
-  previous_results_(error_reporter)
+  ignore_underscore_(ignore_underscore)
 {
   previous_top_label_index_ = 0;
   previous_top_label_time_ = 0;
@@ -52,9 +49,7 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
   if ((latest_results->dims->size != 2)
       || (latest_results->dims->data[0] != 1)
       || (latest_results->dims->data[1] != SL_TFLITE_MODEL_CLASS_COUNT)) {
-    TF_LITE_REPORT_ERROR(
-      error_reporter_,
-      "The results for recognition should contain %d elements, but there are "
+   MicroPrintf("The results for recognition should contain %d elements, but there are "
       "%d in an %d-dimensional shape",
       SL_TFLITE_MODEL_CLASS_COUNT, latest_results->dims->data[1],
       latest_results->dims->size);
@@ -63,9 +58,7 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
 
   if ((!previous_results_.empty())
       && (current_time_ms < previous_results_.front().time_)) {
-    TF_LITE_REPORT_ERROR(
-      error_reporter_,
-      "Results must be fed in increasing time order, but received a "
+    MicroPrintf("Results must be fed in increasing time order, but received a "
       "timestamp of %d that was earlier than the previous one of %d",
       current_time_ms, previous_results_.front().time_);
     return kTfLiteError;
@@ -89,7 +82,7 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
   }
   else
   {
-      TF_LITE_REPORT_ERROR(error_reporter_, "Unsupported output tensor data type, must be int8 or float32");
+      MicroPrintf("Unsupported output tensor data type, must be int8 or float32");
       return kTfLiteError;
   }
 

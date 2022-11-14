@@ -113,15 +113,17 @@ set(CMAKE_CXX_FLAGS_INIT "${CLIB_SPECS} -nostartfiles -ffunction-sections -fdata
 set(CMAKE_ASM_FLAGS_INIT "${CMAKE_C_FLAGS_INIT} -x assembler-with-cpp")
 set(CMAKE_EXE_LINKER_FLAGS_INIT "-Wl,--gc-sections -Wl,--cref" CACHE INTERNAL "exe link flags")
 
-SET(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb3 -DDEBUG" CACHE INTERNAL "c debug compiler flags")
-SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb3 -DDEBUG" CACHE INTERNAL "cxx debug compiler flags")
+# NOTE: Using -ggdb instead of -ggdb3 due to a bug in the VSCode cortex-debug extension:
+# https://www.cygwin.com/bugzilla/show_bug.cgi?id=28219
+SET(CMAKE_C_FLAGS_DEBUG "-O0 -ggdb -DDEBUG" CACHE INTERNAL "c debug compiler flags")
+SET(CMAKE_CXX_FLAGS_DEBUG "-O0 -ggdb -DDEBUG" CACHE INTERNAL "cxx debug compiler flags")
 SET(CMAKE_ASM_FLAGS_DEBUG "-ggdb" CACHE INTERNAL "asm debug compiler flags")
 
 
 mltk_get(MLTK_ENABLE_DEBUG_INFO_IN_RELEASE_BUILDS)
 if(MLTK_ENABLE_DEBUG_INFO_IN_RELEASE_BUILDS)
-SET(CMAKE_C_FLAGS_RELEASE "-O3 -g -ggdb3" CACHE INTERNAL "c release compiler flags")
-SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -g -ggdb3" CACHE INTERNAL "cxx release compiler flags")
+SET(CMAKE_C_FLAGS_RELEASE "-O3 -g -ggdb" CACHE INTERNAL "c release compiler flags")
+SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -g -ggdb" CACHE INTERNAL "cxx release compiler flags")
 else()
 SET(CMAKE_C_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE INTERNAL "c release compiler flags")
 SET(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG" CACHE INTERNAL "cxx release compiler flags")
@@ -129,8 +131,8 @@ endif()
 
 set(CMAKE_EXE_LINKER_RELEASE "-flto" CACHE INTERNAL "exe link flags")
 
-SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -ggdb3" CACHE INTERNAL "c release compiler flags")
-SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g -ggdb3" CACHE INTERNAL "cxx release compiler flags")
+SET(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 -g -ggdb" CACHE INTERNAL "c release compiler flags")
+SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 -g -ggdb" CACHE INTERNAL "cxx release compiler flags")
 set(CMAKE_EXE_LINKER_RELWITHDEBINFO "-flto" CACHE INTERNAL "exe link flags")
 
 SET(CMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS 1 CACHE INTERNAL "")

@@ -208,12 +208,12 @@ def ssh_gen_key_command(
     # Generate an RSA 3072-bit keypair with name: my_server
     mltk ssh-keygen -t rsa my_server
     """
-    from mltk.utils.python import install_pip_package
     from mltk.utils.path import fullpath
 
-    logger = cli.get_logger()
-
-    install_pip_package('cryptography', logger=logger)
+    try:
+        import cryptography
+    except:
+        raise RuntimeError('Failed import cryptography Python package, try running: pip install cryptography OR pip install silabs-mltk[full]')
 
     from cryptography.hazmat.primitives import serialization as crypto_serialization
     from cryptography.hazmat.primitives.asymmetric import (rsa, ed25519)

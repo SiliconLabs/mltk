@@ -22,9 +22,9 @@ resample = librosa.resample
 
 def read_audio_file(
     path:Union[str,np.ndarray,tf.Tensor], 
-    sample_rate:int=None, 
     return_sample_rate=False,
-    return_numpy=True
+    return_numpy=True,
+    **kwargs
 ) -> Union[np.ndarray,tf.Tensor]:
     """Reads and decodes an audio file.
 
@@ -33,7 +33,6 @@ def read_audio_file(
 
     Args:
         path: Path to audio file as a python string, numpy string, or tensorflow string
-        sample_rate: The sample rate to re-sample the audio (if necessary). If this is none then the native sample rate is used
         return_sample_rate: If true then a tuple is returned:  (audio data, audio sample rate)
         return_numpy: If true then return numpy array, else return TF tensor
 
@@ -41,12 +40,11 @@ def read_audio_file(
         If return_sample_rate = False, Audio data as numpy array or TF tensor
         If return_sample_rate = True, (audio data, sample rate)
     """
-    sample_rate = sample_rate or -1
     raw = tf.io.read_file(path)
     sample, original_sample_rate = tf.audio.decode_wav(
         raw, 
         desired_channels=1, 
-        desired_samples=sample_rate
+
     )
     sample = tf.squeeze(sample, axis=-1)
 
@@ -65,7 +63,7 @@ def read_audio_file(
 def write_audio_file(
     path:str,
     sample:Union[np.ndarray,tf.Tensor],
-    sample_rate:int=16000
+    sample_rate:int
 ) -> Union[str,tf.Tensor]:
     """Write audio data to a file
     
@@ -75,7 +73,7 @@ def write_audio_file(
             In this case, the audio path is generated as: <path>/<timestamp>.wav
         sample: Audio data to write, if the data type is:
             - ``int16`` then it is converted to float32 and scaled by 32768
-        sample_rate: Sample rate to re-sample audio, default is 16kHz
+        sample_rate: Sample rate of audio
     Returns:
         Path to written file. If this is executing in a non-eager TF function 
         then the path is a TF Tensor, otherwise it is a Python string

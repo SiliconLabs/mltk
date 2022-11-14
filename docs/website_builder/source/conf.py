@@ -255,6 +255,9 @@ for fn in recursive_listdir(docs_src_dir, return_relative_paths=True):
     with open(src_path, 'r') as f:
         data = ''
         for line in f:
+            if 'Refer to the [online documentation](https://siliconlabs.github.io/mltk) to properly view this file' in line:
+                continue
+
             # Update the relative links to C++ code to point to the github repo
             # https://github.com/siliconlabs/mltk/cpp
             match = cpp_path_re.match(line)

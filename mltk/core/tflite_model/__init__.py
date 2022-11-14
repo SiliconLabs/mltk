@@ -1,5 +1,8 @@
 
-from .tflite_model import (TfliteModel, TfliteOpCode)
+from .tflite_model import (
+    TfliteModel, 
+    TfliteOpCode
+)
 from .tflite_layer import (
     TfliteLayer,
     TfliteLayerOptions,
@@ -21,4 +24,16 @@ from .tflite_layer import (
     TfliteMulLayer,
     TfliteMulLayerOptions,
 )
-from .tflite_tensor import (TfliteTensor, TfliteQuantization, TfliteShape)
+from .tflite_tensor import (
+    TfliteTensor, 
+    TfliteQuantization,
+    TfliteShape
+)
+from .tflite_types import (
+    TfliteActivation,
+    TflitePadding,
+    TfliteFullyConnectedParams,
+    TfliteConvParams,
+    TfliteDepthwiseConvParams,
+    TflitePoolParams
+)

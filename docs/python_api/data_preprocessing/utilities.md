@@ -1,3 +1,4 @@
+__NOTE:__ Refer to the [online documentation](https://siliconlabs.github.io/mltk) to properly view this file
 # Data Preprocessing Utilities
 
 
@@ -84,6 +85,19 @@
 
 ```{eval-rst}
 .. autofunction::  mltk.core.preprocess.utils.list_valid_filenames_in_directory
+```
+
+
+### split_file_list
+
+```{eval-rst}
+.. autofunction::  mltk.core.preprocess.utils.split_file_list
+```
+
+### shuffle_file_list_by_group
+
+```{eval-rst}
+.. autofunction::  mltk.core.preprocess.utils.shuffle_file_list_by_group
 ```
 
 ### normalize

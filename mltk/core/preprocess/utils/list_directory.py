@@ -1,13 +1,14 @@
 import os
-from typing import Tuple, List, Dict
+from typing import Tuple, List, Dict, Callable
 import copy
 import random
 import math
 import multiprocessing
 import numpy as np
+from numpy.random import RandomState
 
 from mltk.core import get_mltk_logger
-
+from mltk.utils.python import prepend_exception_msg
 
 
 
@@ -30,6 +31,7 @@ def list_dataset_directory(
     shuffle_index_directory:str=None,
     return_absolute_paths:bool=False,
     list_valid_filenames_in_directory_function=None,
+    process_samples_function=None,
 ) -> Tuple[List[str], List[int]]:
     """Load a directory of samples and return a tuple of lists (sample paths, label_ids)
 
@@ -90,24 +92,41 @@ def list_dataset_directory(
             .. code-block:: python
                 
                 def list_valid_filenames_in_directory(
-                        base_directory:str, 
-                        search_class:str, 
-                        white_list_formats:List[str], 
-                        split:Tuple[float,float], 
-                        follow_links:bool, 
-                        shuffle_index_directory:str
+                    base_directory:str, 
+                    search_class:str, 
+                    white_list_formats:List[str], 
+                    split:Tuple[float,float], 
+                    follow_links:bool, 
+                    shuffle_index_directory:str,
                 ) -> Tuple[str, List[str]]
                     ...
                     return search_class, filenames
 
+        process_samples_function: This allows for processing the samples BEFORE they're returned by this API.
+            This allows for adding/removing samples.
+            It has the following function signature:
+
+            .. highlight:: python
+            .. code-block:: python
+                
+                def process_samples(
+                    directory:str, # The provided directory to this API
+                    sample_paths:Dict[str,str] # A dictionary: <class name>, [<sample paths relative to directory>],
+                    split:Tuple[float,float],
+                    follow_links:bool,
+                    white_list_formats:List[str],
+                    shuffle:bool,
+                    seed:int,
+                    **kwargs
+                )
+                    ...
+
     Returns:
         Returns a tuple of two lists, (samples paths, label_ids)
     """
-    sample_paths = []
-    sample_class_ids = []
+    sample_paths = {key: [] for key in classes}
+    shuffle_seed = seed or 43
     classes = copy.deepcopy(classes)
-    if class_counts is None:
-        class_counts = {}
     add_unknown_class = unknown_class_label and unknown_class_label in classes
     add_empty_class = empty_class_label and empty_class_label in classes
     list_valid_filenames_in_directory_function = \
@@ -149,13 +168,13 @@ def list_dataset_directory(
             max_len = min(max_samples_per_class, len(filenames))
             filenames = filenames[:max_len]
 
-        class_count = len(filenames)
-        class_counts[class_label] = class_count
-        sample_class_ids.extend([classes.index(class_label)] * class_count)
-        sample_paths.extend(filenames)
+        sample_paths[class_label] = filenames
+
+    if len(sample_paths) == 0:
+        raise RuntimeError(f'No classes found for {", ".join(classes)} in {directory}')
     
     # Determine the average number of samples for a given classes
-    avg_sample_count = sum(class_counts.values()) // len(class_counts)
+    avg_sample_count = sum([len(x) for x in sample_paths.values()]) // len(sample_paths)
     
     # Add the 'unknown' class if necessary
     if add_unknown_class:
@@ -189,20 +208,37 @@ def list_dataset_directory(
             if len(unknown_filenames) >= unknown_sample_count:
                 break
 
-        class_count = len(unknown_filenames)
-        class_counts[unknown_class_label] = class_count
-        sample_class_ids.extend([classes.index(unknown_class_label)] * class_count)
-        sample_paths.extend(unknown_filenames)
+        sample_paths[unknown_class_label] = unknown_filenames
+
 
     if add_empty_class:
         empty_class_count = max(1, int(avg_sample_count * empty_class_percentage))
-        class_counts[empty_class_label] = empty_class_count
-        sample_class_ids.extend([classes.index(empty_class_label)] * empty_class_count)
-        sample_paths.extend([None] * empty_class_count)
-
+        sample_paths[empty_class_label] = [None] * empty_class_count
 
     pool.close()
     pool.join()
+
+    if process_samples_function is not None:
+        try:
+            process_samples_function(
+                directory=directory, 
+                sample_paths=sample_paths,
+                split=split,
+                follow_links=follow_links,
+                white_list_formats=white_list_formats,
+                shuffle=shuffle,
+                seed=shuffle_seed
+            )
+        except Exception as e:
+            prepend_exception_msg(e, 'Error in process_samples_function callback')
+            raise 
+
+    # If the API was provided with a "class_counts" dictionary,
+    # then we want to populate the given dictionary.
+    # Otherwise, just populate a dummy,local dictionary
+    if class_counts is None:
+        class_counts = {} 
+    class_counts.update({key: len(samples) for (key,samples) in sample_paths.items()})
 
     errs = []
     for clazz, n_sample in class_counts.items():
@@ -212,17 +248,27 @@ def list_dataset_directory(
         raise RuntimeError('\n'.join(errs))
 
 
+    if max_samples_per_class != -1:
+        for clazz, paths in sample_paths.items():
+            max_len = min(max_samples_per_class, len(paths))
+            sample_paths[clazz] = paths[:max_len]
+
+    sample_path_list = []
+    sample_class_id_list = []
+    for key, paths in sample_paths.items():
+        sample_path_list.extend(paths)
+        sample_class_id_list.extend([classes.index(key)] * len(paths))
+
     if shuffle:
-        shuffle_seed = seed or 43
-        rng = np.random.RandomState(shuffle_seed)
-        rng.shuffle(sample_paths)
-        rng = np.random.RandomState(shuffle_seed)
-        rng.shuffle(sample_class_ids)
-
+        rng = RandomState(shuffle_seed)
+        rng.shuffle(sample_path_list)
+        rng = RandomState(shuffle_seed)
+        rng.shuffle(sample_class_id_list)
+    
     if return_absolute_paths:
-        sample_paths = [f'{directory}/{fn}' if fn else fn for fn in sample_paths]
+        sample_path_list = [f'{directory}/{fn}' if fn else fn for fn in sample_path_list]
 
-    return sample_paths, sample_class_ids
+    return sample_path_list, sample_class_id_list
 
 
 
@@ -293,9 +339,9 @@ def list_valid_filenames_in_directory(
         # <dataset base dir>/<class3>/...
         #
         # This will recursively return all sample files under <dataset base dir>/<class x>
-        class_base_dir = f'{base_directory}/{search_class}'
+        class_base_dir = f'{base_directory}/{search_class}/'
         for root, _, files in os.walk(base_directory, followlinks=follow_links):
-            root = root.replace('\\', '/')
+            root = root.replace('\\', '/') + '/'
             if not root.startswith(class_base_dir):
                 continue
             
@@ -320,8 +366,32 @@ def list_valid_filenames_in_directory(
             for p in file_list:
                 f.write(p + '\n')
 
+
+    filenames = split_file_list(
+        paths=file_list, 
+        split=split
+    )
+
+    return search_class, filenames
+
+
+def split_file_list(
+    paths:List[str], 
+    split:Tuple[float,float]=None
+) -> List[str]:
+    """Split list of file paths
+    
+    Args:
+        paths: List of file paths
+        split: A tuple indicating the (start,stop) percentage of the dataset to return, 
+            e.g. (.75, 1.0) -> return last 25% of dataset
+            If omitted then return the entire dataset
+
+    Return:
+        Split file paths
+    """
     if split:
-        num_files = len(file_list)
+        num_files = len(paths)
         if split[0] == 0:
             start = 0
             stop = math.ceil(split[1] * num_files)
@@ -329,12 +399,51 @@ def list_valid_filenames_in_directory(
             start = math.ceil(split[0] * num_files)
             stop = num_files
 
-        filenames = file_list[start:stop] 
-    
-    else:
-        filenames = file_list
+        paths = paths[start:stop] 
 
-    return search_class, filenames
+    return paths
+
+
+def shuffle_file_list_by_group(
+    paths:List[str], 
+    group_callback:Callable[[str], str],
+    seed:int=42,
+) -> List[str]:
+    """Shuffle the given file list by group
+    
+    This uses the given 'group_callback' argument to determine the "group"
+    that each file path in the given list belongs.
+    It then shuffles each group and returns the shuffles groups as a flat list.
+
+    This is useful as it allows for splitting the list into training and validation
+    subsets while ensuring that the same group does not appear in both subsets.
+
+    Args:
+        paths: List of file paths
+        group_callback: Callback that takes an element of the given 'paths' array and returns its corresponding "group"
+        seed: Optional seed used to do that random shuffle
+    Return:
+        Shuffle list of groups of files
+    """
+    # Group all the paths by given group_id
+    file_groups = {}
+    for p in sorted(paths):
+        group_id = group_callback(p)
+        if group_id not in file_groups:
+            file_groups[group_id] = []
+        file_groups[group_id].append(p)
+
+    # Shuffle the group_ids
+    rng = RandomState(seed)
+    group_ids = sorted(file_groups.keys())
+    rng.shuffle(group_ids)
+
+    # Flatten the shuffled groups
+    file_list = []
+    for group_id in group_ids:
+        file_list.extend(file_groups[group_id])
+
+    return file_list
 
 
 def _find_unknown_classes(

@@ -10,8 +10,6 @@ namespace mltk
 
 static Logger *mltk_logger =  nullptr;
 bool model_profiler_enabled = false;
-bool model_recorder_enabled = false;
- bool model_error_reporter_enabled = true;
 
 #ifdef TFLITE_MICRO_VERSION_STR
 const char* TFLITE_MICRO_VERSION = TFLITE_MICRO_VERSION_STR;
@@ -177,21 +175,6 @@ const void* get_metadata_from_tflite_flatbuffer(const void* tflite_flatbuffer, c
     return metadata_buffer;
 }
 
-/*************************************************************************************************/
-int TfliteMicroErrorReporter::Report(const char* format, va_list args)
-{
-    if(model_error_reporter_enabled)
-    {
-        auto& logger = get_logger();
-        const auto orig_flags = logger.flags();
-        logger.flags().clear(logging::Newline);
-        logger.vwrite(logging::Error, format, args);
-        logger.write(logging::Error, "\n");
-        logger.flags(orig_flags);
-    }
-
-    return 0;
-}
 
 /*************************************************************************************************/
 bool get_tflite_flatbuffer_from_end_of_flash(const uint8_t** flatbuffer, uint32_t* length, const uint32_t* flash_end_addr)

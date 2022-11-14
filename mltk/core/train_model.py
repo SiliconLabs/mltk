@@ -19,12 +19,10 @@ from .model import (
     DatasetMixin,
     TrainMixin,
     load_mltk_model,
-    load_tflite_or_keras_model,
 )
 from .utils import get_mltk_logger
 from .summarize_model import summarize_model
 from .quantize_model import quantize_model
-from .keras.callbacks import import_tqdm_progressbar_callback
 from .training_results import TrainingResults
 
 
@@ -111,12 +109,19 @@ def train_model(
 
     # Build the MLTK model's corresponding Keras model
     try:
-        keras_model = load_tflite_or_keras_model(
-            mltk_model, 
-            weights=weights,
-        )
+        keras_model = mltk_model.build_model_function(mltk_model)
     except Exception as e:
         prepend_exception_msg(e, 'Failed to build Keras model')
+        raise 
+
+    # Load the weights into the model if necessary
+    try:
+        if weights:
+            weights_path = mltk_model.get_weights_path(weights)
+            logger.info(f'Loading weights file: {weights_path}')
+            keras_model.load_weights(weights_path)
+    except Exception as e:
+        prepend_exception_msg(e, 'Failed to load weights into Keras model')
         raise 
 
     # Generate a summary of the model
@@ -143,14 +148,6 @@ def train_model(
     except Exception as e:
         class_weights = None
         logger.warning("Failed to compute class weights\nSet my_model.class_weights = 'none' to disable", exc_info=e)
-
-    if verbose is not False:
-        # If we're using a Jupyter notebook,
-        # then we use the TQDMNotebookCallback, otherwise use the default ProgressBarCallback 
-        # (note: verbose=True then ProgressBarCallback is used automatically)
-        TQDMProgressBar = import_tqdm_progressbar_callback()
-        if TQDMProgressBar is not None and contains_class_type(callbacks, TQDMProgressBar):
-            verbose = False
 
    
     kwargs = dict(
@@ -313,17 +310,6 @@ def _get_keras_callbacks(
         else:
             logger.debug('NOT using mltk_model.reduce_lr_on_plateau since mltk_model.lr_schedule is specified')
 
-
-    TQDMProgressBar = import_tqdm_progressbar_callback(logger=logger)
-    # If we're executing in a Jupyter Notebook
-    # Then we sure to update the progress bar
-    if TQDMProgressBar is not None and not contains_class_type(keras_callbacks, TQDMProgressBar):
-        kwargs = dict()
-        if epochs == -1:
-            kwargs['show_overall_progress'] = False
-
-        cb = TQDMProgressBar(**kwargs)
-        keras_callbacks.append(cb)
 
     if mltk_model.checkpoints_enabled:
         logger.debug('Enabling model checkpoints')
@@ -493,7 +479,8 @@ def _save_keras_model_file(
 ) -> KerasModel:
     """Save the Keras .h5 model file"""
 
-    # If a custom callback keras savig callback was given then use that
+    # If a custom model saving callback was given then invoke that now
+    # So that we obtain the correct keras model
     if mltk_model.on_save_keras_model is not None:
         try:
             keras_model = mltk_model.on_save_keras_model(
@@ -501,19 +488,21 @@ def _save_keras_model_file(
                 keras_model=keras_model, 
                 logger=logger
             )
+            if keras_model is None:
+                raise RuntimeError('my_model.on_save_keras_model must return a keras model instance')
+
         except Exception as e:
-            prepend_exception_msg(e, 'Error while saving model')
+            prepend_exception_msg(e, 'Error while saving model using my_model.on_save_keras_model')
             raise
         
-    # Otherwise just save the Keras model file
-    else:
-        try:
-            h5_path = mltk_model.h5_log_dir_path
-            logger.info(f'Generating {h5_path}')
-            keras_model.save(h5_path, save_format='tf')
-        except Exception as e:
-            prepend_exception_msg(e, f'Error while saving model to {h5_path}')
-            raise
+    # Save the keras model as a .h5 file
+    try:
+        h5_path = mltk_model.h5_log_dir_path
+        logger.info(f'Generating {h5_path}')
+        keras_model.save(h5_path, save_format='tf')
+    except Exception as e:
+        prepend_exception_msg(e, f'Error while saving model to {h5_path}')
+        raise
 
     return keras_model
 

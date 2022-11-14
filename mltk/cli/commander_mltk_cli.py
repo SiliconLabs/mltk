@@ -1,6 +1,7 @@
 import os
 import sys
 import re
+import time
 import logging
 import typer
 from mltk import cli
@@ -44,6 +45,7 @@ def download_run_command(
     host:str = typer.Option(None, help='SSH host name if this should execute remotely'),
     verbose:bool = typer.Option(False, '-v', '--verbose', help='Enable verbose logging'),
     completed_msg:str = typer.Option(None, help='Regex for app to print to console for it to have successfully completed'),
+    retries:int = typer.Option(0, help='The number of times to retry running the firmware on the device'),
 ):
     """Run a firmware image on a device and parse its serial output for errors"""
     from mltk.utils.path import fullpath, create_tempdir
@@ -79,7 +81,8 @@ def download_run_command(
                 timeout=timeout,
                 verbose=verbose,
                 logger=logger,
-                prev_pid_path=prev_pid_path
+                prev_pid_path=prev_pid_path,
+                retries=retries
             )
         except Exception as e:
             cli.handle_exception('Failed to run command on remote', e)
@@ -116,33 +119,47 @@ def download_run_command(
     port = port or 'regex:JLink CDC UART Port'
     baud = baud or 115200
 
-    logger.error('Executing application on device ...')
-    logger.debug(f'Opening serial connection, BAUD={baud}, port={port}')
-    with SerialReader( 
-        port=port,
-        baud=baud, 
-        outfile=logger,
-        stop_regex=stop_regex,
-        fail_regex=[
-            re.compile(r'.*hardfault.*', re.IGNORECASE), 
-            re.compile(r'.*error.*', re.IGNORECASE),
-            re.compile(r'.*failed to alloc memory.*', re.IGNORECASE),
-            re.compile(r'.*assert failed.*', re.IGNORECASE)
-        ]
-    ) as serial_reader:
-        # Reset the board to start the profiling firmware
-        commander.reset_device(platform=platform, device=device)
+    max_retries = max(retries, 1)
+    for retry_count in range(1, max_retries+1):
+        logger.error(f'Executing application on device (attempt {retry_count} of {max_retries}) ...')
+        logger.debug(f'Opening serial connection, BAUD={baud}, port={port}')
+        with SerialReader( 
+            port=port,
+            baud=baud, 
+            outfile=logger,
+            stop_regex=stop_regex,
+            fail_regex=[
+                re.compile(r'.*hardfault.*', re.IGNORECASE), 
+                re.compile(r'.*error.*', re.IGNORECASE),
+                re.compile(r'.*failed to alloc memory.*', re.IGNORECASE),
+                re.compile(r'.*assert failed.*', re.IGNORECASE)
+            ]
+        ) as serial_reader:
+            # Reset the board to start the profiling firmware
+            commander.reset_device(platform=platform, device=device, logger=logger)
 
-        # Wait for up to a minute for the profiler to complete
-        if not serial_reader.read(timeout=timeout):
-            logger.error('Timed-out waiting for app on device to complete')
-            cli.abort()
+            # Wait for up to a minute for the profiler to complete
+            # The read() will return when the stop_regex, fail_regex, or timeout condition is met
+            if not serial_reader.read(timeout=timeout):
+                logger.error('Timed-out waiting for app on device to complete')
+                if retry_count < max_retries:
+                    serial_reader.close()
+                    time.sleep(3.0) # Wait a moment and retry
+                    continue
 
-        # Check if the profiler failed
-        if serial_reader.failed:
-            logger.error(f'App failed on device, err: {serial_reader.error_message}')
-            cli.abort()
+                cli.abort()
 
+            # Check if the profiler failed
+            if serial_reader.failed:
+                logger.error(f'App failed on device, err: {serial_reader.error_message}')
+                if retry_count < max_retries:
+                    serial_reader.close()
+                    time.sleep(3.0) # Wait a moment and retry
+                    continue
+
+                cli.abort()
+
+            break
 
     logger.info('Application successfully executed')
 
@@ -162,11 +179,12 @@ def _download_run_on_remote(
     verbose:bool,
     completed_msg:str,
     logger:logging.Logger,
-    prev_pid_path:str
+    prev_pid_path:str,
+    retries:int
 ):
 
     from mltk.utils.ssh import SshClient
-    from mltk.utils.path import fullpath, create_tempdir
+    from mltk.utils.path import fullpath
     from mltk.utils.system import get_username
     from mltk.utils.commander import commander as command_module
     import paramiko
@@ -265,6 +283,8 @@ def _download_run_on_remote(
             cmd += ' --verbose'
         if masserase:
             cmd += ' --masserase'
+        if retries:
+            cmd += f' --retries {retries}'
 
 
         pid_re = re.compile(r'.*PID=(\d+).*')
@@ -277,4 +297,4 @@ def _download_run_on_remote(
         logger.debug(f'Executing on remote: {cmd}')
         retcode, retmsg = ssh_client.execute_command(cmd, log_line_parser=_log_line_parser)
         if retcode != 0:
-            raise RuntimeError(f'Failed to execute MLTK command on remote')
+            raise RuntimeError(f'Failed to execute MLTK command on remote: {cmd.join(" ")}')

@@ -16,8 +16,8 @@ def should_patch_file(path: str) -> object:
     if path.endswith('/micro/micro_allocator.cc'):
         return dict(func=process_micro_allocator_cc, state=0)
 
-    if path.endswith('/micro/arena_allocator/simple_memory_allocator.cc'):
-        return dict(func=process_simple_memory_allocator_cc, state=0)
+    if path.endswith('/micro/arena_allocator/single_arena_buffer_allocator.cc'):
+        return dict(func=process_single_arena_buffer_allocator_cc, state=0)
 
     if path.endswith('/micro/memory_planner/greedy_memory_planner.cc'):
         return dict(func=process_greedy_memory_planner_cc, state=0)
@@ -33,6 +33,19 @@ def should_patch_file(path: str) -> object:
     
     if path.endswith('/c/builtin_op_data.h'):
         return dict(func=process_builtin_op_data_h, state=0)
+
+    if path.endswith('/micro/kernels/conv_common.cc'):
+        return dict(func=process_conv_common_cc, state=0)
+    
+    if path.endswith('/micro/kernels/depthwise_conv_common.cc'):
+        return dict(func=process_depthwise_conv_common_cc, state=0)
+    
+    if path.endswith('/micro/kernels/fully_connected_common.cc'):
+        return dict(func=process_fully_connected_common_cc, state=0)
+    
+    if path.endswith('/micro/kernels/pooling_common.cc'):
+        return dict(func=process_pooling_common_cc, state=0)
+    
 
     return None 
 
@@ -120,8 +133,8 @@ def process_micro_allocator_cc(lineno: int, line: str, arg: object) -> str:
 
     return line 
 
-def process_simple_memory_allocator_cc(lineno: int, line: str, arg: object) -> str:
-    if arg['state'] == 0 and  'SimpleMemoryAllocator::IsAllTempDeallocated()' in line:
+def process_single_arena_buffer_allocator_cc(lineno: int, line: str, arg: object) -> str:
+    if arg['state'] == 0 and  'SingleArenaBufferAllocator::IsAllTempDeallocated()' in line:
         arg['state'] = 1
     elif arg['state'] == 1:
         arg['state'] = 2
@@ -209,3 +222,100 @@ def process_builtin_op_data_h(lineno: int, line: str, arg: object) -> str:
 
     return line
 
+
+def process_conv_common_cc(lineno: int, line: str, arg: object) -> str:
+    if arg['state'] == 0:
+        if 'mltk_tflite_micro_recorder.hpp' in line:
+            arg['state'] = 1
+        elif 'namespace tflite {' in line:
+            arg['state'] = 1
+            line = '// Patched by MLTK\n#include "mltk_tflite_micro_recorder.hpp"\n\n' + line
+
+    elif arg['state'] == 1:
+        if 'op_params.quantized_activation_max = data.output_activation_max;' in line:
+            arg['state'] = 2
+
+    elif arg['state'] == 2:
+        arg['state'] = 3
+        if 'TFLITE_MICRO_RECORD_CONV_PARAMS' not in line:
+            line = '  TFLITE_MICRO_RECORD_CONV_PARAMS(op_params, data.per_channel_output_multiplier, data.per_channel_output_shift, data.padding.height_offset); // Patched by MLTK\n' + line
+    
+    elif arg['state'] == 3:
+        if 'int output_channels = filter->dims->data[kConvQuantizedDimension];' in line:
+            arg['state'] = 4
+
+    elif arg['state'] == 4:
+        arg['state'] = 5
+        if '// Patched by MLTK' not in line:
+            line = '    data->padding.height_offset = output_channels; // Patched by MLTK, the height_offset member isnt used, so we hack it to store the number of channels\n' + line
+
+    return line
+
+
+def process_depthwise_conv_common_cc(lineno: int, line: str, arg: object) -> str:
+    if arg['state'] == 0:
+        if 'mltk_tflite_micro_recorder.hpp' in line:
+            arg['state'] = 1
+        elif 'namespace tflite {' in line:
+            arg['state'] = 1
+            line = '// Patched by MLTK\n#include "mltk_tflite_micro_recorder.hpp"\n\n' + line
+
+    elif arg['state'] == 1:
+        if 'op_params.quantized_activation_max = data.output_activation_max;' in line:
+            arg['state'] = 2
+
+    elif arg['state'] == 2:
+        arg['state'] = 3
+        if 'TFLITE_MICRO_RECORD_DEPTHWISE_CONV_PARAMS' not in line:
+            line = '  TFLITE_MICRO_RECORD_DEPTHWISE_CONV_PARAMS(op_params, data.per_channel_output_multiplier, data.per_channel_output_shift, data.padding.height_offset); // Patched by MLTK\n' + line
+    
+    elif arg['state'] == 3:
+        if 'int output_channels = filter->dims->data[kDepthwiseConvQuantizedDimension];' in line:
+            arg['state'] = 4
+
+    elif arg['state'] == 4:
+        arg['state'] = 5
+        if '// Patched by MLTK' not in line:
+            line = '    data->padding.height_offset = output_channels; // Patched by MLTK, the height_offset member isnt used, so we hack it to store the number of channels\n' + line
+
+    return line
+
+
+def process_fully_connected_common_cc(lineno: int, line: str, arg: object) -> str:
+    if arg['state'] == 0:
+        if 'mltk_tflite_micro_recorder.hpp' in line:
+            arg['state'] = 1
+        elif 'namespace tflite {' in line:
+            arg['state'] = 1
+            line = '// Patched by MLTK\n#include "mltk_tflite_micro_recorder.hpp"\n\n' + line
+
+    elif arg['state'] == 1:
+        if 'op_params.quantized_activation_max = op_data.output_activation_max;' in line:
+            arg['state'] = 2
+
+    elif arg['state'] == 2:
+        arg['state'] = 3
+        if 'TFLITE_MICRO_RECORD_FULLY_CONNECTED_PARAMS' not in line:
+            line = '  TFLITE_MICRO_RECORD_FULLY_CONNECTED_PARAMS(op_params); // Patched by MLTK\n' + line
+
+    return line
+
+
+def process_pooling_common_cc(lineno: int, line: str, arg: object) -> str:
+    if arg['state'] == 0:
+        if 'mltk_tflite_micro_recorder.hpp' in line:
+            arg['state'] = 1
+        elif 'namespace tflite {' in line:
+            arg['state'] = 1
+            line = '// Patched by MLTK\n#include "mltk_tflite_micro_recorder.hpp"\n\n' + line
+
+    elif arg['state'] == 1 or arg['state'] == 3:
+        if 'op_params.quantized_activation_max = data->activation_max;' in line:
+            arg['state'] += 1
+
+    elif arg['state'] == 2 or arg['state'] == 4:
+        arg['state'] += 1
+        if '// Patched by MLTK' not in line:
+            line = '\n  op_params.padding_type = tflite::micro::RuntimePaddingType(params->padding); // Patched by MLTK\n  TFLITE_MICRO_RECORD_POOL_PARAMS(op_params);\n' + line
+
+    return line

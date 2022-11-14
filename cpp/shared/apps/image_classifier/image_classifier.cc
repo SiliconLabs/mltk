@@ -138,7 +138,6 @@ void image_classifier_init(void)
   
   // Instantiate CommandRecognizer  
   static RecognizeCommands static_recognizer(
-      model.error_reporter(), 
       app_settings.average_window_duration_ms,
       app_settings.detection_threshold,
       app_settings.suppression_count,

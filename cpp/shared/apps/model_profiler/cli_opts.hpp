@@ -4,7 +4,6 @@
 #include <string>
 
 #include "logging/logging.hpp"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
 
 
 #ifndef VERBOSE

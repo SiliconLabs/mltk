@@ -35,8 +35,8 @@ function bluetoothTryConnect() {
 
 function onDisconnected() {
     console.log('Device got disconnected.');
-    $("#bluetooth-msg").text("Bluetooth disconnected, click to reconnect");
-    $("#bluetooth-msg").fadeIn('slow');
+    $(".bluetooth-msg").text("Bluetooth disconnected, click to reconnect");
+    $(".bluetooth-msg").fadeIn('slow');
     $("#command-log-dialog").fadeOut('slow');
     _bleIsConnected = false;
     if (!HOME) { 
@@ -49,7 +49,7 @@ function gotCharacteristics(error, characteristics) {
     _bleIsConnecting = false;
     if (error || !characteristics) {
         console.log('error: ', error);
-        $("#bluetooth-msg").text("Bluetooth failed, click to try again");
+        $(".bluetooth-msg").text("Bluetooth failed, click to try again");
         return;
     }
      
@@ -63,10 +63,10 @@ function gotCharacteristics(error, characteristics) {
         $("#command-log-dialog").fadeIn('slow');
        
         if(HOME) {
-            $("#bluetooth-msg").text("Say \"go\" to begin");
+            $(".bluetooth-msg").text("Say \"go\" to begin");
             playReadySound();
         } else {
-            $("#bluetooth-msg").fadeOut('slow');
+            $(".bluetooth-msg").fadeOut('slow');
             resumeGame();
         }
         

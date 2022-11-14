@@ -1,4 +1,4 @@
-
+__NOTE:__ Refer to the [online documentation](https://siliconlabs.github.io/mltk) to properly view this file
 # Common Model Architectures
 
 The follow are common model "architectures". i.e. They are generic, non-application-specific

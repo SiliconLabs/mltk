@@ -21,7 +21,7 @@
 #include <cstdint>
 
 #include "tensorflow/lite/c/common.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/micro_log.h"
 #include "tflite_micro_model/tflite_micro_model.hpp"
 #include "image_classifier.h"
 
@@ -38,8 +38,8 @@
 // there are hard limits on the number of results it can store.
 class PreviousResultsQueue {
 public:
-  PreviousResultsQueue(tflite::ErrorReporter * error_reporter)
-    : error_reporter_(error_reporter), front_index_(0), size_(0) {
+  PreviousResultsQueue()
+    :  front_index_(0), size_(0) {
   }
 
   // Data structure that holds an inference result, and the time when it
@@ -80,9 +80,7 @@ public:
   void push_back(const Result& entry)
   {
     if (size() >= MAX_RESULT_COUNT) {
-      TF_LITE_REPORT_ERROR(
-        error_reporter_,
-        "Couldn't push_back latest result, too many already!");
+      MicroPrintf("Couldn't push_back latest result, too many already!");
       return;
     }
     size_ += 1;
@@ -92,8 +90,7 @@ public:
   Result pop_front()
   {
     if (size() <= 0) {
-      TF_LITE_REPORT_ERROR(error_reporter_,
-                           "Couldn't pop_front result, none present!");
+      MicroPrintf("Couldn't pop_front result, none present!");
       return Result();
     }
     Result result = front();
@@ -111,8 +108,7 @@ public:
   Result& from_front(int offset)
   {
     if ((offset < 0) || (offset >= size_)) {
-      TF_LITE_REPORT_ERROR(error_reporter_,
-                           "Attempt to read beyond the end of the queue!");
+      MicroPrintf("Attempt to read beyond the end of the queue!");
       offset = size_ - 1;
     }
     int index = front_index_ + offset;
@@ -123,7 +119,6 @@ public:
   }
 
 private:
-  tflite::ErrorReporter* error_reporter_;
   Result results_[MAX_RESULT_COUNT];
 
   int front_index_;
@@ -152,8 +147,7 @@ public:
   // initially being populated for example. The suppression argument disables
   // further recognitions for a set time after one has been triggered, which can
   // help reduce spurious recognitions.
-  explicit RecognizeCommands(tflite::ErrorReporter* error_reporter,
-                             int32_t average_window_duration_ms = 1000,
+  explicit RecognizeCommands(int32_t average_window_duration_ms = 1000,
                              uint8_t detection_threshold = 150,
                              int32_t suppression_count = 2,
                              int32_t minimum_count = 3,
@@ -167,7 +161,6 @@ public:
 
 private:
   // Configuration
-  tflite::ErrorReporter* error_reporter_;
   int32_t average_window_duration_ms_;
   uint8_t detection_threshold_;
   int32_t suppression_count_;

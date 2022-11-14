@@ -497,10 +497,23 @@ def _patch_image_iterator(datagen):
     tensorflow.keras.preprocessing.image.ImageDataGenerator 
     properly iterates while predicting
     """
-    from keras_preprocessing.image.iterator import Iterator
+    is_keras_iterator = False
+    try:
+        from keras_preprocessing.image.iterator import Iterator
+        if isinstance(datagen, Iterator):
+            is_keras_iterator = True
+    except:
+        pass 
+    try:
+        from keras.preprocessing.image import Iterator
+        if isinstance(datagen, Iterator):
+            is_keras_iterator = True
+    except:
+        pass 
 
-    if not isinstance(datagen, Iterator):
+    if not is_keras_iterator:
         return
+
 
     datagen.max_samples = -1
     datagen.sample_count = 0

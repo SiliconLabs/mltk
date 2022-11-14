@@ -155,11 +155,11 @@ def extract_model_parameters(
                 assert cpu_cycles is not None and cpu_cycles > 0
                 params['cpu_cycles'] = cpu_cycles
             elif name == 'accelerator_loads':
-                params['accelerator_loads'] = layer.accelerator_loads
+                params['accelerator_loads'] = layer['accelerator_loads']
             elif name == 'accelerator_optimized_loads':
-                params['accelerator_optimized_loads'] = layer.accelerator_optimized_loads
+                params['accelerator_optimized_loads'] = layer['accelerator_optimized_loads']
             elif name == 'accelerator_parallel_loads':
-                params['accelerator_parallel_loads'] = layer.accelerator_parallel_loads
+                params['accelerator_parallel_loads'] = layer['accelerator_parallel_loads']
             elif name == 'input_size':
                 params['input_size'] = layer_input.shape.flat_size
             elif name == 'input_flat_size':

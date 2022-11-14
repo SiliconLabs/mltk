@@ -4,5 +4,4 @@ from .tflite_micro_model import (
     TfliteMicroLayerError, 
     TfliteMicroModelDetails,
     TfliteMicroProfiledLayerResult,
-    TfliteMicroRecordedLayerResult,
 )

@@ -257,8 +257,7 @@ def evaluate_classifier(
     y_pred = []
     y_label = []
 
-    progbar = tqdm.tqdm(unit='prediction', desc='Evaluating') if verbose else None
-
+    progbar =_get_progbar(mltk_model, verbose)
     for batch_x, batch_y in _iterate_evaluation_data(mltk_model):
         if isinstance(built_model, KerasModel):
             pred = built_model.predict(batch_x, verbose=0)
@@ -281,7 +280,7 @@ def evaluate_classifier(
 
     results = ClassifierEvaluationResults(
         name=mltk_model.name,
-        classes=None if not hasattr(mltk_model, 'classes') else mltk_model.classes
+        classes=getattr(mltk_model, 'classes', None)
     )
 
     y_pred = _list_to_numpy_array(y_pred)
@@ -814,3 +813,26 @@ def _convert_tf_tensor_to_numpy_array(x, expand_dim=None):
         x = np.expand_dims(x, axis=expand_dim)
     
     return x
+
+
+def _get_progbar(mltk_model:MltkModel, verbose:bool) -> tqdm.tqdm:
+    if not verbose:
+        return None 
+
+    try:
+        class_counts = getattr(mltk_model, 'class_counts', {})
+        eval_class_counts = class_counts.get('evaluation', {})
+        valid_class_counts = class_counts.get('validation', {})
+        eval_n_samples = sum(eval_class_counts.values())
+        valid_n_samples = sum(valid_class_counts.values())
+        if eval_n_samples > 0:
+            n_samples = eval_n_samples
+        elif valid_n_samples > 0:
+            n_samples = valid_n_samples
+        else:
+            n_samples = sum(class_counts.values()) or None
+
+    except:
+        n_samples = None
+
+    return tqdm.tqdm(unit='prediction', desc='Evaluating', total=n_samples)

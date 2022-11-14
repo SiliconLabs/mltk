@@ -10,8 +10,7 @@ import sklearn
 
 import matplotlib.pyplot as plt
 from mltk.utils import gpu
-from mltk.utils.python import install_pip_package, prepend_exception_msg
-from .keras.callbacks import import_tqdm_progressbar_callback
+from mltk.utils.python import prepend_exception_msg
 from .model import (
     MltkModel,
     KerasModel,
@@ -194,17 +193,6 @@ def evaluate_autoencoder(
 
     scoring_function = mltk_model.get_scoring_function()
     classes = classes or mltk_model.eval_classes
-
-
-    if verbose:
-        callbacks = callbacks or []
-        TQDMNotebookProgressBar = import_tqdm_progressbar_callback()
-        if TQDMNotebookProgressBar is not None:
-            # If we're using a Jupyter notebook,
-            # then we use the TQDMNotebookCallback, otherwise use the default ProgressBarCallback 
-            # (note: verbose=True then ProgressBarCallback is used automatically)
-            verbose = False
-            callbacks.append(TQDMNotebookProgressBar(show_overall_progress=True))
 
     # Build the MLTK model's corresponding as a Keras model or .tflite
     try:
@@ -703,14 +691,12 @@ def _retrieve_data(x):
 def _save_decoded_image(out_path, orig, decoded, score):
     # pylint: disable=no-member
     try:
-        install_pip_package('opencv-python', module_name='cv2', logger=get_mltk_logger())
-    except:
-        return 
-
-    try:
         from cv2 import cv2 
     except:
-        import cv2
+        try:
+            import cv2
+        except:
+            raise RuntimeError('Failed import cv2 Python package, try running: pip install opencv-python OR pip install silabs-mltk[full]')
 
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
 

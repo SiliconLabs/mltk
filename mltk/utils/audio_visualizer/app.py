@@ -1,16 +1,8 @@
-import logging 
 
-
-from mltk.core import MltkModel
-
-
-from .install_wxpython import install_wxpython
-
-
-install_wxpython()
-
-
-import wx
+try:
+    import wx
+except:
+    raise RuntimeError('Failed import wx Python package, try running: pip install wxpython')
 
 from .gui import res
 from .gui.generated.VisualizerFrame import VisualizerFrame

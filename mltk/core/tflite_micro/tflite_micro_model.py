@@ -1,7 +1,9 @@
-from typing import List
+from typing import List, Dict
 import re
 import collections
 import numpy as np
+import msgpack
+
 
 from mltk.utils.string_formatting import  format_units
 
@@ -128,25 +130,9 @@ class TfliteMicroProfiledLayerResult(collections.defaultdict):
         return self['cpu_cycles']
     @property
     def energy(self) -> float:
-        """nergy in Joules required by this layer
+        """Energy in Joules required by this layer
         The energy is relative to the 'baseline' energy (i.e. energy used while the device was idling)"""
         return self['energy']
-
-
-class TfliteMicroRecordedLayerResult:
-    def __init__(self, result:dict) -> None:
-        self._inputs = result['inputs']
-        self._outputs = result['outputs']
-
-    @property
-    def inputs(self) -> List[np.ndarray]:
-        """Recorded input tensor data"""
-        return self._inputs
-
-    @property
-    def outputs(self) -> List[np.ndarray]:
-        """Recorded output tensor data"""
-        return self._outputs
 
 
 
@@ -159,7 +145,7 @@ class TfliteMicroModel:
         tflm_accelerator:TfliteMicroAccelerator, 
         flatbuffer_data:bytes, 
         enable_profiler:bool=False,
-        enable_recorder:bool=False,
+        enable_tensor_recorder:bool=False,
         force_buffer_overlap:bool=False,
         runtime_buffer_size:int=0,
     ):
@@ -173,7 +159,7 @@ class TfliteMicroModel:
             flatbuffer_data,
             accelerator_wrapper, 
             enable_profiler,
-            enable_recorder,
+            enable_tensor_recorder,
             force_buffer_overlap,
             runtime_buffer_size
         ):
@@ -269,24 +255,28 @@ class TfliteMicroModel:
 
 
     @property
-    def is_recorder_enabled(self) -> bool:
+    def is_tensor_recorder_enabled(self) -> bool:
         """Return if the tensor recorder is enabled """
-        return self._model_wrapper.is_recorder_enabled()
+        return self._model_wrapper.is_tensor_recorder_enabled()
 
 
-    def get_recorded_data(self) -> List[TfliteMicroRecordedLayerResult]:
+    def get_recorded_data(self) -> List[Dict[str,object]]:
         """Return the recorded contents of each model layers' tensors
         
         Returns:
             A list where each entry contains the input/output tensors
             of the associated model layer
         """
-        retval = []
-        results = self._model_wrapper.get_recorded_data()
-        for v in results:
-            retval.append(TfliteMicroRecordedLayerResult(v))
+        results_bin = self._model_wrapper.get_recorded_data()
+        if results_bin is None:
+            raise RuntimeError('Failed to retrieve recorded model data from Tensorflow-Lite Micro')
 
-        return retval
+        try:
+            recorded_data = msgpack.loads(results_bin)
+        except Exception as e:
+            raise RuntimeError(f'Failed to parse recorded model binary data, err: {e}')
+
+        return recorded_data
 
     def get_layer_error(self, index:int) -> TfliteMicroLayerError:
         """Return the TfliteMicroLayerError at the given layer index if found else return None"""

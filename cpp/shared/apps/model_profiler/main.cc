@@ -6,19 +6,30 @@
 #include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tflite_micro_model/tflite_micro_model.hpp"
 #include "mltk_tflite_micro_helper.hpp"
+#include "mltk_tflite_micro_accelerator_recorder.hpp"
 
 #ifndef __arm__
 // CLI parsing only supported on Windows/Linux
 #include "cli_opts.hpp"
 #endif
 
+
+
+using namespace mltk;
+
+
+
+
+#ifdef TFLITE_MICRO_RECORDER_ENABLED
+static void dump_recorded_data(TfliteMicroModel &model, logging::Logger& logger);
+#endif
+
+
 // These are defined by the build scripts
 // which converts the specified .tflite to a C array
 extern "C" const uint8_t sl_tflite_model_array[];
 extern "C" const uint32_t sl_tflite_model_len;
 
-
-using namespace mltk;
 
 
 
@@ -28,8 +39,6 @@ static bool load_model(
     const uint8_t* tflite_input_flatbuffer, 
     uint32_t tflite_input_flatbuffer_len
 );
-static void print_recorded_data(TfliteMicroModel &model, logging::Logger& logger);
-
 
 tflite::AllOpsResolver op_resolver;
 
@@ -85,7 +94,9 @@ extern "C" int main(void)
     }
 
     profiling::print_stats(profiler, &logger);
-    print_recorded_data(model, logger);
+#ifdef TFLITE_MICRO_RECORDER_ENABLED
+    dump_recorded_data(model, logger);
+#endif
     
     logger.info("done");
 
@@ -138,9 +149,12 @@ static bool load_model(
 
     model.enable_profiler();
 #ifdef TFLITE_MICRO_RECORDER_ENABLED
-    model.enable_recorder();
+    model.enable_tensor_recorder();
 #endif
-
+#ifdef TFLITE_MICRO_ACCELERATOR_RECORDER_ENABLED
+   TfliteMicroAcceleratorRecorder::instance().set_program_recording_enabled();
+   TfliteMicroAcceleratorRecorder::instance().set_data_recording_enabled();
+#endif
     logger.info("Loading model");
 
 #ifdef MLTK_RUNTIME_MEMORY_SIZE
@@ -161,27 +175,91 @@ static bool load_model(
     return true;
 }
 
-static void print_recorded_data(TfliteMicroModel &model, logging::Logger& logger)
-{
 #ifdef TFLITE_MICRO_RECORDER_ENABLED
-    logger.info("Recording results:");
-    auto& recorded_data = model.recorded_data();
-    int layer_idx = 0;
-    for(auto& layer : recorded_data)
+#include "mltk_tflite_micro_recorder.hpp"
+
+static void dump_recorded_data(TfliteMicroModel &model, logging::Logger& logger)
+{
+    const uint8_t* buffer;
+    uint32_t buffer_length;
+    msgpack_object_t* root_obj;
+
+    if(!model.recorded_data(&buffer, &buffer_length))
     {
-        logger.info("Layer %d:", layer_idx);
-        logger.info("  Input sizes (bytes):");
-        for(auto& input : layer.inputs)
-        {
-            logger.info("    %d", input.length);
-        }
-        logger.info("  Output sizes (bytes):", layer_idx);
-        for(auto& output : layer.outputs)
-        {
-            logger.info("    %d", output.length);
-        }
-        ++layer_idx;
+         logger.error("No recorded data available");
+        return;
     }
-    recorded_data.clear();
-#endif
+    if(msgpack_deserialize_with_buffer(&root_obj, buffer, buffer_length, MSGPACK_FLAGS_NONE) != 0)
+    {
+         logger.error("Failed to de-serialize recorded data");
+        return;
+    }
+
+    struct Context {
+        logging::Logger& logger;
+        int n_values = 0;
+        int current_index = 0;
+        int layer_index = 0;
+ 
+        Context(logging::Logger& logger): logger(logger){}
+    };
+
+    auto msgpack_iterator = [](const msgpack_object_t *key, const msgpack_object_t *value, void *arg) -> int 
+    {
+        auto& context = *(Context*)arg;
+
+        if(context.current_index == context.n_values)
+        {
+            if(key == nullptr)
+            {
+                context.logger.info("Layer %d:", context.layer_index);
+                context.layer_index += 1;
+                return 0;
+            }
+
+            char key_str[256];
+            context.current_index = 0;
+            context.logger.info("  %s:", msgpack_to_str(key, key_str, sizeof(key_str)));
+     
+            if(MSGPACK_IS_ARRAY(value))
+            {
+                context.n_values = MSGPACK_ARRAY_LENGTH(value);
+            }
+            else if(MSGPACK_IS_DICT(value))
+            {
+                context.n_values = MSGPACK_DICT_LENGTH(value);
+            }
+            else 
+            {
+                return -1;
+            }
+        }
+        else if(key == nullptr)
+        {
+            context.logger.info("    %d: %d elements", context.current_index, MSGPACK_BIN_LENGTH(value));
+            context.current_index += 1;
+        }
+        else 
+        {
+            char key_str[64];
+            char val_str[64];
+            context.logger.info("    %s: %s", msgpack_to_str(key, key_str, sizeof(key_str)), msgpack_to_str(value, val_str, sizeof(val_str)));
+            context.current_index += 1;
+        }
+
+        return 0;
+    };
+
+    
+
+    Context context(logger);
+
+    logger.info("Recording results (%d layers):", MSGPACK_ARRAY_LENGTH(root_obj));
+    if(msgpack_foreach(root_obj, msgpack_iterator, &context, 10) != 0)
+    {
+        logger.error("Failed to process recorded data");
+    }
+
+    msgpack_free_objects(root_obj);
 }
+#endif

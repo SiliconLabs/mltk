@@ -86,7 +86,6 @@ In this case, ONLY the .tflite will be programmed and the existing fingerprint_a
 
     import numpy as np
     from mltk.core import (
-        TfliteModel,
         TfliteModelParameters,
         load_tflite_model,
     )
@@ -94,9 +93,8 @@ In this case, ONLY the .tflite will be programmed and the existing fingerprint_a
     from mltk.utils import firmware_apps
     from mltk.utils import commander
     from mltk.utils.serial_reader import SerialReader
-    from mltk.utils.path import (fullpath, create_user_dir, clean_directory)
+    from mltk.utils.path import (create_user_dir, clean_directory)
     from mltk.utils.jlink_stream import (JlinkStream, JLinkDataStream, JlinkStreamOptions)
-    from mltk.utils.python import install_pip_package
     from mltk.utils.logger import get_logger
     from mltk.utils.system import send_signal
     from mltk.utils.string_formatting import iso_time_filename_str
@@ -106,13 +104,12 @@ In this case, ONLY the .tflite will be programmed and the existing fingerprint_a
     latest_image_q = collections.deque(maxlen=1)
 
     try:
-        install_pip_package('opencv-python', 'cv2', logger=logger)
         from cv2 import cv2
-    except Exception as e:
+    except:
         try:
             import cv2
         except:
-            raise RuntimeError('Failed import cv2 Python package')
+            raise RuntimeError('Failed import cv2 Python package, try running: pip install opencv-python OR pip install silabs-mltk[full]')
 
     if generate_dataset:
         disable_inference = True
