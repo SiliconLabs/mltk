@@ -639,7 +639,7 @@ The LED will be solid red, blue, or purple for the authenticated user.<br/>
 The LED will flash purple for an unknown fingerprint</p></li>
 </ul>
 <p><strong>HINT:</strong> Run the following command to view the captured fingerprints:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk fingerprint_reader
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>fingerprint_reader
 </pre></div>
 </div>
 <section id="state-diagram">
@@ -673,7 +673,7 @@ to convert a .tflite file into a c file which is added to the project.</p>
 <section id="via-fingeprint-reader-command">
 <h4 id="via-fingeprint-reader-command">via fingeprint_reader Command<a class="headerlink" href="#via-fingeprint-reader-command" title="Permalink to this headline">¶</a></h4>
 <p>Alternatively, using the command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk fingeprint_reader &lt;model path&gt; --app none
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>fingeprint_reader<span class="w"> </span>&lt;model<span class="w"> </span>path&gt;<span class="w"> </span>--app<span class="w"> </span>none
 </pre></div>
 </div>
 <p>will program the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model to the end of the device’s flash.
@@ -688,7 +688,7 @@ of the model built into the firmware.</p>
 or the CMake <a class="reference external" href="../../../docs/command_line.html">Command Line</a>.</p>
 <p>To update the model, create/modify the file: <code class="docutils literal notranslate"><span class="pre">&lt;mltk</span> <span class="pre">repo</span> <span class="pre">root&gt;/user_options.cmake</span></code>
 and add:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk_set<span class="o">(</span>FINGERPRINT_AUTHENTICATOR_MODEL &lt;model name or path&gt;<span class="o">)</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk_set<span class="o">(</span>FINGERPRINT_AUTHENTICATOR_MODEL<span class="w"> </span>&lt;model<span class="w"> </span>name<span class="w"> </span>or<span class="w"> </span>path&gt;<span class="o">)</span>
 </pre></div>
 </div>
 <p>where <code class="docutils literal notranslate"><span class="pre">&lt;model</span> <span class="pre">name</span> <span class="pre">or</span> <span class="pre">path&gt;</span></code> is the file path to your model’s <code class="docutils literal notranslate"><span class="pre">.tflite</span></code>
@@ -759,12 +759,12 @@ This module must be connected to the USART peripheral of the embedded target.</p
 <section id="dumping-images-to-pc">
 <h2 id="dumping-images-to-pc">Dumping images to PC<a class="headerlink" href="#dumping-images-to-pc" title="Permalink to this headline">¶</a></h2>
 <p>This application works with the MLTK command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk fingerprint_reader --help
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>fingerprint_reader<span class="w"> </span>--help
 </pre></div>
 </div>
 <p>Using this command, you can dump images to the local PC.</p>
 <p>For example:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk classify_image fingerprint_reader --dump-images
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>classify_image<span class="w"> </span>fingerprint_reader<span class="w"> </span>--dump-images
 </pre></div>
 </div>
 <p>which will display the images from the fingerprint reader and save them to the local PC</p>
@@ -782,18 +782,18 @@ to control how the app is built.</p>
 <p>Optionally, configure the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model to profile:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify the path to the .tflite model file to use</span>
 <span class="c1"># by the mltk_fingerprint_authenticator application</span>
-mltk_set<span class="o">(</span>FINGERPRINT_AUTHENTICATOR_MODEL ~/my_models/my_model.tflite<span class="o">)</span>
+mltk_set<span class="o">(</span>FINGERPRINT_AUTHENTICATOR_MODEL<span class="w"> </span>~/my_models/my_model.tflite<span class="o">)</span>
 </pre></div>
 </div>
 <p><strong>HINT:</strong><br/>
 You can also specify the path to the <code class="docutils literal notranslate"><span class="pre">.mltk.zip</span></code> model archive or just specify the MLTK model name, e.g.:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Specify the path to the model archive</span>
-mltk_set<span class="o">(</span>FINGERPRINT_AUTHENTICATOR_MODEL ~/my_models/my_model.mltk.zip<span class="o">)</span>
+mltk_set<span class="o">(</span>FINGERPRINT_AUTHENTICATOR_MODEL<span class="w"> </span>~/my_models/my_model.mltk.zip<span class="o">)</span>
 
 <span class="c1"># Specify the MLTK model name</span>
 <span class="c1"># NOTE: The model specification must be on the model search path, see:</span>
 <span class="c1">#       https://siliconlabs.github.io/mltk/docs/guides/model_search_path.html</span>
-mltk_set<span class="o">(</span>FINGERPRINT_AUTHENTICATOR_MODEL fingerprint_signature_generator<span class="o">)</span>
+mltk_set<span class="o">(</span>FINGERPRINT_AUTHENTICATOR_MODEL<span class="w"> </span>fingerprint_signature_generator<span class="o">)</span>
 </pre></div>
 </div>
 </section>
@@ -801,7 +801,7 @@ mltk_set<span class="o">(</span>FINGERPRINT_AUTHENTICATOR_MODEL fingerprint_sign
 <h3 id="tflite-micro-accelerator">TFLITE_MICRO_ACCELERATOR<a class="headerlink" href="#tflite-micro-accelerator" title="Permalink to this headline">¶</a></h3>
 <p>Optionally, configure the target hardware accelerator:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Use the Gecko SDK MVP TFLM kernels</span>
-mltk_set<span class="o">(</span>TFLITE_MICRO_ACCELERATOR mvp<span class="o">)</span>
+mltk_set<span class="o">(</span>TFLITE_MICRO_ACCELERATOR<span class="w"> </span>mvp<span class="o">)</span>
 </pre></div>
 </div>
 </section>

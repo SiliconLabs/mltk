@@ -690,8 +690,8 @@ The core model structure and any other metadata entries in the <code class="docu
 <h3 id="viewing-parameters">Viewing Parameters<a class="headerlink" href="#viewing-parameters" title="Permalink to this headline">¶</a></h3>
 <p>Use the MLTK’s <a class="reference internal" href="model_summary.html"><span class="doc std std-doc">model summary</span></a> feature to view the model parameters.
 e.g.:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk summarize audio_example1 --tflite
-mltk summarize ~/workspace/my_model.tflite
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>summarize<span class="w"> </span>audio_example1<span class="w"> </span>--tflite
+mltk<span class="w"> </span>summarize<span class="w"> </span>~/workspace/my_model.tflite
 </pre></div>
 </div>
 </section>
@@ -721,7 +721,7 @@ mltk summarize ~/workspace/my_model.tflite
 <strong>NOTE:</strong> The <code class="docutils literal notranslate"><span class="pre">fe.*</span></code> parameters are specified in the <a class="reference internal" href="../python_api/data_preprocessing/audio_feature_generator_settings.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGeneratorSettings" title="mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGeneratorSettings"><span class="xref myst py py-class">AudioFeatureGeneratorSettings</span></a> and
 used by the <a class="reference internal" href="../python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator" title="mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator"><span class="xref myst py py-class">AudioFeatureGenerator</span></a> during model training.</p>
 <p>See the <a class="reference internal" href="../audio/audio_feature_generator.html"><span class="doc std std-doc">Audio Feature Generator</span></a> guide for more details.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">samplewise_norm.*</span></code> parameters are specified in <span class="xref myst">ParallelAudioDataGenerator</span>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">samplewise_norm.*</span></code> parameters are specified in <a class="reference internal" href="../python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator" title="mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator"><span class="xref myst py py-class">ParallelAudioDataGenerator</span></a>.</p>
 <ul class="simple">
 <li><p><strong>fe.sample_rate_hz</strong>                     - The sample rate of the audio in Hz</p></li>
 <li><p><strong>fe.sample_length_ms</strong>                   - The length of an audio sample in milliseconds</p></li>
@@ -760,7 +760,7 @@ Anything below max spectrogram minus <code class="docutils literal notranslate">
 <section id="imagedatasetmixin">
 <h3 id="imagedatasetmixin">ImageDatasetMixin<a class="headerlink" href="#imagedatasetmixin" title="Permalink to this headline">¶</a></h3>
 <p>The <a class="reference internal" href="../python_api/mltk_model/image_dataset_mixin.html#mltk.core.ImageDatasetMixin" title="mltk.core.ImageDatasetMixin"><span class="xref myst py py-class">ImageDatasetMixin</span></a> adds the following parameters.<br/>
-The <code class="docutils literal notranslate"><span class="pre">samplewise_norm.*</span></code> parameters are specified in <span class="xref myst">ParallelImageDataGenerator</span>.</p>
+The <code class="docutils literal notranslate"><span class="pre">samplewise_norm.*</span></code> parameters are specified in <a class="reference internal" href="../python_api/data_preprocessing/image_data_generator.html#mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator" title="mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator"><span class="xref myst py py-class">ParallelImageDataGenerator</span></a>.</p>
 <ul class="simple">
 <li><p><strong>samplewise_norm.rescale</strong> - Value to scale each element of the sample: <code class="docutils literal notranslate"><span class="pre">norm_img</span> <span class="pre">=</span> <span class="pre">img</span> <span class="pre">*</span> <span class="pre">&lt;scaler&gt;</span></code></p></li>
 <li><p><strong>samplewise_norm.mean_and_std</strong> - Normalize the sample by the mean and standard deviation: <code class="docutils literal notranslate"><span class="pre">norm_img</span> <span class="pre">=</span> <span class="pre">(img</span> <span class="pre">-</span> <span class="pre">mean(img))</span> <span class="pre">/</span> <span class="pre">std(img)</span></code></p></li>
@@ -798,7 +798,7 @@ This includes after the <code class="docutils literal notranslate"><span class="
 <p>Alternatively, parameters can be added directly through the <code class="docutils literal notranslate"><span class="pre">update_params</span></code> command and <a class="reference internal" href="../python_api/operations/update_model_parameters.html#mltk.core.update_model_parameters" title="mltk.core.update_model_parameters"><span class="xref myst py py-func">update_model_parameters</span></a> API
 <em>without</em> modifying the <a class="reference internal" href="model_specification.html"><span class="doc std std-doc">model specification</span></a> script.</p>
 <p>For example,</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk update_params ~/workspace/my_model.tflite <span class="nv">my_custom_params</span><span class="o">=</span><span class="m">43</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>update_params<span class="w"> </span>~/workspace/my_model.tflite<span class="w"> </span><span class="nv">my_custom_params</span><span class="o">=</span><span class="m">43</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">update_model_parameters</span><span class="p">(</span><span class="s1">'~/workspace/my_model.tflite'</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">'my_custom_params'</span><span class="p">:</span> <span class="mi">43</span><span class="p">})</span>
@@ -810,7 +810,7 @@ This includes after the <code class="docutils literal notranslate"><span class="
 <h2 id="command">Command<a class="headerlink" href="#command" title="Permalink to this headline">¶</a></h2>
 <p>Updating model parameters from the command-line is done using the <code class="docutils literal notranslate"><span class="pre">update_params</span></code> operation.</p>
 <p>For more details on the available command-line options, issue the command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk update_params --help
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>update_params<span class="w"> </span>--help
 </pre></div>
 </div>
 <section id="example-1-update-model-specification">
@@ -822,7 +822,7 @@ This includes after the <code class="docutils literal notranslate"><span class="
 <li><p>Run the <code class="docutils literal notranslate"><span class="pre">update_params</span></code> command to update the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file in the <a class="reference internal" href="model_archive.html"><span class="doc std std-doc">model archive</span></a></p></li>
 </ol>
 <p>In this example, it’s assumed that the <a class="reference internal" href="../python_api/mltk_model/model.html#mltk.core.MltkModel.model_parameters" title="mltk.core.MltkModel.model_parameters"><span class="xref myst py py-attr">MltkModel.model_parameters</span></a> in
-the <span class="xref myst">tflite_micro_speech model</span> specification script have been modified <em>after</em> the model has been trained.</p>
+the <a class="reference internal" href="../python_api/models/tflite_micro/tflite_micro_speech.html#module-mltk.models.tflite_micro.tflite_micro_speech" title="mltk.models.tflite_micro.tflite_micro_speech"><span class="xref myst py py-mod">tflite_micro_speech model</span></a> specification script have been modified <em>after</em> the model has been trained.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mltk_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">[</span><span class="s1">'average_window_duration_ms'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span>
 <span class="n">mltk_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">[</span><span class="s1">'detection_threshold'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">185</span>
 <span class="n">mltk_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">[</span><span class="s1">'suppression_ms'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1500</span>
@@ -832,7 +832,7 @@ the <span class="xref myst">tflite_micro_speech model</span> specification scrip
 <span class="n">mltk_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">[</span><span class="s1">'log_level'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'info'</span>
 </pre></div>
 </div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk update_params tflite_micro_speech
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>update_params<span class="w"> </span>tflite_micro_speech
 </pre></div>
 </div>
 <p>After this command completes, the <code class="docutils literal notranslate"><span class="pre">tflite_micro_speech.mltk.zip</span></code> model archive is updated with a new <code class="docutils literal notranslate"><span class="pre">tflite_micro_speech.tflite</span></code> model file.<br/>
@@ -842,7 +842,7 @@ Note that <em>only</em> the parameters in the <code class="docutils literal notr
 <h3 id="example-2-update-with-command-line">Example 2: Update with command-line<a class="headerlink" href="#example-2-update-with-command-line" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">update_params</span></code> command also works with <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model files generated outside of the MLTK.<br/>
 In this mode, model parameters can be supplied on the command-line, e.g.:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk update_params ~/workspace/my_model.tflite <span class="nv">volume</span><span class="o">=</span><span class="m">10</span>.0 <span class="nv">log_level</span><span class="o">=</span>debug <span class="nv">threshold</span><span class="o">=</span><span class="m">43</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>update_params<span class="w"> </span>~/workspace/my_model.tflite<span class="w"> </span><span class="nv">volume</span><span class="o">=</span><span class="m">10</span>.0<span class="w"> </span><span class="nv">log_level</span><span class="o">=</span>debug<span class="w"> </span><span class="nv">threshold</span><span class="o">=</span><span class="m">43</span>
 </pre></div>
 </div>
 <p>After this command completes, the <code class="docutils literal notranslate"> <span class="pre">~/workspace/my_model.tflite</span></code> model file is updated with the given parameters.<br/>
@@ -854,15 +854,15 @@ The model weights and layers are untouched.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">update_params</span></code> command also works with <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model files generated outside of the MLTK.
 In this mode, model parameters can be supplied via a JSON file, e.g.:</p>
 <p>Given the file <code class="docutils literal notranslate"><span class="pre">model_parameters.json</span></code>:</p>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="nt">"volume"</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">"log_level"</span><span class="p">:</span><span class="w"> </span><span class="s2">"debug"</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="nt">"threshold"</span><span class="p">:</span><span class="w"> </span><span class="mi">43</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">"volume"</span><span class="p">:</span><span class="w"> </span><span class="mf">10.0</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"log_level"</span><span class="p">:</span><span class="w"> </span><span class="s2">"debug"</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">"threshold"</span><span class="p">:</span><span class="w"> </span><span class="mi">43</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>and running the command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk update_params ~/workspace/my_model.tflite --params  ~/workspace/model_parameters.json
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>update_params<span class="w"> </span>~/workspace/my_model.tflite<span class="w"> </span>--params<span class="w">  </span>~/workspace/model_parameters.json
 </pre></div>
 </div>
 <p>the <code class="docutils literal notranslate"> <span class="pre">~/workspace/my_model.tflite</span></code> model file is updated with the given parameters.<br/>

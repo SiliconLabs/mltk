@@ -453,7 +453,7 @@
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
-    <span class="sd">"""Temporal efficient neural network (TENet)</span>
+<span class="w">    </span><span class="sd">"""Temporal efficient neural network (TENet)</span>
 <span class="sd">    </span>
 <span class="sd">    A network for processing spectrogram data using temporal and depthwise convolutions.</span>
 <span class="sd">    The network treats the [T, F] spectrogram as a timeseries shaped [T, 1, F].</span>
@@ -606,7 +606,7 @@
 
 
 <span class="k">class</span> <span class="nc">MultiScaleTemporalConvolution</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">):</span>
-    <span class="sd">"""Convolution which combines results form several filter widths with padding.</span>
+<span class="w">    </span><span class="sd">"""Convolution which combines results form several filter widths with padding.</span>
 <span class="sd">    Convolution is a linearly separable operation, so these different filters can be superimposed during inference.</span>
 <span class="sd">    This makes it possible to flatten the different filters into one.</span>
 <span class="sd">    Call `.fuse` after training to flatten the filters into one.</span>
@@ -669,7 +669,7 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">fuse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">"""Fuse convolutions in-place"""</span>
+<span class="w">        </span><span class="sd">"""Fuse convolutions in-place"""</span>
         <span class="n">fused_convolution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fused</span><span class="p">()</span>
         <span class="n">scale</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">temporal_convolutions</span> <span class="o">=</span> <span class="p">[</span><span class="n">fused_convolution</span><span class="p">]</span>
@@ -677,7 +677,7 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_input_shape</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">fused</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DepthwiseConv2D</span><span class="p">:</span>
-        <span class="sd">"""Returns a new depthwise conv, created by fusuing the filters of each temporal convolution in this MTConv block."""</span>
+<span class="w">        </span><span class="sd">"""Returns a new depthwise conv, created by fusuing the filters of each temporal convolution in this MTConv block."""</span>
         <span class="n">argmax_scale</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">)</span>
         <span class="n">max_scale</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="n">argmax_scale</span><span class="p">]</span>
         <span class="n">fused_convolution</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DepthwiseConv2D</span><span class="p">(</span>
@@ -729,7 +729,7 @@
     <span class="n">expansion_ratio</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
     <span class="n">scales</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">:</span>
-    <span class="sd">"""Inverted bottleneck with depthwise separable temporal convolution and a residual connection."""</span>
+<span class="w">    </span><span class="sd">"""Inverted bottleneck with depthwise separable temporal convolution and a residual connection."""</span>
 
     <span class="n">input_shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>

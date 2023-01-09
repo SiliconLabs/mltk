@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>&lt;no title&gt; &#8212; MLTK 0.14.0 documentation</title>
+    <title>siamese_contrastive &#8212; MLTK 0.14.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
@@ -122,7 +122,7 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           <span class="md-header-nav__topic">Machine Learning Toolkit</span>
-          <span class="md-header-nav__topic"> &lt;no title&gt; </span>
+          <span class="md-header-nav__topic"> siamese_contrastive </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -301,7 +301,42 @@
     
     
       <a href="../index.html" class="md-nav__link">Reference Models</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="index.html" class="md-nav__link">Example Models</a>
       
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../siliconlabs/index.html" class="md-nav__link">Silicon Lab’s Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tinyml/index.html" class="md-nav__link">TinyML Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tflite_micro/index.html" class="md-nav__link">Tensorflow-Lite Micro Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../common_models.html" class="md-nav__link">Common Model Architectures</a>
+      
+    
+    </li></ul>
     
     </li>
     <li class="md-nav__item">
@@ -410,7 +445,19 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
   <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#docs-python-api-models-examples-siamese-contrastive--page-root" class="md-nav__link">siamese_contrastive</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#commands" class="md-nav__link">Commands</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-summary" class="md-nav__link">Model Summary</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-diagram" class="md-nav__link">Model Diagram</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../../../_static/js/apitoc.js></script>
   </ul>
 </nav>
               </div>
@@ -427,14 +474,126 @@
                 <li><a href="../index.html" >Reference Models</a></li>
                 <li><a href="index.html" accesskey="U">Example Models</a></li>
 
-              <li class="activate"><a>&lt;no title&gt;</a></li>
+              <li class="activate"><a>siamese_contrastive</a></li>
             </ul>
           </div>
           
 
           <article class="md-content__inner md-typeset" role="main">
             
-  
+  <span class="target" id="module-mltk.models.examples.siamese_contrastive"></span><section id="siamese-contrastive">
+<h1 id="docs-python-api-models-examples-siamese-contrastive--page-root">siamese_contrastive<a class="headerlink" href="#docs-python-api-models-examples-siamese-contrastive--page-root" title="Permalink to this headline">¶</a></h1>
+<p>Source code: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/examples/siamese_contrastive.py">siamese_contrastive.py</a></p>
+<p>This example was adapted from <a class="reference external" href="https://keras.io/examples/vision/siamese_contrastive">https://keras.io/examples/vision/siamese_contrastive</a>.</p>
+<p><a class="reference external" href="https://en.wikipedia.org/wiki/Siamese_neural_network">Siamese Networks</a> are neural networks which share weights between two or more sister networks,
+each producing embedding vectors of its respective inputs.</p>
+<p>In supervised similarity learning, the networks are then trained to maximize the contrast (distance) between embeddings of inputs of different classes,
+while minimizing the distance between embeddings of similar classes, resulting in embedding spaces that reflect the class segmentation of the training inputs.</p>
+<section id="commands">
+<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do a "dry run" test training of the model</span>
+mltk<span class="w"> </span>train<span class="w"> </span>siamese_contrastive-test
+
+<span class="c1"># Train the model</span>
+mltk<span class="w"> </span>train<span class="w"> </span>siamese_contrastive
+
+<span class="c1"># Evaluate the trained model .tflite model</span>
+mltk<span class="w"> </span>evaluate<span class="w"> </span>siamese_contrastive<span class="w"> </span>--tflite
+
+<span class="c1"># Profile the model in the MVP hardware accelerator simulator</span>
+mltk<span class="w"> </span>profile<span class="w"> </span>siamese_contrastive<span class="w"> </span>--accelerator<span class="w"> </span>MVP
+
+<span class="c1"># Profile the model on a physical development board</span>
+mltk<span class="w"> </span>profile<span class="w"> </span>siamese_contrastive<span class="w"> </span>--accelerator<span class="w"> </span>MVP<span class="w"> </span>--device
+
+<span class="c1"># Directly invoke the model script</span>
+python<span class="w"> </span>siamese_contrastive.py
+</pre></div>
+</div>
+</section>
+<section id="model-summary">
+<h2 id="model-summary">Model Summary<a class="headerlink" href="#model-summary" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w">  </span>mltk<span class="w"> </span>summarize<span class="w"> </span>siamese_contrastive<span class="w"> </span>--tflite<span class="w"> </span>--build
+
++-------+-----------------+-------------------+----------------+-----------------------------------------------------+
+<span class="p">|</span><span class="w"> </span>Index<span class="w"> </span><span class="p">|</span><span class="w"> </span>OpCode<span class="w">          </span><span class="p">|</span><span class="w"> </span>Input<span class="o">(</span>s<span class="o">)</span><span class="w">          </span><span class="p">|</span><span class="w"> </span>Output<span class="o">(</span>s<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span>Config<span class="w">                                              </span><span class="p">|</span>
++-------+-----------------+-------------------+----------------+-----------------------------------------------------+
+<span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>quantize<span class="w">        </span><span class="p">|</span><span class="w"> </span>28x28x1<span class="w"> </span><span class="o">(</span>float32<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>28x28x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>quantize<span class="w">        </span><span class="p">|</span><span class="w"> </span>28x28x1<span class="w"> </span><span class="o">(</span>float32<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>28x28x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>conv_2d<span class="w">         </span><span class="p">|</span><span class="w"> </span>28x28x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>24x24x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:1x1<span class="w"> </span>activation:none<span class="w">            </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span>5x5x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>tanh<span class="w">            </span><span class="p">|</span><span class="w"> </span>24x24x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>24x24x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>average_pool_2d<span class="w"> </span><span class="p">|</span><span class="w"> </span>24x24x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>12x12x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:2x2<span class="w"> </span>filter:2x2<span class="w"> </span>activation:none<span class="w"> </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">5</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>conv_2d<span class="w">         </span><span class="p">|</span><span class="w"> </span>12x12x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>8x8x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:1x1<span class="w"> </span>activation:none<span class="w">            </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span>5x5x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">6</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>tanh<span class="w">            </span><span class="p">|</span><span class="w"> </span>8x8x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>8x8x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">7</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>average_pool_2d<span class="w"> </span><span class="p">|</span><span class="w"> </span>8x8x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>4x4x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:2x2<span class="w"> </span>filter:2x2<span class="w"> </span>activation:none<span class="w"> </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">8</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>4x4x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">     </span><span class="p">|</span><span class="w"> </span><span class="m">256</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">     </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">9</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>conv_2d<span class="w">         </span><span class="p">|</span><span class="w"> </span>28x28x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>24x24x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:1x1<span class="w"> </span>activation:none<span class="w">            </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span>5x5x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>tanh<span class="w">            </span><span class="p">|</span><span class="w"> </span>24x24x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>24x24x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">11</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>average_pool_2d<span class="w"> </span><span class="p">|</span><span class="w"> </span>24x24x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>12x12x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:2x2<span class="w"> </span>filter:2x2<span class="w"> </span>activation:none<span class="w"> </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">12</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>conv_2d<span class="w">         </span><span class="p">|</span><span class="w"> </span>12x12x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>8x8x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:1x1<span class="w"> </span>activation:none<span class="w">            </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span>5x5x4<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">13</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>tanh<span class="w">            </span><span class="p">|</span><span class="w"> </span>8x8x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>8x8x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">14</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>average_pool_2d<span class="w"> </span><span class="p">|</span><span class="w"> </span>8x8x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>4x4x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:2x2<span class="w"> </span>filter:2x2<span class="w"> </span>activation:none<span class="w"> </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">15</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>4x4x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">     </span><span class="p">|</span><span class="w"> </span><span class="m">256</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">     </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">16</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>fully_connected<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">256</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span>Activation:none<span class="w">                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">256</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">17</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>tanh<span class="w">            </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">18</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>quantize<span class="w">        </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">19</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>fully_connected<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">256</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span>Activation:none<span class="w">                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">256</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">20</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>tanh<span class="w">            </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">21</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>quantize<span class="w">        </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">22</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>concatenation<span class="w">   </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">10</span><span class="w">                               </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">23</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>fully_connected<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span>Activation:relu<span class="w">                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">24</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>fully_connected<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span>Activation:relu<span class="w">                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">25</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>fully_connected<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">       </span><span class="p">|</span><span class="w"> </span>Activation:none<span class="w">                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">26</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>logistic<span class="w">        </span><span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">          </span><span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">       </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">27</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>dequantize<span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">          </span><span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>float32<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
++-------+-----------------+-------------------+----------------+-----------------------------------------------------+
+Total<span class="w"> </span>MACs:<span class="w"> </span><span class="m">327</span>.440<span class="w"> </span>k
+Total<span class="w"> </span>OPs:<span class="w"> </span><span class="m">676</span>.823<span class="w"> </span>k
+Name:<span class="w"> </span>siamese_contrastive
+Version:<span class="w"> </span><span class="m">1</span>
+Description:<span class="w"> </span>Image<span class="w"> </span>similarity<span class="w"> </span>estimation<span class="w"> </span>using<span class="w"> </span>a<span class="w"> </span>Siamese<span class="w"> </span>Network<span class="w"> </span>with<span class="w"> </span>a<span class="w"> </span>contrastive<span class="w"> </span>loss
+classes:<span class="w"> </span><span class="o">[]</span>
+hash:<span class="w"> </span>400f59a4a68872982f23f08a9de3fe92
+date:<span class="w"> </span><span class="m">2022</span>-02-04T18:55:43.645Z
+runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
+.tflite<span class="w"> </span>file<span class="w"> </span>size:<span class="w"> </span><span class="m">17</span>.4kB
+</pre></div>
+</div>
+</section>
+<section id="model-diagram">
+<h2 id="model-diagram">Model Diagram<a class="headerlink" href="#model-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>view<span class="w"> </span>siamese_contrastive<span class="w"> </span>--tflite<span class="w"> </span>--build
+</pre></div>
+</div>
+<div class="model-diagram">
+<a href="../../../../_images/models/siamese_contrastive.tflite.png" target="_blank">
+<img src="../../../../_images/models/siamese_contrastive.tflite.png"/>
+<p>Click to enlarge</p>
+</a>
+</div></section>
+</section>
+
 
           </article>
         </div>

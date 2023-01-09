@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>&lt;no title&gt; &#8212; MLTK 0.14.0 documentation</title>
+    <title>basic_tf_dataset_example &#8212; MLTK 0.14.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
@@ -84,7 +84,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="image_tf_dataset" href="image_tf_dataset.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="basic_example.html" />
+    <link rel="prev" title="basic_example" href="basic_example.html" />
   
    
 
@@ -122,7 +122,7 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           <span class="md-header-nav__topic">Machine Learning Toolkit</span>
-          <span class="md-header-nav__topic"> &lt;no title&gt; </span>
+          <span class="md-header-nav__topic"> basic_tf_dataset_example </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -301,7 +301,42 @@
     
     
       <a href="../index.html" class="md-nav__link">Reference Models</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="index.html" class="md-nav__link">Example Models</a>
       
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../siliconlabs/index.html" class="md-nav__link">Silicon Lab’s Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tinyml/index.html" class="md-nav__link">TinyML Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tflite_micro/index.html" class="md-nav__link">Tensorflow-Lite Micro Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../common_models.html" class="md-nav__link">Common Model Architectures</a>
+      
+    
+    </li></ul>
     
     </li>
     <li class="md-nav__item">
@@ -410,7 +445,15 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
   <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#docs-python-api-models-examples-basic-tf-dataset-example--page-root" class="md-nav__link">basic_tf_dataset_example</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#commands" class="md-nav__link">Commands</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../../../_static/js/apitoc.js></script>
   </ul>
 </nav>
               </div>
@@ -427,14 +470,45 @@
                 <li><a href="../index.html" >Reference Models</a></li>
                 <li><a href="index.html" accesskey="U">Example Models</a></li>
 
-              <li class="activate"><a>&lt;no title&gt;</a></li>
+              <li class="activate"><a>basic_tf_dataset_example</a></li>
             </ul>
           </div>
           
 
           <article class="md-content__inner md-typeset" role="main">
             
-  
+  <span class="target" id="module-mltk.models.examples.basic_tf_dataset_example"></span><section id="basic-tf-dataset-example">
+<h1 id="docs-python-api-models-examples-basic-tf-dataset-example--page-root">basic_tf_dataset_example<a class="headerlink" href="#docs-python-api-models-examples-basic-tf-dataset-example--page-root" title="Permalink to this headline">¶</a></h1>
+<p>Basic MLTK model example using the Tensorflow dataset API</p>
+<ul class="simple">
+<li><p>Source code: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/examples/basic_tf_dataset_example.py">basic_tf_dataset_example.py</a></p></li>
+</ul>
+<p>This provides a basic example of how to create a <a class="reference external" href="../../../../docs/guides/model_specification.html">model specification</a>
+using the <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/data/Dataset">Tensorflow Dataset API</a> for dataset management.</p>
+<section id="commands">
+<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do a "dry run" test training of the model</span>
+mltk<span class="w"> </span>train<span class="w"> </span>basic_tf_dataset_example-test
+
+<span class="c1"># Train the model</span>
+mltk<span class="w"> </span>train<span class="w"> </span>basic_tf_dataset_example
+
+<span class="c1"># Evaluate the trained model .tflite model</span>
+mltk<span class="w"> </span>evaluate<span class="w"> </span>basic_tf_dataset_example<span class="w"> </span>--tflite
+
+<span class="c1"># Profile the model in the MVP hardware accelerator simulator</span>
+mltk<span class="w"> </span>profile<span class="w"> </span>basic_tf_dataset_example<span class="w"> </span>--accelerator<span class="w"> </span>MVP
+
+<span class="c1"># Profile the model on a physical development board</span>
+mltk<span class="w"> </span>profile<span class="w"> </span>basic_tf_dataset_example<span class="w"> </span>--accelerator<span class="w"> </span>MVP<span class="w"> </span>--device
+
+<span class="c1"># Directly invoke the model script</span>
+python<span class="w"> </span>basic_tf_dataset_example.py
+</pre></div>
+</div>
+</section>
+</section>
+
 
           </article>
         </div>
@@ -446,7 +520,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
           
-            <a href="basic_example.html" title="&lt;no title&gt;"
+            <a href="basic_example.html" title="basic_example"
                class="md-flex md-footer-nav__link md-footer-nav__link--prev"
                rel="prev">
               <div class="md-flex__cell md-flex__cell--shrink">
@@ -455,7 +529,7 @@
               <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
                 <span class="md-flex__ellipsis">
                   <span
-                      class="md-footer-nav__direction"> Previous </span> &lt;no title&gt; </span>
+                      class="md-footer-nav__direction"> Previous </span> basic_example </span>
               </div>
             </a>
           

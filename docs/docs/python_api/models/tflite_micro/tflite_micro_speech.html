@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>&lt;no title&gt; &#8212; MLTK 0.14.0 documentation</title>
+    <title>tflite_micro_speech &#8212; MLTK 0.14.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
@@ -122,7 +122,7 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           <span class="md-header-nav__topic">Machine Learning Toolkit</span>
-          <span class="md-header-nav__topic"> &lt;no title&gt; </span>
+          <span class="md-header-nav__topic"> tflite_micro_speech </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -301,7 +301,42 @@
     
     
       <a href="../index.html" class="md-nav__link">Reference Models</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="../examples/index.html" class="md-nav__link">Example Models</a>
       
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../siliconlabs/index.html" class="md-nav__link">Silicon Lab’s Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tinyml/index.html" class="md-nav__link">TinyML Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="index.html" class="md-nav__link">Tensorflow-Lite Micro Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../common_models.html" class="md-nav__link">Common Model Architectures</a>
+      
+    
+    </li></ul>
     
     </li>
     <li class="md-nav__item">
@@ -410,7 +445,29 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
   <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#docs-python-api-models-tflite-micro-tflite-micro-speech--page-root" class="md-nav__link">tflite_micro_speech</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#dataset" class="md-nav__link">Dataset</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-topology-training" class="md-nav__link">Model Topology & Training</a>
+        </li>
+        <li class="md-nav__item"><a href="#performance-floating-point-model" class="md-nav__link">Performance (floating point model)</a>
+        </li>
+        <li class="md-nav__item"><a href="#performance-quantized-tflite-model" class="md-nav__link">Performance (quantized tflite model)</a>
+        </li>
+        <li class="md-nav__item"><a href="#commands" class="md-nav__link">Commands</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-summary" class="md-nav__link">Model Summary</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-profiling-report" class="md-nav__link">Model Profiling Report</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-diagram" class="md-nav__link">Model Diagram</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../../../_static/js/apitoc.js></script>
   </ul>
 </nav>
               </div>
@@ -427,14 +484,183 @@
                 <li><a href="../index.html" >Reference Models</a></li>
                 <li><a href="index.html" accesskey="U">Tensorflow-Lite Micro Models</a></li>
 
-              <li class="activate"><a>&lt;no title&gt;</a></li>
+              <li class="activate"><a>tflite_micro_speech</a></li>
             </ul>
           </div>
           
 
           <article class="md-content__inner md-typeset" role="main">
             
-  
+  <span class="target" id="module-mltk.models.tflite_micro.tflite_micro_speech"></span><section id="tflite-micro-speech">
+<h1 id="docs-python-api-models-tflite-micro-tflite-micro-speech--page-root">tflite_micro_speech<a class="headerlink" href="#docs-python-api-models-tflite-micro-tflite-micro-speech--page-root" title="Permalink to this headline">¶</a></h1>
+<p>TF-Lite Micro Speech reference model</p>
+<ul class="simple">
+<li><p>Source code: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/tflite_micro/tflite_micro_speech.py">tflite_micro_speech.py</a></p></li>
+<li><p>Pre-trained model: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/tflite_micro/tflite_micro_speech.mltk.zip">tflite_micro_speech.mltk.zip</a></p></li>
+</ul>
+<p>Taken from:
+<a class="reference external" href="https://github.com/SiliconLabs/platform_ml_models/tree/master/eembc/TFLite_micro_speech">https://github.com/SiliconLabs/platform_ml_models/tree/master/eembc/TFLite_micro_speech</a></p>
+<section id="dataset">
+<h2 id="dataset">Dataset<a class="headerlink" href="#dataset" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://storage.cloud.google.com/download.tensorflow.org/data/speech_commands_v0.02.tar.gz">2.3GB wave-file archive</a></p></li>
+<li><p><a class="reference external" href="https://arxiv.org/abs/1804.03209">https://arxiv.org/abs/1804.03209</a></p></li>
+</ul>
+</section>
+<section id="model-topology-training">
+<h2 id="model-topology-training">Model Topology &amp; Training<a class="headerlink" href="#model-topology-training" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/micro_speech/train">TensorFlow Lite Micro README.md</a></p></li>
+<li><p><a class="reference external" href="https://github.com/tensorflow/tflite-micro/blob/master/tensorflow/lite/micro/examples/micro_speech/train/train_micro_speech_model.ipynb">Training Instructions</a></p></li>
+</ul>
+</section>
+<section id="performance-floating-point-model">
+<h2 id="performance-floating-point-model">Performance (floating point model)<a class="headerlink" href="#performance-floating-point-model" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Accuracy - 93.7%</p></li>
+<li><p>AUC - .993</p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Performance is somewhat sensitive to the exact process of spectrogram generation. We may need to precisely define that.</p>
+</div>
+</section>
+<section id="performance-quantized-tflite-model">
+<h2 id="performance-quantized-tflite-model">Performance (quantized tflite model)<a class="headerlink" href="#performance-quantized-tflite-model" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>Accuracy - 93.1%</p></li>
+<li><p>AUC -* .992</p></li>
+</ul>
+</section>
+<section id="commands">
+<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do a "dry run" test training of the model</span>
+mltk<span class="w"> </span>train<span class="w"> </span>tflite_micro_speech-test
+
+<span class="c1"># Train the model</span>
+mltk<span class="w"> </span>train<span class="w"> </span>tflite_micro_speech
+
+<span class="c1"># Evaluate the trained model .tflite model</span>
+mltk<span class="w"> </span>evaluate<span class="w"> </span>tflite_micro_speech<span class="w"> </span>--tflite
+
+<span class="c1"># Profile the model in the MVP hardware accelerator simulator</span>
+mltk<span class="w"> </span>profile<span class="w"> </span>tflite_micro_speech<span class="w"> </span>--accelerator<span class="w"> </span>MVP
+
+<span class="c1"># Profile the model on a physical development board</span>
+mltk<span class="w"> </span>profile<span class="w"> </span>tflite_micro_speech<span class="w"> </span>--accelerator<span class="w"> </span>MVP<span class="w"> </span>--device
+</pre></div>
+</div>
+</section>
+<section id="model-summary">
+<h2 id="model-summary">Model Summary<a class="headerlink" href="#model-summary" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>summarize<span class="w"> </span>tflite_micro_speech<span class="w"> </span>--tflite
+
++-------+-----------------+----------------+----------------+-----------------------------------------+
+<span class="p">|</span><span class="w"> </span>Index<span class="w"> </span><span class="p">|</span><span class="w"> </span>OpCode<span class="w">          </span><span class="p">|</span><span class="w"> </span>Input<span class="o">(</span>s<span class="o">)</span><span class="w">       </span><span class="p">|</span><span class="w"> </span>Output<span class="o">(</span>s<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span>Config<span class="w">                                  </span><span class="p">|</span>
++-------+-----------------+----------------+----------------+-----------------------------------------+
+<span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>conv_2d<span class="w">         </span><span class="p">|</span><span class="w"> </span>49x40x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>25x20x8<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>Padding:same<span class="w"> </span>stride:2x2<span class="w"> </span>activation:relu<span class="w"> </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span>10x8x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                         </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                         </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>25x20x8<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">4000</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                    </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                         </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>fully_connected<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">4000</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">       </span><span class="p">|</span><span class="w"> </span>Activation:none<span class="w">                         </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">4000</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                         </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w">                </span><span class="p">|</span><span class="w">                                         </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>softmax<span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">       </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">       </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">9</span><span class="w">                    </span><span class="p">|</span>
++-------+-----------------+----------------+----------------+-----------------------------------------+
+Total<span class="w"> </span>MACs:<span class="w"> </span><span class="m">336</span>.000<span class="w"> </span>k
+Total<span class="w"> </span>OPs:<span class="w"> </span><span class="m">680</span>.012<span class="w"> </span>k
+Name:<span class="w"> </span>tflite_micro_speech
+Version:<span class="w"> </span><span class="m">1</span>
+Description:<span class="w"> </span>TFLite-Micro<span class="w"> </span>speech
+Classes:<span class="w"> </span>yes,<span class="w"> </span>no,<span class="w"> </span>_unknown_,<span class="w"> </span>_silence_
+hash:<span class="w"> </span>36dd6db8f633c9fca61b418402ea698f
+date:<span class="w"> </span><span class="m">2022</span>-02-04T19:13:52.143Z
+runtime_memory_size:<span class="w"> </span><span class="m">9028</span>
+average_window_duration_ms:<span class="w"> </span><span class="m">1000</span>
+detection_threshold:<span class="w"> </span><span class="m">185</span>
+suppression_ms:<span class="w"> </span><span class="m">1500</span>
+minimum_count:<span class="w"> </span><span class="m">3</span>
+volume_db:<span class="w"> </span><span class="m">5</span>.0
+latency_ms:<span class="w"> </span><span class="m">0</span>
+log_level:<span class="w"> </span>info
+samplewise_norm.rescale:<span class="w"> </span><span class="m">0</span>.0
+samplewise_norm.mean_and_std:<span class="w"> </span>False
+fe.sample_rate_hz:<span class="w"> </span><span class="m">16000</span>
+fe.sample_length_ms:<span class="w"> </span><span class="m">1000</span>
+fe.window_size_ms:<span class="w"> </span><span class="m">30</span>
+fe.window_step_ms:<span class="w"> </span><span class="m">20</span>
+fe.filterbank_n_channels:<span class="w"> </span><span class="m">40</span>
+fe.filterbank_upper_band_limit:<span class="w"> </span><span class="m">7500</span>.0
+fe.filterbank_lower_band_limit:<span class="w"> </span><span class="m">125</span>.0
+fe.noise_reduction_enable:<span class="w"> </span>True
+fe.noise_reduction_smoothing_bits:<span class="w"> </span><span class="m">10</span>
+fe.noise_reduction_even_smoothing:<span class="w"> </span><span class="m">0</span>.02500000037252903
+fe.noise_reduction_odd_smoothing:<span class="w"> </span><span class="m">0</span>.05999999865889549
+fe.noise_reduction_min_signal_remaining:<span class="w"> </span><span class="m">0</span>.05000000074505806
+fe.pcan_enable:<span class="w"> </span>True
+fe.pcan_strength:<span class="w"> </span><span class="m">0</span>.949999988079071
+fe.pcan_offset:<span class="w"> </span><span class="m">80</span>.0
+fe.pcan_gain_bits:<span class="w"> </span><span class="m">21</span>
+fe.log_scale_enable:<span class="w"> </span>True
+fe.log_scale_shift:<span class="w"> </span><span class="m">6</span>
+fe.fft_length:<span class="w"> </span><span class="m">512</span>
+.tflite<span class="w"> </span>file<span class="w"> </span>size:<span class="w"> </span><span class="m">21</span>.6kB
+</pre></div>
+</div>
+</section>
+<section id="model-profiling-report">
+<h2 id="model-profiling-report">Model Profiling Report<a class="headerlink" href="#model-profiling-report" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Profile on physical EFR32xG24 using MVP accelerator</span>
+mltk<span class="w"> </span>profile<span class="w"> </span>tflite_micro_speech<span class="w"> </span>--device<span class="w"> </span>--accelerator<span class="w"> </span>MVP
+
+<span class="w"> </span>Profiling<span class="w"> </span>Summary
+<span class="w"> </span>Name:<span class="w"> </span>tflite_micro_speech
+<span class="w"> </span>Accelerator:<span class="w"> </span>MVP
+<span class="w"> </span>Input<span class="w"> </span>Shape:<span class="w"> </span>1x49x40x1
+<span class="w"> </span>Input<span class="w"> </span>Data<span class="w"> </span>Type:<span class="w"> </span>int8
+<span class="w"> </span>Output<span class="w"> </span>Shape:<span class="w"> </span>1x4
+<span class="w"> </span>Output<span class="w"> </span>Data<span class="w"> </span>Type:<span class="w"> </span>int8
+<span class="w"> </span>Flash,<span class="w"> </span>Model<span class="w"> </span>File<span class="w"> </span>Size<span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>:<span class="w"> </span><span class="m">21</span>.6k
+<span class="w"> </span>RAM,<span class="w"> </span>Runtime<span class="w"> </span>Memory<span class="w"> </span>Size<span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>:<span class="w"> </span><span class="m">11</span>.3k
+<span class="w"> </span>Operation<span class="w"> </span>Count:<span class="w"> </span><span class="m">684</span>.0k
+<span class="w"> </span>Multiply-Accumulate<span class="w"> </span>Count:<span class="w"> </span><span class="m">336</span>.0k
+<span class="w"> </span>Layer<span class="w"> </span>Count:<span class="w"> </span><span class="m">4</span>
+<span class="w"> </span>Unsupported<span class="w"> </span>Layer<span class="w"> </span>Count:<span class="w"> </span><span class="m">1</span>
+<span class="w"> </span>Accelerator<span class="w"> </span>Cycle<span class="w"> </span>Count:<span class="w"> </span><span class="m">404</span>.6k
+<span class="w"> </span>CPU<span class="w"> </span>Cycle<span class="w"> </span>Count:<span class="w"> </span><span class="m">115</span>.0k
+<span class="w"> </span>CPU<span class="w"> </span>Utilization<span class="w"> </span><span class="o">(</span>%<span class="o">)</span>:<span class="w"> </span><span class="m">24</span>.2
+<span class="w"> </span>Clock<span class="w"> </span>Rate<span class="w"> </span><span class="o">(</span>hz<span class="o">)</span>:<span class="w"> </span><span class="m">78</span>.0M
+<span class="w"> </span>Time<span class="w"> </span><span class="o">(</span>s<span class="o">)</span>:<span class="w"> </span><span class="m">6</span>.1m
+<span class="w"> </span>Ops/s:<span class="w"> </span><span class="m">112</span>.3M
+<span class="w"> </span>MACs/s:<span class="w"> </span><span class="m">55</span>.2M
+<span class="w"> </span>Inference/s:<span class="w"> </span><span class="m">164</span>.2
+
+<span class="w"> </span>Model<span class="w"> </span>Layers
+<span class="w"> </span>+-------+-----------------+--------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------+------------+--------------------------------+
+<span class="w"> </span><span class="p">|</span><span class="w"> </span>Index<span class="w"> </span><span class="p">|</span><span class="w"> </span>OpCode<span class="w">          </span><span class="p">|</span><span class="w"> </span><span class="c1"># Ops  | # MACs | Acc Cycles | CPU Cycles | Time (s) | Input Shape          | Output Shape | Options                                 | Supported? | Error Msg                      |</span>
+<span class="w"> </span>+-------+-----------------+--------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------+------------+--------------------------------+
+<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>conv_2d<span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">652</span>.0k<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">320</span>.0k<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">380</span>.5k<span class="w">     </span><span class="p">|</span><span class="w"> </span><span class="m">85</span>.7k<span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="m">5</span>.4m<span class="w">     </span><span class="p">|</span><span class="w"> </span>1x49x40x1,8x10x8x1,8<span class="w"> </span><span class="p">|</span><span class="w"> </span>1x25x20x8<span class="w">    </span><span class="p">|</span><span class="w"> </span>Padding:same<span class="w"> </span>stride:2x2<span class="w"> </span>activation:relu<span class="w"> </span><span class="p">|</span><span class="w"> </span>True<span class="w">       </span><span class="p">|</span><span class="w">                                </span><span class="p">|</span>
+<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w">          </span><span class="p">|</span><span class="w"> </span><span class="m">20</span>.5k<span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="m">270</span>.0u<span class="w">   </span><span class="p">|</span><span class="w"> </span>1x25x20x8,2<span class="w">          </span><span class="p">|</span><span class="w"> </span>1x4000<span class="w">       </span><span class="p">|</span><span class="w"> </span><span class="nv">Type</span><span class="o">=</span>none<span class="w">                               </span><span class="p">|</span><span class="w"> </span>True<span class="w">       </span><span class="p">|</span><span class="w">                                </span><span class="p">|</span>
+<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>fully_connected<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">32</span>.0k<span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="m">16</span>.0k<span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="m">24</span>.1k<span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="m">5</span>.1k<span class="w">       </span><span class="p">|</span><span class="w"> </span><span class="m">360</span>.0u<span class="w">   </span><span class="p">|</span><span class="w"> </span>1x4000,4x4000,4<span class="w">      </span><span class="p">|</span><span class="w"> </span>1x4<span class="w">          </span><span class="p">|</span><span class="w"> </span>Activation:none<span class="w">                         </span><span class="p">|</span><span class="w"> </span>False<span class="w">      </span><span class="p">|</span><span class="w"> </span>weights_shape<span class="o">[</span><span class="m">1</span><span class="o">]</span><span class="w"> </span><span class="o">(</span><span class="m">4000</span><span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span><span class="m">2048</span><span class="w"> </span><span class="p">|</span>
+<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>softmax<span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">20</span>.0<span class="w">   </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w">          </span><span class="p">|</span><span class="w"> </span><span class="m">3</span>.7k<span class="w">       </span><span class="p">|</span><span class="w"> </span><span class="m">60</span>.0u<span class="w">    </span><span class="p">|</span><span class="w"> </span>1x4<span class="w">                  </span><span class="p">|</span><span class="w"> </span>1x4<span class="w">          </span><span class="p">|</span><span class="w"> </span><span class="nv">Type</span><span class="o">=</span>softmaxoptions<span class="w">                     </span><span class="p">|</span><span class="w"> </span>True<span class="w">       </span><span class="p">|</span><span class="w">                                </span><span class="p">|</span>
+<span class="w"> </span>+-------+-----------------+--------+--------+------------+------------+----------+----------------------+--------------+-----------------------------------------+------------+--------------------------------+
+</pre></div>
+</div>
+</section>
+<section id="model-diagram">
+<h2 id="model-diagram">Model Diagram<a class="headerlink" href="#model-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>view<span class="w"> </span>tflite_micro_speech<span class="w"> </span>--tflite
+</pre></div>
+</div>
+<div class="model-diagram">
+<a href="../../../../_images/models/tflite_micro_speech.tflite.png" target="_blank">
+<img src="../../../../_images/models/tflite_micro_speech.tflite.png"/>
+<p>Click to enlarge</p>
+</a>
+</div></section>
+</section>
+
 
           </article>
         </div>

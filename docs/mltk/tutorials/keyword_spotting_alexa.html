@@ -886,7 +886,7 @@ We want to choose these settings so that the generated spectrogram has the best 
 <section id="audio-visualizer-command">
 <h4 id="audio-visualizer-command">Audio visualizer command<a class="headerlink" href="#audio-visualizer-command" title="Permalink to this headline">¶</a></h4>
 <p>To run the Audio Visualizer, issue the command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk view_audio
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>view_audio
 </pre></div>
 </div>
 </section>
@@ -935,7 +935,7 @@ We want to choose these settings so that the generated spectrogram has the best 
 <section id="model-profiler-command">
 <h4 id="model-profiler-command">Model profiler command<a class="headerlink" href="#model-profiler-command" title="Permalink to this headline">¶</a></h4>
 <p>Plug the <a class="reference external" href="https://www.silabs.com/development-tools/wireless/efr32xg24-dev-kit">development board</a> in your PC and issue the following command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk profile keyword_spotting_alexa --build --device --accelerator mvp
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_alexa<span class="w"> </span>--build<span class="w"> </span>--device<span class="w"> </span>--accelerator<span class="w"> </span>mvp
 </pre></div>
 </div>
 <p>This does the following:</p>
@@ -981,14 +981,14 @@ The model can either be trained locally or on a remote cloud machine.</p>
 <section id="local-training">
 <h4 id="local-training">Local Training<a class="headerlink" href="#local-training" title="Permalink to this headline">¶</a></h4>
 <p>See the <a class="reference internal" href="../../docs/guides/model_training.html"><span class="doc std std-doc">Local Model Training</span></a> guide for details on how to train the model on your local machine.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk train keyword_spotting_alexa
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>train<span class="w"> </span>keyword_spotting_alexa
 </pre></div>
 </div>
 </section>
 <section id="remote-training">
 <h4 id="remote-training">Remote Training<a class="headerlink" href="#remote-training" title="Permalink to this headline">¶</a></h4>
 <p>See the <a class="reference internal" href="../../docs/guides/model_training_via_ssh.html"><span class="doc std std-doc">Remote Model Training</span></a> guide for details on how to train the model on a remote cloud machine.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>shell ssh train keyword_spotting_alexa
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>shell<span class="w"> </span>ssh<span class="w"> </span>train<span class="w"> </span>keyword_spotting_alexa
 </pre></div>
 </div>
 <p><strong>HINT:</strong> This model can be trained in ~2hrs using <a class="reference internal" href="cloud_training_with_vast_ai.html"><span class="doc std std-doc">vast.ai</span></a>.<br/>
@@ -1021,7 +1021,7 @@ This will program the trained model to the <a class="reference external" href="h
 <section id="classify-audio-command">
 <h4 id="classify-audio-command">Classify audio command<a class="headerlink" href="#classify-audio-command" title="Permalink to this headline">¶</a></h4>
 <p>Issue the following command to run the <a class="reference internal" href="../../docs/cpp_development/examples/audio_classifier.html"><span class="doc std std-doc">audio_classifier</span></a> app with your trained ML model on the development board:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk classify_audio keyword_spotting_alexa --device --accelerator mvp --verbose
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>classify_audio<span class="w"> </span>keyword_spotting_alexa<span class="w"> </span>--device<span class="w"> </span>--accelerator<span class="w"> </span>mvp<span class="w"> </span>--verbose
 </pre></div>
 </div>
 <p>This does the following:</p>
@@ -1038,7 +1038,7 @@ This will program the trained model to the <a class="reference external" href="h
 <p>With the model fully trained, we can now run it in the demo application.</p>
 <p>See the <a class="reference internal" href="#quick-start"><span class="std std-doc">Quick Start</span></a> for more details.</p>
 <p>When you get to step 4), change the <code class="docutils literal notranslate"><span class="pre">model</span></code> argument to point to your newly trained model, e.g.:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk program_app mltk_audio_classifier-audio_io-brd2601-mvp --model ~/Desktop/my_model.mltk.zip
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>program_app<span class="w"> </span>mltk_audio_classifier-audio_io-brd2601-mvp<span class="w"> </span>--model<span class="w"> </span>~/Desktop/my_model.mltk.zip
 </pre></div>
 </div>
 <p><strong>NOTE:</strong> Internally, this demo uses the <a class="reference internal" href="../../docs/python_api/utils/uart_stream/index.html"><span class="doc std std-doc">UartStream</span></a> Python utility to communicate with the development board via UART.</p>
@@ -1088,17 +1088,17 @@ However, for longer responses such as music or stories this rate is not fast eno
 </ul>
 </li>
 <li><p>Update the model archive with a new parameter: <code class="docutils literal notranslate"><span class="pre">baud_rate=460800</span></code>  using the command (change <code class="docutils literal notranslate"><span class="pre">keyword_spotting_alexa</span></code> to your model’s <code class="docutils literal notranslate"><span class="pre">.mltk.zip</span></code> file path):</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk update_params keyword_spotting_alexa <span class="nv">baud_rate</span><span class="o">=</span><span class="m">460800</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>update_params<span class="w"> </span>keyword_spotting_alexa<span class="w"> </span><span class="nv">baud_rate</span><span class="o">=</span><span class="m">460800</span>
 </pre></div>
 </div>
 </li>
 <li><p>Re-program the app (or rebuild the app from source):</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk program_app mltk_audio_classifier-audio_io-brd2601-mvp --model keyword_spotting_alexa
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>program_app<span class="w"> </span>mltk_audio_classifier-audio_io-brd2601-mvp<span class="w"> </span>--model<span class="w"> </span>keyword_spotting_alexa
 </pre></div>
 </div>
 </li>
 <li><p>Run the demo Python script with the <code class="docutils literal notranslate"><span class="pre">--baud</span></code> argument, e.g.:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python alexa_demo.py --baud <span class="m">460800</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>alexa_demo.py<span class="w"> </span>--baud<span class="w"> </span><span class="m">460800</span>
 </pre></div>
 </div>
 </li>

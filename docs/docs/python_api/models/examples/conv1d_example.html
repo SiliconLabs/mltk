@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>&lt;no title&gt; &#8212; MLTK 0.14.0 documentation</title>
+    <title>conv1d_example &#8212; MLTK 0.14.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
@@ -83,8 +83,8 @@
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="&lt;no title&gt;" href="binary_classification.html" />
-    <link rel="prev" title="&lt;no title&gt;" href="image_example1.html" />
+    <link rel="next" title="binary_classification" href="binary_classification.html" />
+    <link rel="prev" title="image_example1" href="image_example1.html" />
   
    
 
@@ -122,7 +122,7 @@
       <div class="md-flex__cell md-flex__cell--stretch">
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           <span class="md-header-nav__topic">Machine Learning Toolkit</span>
-          <span class="md-header-nav__topic"> &lt;no title&gt; </span>
+          <span class="md-header-nav__topic"> conv1d_example </span>
         </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
@@ -301,7 +301,42 @@
     
     
       <a href="../index.html" class="md-nav__link">Reference Models</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="index.html" class="md-nav__link">Example Models</a>
       
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../siliconlabs/index.html" class="md-nav__link">Silicon Lab’s Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tinyml/index.html" class="md-nav__link">TinyML Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../tflite_micro/index.html" class="md-nav__link">Tensorflow-Lite Micro Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../common_models.html" class="md-nav__link">Common Model Architectures</a>
+      
+    
+    </li></ul>
     
     </li>
     <li class="md-nav__item">
@@ -410,7 +445,19 @@
               <div class="md-sidebar__inner">
                 
 <nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
   <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#docs-python-api-models-examples-conv1d-example--page-root" class="md-nav__link">conv1d_example</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#commands" class="md-nav__link">Commands</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-summary" class="md-nav__link">Model Summary</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-diagram" class="md-nav__link">Model Diagram</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../../../_static/js/apitoc.js></script>
   </ul>
 </nav>
               </div>
@@ -427,14 +474,147 @@
                 <li><a href="../index.html" >Reference Models</a></li>
                 <li><a href="index.html" accesskey="U">Example Models</a></li>
 
-              <li class="activate"><a>&lt;no title&gt;</a></li>
+              <li class="activate"><a>conv1d_example</a></li>
             </ul>
           </div>
           
 
           <article class="md-content__inner md-typeset" role="main">
             
-  
+  <span class="target" id="module-mltk.models.examples.conv1d_example"></span><section id="conv1d-example">
+<h1 id="docs-python-api-models-examples-conv1d-example--page-root">conv1d_example<a class="headerlink" href="#docs-python-api-models-examples-conv1d-example--page-root" title="Permalink to this headline">¶</a></h1>
+<p>Source code: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/examples/conv1d_example.py">conv1d_example.py</a></p>
+<p>This demonstrates how to create a Conv1D model.</p>
+<p>This uses the ParallelAudioDataGenerator with the AudioFeatureGenerator disabled.</p>
+<section id="commands">
+<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Do a "dry run" test training of the model</span>
+mltk<span class="w"> </span>train<span class="w"> </span>conv1d_example-test
+
+<span class="c1"># Train the model</span>
+mltk<span class="w"> </span>train<span class="w"> </span>conv1d_example
+
+<span class="c1"># Evaluate the trained model .tflite model</span>
+mltk<span class="w"> </span>evaluate<span class="w"> </span>conv1d_example<span class="w"> </span>--tflite
+
+<span class="c1"># Profile the model in the MVP hardware accelerator simulator</span>
+mltk<span class="w"> </span>profile<span class="w"> </span>conv1d_example<span class="w"> </span>--accelerator<span class="w"> </span>MVP
+
+<span class="c1"># Profile the model on a physical development board</span>
+mltk<span class="w"> </span>profile<span class="w"> </span>conv1d_example<span class="w"> </span>--accelerator<span class="w"> </span>MVP<span class="w"> </span>--device
+
+<span class="c1"># Directly invoke the model script</span>
+python<span class="w"> </span>conv1d_example.py
+</pre></div>
+</div>
+</section>
+<section id="model-summary">
+<h2 id="model-summary">Model Summary<a class="headerlink" href="#model-summary" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>summarize<span class="w"> </span>conv1d_example<span class="w"> </span>--tflite<span class="w"> </span>--build
+
++-------+-----------------+------------------+------------------+-----------------------------------------------------+
+<span class="p">|</span><span class="w"> </span>Index<span class="w"> </span><span class="p">|</span><span class="w"> </span>OpCode<span class="w">          </span><span class="p">|</span><span class="w"> </span>Input<span class="o">(</span>s<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span>Output<span class="o">(</span>s<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w"> </span>Config<span class="w">                                              </span><span class="p">|</span>
++-------+-----------------+------------------+------------------+-----------------------------------------------------+
+<span class="p">|</span><span class="w"> </span><span class="m">0</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>expand_dims<span class="w">     </span><span class="p">|</span><span class="w"> </span>3600x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>1x3600x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">52</span><span class="w">                               </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w">  </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">1</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>conv_2d<span class="w">         </span><span class="p">|</span><span class="w"> </span>1x3600x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>1x900x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:same<span class="w"> </span>stride:4x1<span class="w"> </span>activation:relu<span class="w">             </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span>1x7x1<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">     </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">       </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>1x900x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>900x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>expand_dims<span class="w">     </span><span class="p">|</span><span class="w"> </span>900x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>900x1x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">52</span><span class="w">                               </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w">  </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>max_pool_2d<span class="w">     </span><span class="p">|</span><span class="w"> </span>900x1x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>450x1x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:1x2<span class="w"> </span>filter:1x2<span class="w"> </span>activation:none<span class="w"> </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">5</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>450x1x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>450x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">6</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>expand_dims<span class="w">     </span><span class="p">|</span><span class="w"> </span>450x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>1x450x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">52</span><span class="w">                               </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w">  </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">7</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>conv_2d<span class="w">         </span><span class="p">|</span><span class="w"> </span>1x450x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>1x450x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:same<span class="w"> </span>stride:1x1<span class="w"> </span>activation:relu<span class="w">             </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span>1x5x16<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">32</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">       </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">8</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>1x450x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>450x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">9</span><span class="w">     </span><span class="p">|</span><span class="w"> </span>expand_dims<span class="w">     </span><span class="p">|</span><span class="w"> </span>450x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>450x1x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">52</span><span class="w">                               </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w">  </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">10</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>max_pool_2d<span class="w">     </span><span class="p">|</span><span class="w"> </span>450x1x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>225x1x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:1x2<span class="w"> </span>filter:1x2<span class="w"> </span>activation:none<span class="w"> </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">11</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>225x1x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>225x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">12</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>expand_dims<span class="w">     </span><span class="p">|</span><span class="w"> </span>225x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>1x225x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">52</span><span class="w">                               </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w">  </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">13</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>conv_2d<span class="w">         </span><span class="p">|</span><span class="w"> </span>1x225x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>1x225x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:same<span class="w"> </span>stride:1x1<span class="w"> </span>activation:relu<span class="w">             </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span>1x3x32<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">       </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">14</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>1x225x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>225x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">15</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>expand_dims<span class="w">     </span><span class="p">|</span><span class="w"> </span>225x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>225x1x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">52</span><span class="w">                               </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w">  </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">16</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>max_pool_2d<span class="w">     </span><span class="p">|</span><span class="w"> </span>225x1x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>112x1x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:1x2<span class="w"> </span>filter:1x2<span class="w"> </span>activation:none<span class="w"> </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">17</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>112x1x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>112x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">18</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>expand_dims<span class="w">     </span><span class="p">|</span><span class="w"> </span>112x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>1x112x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">52</span><span class="w">                               </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w">  </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">19</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>conv_2d<span class="w">         </span><span class="p">|</span><span class="w"> </span>1x112x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>1x112x128<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>Padding:same<span class="w"> </span>stride:1x1<span class="w"> </span>activation:relu<span class="w">             </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span>1x3x64<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">    </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">128</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">20</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>1x112x128<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>112x128<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">   </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">21</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>expand_dims<span class="w">     </span><span class="p">|</span><span class="w"> </span>112x128<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">   </span><span class="p">|</span><span class="w"> </span>112x1x128<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">52</span><span class="w">                               </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w">  </span><span class="o">(</span>int32<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">22</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>max_pool_2d<span class="w">     </span><span class="p">|</span><span class="w"> </span>112x1x128<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>56x1x128<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span>Padding:valid<span class="w"> </span>stride:1x2<span class="w"> </span>filter:1x2<span class="w"> </span>activation:none<span class="w"> </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">23</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>reshape<span class="w">         </span><span class="p">|</span><span class="w"> </span>56x1x128<span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">  </span><span class="p">|</span><span class="w"> </span><span class="m">7168</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">0</span><span class="w">                                </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">24</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>fully_connected<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="m">7168</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span>Activation:none<span class="w">                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">7168</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">      </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w">       </span><span class="p">|</span><span class="w">                 </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">(</span>int32<span class="o">)</span><span class="w">        </span><span class="p">|</span><span class="w">                  </span><span class="p">|</span><span class="w">                                                     </span><span class="p">|</span>
+<span class="p">|</span><span class="w"> </span><span class="m">25</span><span class="w">    </span><span class="p">|</span><span class="w"> </span>softmax<span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="o">(</span>int8<span class="o">)</span><span class="w">         </span><span class="p">|</span><span class="w"> </span><span class="nv">BuiltinOptionsType</span><span class="o">=</span><span class="m">9</span><span class="w">                                </span><span class="p">|</span>
++-------+-----------------+------------------+------------------+-----------------------------------------------------+
+Total<span class="w"> </span>MACs:<span class="w"> </span><span class="m">5</span>.416<span class="w"> </span>M
+Total<span class="w"> </span>OPs:<span class="w"> </span><span class="m">11</span>.034<span class="w"> </span>M
+Name:<span class="w"> </span>conv1d_example
+Version:<span class="w"> </span><span class="m">1</span>
+Description:<span class="w"> </span>Conv1D<span class="w"> </span>example
+Classes:<span class="w"> </span><span class="m">1</span><span class="w"> </span>NSR,<span class="w"> </span><span class="m">2</span><span class="w"> </span>APB,<span class="w"> </span><span class="m">4</span><span class="w"> </span>AFIB,<span class="w"> </span><span class="m">7</span><span class="w"> </span>PVC
+hash:<span class="w"> </span>ba4d5f7fb808e7566d44a63b4335516e
+date:<span class="w"> </span><span class="m">2022</span>-02-04T22:24:20.345Z
+runtime_memory_size:<span class="w"> </span><span class="m">33920</span>
+samplewise_norm.rescale:<span class="w"> </span><span class="m">0</span>.0
+samplewise_norm.mean_and_std:<span class="w"> </span>False
+fe.sample_rate_hz:<span class="w"> </span><span class="m">360</span>
+fe.sample_length_ms:<span class="w"> </span><span class="m">10000</span>
+fe.window_size_ms:<span class="w"> </span><span class="m">25</span>
+fe.window_step_ms:<span class="w"> </span><span class="m">10</span>
+fe.filterbank_n_channels:<span class="w"> </span><span class="m">32</span>
+fe.filterbank_upper_band_limit:<span class="w"> </span><span class="m">7500</span>.0
+fe.filterbank_lower_band_limit:<span class="w"> </span><span class="m">125</span>.0
+fe.noise_reduction_enable:<span class="w"> </span>False
+fe.noise_reduction_smoothing_bits:<span class="w"> </span><span class="m">10</span>
+fe.noise_reduction_even_smoothing:<span class="w"> </span><span class="m">0</span>.02500000037252903
+fe.noise_reduction_odd_smoothing:<span class="w"> </span><span class="m">0</span>.05999999865889549
+fe.noise_reduction_min_signal_remaining:<span class="w"> </span><span class="m">0</span>.05000000074505806
+fe.pcan_enable:<span class="w"> </span>False
+fe.pcan_strength:<span class="w"> </span><span class="m">0</span>.949999988079071
+fe.pcan_offset:<span class="w"> </span><span class="m">80</span>.0
+fe.pcan_gain_bits:<span class="w"> </span><span class="m">21</span>
+fe.log_scale_enable:<span class="w"> </span>True
+fe.log_scale_shift:<span class="w"> </span><span class="m">6</span>
+fe.fft_length:<span class="w"> </span><span class="m">16</span>
+.tflite<span class="w"> </span>file<span class="w"> </span>size:<span class="w"> </span><span class="m">82</span>.8kB
+</pre></div>
+</div>
+</section>
+<section id="model-diagram">
+<h2 id="model-diagram">Model Diagram<a class="headerlink" href="#model-diagram" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>view<span class="w"> </span>conv1d_example<span class="w"> </span>--tflite<span class="w"> </span>--build
+</pre></div>
+</div>
+<div class="model-diagram">
+<a href="../../../../_images/models/conv1d_example.tflite.png" target="_blank">
+<img src="../../../../_images/models/conv1d_example.tflite.png"/>
+<p>Click to enlarge</p>
+</a>
+</div></section>
+</section>
+
 
           </article>
         </div>
@@ -446,7 +626,7 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
           
-            <a href="image_example1.html" title="&lt;no title&gt;"
+            <a href="image_example1.html" title="image_example1"
                class="md-flex md-footer-nav__link md-footer-nav__link--prev"
                rel="prev">
               <div class="md-flex__cell md-flex__cell--shrink">
@@ -455,17 +635,17 @@
               <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
                 <span class="md-flex__ellipsis">
                   <span
-                      class="md-footer-nav__direction"> Previous </span> &lt;no title&gt; </span>
+                      class="md-footer-nav__direction"> Previous </span> image_example1 </span>
               </div>
             </a>
           
           
-            <a href="binary_classification.html" title="&lt;no title&gt;"
+            <a href="binary_classification.html" title="binary_classification"
                class="md-flex md-footer-nav__link md-footer-nav__link--next"
                rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
                 class="md-flex__ellipsis"> <span
-                class="md-footer-nav__direction"> Next </span> &lt;no title&gt; </span>
+                class="md-footer-nav__direction"> Next </span> binary_classification </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink"><i
                 class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>

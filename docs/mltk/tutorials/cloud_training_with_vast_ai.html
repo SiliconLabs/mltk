@@ -853,7 +853,7 @@ Then you can increase your credit balance using one time payments with the add c
 <p>To use this tutorial, the latest MLTK must be installed on your local machine.</p>
 <p>Refer to the “Standard Python Package” <a class="reference external" href="../../docs/installation.html#standard-python-package">Installation Guide</a> for more details.</p>
 <p>After installing the MLTK, the <code class="docutils literal notranslate"><span class="pre">mltk</span></code> command should be able on your local command prompt. You may confirm this by issuing the command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk --help
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>--help
 </pre></div>
 </div>
 </section>
@@ -868,7 +868,7 @@ Then you can increase your credit balance using one time payments with the add c
 <li><p>The <strong>public key</strong> resides on the <strong>remote machine</strong>, its contents need not be secure (i.e. it can be copied &amp; pasted anywhere)</p></li>
 </ul>
 <p>Use the following MLTK command to generate an <a class="reference external" href="https://ed25519.cr.yp.to/">Ed25519</a> SSH keypair:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk ssh-keygen vast_ai
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>ssh-keygen<span class="w"> </span>vast_ai
 </pre></div>
 </div>
 <p>This will generate the public/private keys on your local machine at:</p>
@@ -992,7 +992,7 @@ The instance can be shutdown by selecting the <code class="docutils literal notr
 <section id="ssh-client-login">
 <h3 id="ssh-client-login">SSH Client Login<a class="headerlink" href="#ssh-client-login" title="Permalink to this headline">¶</a></h3>
 <p>Assuming the remote instance is active, you should be able to log into the machine using a standard <a class="reference external" href="https://www.openssh.com/">SSH client</a>, e.g.:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssh &lt;host&gt; -p &lt;port&gt; -i ~/.ssh/id_vast_ai
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>ssh<span class="w"> </span>&lt;host&gt;<span class="w"> </span>-p<span class="w"> </span>&lt;port&gt;<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai
 </pre></div>
 </div>
 <p>Where <code class="docutils literal notranslate"><span class="pre">&lt;port&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;host&gt;</span></code> may be determined in step 6) from above.<br/>
@@ -1045,12 +1045,12 @@ So, the more CPU cores there are, the faster the augmented training data is able
 <li><p>Linux -&gt; <code class="docutils literal notranslate"><span class="pre">~/.mltk/user_settings.yaml</span></code></p></li>
 </ul>
 <p>To this file, add the following:</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ssh</span><span class="p">:</span><span class="w"></span>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ssh</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">create_venv</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w"> </span>
-<span class="w">    </span><span class="nt">startup_cmds</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install wheel silabs-mltk</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo apt-get update</span><span class="w"></span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo apt install -y p7zip-full libsndfile1</span><span class="w"></span>
+<span class="w">    </span><span class="nt">startup_cmds</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install wheel silabs-mltk</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo apt-get update</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo apt install -y p7zip-full libsndfile1</span>
 </pre></div>
 </div>
 <p>This tells the <a class="reference internal" href="../../docs/guides/model_training_via_ssh.html"><span class="doc std std-doc">mltk ssh train</span></a> command to:</p>
@@ -1130,8 +1130,8 @@ The <a class="reference external" href="../../docs/python_api/models/siliconlabs
 <h4 id="test-everything-works-locally">Test everything works locally<a class="headerlink" href="#test-everything-works-locally" title="Permalink to this headline">¶</a></h4>
 <p>Before training in the cloud, it is helpful to do a training “dry run” locally to ensure everything is basically working.<br/>
 This can be done with the command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;same directory as model specification .py&gt;
-mltk train keyword_spotting_on_off_v2-test
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;same<span class="w"> </span>directory<span class="w"> </span>as<span class="w"> </span>model<span class="w"> </span>specification<span class="w"> </span>.py&gt;
+mltk<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2-test
 </pre></div>
 </div>
 <p>This will train the model for a few epochs using a subset of the dataset.
@@ -1142,13 +1142,13 @@ This way, you can quickly fix any errors locally before invoking the actual trai
 <p>Before spending the time and money on training a model, it is very important to know if it is even able to run on the embedded target.
 For this reason, the MLTK features a <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">model profiler</span></a>.</p>
 <p>Assuming you have a <a class="reference internal" href="../../docs/other/supported_hardware.html"><span class="doc std std-doc">supported</span></a> development board and are targeting the <a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/mvp-accelerator">MVP</a> hardware accelerator, issue the command:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;same directory as model specification .py&gt;
-mltk profile keyword_spotting_on_off_v2 --build --accelerator mvp --device
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;same<span class="w"> </span>directory<span class="w"> </span>as<span class="w"> </span>model<span class="w"> </span>specification<span class="w"> </span>.py&gt;
+mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--build<span class="w"> </span>--accelerator<span class="w"> </span>mvp<span class="w"> </span>--device
 </pre></div>
 </div>
 <p>If you do not have a development board, you can still profile using the simulator:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> &lt;same directory as model specification .py&gt;
-mltk profile keyword_spotting_on_off_v2 --build --accelerator mvp
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;same<span class="w"> </span>directory<span class="w"> </span>as<span class="w"> </span>model<span class="w"> </span>specification<span class="w"> </span>.py&gt;
+mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--build<span class="w"> </span>--accelerator<span class="w"> </span>mvp
 </pre></div>
 </div>
 <p>This will profile the <em>untrained</em> model and provide statistics such as:</p>
@@ -1184,11 +1184,11 @@ The <a class="reference internal" href="../../docs/python_api/models/siliconlabs
 <p>With the model specification ready and cloud instance started, it’s time to train it in the cloud.</p>
 <p>This done using the <a class="reference internal" href="../../docs/guides/model_training_via_ssh.html"><span class="doc std std-doc">mltk ssh train</span></a>, e.g.:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Navigate to the directory containing the model specification</span>
-<span class="nb">cd</span> &lt;directory where keyword_spotting_on_off_v2.py is located&gt;
+<span class="nb">cd</span><span class="w"> </span>&lt;directory<span class="w"> </span>where<span class="w"> </span>keyword_spotting_on_off_v2.py<span class="w"> </span>is<span class="w"> </span>located&gt;
 
 <span class="c1"># Train keyword_spotting_on_off_v2 model in cloud</span>
 <span class="c1"># --clean will clean all previous  training files before starting</span>
-mltk ssh -p <span class="m">39975</span> -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --clean
+mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--clean
 </pre></div>
 </div>
 <ul class="simple">
@@ -1202,14 +1202,14 @@ mltk ssh -p <span class="m">39975</span> -h root@ssh6.vast.ai -i ~/.ssh/id_vast_
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Train keyword_spotting_on_off_v2 model in cloud</span>
 <span class="c1"># --clean will clean all previous  training files before starting</span>
 <span class="c1"># Only one command may be active, --force will abort any previous commands still executing</span>
-mltk ssh -p <span class="m">39975</span> -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --clean --force
+mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--clean<span class="w"> </span>--force
 
 <span class="c1"># If a previous command's SSH connection prematurely closed, </span>
 <span class="c1"># --resume may be used to re-connect without restarting the remote command</span>
-mltk ssh -p <span class="m">39975</span> -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --resume
+mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--resume
 
 <span class="c1"># Use the --verbose option to see verbose logs</span>
-mltk ssh -p <span class="m">39975</span> -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --verbose
+mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--verbose
 </pre></div>
 </div>
 </section>
