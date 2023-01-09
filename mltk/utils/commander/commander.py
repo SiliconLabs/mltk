@@ -122,6 +122,10 @@ def issue_command(
                 f'Additional error details:\n{retmsg}'
                 )
         else:
+            if 'Cannot connect to J-Link.' in retmsg:
+                retmsg += '\nThings to try:\n'
+                retmsg += '- 1. Ensure the development board is properly connected and enumerated\n'
+                retmsg += '- 2. Install the Segger J-Link drivers: https://www.segger.com/downloads/jlink\n'
             raise RuntimeError(f'{cmd_str}\nretcode={retcode}\n{retmsg}')
 
     if logger is not None:
