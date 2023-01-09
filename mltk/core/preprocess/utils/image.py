@@ -1,16 +1,18 @@
+"""Utilities for processing image data"""
+
 from typing import Union, Tuple
 import os
-import tensorflow as tf 
+import tensorflow as tf
 import numpy as np
 
 
 def read_image_file(
-    path:Union[str,np.ndarray,tf.Tensor], 
+    path:Union[str,np.ndarray,tf.Tensor],
     target_channels=0,
     return_numpy=False
 ) -> Union[np.ndarray,tf.Tensor]:
     """Reads and decodes an image file.
-    
+
     Args:
         path: Path to image file as a python string, numpy string, or tensorflow string
         target_channels: Number of channels to return image as, if 0 then use native channels
@@ -21,17 +23,17 @@ def read_image_file(
     """
     if target_channels is None:
         target_channels = 0
-    
+
     raw = tf.io.read_file(path)
     sample = tf.io.decode_image(
-        raw, 
-        expand_animations=True, 
-        channels=target_channels, 
+        raw,
+        expand_animations=True,
+        channels=target_channels,
         dtype=tf.uint8
     )
     if return_numpy:
         return sample.numpy()
-    
+
     return sample
 
 
@@ -54,7 +56,7 @@ def write_image_file(
         batch_size: This allows for using this function within a tf.keras.layers.Lambda layer
             If used, this will write each image in the given batch
     Returns:
-        Path to written file. If this is executing in a non-eager TF function 
+        Path to written file. If this is executing in a non-eager TF function
         then the path is a TF Tensor, otherwise it is a Python string
     """
     if isinstance(sample, np.ndarray):
@@ -89,7 +91,7 @@ def write_image_file(
             sample = (sample * 255.0 / ((max_val - min_val) + 1e-6))
 
         sample = tf.clip_by_value(sample, 0.0, 255.0)
-    
+
     sample = tf.cast(sample, tf.uint8)
 
     path = tf.strings.join((os.path.abspath(path),))
@@ -97,7 +99,7 @@ def write_image_file(
         ts = tf.timestamp() * 1000
         fn = tf.strings.format('{}.jpg', ts)
         path = tf.strings.join((path, fn), separator=os.path.sep)
-    
+
     img = tf.image.encode_jpeg(sample, quality=100, format=format)
     tf.io.write_file(path, img)
 

@@ -300,16 +300,12 @@ def _get_keras_callbacks(
 
 
     if mltk_model.reduce_lr_on_plateau and not contains_class_type(keras_callbacks, keras.callbacks.ReduceLROnPlateau):
-        if mltk_model.lr_schedule is None:
-            kwargs = dict()
-            kwargs.update(mltk_model.reduce_lr_on_plateau)
-            logger.debug('Using default ReduceLROnPlateau callback with following parameters:')
-            logger.debug(f'{pprint.pformat(kwargs)}')
-            cb = keras.callbacks.ReduceLROnPlateau(**kwargs)
-            keras_callbacks.append(cb)
-        else:
-            logger.debug('NOT using mltk_model.reduce_lr_on_plateau since mltk_model.lr_schedule is specified')
-
+        kwargs = dict()
+        kwargs.update(mltk_model.reduce_lr_on_plateau)
+        logger.debug('Using default ReduceLROnPlateau callback with following parameters:')
+        logger.debug(f'{pprint.pformat(kwargs)}')
+        cb = keras.callbacks.ReduceLROnPlateau(**kwargs)
+        keras_callbacks.append(cb)
 
     if mltk_model.checkpoints_enabled:
         logger.debug('Enabling model checkpoints')

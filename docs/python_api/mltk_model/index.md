@@ -6,6 +6,9 @@ The [model specification](../../guides/model_specification.md) should define an 
 and any other required mixins. Once the object is defined and instantiated, the various properties should be populated.
 After the model specification is finished, it may be invoked with one of the various [Model Operations](../operations/index.md).
 
+## Example Usage
+
+
 The following is a snippet from the [basic_example](https://siliconlabs.github.io/mltk/docs/python_api/models/examples/basic_example.html) reference model:
 
 
@@ -16,7 +19,7 @@ class MyModel(
     mltk_core.MltkModel,    # We must inherit the MltkModel class
     mltk_core.TrainMixin,   # We also inherit the TrainMixin since we want to train this model
     mltk_core.DatasetMixin, # We also need the DatasetMixin mixin to provide the relevant dataset properties
-    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation for our classification model 
+    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation for our classification model
 ):
     pass
 
@@ -47,6 +50,9 @@ if __name__ == '__main__':
 See the [reference models](https://siliconlabs.github.io/mltk/docs/python_api/models/index.html) for more examples.
 
 Additional [Model Utilities](https://siliconlabs.github.io/mltk/docs/python_api/mltk_model/utilities.html) are also available.
+
+## API Reference
+
 
 The following [MltkModel](mltk.core.MltkModel) mixins are available:
 

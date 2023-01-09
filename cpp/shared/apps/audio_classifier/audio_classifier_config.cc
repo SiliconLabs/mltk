@@ -6,7 +6,7 @@
 
 
 
-extern "C" 
+extern "C"
 {
 
 int SL_TFLITE_MODEL_AVERAGE_WINDOW_DURATION_MS;
@@ -18,7 +18,7 @@ int SL_TFLITE_MODEL_VERBOSE_MODEL_OUTPUT_LOGS;
 int SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS;
 mltk::StringList SL_TFLITE_MODEL_CLASSES;
 mltk::Int32List SL_TFLITE_DETECTION_THRESHOLD_LIST;
-
+int SL_TFLITE_MODEL_BAUD_RATE = 0;
 
 
 bool mltk_app_settings_load_parameters(const void* tflite_flatbuffer)
@@ -91,7 +91,7 @@ bool mltk_app_settings_load_parameters(const void* tflite_flatbuffer)
 
 #ifndef __arm__
     // Ensure the loop interval is at least 10ms on Windows/Linux
-    if(SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS < 10) 
+    if(SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS < 10)
     {
         SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS = 10;
     }
@@ -100,8 +100,8 @@ bool mltk_app_settings_load_parameters(const void* tflite_flatbuffer)
     if(cli_opts.dump_audio)
     {
         SL_ML_AUDIO_FEATURE_GENERATION_DUMP_AUDIO = 1;
-    } 
-    else 
+    }
+    else
     {
         model_parameters.get("dump_audio", SL_ML_AUDIO_FEATURE_GENERATION_DUMP_AUDIO);
     }
@@ -110,7 +110,7 @@ bool mltk_app_settings_load_parameters(const void* tflite_flatbuffer)
     {
         SL_ML_AUDIO_FEATURE_GENERATION_DUMP_RAW_SPECTROGRAM = 1;
     }
-    else 
+    else
     {
         model_parameters.get("dump_raw_spectrograms", SL_ML_AUDIO_FEATURE_GENERATION_DUMP_RAW_SPECTROGRAM);
     }
@@ -119,7 +119,7 @@ bool mltk_app_settings_load_parameters(const void* tflite_flatbuffer)
     {
         SL_ML_AUDIO_FEATURE_GENERATION_DUMP_QUANTIZED_SPECTROGRAM = 1;
     }
-    else 
+    else
     {
         model_parameters.get("dump_spectrograms", SL_ML_AUDIO_FEATURE_GENERATION_DUMP_QUANTIZED_SPECTROGRAM);
     }
@@ -133,9 +133,11 @@ bool mltk_app_settings_load_parameters(const void* tflite_flatbuffer)
 #ifdef __arm__
     if(SL_ML_AUDIO_FEATURE_GENERATION_DUMP_AUDIO)
     {
-        // Force the infernece loop to 100ms when dumping audio
+        // Force the inference loop to 100ms when dumping audio
         SL_TFLITE_MODEL_INFERENCE_INTERVAL_MS = 100;
     }
+
+    model_parameters.get("baud_rate", SL_TFLITE_MODEL_BAUD_RATE);
 #endif
 
     printf("Application settings:\n");

@@ -51,7 +51,9 @@
 #ifndef DIV_ROUND_UP
 #define DIV_ROUND_UP(m, n)    (((m) + (n) - 1) / (n))
 #endif /* ifndef DIV_ROUND_UP */
-
+#ifndef MIN
+#define MIN(x,y)  ((x) < (y) ? (x) : (y))
+#endif 
 
 static struct
 {
@@ -224,7 +226,7 @@ sl_status_t mltk_sl_mic_start_streaming(void *buffer, uint32_t n_frames, sl_mic_
   // Start at 25ms and increment until we find a multiple of the given n_frames
   const int ms_per_sample = (n_frames * 1000) / mic_context.sample_rate;
   uint32_t ms_per_callback;
-  for(ms_per_callback = 25; ms_per_callback < ms_per_sample; ++ms_per_callback)
+  for(ms_per_callback = MIN(25, ms_per_sample); ms_per_callback < ms_per_sample; ++ms_per_callback)
   {
     const int n_frames_per_callback = (ms_per_callback * mic_context.sample_rate) / 1000;
 

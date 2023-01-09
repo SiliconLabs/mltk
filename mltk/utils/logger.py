@@ -1,3 +1,7 @@
+"""Data logging utilities
+
+See the source code on Github: `mltk/utils/logger.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/logger.py>`_
+"""
 import logging
 import os
 import re
@@ -11,10 +15,10 @@ from typing import Callable, Union, TextIO
 
 
 def get_logger(
-    name='mltk', 
-    level='INFO', 
-    console=False, 
-    log_file=None, 
+    name='mltk',
+    level='INFO',
+    console=False,
+    log_file=None,
     log_file_mode='w',
     parent:logging.Logger=None,
     base_level='DEBUG',
@@ -27,8 +31,8 @@ def get_logger(
             logger.propagate = False
         else:
             logger.parent = parent
-            logger.propagate = True 
-        
+            logger.propagate = True
+
         logger.setLevel(base_level)
 
         if console:
@@ -58,8 +62,8 @@ def add_console_logger(logger: logging.Logger, level='INFO'):
     """Add a console logger to the given logger"""
     for handler in logger.handlers:
         if isinstance(handler, _ConsoleStreamLogger):
-            return 
-        
+            return
+
     ch = _ConsoleStreamLogger(sys.stdout)
     ch.setLevel(get_level(level))
     logger.addHandler(ch)
@@ -69,8 +73,8 @@ def make_filelike(logger: logging.Logger, level=logging.INFO):
     """Make the given logger 'file-like'"""
     # pylint: disable=protected-access
     if logger is None:
-        return 
-    
+        return
+
     # Convert the level to an int
     level = logging._nameToLevel[get_level(level)]
     logger._buffer = ''
@@ -79,7 +83,7 @@ def make_filelike(logger: logging.Logger, level=logging.INFO):
         return False
 
     def _write(cls, data):
-        cls._buffer +=  data 
+        cls._buffer +=  data
 
     def _flush(cls):
         if cls._buffer:
@@ -101,7 +105,7 @@ def make_filelike(logger: logging.Logger, level=logging.INFO):
 
         for i, h in enumerate(logger.handlers):
             h.terminator = terminator[i]
-        
+
         return previous_terminators
 
 
@@ -118,12 +122,12 @@ def make_filelike(logger: logging.Logger, level=logging.INFO):
 
 
 def redirect_stream(
-    logger:logging.Logger, 
+    logger:logging.Logger,
     stream:Union[TextIO,str]='stderr',
     close_atexit=True
 ) -> Callable:
     """Redirect std logs to the given logger
-    
+
     NOTE: This redirects ALL logs from the stream
     """
 
@@ -140,10 +144,10 @@ def redirect_stream(
 
     if saved_sys_std_stream_name is not None:
         if saved_sys_std_stream_name == 'stderr':
-            setattr(sys, saved_sys_std_stream_name, sys.stdout) 
+            setattr(sys, saved_sys_std_stream_name, sys.stdout)
         else:
-            setattr(sys, saved_sys_std_stream_name, io.TextIOWrapper(os.fdopen(stream_fd, 'wb'), encoding='utf-8' )) 
-    
+            setattr(sys, saved_sys_std_stream_name, io.TextIOWrapper(os.fdopen(stream_fd, 'wb'), encoding='utf-8' ))
+
     # Map tensorflow logs to the Python logger's corresponding level
     tf_err_re = re.compile('.*:\s([DIWE])\s(.*)')
     def _process_line(line:str):
@@ -159,7 +163,7 @@ def redirect_stream(
             logger.log(level, match.group(2))
         else:
             logger.debug(line)
-    
+
     def _drain_pipe():
         line = ''
         while True:
@@ -171,10 +175,10 @@ def redirect_stream(
                 if c == '\n':
                     _process_line(line.strip())
                     line = ''
-            
+
     pipe_redirect_thread = threading.Thread(
-        target=_drain_pipe, 
-        name='stream_redirect', 
+        target=_drain_pipe,
+        name='stream_redirect',
         daemon=True
     )
 
@@ -210,7 +214,7 @@ def redirect_stream(
 
 def timing_decorator(f, level='INFO'):
     """Print the run-time of the decorated function to the logger
-    
+
     If a logger is found in the args then that is used,
     else if a logger is found in the 'self' argument, then that is used
     """
@@ -219,20 +223,20 @@ def timing_decorator(f, level='INFO'):
         if logger is None:
             for a in args:
                 if isinstance(a, logging.Logger):
-                    logger = a 
-                    break 
+                    logger = a
+                    break
         if logger is None:
             for a in kwargs.values():
                 if isinstance(a, logging.Logger):
-                    logger = a 
+                    logger = a
                     break
         if logger is None and len(args) > 0:
             self = args[0]
             for key in dir(self):
                 value = getattr(self, key)
                 if isinstance(value, logging.Logger):
-                    logger = value 
-                    break 
+                    logger = value
+                    break
 
         if logger is None:
             logger = get_logger()
@@ -250,12 +254,12 @@ def set_console_level(logger:logging.Logger, level:str) -> str:
     """Set the logger's console level and return the previous level"""
     if level is None:
         return None
-    
+
     prev_console_level = None
     if hasattr(logger, 'console_level'):
         prev_console_level = logger.console_level
         logger.console_level = level
-    return prev_console_level 
+    return prev_console_level
 
 
 def get_level(level:Union[str,int]) -> str:
@@ -268,8 +272,8 @@ def get_level(level:Union[str,int]) -> str:
 class ConsoleLoggerLevelContext:
     def __init__(self, logger:logging.Logger, level:str):
         self.logger = logger
-        self.level = level 
-       
+        self.level = level
+
     def __enter__(self):
         self.saved_console_level = self.logger.console_level
         self.logger.console_level = self.level
@@ -284,19 +288,19 @@ class DummyLogger():
         self.handlers = []
 
     def debug(self, *args, **kwargs):
-        pass 
+        pass
     def info(self, *args, **kwargs):
-        pass 
+        pass
     def warning(self, *args, **kwargs):
-        pass 
+        pass
     def error(self, *args, **kwargs):
-        pass 
+        pass
     def exception(self, *args, **kwargs):
-        pass 
+        pass
     def write(self, *args, **kwargs):
-        pass 
+        pass
     def flush(self, *args, **kwargs):
-        pass 
+        pass
 
 
 # This is needed to distinguish between a FileHandler and console StreamHandler

@@ -1,9 +1,12 @@
+"""General system utilities
+
+See the source code on Github: `mltk/utils/system.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/system.py>`_
+"""
 import sys
 import os
-import signal 
+import signal
 import stat
 import time
-import datetime
 
 
 
@@ -11,10 +14,10 @@ def get_current_os() -> str:
     """Return the current OS handle, windows, linux or osx"""
     if sys.platform == "linux" or sys.platform == "linux2":
         return 'linux'
-    
+
     elif sys.platform == "darwin":
         return 'osx'
-    
+
     elif sys.platform == "win32":
         return 'windows'
 
@@ -75,10 +78,10 @@ def make_path_executable(path:str):
 
 def send_signal(sig = signal.SIGINT, pid:int=None):
     """Send a signal to the current process and all children processes
-    
+
     Args:
         sig: The signal to send
-        pid: The process id. If None then use current process. 
+        pid: The process id. If None then use current process.
             If -1, only send signal to children processes of current process
             If 0, only send signal to current process
     """

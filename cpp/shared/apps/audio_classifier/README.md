@@ -18,7 +18,7 @@ __NOTES:__
 - [Online documentation](https://siliconlabs.github.io/mltk/docs/cpp_development/examples/audio_classifier.html) - View this example's online documentation
 - [Keyword Spotting Tutorial](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_on_off.html) - View this example's associated tutorial
 - [Audio classifier utility](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility) - View the audio classifier utility's documentation
-
+- [Alexa Demo](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_alexa.html) - Alexa Voice Services (AVS) demo using a Python script
 
 
 ## Behavior
@@ -176,6 +176,85 @@ It has been modified as follows:
 4. Added support for dumping raw microphone audio and generated spectrograms
    for capture by Python script (using the `mltk classify_audio` command)
 5. Updated embedded microphone driver to support dynamic sample lengths
+
+
+## CMake Variables
+
+This application supports the following __optional__ CMake variables.
+The variables may be specified on the [command-line](https://siliconlabs.github.io/mltk/docs/cpp_development/command_line.html) or in the [user_options.cmake](https://siliconlabs.github.io/mltk/docs/cpp_development/build_options.html) file.
+
+### VERBOSE
+
+Enable verbose logging while the application executes
+
+```shell
+mltk_set(VERBOSE ON)
+```
+
+### WINDOW_MS
+
+Configure the length of the averaging window in milliseconds.
+This overrides the [model parameter](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html#audiodatasetmixin) setting `average_window_duration_ms`.
+ 
+```shell
+mltk_set(WINDOW_MS 750)
+```
+
+### THRESHOLD
+
+Configure the detection threshold. This is a value from 0-255., 255 being the highest.
+This overrides the [model parameter](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html#audiodatasetmixin) setting `detection_threshold`.
+ 
+```shell
+mltk_set(THRESHOLD 185)
+```
+
+### SUPPRESSION_MS
+
+The amount of time in milliseconds to wait after a detection to begin listening for keywords again.
+This overrides the [model parameter](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html#audiodatasetmixin) setting `suppression_ms`.
+ 
+```shell
+mltk_set(SUPPRESSION_MS 500)
+```
+
+### COUNT
+
+The minimum number of inference results to average when calculating the detection value
+This overrides the [model parameter](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html#audiodatasetmixin) setting `minimum_count`.
+ 
+```shell
+mltk_set(COUNT 2)
+```
+
+### VOLUME_GAIN
+
+The integer multiplier value to apply to each microphone sample.
+This overrides the [model parameter](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html#audiodatasetmixin) setting `volume_gain`.
+ 
+```shell
+mltk_set(VOLUME_GAIN 2)
+```
+
+### LATENCY_MS
+
+This is the amount of time in milliseconds an audio loop takes.
+This overrides the [model parameter](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html#audiodatasetmixin) setting `latency_ms`.
+ 
+```shell
+mltk_set(LATENCY_MS 2)
+```
+
+## AUDIO_CLASSIFIER_ENABLE_AUDIO_IO
+
+This enables audio input/output streaming via UART.
+This is currently only used in the [Keyword Spotting - Alexa](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_alexa.html) demo.
+
+```shell
+mltk_set(AUDIO_CLASSIFIER_ENABLE_AUDIO_IO ON)
+```
+
+__NOTE:__ When this feature is enabled, log prints are effectively disabled.
 
 
 ## Additional Reading

@@ -39,10 +39,10 @@ def test_generate_keypair():
     for i, line in enumerate(lines):
         if line.endswith(' utest'):
             replace_lineno = i
-            break 
+            break
 
     if replace_lineno >= 0:
-        lines[replace_lineno] = pub_key 
+        lines[replace_lineno] = pub_key
     else:
         lines.append(pub_key)
 
@@ -72,7 +72,7 @@ def test_train_model_with_params_in_cmd_create_venv():
     remove_directory(ssh_workspace_dir)
 
     env = os.environ.copy()
-    ssh_settings=dict( 
+    ssh_settings=dict(
         create_venv=True,
         upload_files=[f'{__file__}|{upload_file_abspath}', 'test_autoencoder_model.py'],
         environment=['TEST="This is a test"', 'FOO', 'BAR=this is a string without quotes', 'CUDA_VISIBLE_DEVICES=-1'],
@@ -88,15 +88,15 @@ def test_train_model_with_params_in_cmd_create_venv():
     env['MLTK_USER_SETTINGS_PATH'] = settings_path
 
     run_mltk_command(
-        'ssh', '-h', f'{ssh_username}@localhost/{os.path.basename(ssh_workspace_dir)}', '-p', 22, '-i', f'{pytest_results_dir}/id_utest', 'train', 'test_image_model-test', '--verbose', '--clean', '--force', 
-        update_model_path=True, 
+        'ssh', '-h', f'{ssh_username}@localhost/{os.path.basename(ssh_workspace_dir)}', '-p', 22, '-i', f'{pytest_results_dir}/id_utest', 'train', 'test_image_model-test', '--verbose', '--clean', '--force',
+        update_model_path=True,
         env=env
     )
 
     assert os.path.exists(f'{ssh_workspace_dir}/test_autoencoder_model.py')
     _verify_results(
         startup_cmd_file_path=startup_cmd_file_path,
-        shutdown_cmd_file_path=shutdown_cmd_file_path, 
+        shutdown_cmd_file_path=shutdown_cmd_file_path,
         model_file_path=model_file_path,
         model_log_dir=model_log_dir,
         upload_file_abspath=upload_file_abspath
@@ -123,10 +123,10 @@ def test_train_model_with_params_in_settings_no_create_venv():
     remove_directory(model_log_dir)
 
     env = os.environ.copy()
-    ssh_settings=dict( 
+    ssh_settings=dict(
         create_venv=False,
         remote_dir=ssh_workspace_dir,
-        connection=dict( 
+        connection=dict(
             hostname='localhost',
             port=22,
             key_filename=f'{pytest_results_dir}/id_utest',
@@ -151,15 +151,15 @@ def test_train_model_with_params_in_settings_no_create_venv():
     env['MLTK_USER_SETTINGS_PATH'] = settings_path
 
     run_mltk_command(
-        'ssh', 'train', 'test_image_model', '--verbose', '--clean', '--force', 
-        update_model_path=True, 
+        'ssh', 'train', 'test_image_model', '--verbose', '--clean', '--force',
+        update_model_path=True,
         env=env
     )
 
     assert os.path.exists(f'{ssh_workspace_dir}/test_autoencoder_model.py')
     _verify_results(
         startup_cmd_file_path=startup_cmd_file_path,
-        shutdown_cmd_file_path=shutdown_cmd_file_path, 
+        shutdown_cmd_file_path=shutdown_cmd_file_path,
         model_file_path=model_file_path,
         model_log_dir=model_log_dir,
         upload_file_abspath=upload_file_abspath
@@ -216,9 +216,9 @@ def test_train_model_with_ssh_mixin_and_config():
 
 
     env = os.environ.copy()
-    ssh_settings=dict( 
+    ssh_settings=dict(
         config_path=ssh_config_path,
-        connection=dict( 
+        connection=dict(
             hostname='localhost',
             port=22,
             key_filename=f'',
@@ -240,14 +240,14 @@ def test_train_model_with_ssh_mixin_and_config():
     env['MLTK_USER_SETTINGS_PATH'] = settings_path
 
     run_mltk_command(
-        'ssh', '-h', 'utest_host', 'train', f'{pytest_results_dir}/test_image_model.py', "--test", '--verbose', '--clean', '--force', 
-        update_model_path=True, 
+        'ssh', '-h', 'utest_host', 'train', f'{pytest_results_dir}/test_image_model.py', "--test", '--verbose', '--clean', '--force',
+        update_model_path=True,
         env=env
     )
 
     _verify_results(
         startup_cmd_file_path=startup_cmd_file_path,
-        shutdown_cmd_file_path=shutdown_cmd_file_path, 
+        shutdown_cmd_file_path=shutdown_cmd_file_path,
         model_file_path=model_file_path,
         model_log_dir=model_log_dir,
         upload_file_abspath=upload_file_abspath,
@@ -275,7 +275,7 @@ def test_train_model_nowait():
     #remove_directory(ssh_workspace_dir)
 
     env = os.environ.copy()
-    ssh_settings=dict( 
+    ssh_settings=dict(
         create_venv=True,
         upload_files=[f'{__file__}|{upload_file_abspath}', 'test_autoencoder_model.py'],
         environment=['TEST="This is a test"', 'FOO', 'BAR=this is a string without quotes', 'CUDA_VISIBLE_DEVICES=-1'],
@@ -291,8 +291,8 @@ def test_train_model_nowait():
     env['MLTK_USER_SETTINGS_PATH'] = settings_path
 
     run_mltk_command(
-        'ssh', '-h', f'{ssh_username}@localhost/{os.path.basename(ssh_workspace_dir)}', '-p', 22, '-i', f'{pytest_results_dir}/id_utest', 'train', 'test_image_model-test', '--verbose', '--clean', '--force', '--no-wait', 
-        update_model_path=True, 
+        'ssh', '-h', f'{ssh_username}@localhost/{os.path.basename(ssh_workspace_dir)}', '-p', 22, '-i', f'{pytest_results_dir}/id_utest', 'train', 'test_image_model-test', '--verbose', '--clean', '--force', '--no-wait',
+        update_model_path=True,
         env=env
     )
 
@@ -312,15 +312,15 @@ def test_train_model_resume():
     env['MLTK_USER_SETTINGS_PATH'] = settings_path
 
     run_mltk_command(
-        'ssh', '-h', f'{ssh_username}@localhost/{os.path.basename(ssh_workspace_dir)}', '-p', 22, '-i', f'{pytest_results_dir}/id_utest', 'train', 'test_image_model-test', '--verbose', '--clean', '--resume', 
-        update_model_path=True, 
+        'ssh', '-h', f'{ssh_username}@localhost/{os.path.basename(ssh_workspace_dir)}', '-p', 22, '-i', f'{pytest_results_dir}/id_utest', 'train', 'test_image_model-test', '--verbose', '--clean', '--resume',
+        update_model_path=True,
         env=env
     )
 
     assert os.path.exists(f'{ssh_workspace_dir}/test_autoencoder_model.py')
     _verify_results(
         startup_cmd_file_path=startup_cmd_file_path,
-        shutdown_cmd_file_path=shutdown_cmd_file_path, 
+        shutdown_cmd_file_path=shutdown_cmd_file_path,
         model_file_path=model_file_path,
         model_log_dir=model_log_dir,
         upload_file_abspath=upload_file_abspath
@@ -347,7 +347,7 @@ def _remove_file(path):
 
 
 def _verify_results(
-    startup_cmd_file_path, 
+    startup_cmd_file_path,
     shutdown_cmd_file_path,
     model_file_path,
     model_log_dir,
@@ -389,5 +389,3 @@ def _verify_results(
     for fn in log_files:
         p = f'{model_log_dir}/{fn}'
         assert os.path.exists(p), f'Missing log file: {p}'
-
-

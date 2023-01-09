@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>AudioFeatureGenerator &#8212; MLTK 0.13.0 documentation</title>
+    <title>AudioFeatureGenerator &#8212; MLTK 0.14.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
@@ -108,11 +108,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.13.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.14.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.13.0 documentation logo">
+                   alt="MLTK 0.14.0 documentation logo">
           
         </a>
       </div>
@@ -204,13 +204,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -334,6 +334,13 @@
     
     
       <a href="index.html" class="md-nav__link">Data Preprocessing</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../utils/index.html" class="md-nav__link">Utilities</a>
       
     
     </li></ul>
@@ -481,7 +488,72 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mltk.core.preprocess.audio.audio_feature_generator.</span></span><span class="sig-name descname"><span class="pre">AudioFeatureGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">settings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/preprocess/audio/audio_feature_generator/audio_feature_generator.html#AudioFeatureGenerator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>AudioFeatureGenerator Interface</p>
+<dd><p>Converts raw audio into a spectrogram (gray-scale 2D image)</p>
+<p><strong>Example Usage</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
+<span class="kn">from</span> <span class="nn">mltk.core.preprocess.utils</span> <span class="kn">import</span> <span class="n">audio</span> <span class="k">as</span> <span class="n">audio_utils</span>
+
+<span class="c1"># Define the settings used to convert the audio into a spectrogram</span>
+<span class="n">frontend_settings</span> <span class="o">=</span> <span class="n">AudioFeatureGeneratorSettings</span><span class="p">()</span>
+
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="mi">16000</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="mi">1200</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_size_ms</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_step_ms</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_n_channels</span> <span class="o">=</span> <span class="mi">108</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_upper_band_limit</span> <span class="o">=</span> <span class="mf">7500.0</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_lower_band_limit</span> <span class="o">=</span> <span class="mf">125.0</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_enable</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_smoothing_bits</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_even_smoothing</span> <span class="o">=</span>  <span class="mf">0.025</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_odd_smoothing</span> <span class="o">=</span> <span class="mf">0.06</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_min_signal_remaining</span> <span class="o">=</span> <span class="mf">0.40</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">quantize_dynamic_scale_enable</span> <span class="o">=</span> <span class="kc">True</span> <span class="c1"># Enable dynamic quantization</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">quantize_dynamic_scale_range_db</span> <span class="o">=</span> <span class="mf">40.0</span>
+
+<span class="c1"># Read the raw audio file</span>
+<span class="n">sample</span><span class="p">,</span> <span class="n">original_sample_rate</span> <span class="o">=</span> <span class="n">audio_utils</span><span class="o">.</span><span class="n">read_audio_file</span><span class="p">(</span>
+    <span class="s1">'my_audio.wav'</span><span class="p">,</span>
+    <span class="n">return_numpy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">return_sample_rate</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># Clip/pad the audio so that it's length matches the values configured in "frontend_settings"</span>
+<span class="n">out_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">original_sample_rate</span> <span class="o">*</span> <span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">sample</span> <span class="o">=</span> <span class="n">audio_utils</span><span class="o">.</span><span class="n">adjust_length</span><span class="p">(</span>
+    <span class="n">sample</span><span class="p">,</span>
+    <span class="n">out_length</span><span class="o">=</span><span class="n">out_length</span><span class="p">,</span>
+    <span class="n">trim_threshold_db</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">offset</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">)</span>
+
+<span class="c1"># Convert the sample rate (if necessary)</span>
+<span class="k">if</span> <span class="n">original_sample_rate</span> <span class="o">!=</span> <span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span><span class="p">:</span>
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">audio_utils</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span>
+        <span class="n">sample</span><span class="p">,</span>
+        <span class="n">orig_sr</span><span class="o">=</span><span class="n">original_sample_rate</span><span class="p">,</span>
+        <span class="n">target_sr</span><span class="o">=</span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span>
+    <span class="p">)</span>
+
+<span class="c1"># Generate a spectrogram from the audio sample</span>
+<span class="c1">#</span>
+<span class="c1"># NOTE: audio_utils.apply_frontend() is a helper function.</span>
+<span class="c1">#       Internally, it converts from float32 to int16 (audio_utils.read_audio_file() returns float32)</span>
+<span class="c1">#       then calls the AudioFeatureGenerator, e.g.:</span>
+<span class="c1">#       sample = sample * 32768</span>
+<span class="c1">#       sample = sample.astype(np.int16)</span>
+<span class="c1">#       sample = np.squeeze(sample, axis=-1)</span>
+<span class="c1">#       frontend = AudioFeatureGenerator(frontend_settings)</span>
+<span class="c1">#       spectrogram = frontend.process_sample(sample, dtype=np.int8)</span>
+
+<span class="n">spectrogram</span> <span class="o">=</span> <span class="n">audio_utils</span><span class="o">.</span><span class="n">apply_frontend</span><span class="p">(</span>
+    <span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span>
+    <span class="n">settings</span><span class="o">=</span><span class="n">frontend_settings</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
@@ -528,7 +600,7 @@
 <span class="sig-name descname"><span class="pre">process_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=&lt;class</span> <span class="pre">'numpy.float32'&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/core/preprocess/audio/audio_feature_generator/audio_feature_generator.html#AudioFeatureGenerator.process_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator.process_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert the provided 1D audio sample to a 2D spectrogram using the AudioFeatureGenerator</p>
 <p>The generated 2D spectrogram dimensions are calculated as follows:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sample_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sample_length_ms</span><span class="o">*</span><span class="n">sample_rate_hz</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sample_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">sample_length_ms</span><span class="o">*</span><span class="n">sample_rate_hz</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
 <span class="n">window_size_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_size_ms</span> <span class="o">*</span> <span class="n">sample_rate_hz</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
 <span class="n">window_step_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">window_step_ms</span> <span class="o">*</span> <span class="n">sample_rate_hz</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
 <span class="n">height</span> <span class="o">=</span> <span class="n">n_features</span> <span class="o">=</span> <span class="p">(</span><span class="n">sample_length</span> <span class="o">-</span> <span class="n">window_size_length</span><span class="p">)</span> <span class="o">//</span> <span class="n">window_step_length</span> <span class="o">+</span> <span class="mi">1</span>
@@ -622,7 +694,7 @@ This must be one of the following:</p>
               
           </div>
             Last updated on
-              Nov 14, 2022.
+              Jan 09, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

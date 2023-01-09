@@ -31,7 +31,7 @@ Refer to [Supported Hardware](../other/supported_hardware.md) for more details.
 
 __NOTE:__ If this variable is not defined, then the host operating system (e.g. `windows` or `linux`) is automatically selected.
 
-```
+```shell
 # Specify the embedded platform
 mltk_set(MLTK_PLATFORM_NAME brd2601)
 ```

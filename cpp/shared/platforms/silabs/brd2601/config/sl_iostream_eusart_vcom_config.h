@@ -41,7 +41,10 @@
 
 // <o SL_IOSTREAM_EUSART_VCOM_BAUDRATE> Baud rate
 // <i> Default: 115200
-#define SL_IOSTREAM_EUSART_VCOM_BAUDRATE              115200
+#ifndef MLTK_BAUD_RATE
+#define MLTK_BAUD_RATE 115200
+#endif
+#define SL_IOSTREAM_EUSART_VCOM_BAUDRATE              MLTK_BAUD_RATE
 
 // <o SL_IOSTREAM_EUSART_VCOM_PARITY> Parity mode to use
 // <eusartNoParity=> No Parity

@@ -1,0 +1,1234 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, machine-learning, machinelearning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tensorflow-lite-micro, keras-tensorflow, keras, tflite, embedded, embedded-systems, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HZ5MW943WF"></script>
+<script>
+    window.gTrackingId = 'G-HZ5MW943WF';
+</script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
+  
+  
+    <title>Synthetic Audio Dataset Generation &#8212; MLTK 0.14.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script>let toggleHintShow = 'Click to show';</script>
+    <script>let toggleHintHide = 'Click to hide';</script>
+    <script>let toggleOpenOnPrint = 'true';</script>
+    <script src="../../_static/togglebutton.js"></script>
+    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/apitoc.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API Examples" href="../../docs/examples.html" />
+    <link rel="prev" title="Add an Existing Script to the MLTK" href="add_existing_script_to_mltk.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/tutorials/synthetic_audio_dataset_generation" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.14.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.14.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Synthetic Audio Dataset Generation </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder="Search"
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_on_off.html" class="md-nav__link">Keyword Spotting - On/Off</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_pacman.html" class="md-nav__link">Keyword Spotting - Pac-Man</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_alexa.html" class="md-nav__link">Keyword Spotting - Alexa</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="image_classification.html" class="md-nav__link">Image Classification - Rock, Paper, Scissors</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="cloud_training_with_vast_ai.html" class="md-nav__link">Cloud Training with vast.ai</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_optimization.html" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_with_transfer_learning.html" class="md-nav__link">Keyword Spotting with Transfer Learning</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="fingerprint_authentication.html" class="md-nav__link">Fingerprint Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="onnx_to_tflite.html" class="md-nav__link">ONNX to TF-Lite Model Conversion</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_debugging.html" class="md-nav__link">Model Debugging</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="add_existing_script_to_mltk.html" class="md-nav__link">Add an Existing Script to the MLTK</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Synthetic Audio Dataset Generation </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Synthetic Audio Dataset Generation</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#mltk-tutorials-synthetic-audio-dataset-generation--page-root" class="md-nav__link">Synthetic Audio Dataset Generation</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#quick-links" class="md-nav__link">Quick Links</a>
+        </li>
+        <li class="md-nav__item"><a href="#content" class="md-nav__link">Content</a>
+        </li>
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#recording-real-people" class="md-nav__link">Recording real people</a>
+        </li>
+        <li class="md-nav__item"><a href="#synthetic-generation" class="md-nav__link">Synthetic generation</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-synthetic-augmentations" class="md-nav__link">Note about synthetic augmentations</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-languages" class="md-nav__link">Note about languages</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-the-negative-class" class="md-nav__link">Note about the “negative” class</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-cost" class="md-nav__link">Note about cost</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#google-cloud-platform-gcp-setup" class="md-nav__link">Google Cloud Platform (GCP) Setup</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#features" class="md-nav__link">Features</a>
+        </li>
+        <li class="md-nav__item"><a href="#id1" class="md-nav__link">Quick Links</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#microsoft-azure-setup" class="md-nav__link">Microsoft Azure Setup</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#id2" class="md-nav__link">Features</a>
+        </li>
+        <li class="md-nav__item"><a href="#id3" class="md-nav__link">Quick Links</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#amazon-web-services-aws-setup" class="md-nav__link">Amazon Web Services (AWS) Setup</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#id4" class="md-nav__link">Quick Links</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#alexa-example" class="md-nav__link">Alexa Example</a>
+        </li>
+        <li class="md-nav__item"><a href="#next-steps" class="md-nav__link">Next Steps</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../_static/js/apitoc.js></script>
+  </ul>
+</nav>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#mltk-tutorials-synthetic-audio-dataset-generation--page-root" class="md-nav__link">Synthetic Audio Dataset Generation</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#quick-links" class="md-nav__link">Quick Links</a>
+        </li>
+        <li class="md-nav__item"><a href="#content" class="md-nav__link">Content</a>
+        </li>
+        <li class="md-nav__item"><a href="#overview" class="md-nav__link">Overview</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#recording-real-people" class="md-nav__link">Recording real people</a>
+        </li>
+        <li class="md-nav__item"><a href="#synthetic-generation" class="md-nav__link">Synthetic generation</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-synthetic-augmentations" class="md-nav__link">Note about synthetic augmentations</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-languages" class="md-nav__link">Note about languages</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-the-negative-class" class="md-nav__link">Note about the “negative” class</a>
+        </li>
+        <li class="md-nav__item"><a href="#note-about-cost" class="md-nav__link">Note about cost</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#google-cloud-platform-gcp-setup" class="md-nav__link">Google Cloud Platform (GCP) Setup</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#features" class="md-nav__link">Features</a>
+        </li>
+        <li class="md-nav__item"><a href="#id1" class="md-nav__link">Quick Links</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#microsoft-azure-setup" class="md-nav__link">Microsoft Azure Setup</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#id2" class="md-nav__link">Features</a>
+        </li>
+        <li class="md-nav__item"><a href="#id3" class="md-nav__link">Quick Links</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#amazon-web-services-aws-setup" class="md-nav__link">Amazon Web Services (AWS) Setup</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#id4" class="md-nav__link">Quick Links</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#alexa-example" class="md-nav__link">Alexa Example</a>
+        </li>
+        <li class="md-nav__item"><a href="#next-steps" class="md-nav__link">Next Steps</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../_static/js/apitoc.js></script>
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li><a href="../../docs/tutorials.html" accesskey="U">Tutorials</a></li>
+
+              <li class="activate"><a>Synthetic Audio Dataset Generation</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="synthetic-audio-dataset-generation">
+<h1 id="mltk-tutorials-synthetic-audio-dataset-generation--page-root">Synthetic Audio Dataset Generation<a class="headerlink" href="#mltk-tutorials-synthetic-audio-dataset-generation--page-root" title="Permalink to this headline">¶</a></h1>
+<p>This tutorial describes how to use Text-to-Speech (TTS) features of the:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://cloud.google.com/text-to-speech">Google Cloud Platform (GCP)</a></p></li>
+<li><p><a class="reference external" href="https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/text-to-speech">Microsoft (Azure)</a></p></li>
+<li><p><a class="reference external" href="https://aws.amazon.com/polly">Amazon Web Services (AWS)</a></p></li>
+</ul>
+<p>clouds to generate synthetic keyword audio datasets.</p>
+<p>With this, <a class="reference internal" href="../../docs/audio/keyword_spotting_overview.html"><span class="doc std std-doc">keyword spotting</span></a> machine learning models may be trained to detected custom keywords.</p>
+<p>In this tutorial, we use the <a class="reference internal" href="../../docs/python_api/utils/audio_dataset_generator/index.html"><span class="doc std std-doc">AudioDatasetGenerator</span></a> Python package to generate a synthetic “Alexa” dataset.</p>
+<section id="quick-links">
+<h2 id="quick-links">Quick Links<a class="headerlink" href="#quick-links" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/SiliconLabs/mltk/blob/master/mltk/tutorials/synthetic_audio_dataset_generation.ipynb">GitHub Source</a> - View this tutorial on Github</p></li>
+<li><p><a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/tutorials/synthetic_audio_dataset_generation.ipynb">Run on Colab</a> - Run this tutorial on Google Colab</p></li>
+<li><p><a class="reference internal" href="../../docs/python_api/utils/audio_dataset_generator/index.html"><span class="doc std std-doc">AudioDatasetGenerator API Reference</span></a> - View the Python API reference</p></li>
+<li><p><a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/utils/audio_dataset_generator/examples/alexa_dataset_generator.py">Alexa Dataset Generation Example</a> - View the example Python script to generate an “Alexa” dataset</p></li>
+</ul>
+</section>
+<section id="content">
+<h2 id="content">Content<a class="headerlink" href="#content" title="Permalink to this headline">¶</a></h2>
+<p>This tutorial is divided into the following sections:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#overview"><span class="std std-doc">Basic overview</span></a></p></li>
+<li><p><a class="reference internal" href="#google-cloud-platform-gcp-setup"><span class="std std-doc">Google Cloud setup</span></a></p></li>
+<li><p><a class="reference internal" href="#microsoft-azure-setup"><span class="std std-doc">Microsoft Cloud setup</span></a></p></li>
+<li><p><a class="reference internal" href="#amazon-web-services-aws-setup"><span class="std std-doc">Amazon Cloud setup</span></a></p></li>
+<li><p><a class="reference internal" href="#alexa-example"><span class="std std-doc">Example script for generating an “Alexa” dataset</span></a></p></li>
+</ul>
+</section>
+<section id="overview">
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>A quality keyword spotting dataset should have the following characteristics:</p>
+<ul class="simple">
+<li><p><strong>Lots of samples</strong> - At least 3k+ samples for each keyword (10-100k+ is recommended)</p></li>
+<li><p><strong>Lots of different voices</strong> - The more people speaking the keywords the better as this will help account of different accents</p></li>
+<li><p><strong>Same voice, different pronunciations</strong> - The same speaker saying the keyword in different ways (e.g. fast, slow, “happy”, “sad”, “excited”, etc.)</p></li>
+<li><p><strong>Lots of negative samples</strong> - Words that are not the keyword(s) but sound similar or would be commonly heard in the field</p></li>
+</ul>
+<p>All of these characterisitics help to make a <em>representative</em> dataset, and the more representative the dataset (i.e. the more similar the data is to what would be heard in the field) the better the machine learning model will likely perform.</p>
+<section id="recording-real-people">
+<h3 id="recording-real-people">Recording real people<a class="headerlink" href="#recording-real-people" title="Permalink to this headline">¶</a></h3>
+<p>Ideally, the dataset would be generated by recording 5-50k+ different people saying the keyword(s) as this would help to make the most representative dataset.
+While 3rd-party services are available to aid with dataset generation they can be expensive ($20k+).</p>
+<p><strong>Pros</strong></p>
+<ul class="simple">
+<li><p>More representative samples</p></li>
+</ul>
+<p><strong>Cons</strong></p>
+<ul class="simple">
+<li><p>Expensive (time and money)</p></li>
+<li><p>Harder to generate “negative” samples (harder to record non-keywords)</p></li>
+<li><p>More data cleaning required (need to verify audio samples as humans make errors)</p></li>
+</ul>
+</section>
+<section id="synthetic-generation">
+<h3 id="synthetic-generation">Synthetic generation<a class="headerlink" href="#synthetic-generation" title="Permalink to this headline">¶</a></h3>
+<p>An alternative approach is to synthetically generate the audio samples using Text-to-Speech (TTS) services.
+Cloud services like <a class="reference external" href="https://cloud.google.com/text-to-speech">Google Cloud Platform (GCP)</a>, <a class="reference external" href="https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/text-to-speech">Microsoft (Azure)</a>, and <a class="reference external" href="https://aws.amazon.com/polly">Amazon Web Services (AWS)</a>
+allow for converting written text to audio samples. While these services are primarily intended for converting long strings of text they also work for single words.</p>
+<p>A major concern with this approach is that the generated audio samples would not be representative (i.e. they would sound too “robotic”), however, in many cases the audio generated by these TTS services sounds realistic thanks to <a class="reference external" href="https://ai.googleblog.com/2017/12/tacotron-2-generating-human-like-speech.html">new AI techniques</a>.</p>
+<p><strong>Pros</strong></p>
+<ul class="simple">
+<li><p>Less expensive (time and money)</p></li>
+<li><p>Easier to generate “negative” samples</p></li>
+<li><p>Little or no data cleaning required</p></li>
+</ul>
+<p><strong>Cons</strong></p>
+<ul class="simple">
+<li><p>Less representative samples (limited by the number of “voices” offered by the TTS services)</p></li>
+</ul>
+</section>
+<section id="note-about-synthetic-augmentations">
+<h3 id="note-about-synthetic-augmentations">Note about synthetic augmentations<a class="headerlink" href="#note-about-synthetic-augmentations" title="Permalink to this headline">¶</a></h3>
+<p>Many of the TTS services allow for augmenting the audio by adjusting the “pitch” or “speaking rate”. While this can help to increase the number of audio samples, these augmentations should be used sparingly as they do not fundamentally change the underlying audio. As such, a large number of samples with small increments in the augmentation settings will likely not help the machine learning model to generalize (in fact, they could cause the ML model to over fit the data).</p>
+</section>
+<section id="note-about-languages">
+<h3 id="note-about-languages">Note about languages<a class="headerlink" href="#note-about-languages" title="Permalink to this headline">¶</a></h3>
+<p>Each TTS service supports numerous different languages.
+While there are exceptions, it has been found that English keywords generated with different languages are still valid (e.g. English text generated with a Russian “voice” still sounds like a valid English audio sample with a Russian accent).
+This is very useful as it allows for generating keywords with different accents and thus allows for generating a more representative dataset.</p>
+<p>When using different languages, it is recommended to spot check the generated audio samples to ensure they’re valid.</p>
+</section>
+<section id="note-about-the-negative-class">
+<h3 id="note-about-the-negative-class">Note about the “negative” class<a class="headerlink" href="#note-about-the-negative-class" title="Permalink to this headline">¶</a></h3>
+<p>Training a machine learning model to detect a one or more keywords is (relatively) easy.
+The hard part is training a machine learning model to reliably detect the keywords <em>and</em> reject everything else.</p>
+<p>For example, consider a “smart” trashcan whose lid opens with the keyword “open” and closes with the keyword “close”.
+The trashcan should only react to those two keywords and ignore all other words and sounds (i.e. it should have a low false-positive rate).
+For this application, a low false-positive rate is critical otherwise the trashcan lid would be constantly opening/closing while having a conversation next to it.</p>
+<p>Training an ML model to trigger on the “open” and “close” keywords is fairly simple.
+The hard part is getting the ML model to ignore everything else (e.g. words like “opening”, “closet”, etc.).</p>
+<p>To help solve this problem, the dataset should have a large “negative” class – it should have lots of samples that sound similar to the keywords.
+Generating the negative samples is fairly trivial with synthetic dataset generation as it is just a matter of supplying the negative keywords to the generation script.</p>
+</section>
+<section id="note-about-cost">
+<h3 id="note-about-cost">Note about cost<a class="headerlink" href="#note-about-cost" title="Permalink to this headline">¶</a></h3>
+<p>While using the cloud TTS services is relatively cheap, <strong>they are NOT FREE!</strong></p>
+<p>These services typically charge per character that is sent to the generation request.
+The TTS services usually offer a certain number of free characters per month and then charge once the limit is exceeded.</p>
+<p>For instance, consider the <a class="reference external" href="https://cloud.google.com/text-to-speech/pricing">Google Text-to-Speech pricing table</a>  (as of January 2023, see their website for the latest prices):</p>
+<table>
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>Free per month</p></th>
+<th class="head"><p>Price after free usage limit is reached</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Standard (non-WaveNet, non-Neural2) voices</p></td>
+<td><p>0 to 4 million characters</p></td>
+<td><p>$0.000004 USD per character ($4.00 USD per 1 million characters)</p></td>
+</tr>
+<tr class="row-odd"><td><p>WaveNet voices</p></td>
+<td><p>0 to 1 million characters</p></td>
+<td><p>$0.000016 USD per character  ($16.00 USD per 1 million characters)</p></td>
+</tr>
+<tr class="row-even"><td><p>Neural2 voices</p></td>
+<td><p>0 to 1 million characters</p></td>
+<td><p>$0.000016 USD per character ($16.00 USD per 1 million characters)</p></td>
+</tr>
+</tbody>
+</table>
+<p>Even with this pricing, a lot of keyword audio samples may be generated for very little money.</p>
+<p><strong>NOTE:</strong> The number of characters sent is not only dependent on the length of the keyword but also on the audio markup language.</p>
+<p>For instance, the following is an example request sent to the Microsoft cloud:</p>
+<div class="highlight-xml notranslate"><div class="highlight"><pre><span></span><span class="nt">&lt;speak</span> <span class="na">version=</span><span class="s">"1.0"</span> <span class="na">xmlns=</span><span class="s">"http://www.w3.org/2001/10/synthesis"</span> <span class="na">xml:lang=</span><span class="s">"en-US"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;voice</span> <span class="na">name=</span><span class="s">"en-US-JennyNeural"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;mstts:express-as</span> <span class="na">style=</span><span class="s">"cheerful"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;prosody</span> <span class="na">rate=</span><span class="s">"fast"</span> <span class="na">pitch=</span><span class="s">"medium"</span><span class="nt">&gt;</span>
+                open
+            <span class="nt">&lt;/prosody&gt;</span>
+        <span class="nt">&lt;/mstts:express-as&gt;</span>
+    <span class="nt">&lt;/voice&gt;</span>
+<span class="nt">&lt;/speak&gt;</span>
+</pre></div>
+</div>
+<p>All of the characters in the request (minus the whitespace) contribute to the character count.</p>
+<p>To help determine the character counts, the MLTK features the API: <a class="reference external" href="../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.count_characters">AudioDatasetGenerator.count_characters</a></p>
+</section>
+</section>
+<section id="google-cloud-platform-gcp-setup">
+<h2 id="google-cloud-platform-gcp-setup">Google Cloud Platform (GCP) Setup<a class="headerlink" href="#google-cloud-platform-gcp-setup" title="Permalink to this headline">¶</a></h2>
+<p>From <a class="reference external" href="https://cloud.google.com/text-to-speech">Google Cloud Platform Text-to-Speech</a>:</p>
+<blockquote>
+<div><p>Convert text into natural-sounding speech using an API powered by the best of Google’s AI technologies.</p>
+</div></blockquote>
+<section id="features">
+<h3 id="features">Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Choose from <a class="reference external" href="https://cloud.google.com/text-to-speech/docs/voices">220+ voices across 40+ languages and variants</a></p></li>
+<li><p>New customers get $300 in free credits to spend on Text-to-Speech</p></li>
+</ul>
+</section>
+<section id="id1">
+<h3 id="id1">Quick Links<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://codelabs.developers.google.com/codelabs/cloud-text-speech-python3">Installation Instructions</a></p></li>
+<li><p><a class="reference external" href="https://cloud.google.com/text-to-speech#section-2">Live Demo</a></p></li>
+<li><p><a class="reference external" href="https://cloud.google.com/text-to-speech/pricing">Pricing</a></p></li>
+<li><p><a class="reference external" href="https://cloud.google.com/text-to-speech/quotas">Quotas</a></p></li>
+<li><p><a class="reference external" href="https://cloud.google.com/python/docs/reference/texttospeech/latest/google.cloud.texttospeech_v1beta1.services.text_to_speech.TextToSpeechClient">Python API Docs</a></p></li>
+</ul>
+</section>
+</section>
+<section id="microsoft-azure-setup">
+<h2 id="microsoft-azure-setup">Microsoft Azure Setup<a class="headerlink" href="#microsoft-azure-setup" title="Permalink to this headline">¶</a></h2>
+<p>From <a class="reference external" href="https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/text-to-speech">Microsoft Azure Text-to-Speech</a>:</p>
+<blockquote>
+<div><p>Text-to-speech enables your applications, tools, or devices to convert text into humanlike synthesized speech. The text-to-speech capability is also known as speech synthesis. Use humanlike prebuilt neural voices out of the box, or create a custom neural voice that’s unique to your product or brand.</p>
+</div></blockquote>
+<section id="id2">
+<h3 id="id2">Features<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>For a full list of supported voices, languages, and locales, see Language and voice support for the <a class="reference external" href="https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=stt-tts">Speech service</a></p></li>
+<li><p>New customers get $200 in free credits to spend on Text-to-Speech</p></li>
+</ul>
+</section>
+<section id="id3">
+<h3 id="id3">Quick Links<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-text-to-speech?pivots=programming-language-python">Installation Instructions</a></p></li>
+<li><p><a class="reference external" href="https://azure.microsoft.com/en-us/products/cognitive-services/text-to-speech/#features">Live Demo</a></p></li>
+<li><p><a class="reference external" href="https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-services">Pricing</a></p></li>
+<li><p><a class="reference external" href="https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/speech-services-quotas-and-limits">Quotas</a></p></li>
+<li><p><a class="reference external" href="https://learn.microsoft.com/en-us/python/api/azure-cognitiveservices-speech/azure.cognitiveservices.speech.speechsynthesizer?view=azure-python">Python API Docs</a></p></li>
+</ul>
+</section>
+</section>
+<section id="amazon-web-services-aws-setup">
+<h2 id="amazon-web-services-aws-setup">Amazon Web Services (AWS) Setup<a class="headerlink" href="#amazon-web-services-aws-setup" title="Permalink to this headline">¶</a></h2>
+<p>From <a class="reference external" href="https://docs.aws.amazon.com/polly/latest/dg/what-is.html">Amazon Polly</a></p>
+<blockquote>
+<div><p>Amazon Polly is a cloud service that converts text into lifelike speech. You can use Amazon Polly to develop applications that increase engagement and accessibility. Amazon Polly supports multiple languages and includes a variety of lifelike voices, so you can build speech-enabled applications that work in multiple locations and use the ideal voice for your customers. With Amazon Polly, you only pay for the text you synthesize.</p>
+</div></blockquote>
+<section id="id4">
+<h3 id="id4">Quick Links<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.aws.amazon.com/polly/latest/dg/get-started-what-next.html">Installation Instructions</a></p></li>
+<li><p><a class="reference external" href="https://us-east-1.console.aws.amazon.com/polly/home/SynthesizeSpeech">Live Demo</a></p></li>
+<li><p><a class="reference external" href="https://aws.amazon.com/polly/pricing">Pricing</a></p></li>
+<li><p><a class="reference external" href="https://docs.aws.amazon.com/general/latest/gr/pol.html">Quotas</a></p></li>
+<li><p><a class="reference external" href="https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/polly.html">Python API Docs</a></p></li>
+</ul>
+</section>
+</section>
+<section id="alexa-example">
+<h2 id="alexa-example">Alexa Example<a class="headerlink" href="#alexa-example" title="Permalink to this headline">¶</a></h2>
+<p>The MLTK features the Python package: <a class="reference internal" href="../../docs/python_api/utils/audio_dataset_generator/index.html"><span class="doc std std-doc">AudioDatasetGenerator</span></a> which allows for generating a synthetic keyword dataset using the Google, Microsoft, and Amazon clouds.</p>
+<p>The Python script: <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/utils/audio_dataset_generator/examples/alexa_dataset_generator.py">alexa_dataset_generator.py</a> demonstrates how to use this Python package to generate a synthetic “Alexa” dataset.</p>
+<p>The following provides more details about this script.</p>
+<p><strong>NOTE:</strong> Click <a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/tutorials/synthetic_audio_dataset_generation.ipynb">HERE</a> to execute the following code in your web-browser</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the MLTK Python package into the local Notebook environment</span>
+<span class="o">%</span><span class="k">pip</span> install silabs-mltk --upgrade
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import the necessary Python packages</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">tqdm</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">mltk.utils.audio_dataset_generator</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">AudioDatasetGenerator</span><span class="p">,</span>
+    <span class="n">Keyword</span><span class="p">,</span>
+    <span class="n">Augmentation</span><span class="p">,</span>
+    <span class="n">VoiceRate</span><span class="p">,</span>
+    <span class="n">VoicePitch</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># NOTE: The following credentials are provided as an example.</span>
+<span class="c1">#       You must generate your own credentials to run this example</span>
+
+<span class="c1">###################################################################################################</span>
+<span class="c1"># Configure your Azure credentials</span>
+<span class="c1"># See: https://learn.microsoft.com/en-us/azure/cognitive-services/speech-service/get-started-text-to-speech?pivots=programming-language-python</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'SPEECH_KEY'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'e8699507e7c04a4cb8afdba62986987c'</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'SPEECH_REGION'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'westus2'</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###################################################################################################</span>
+<span class="c1"># Configure your Google credentials</span>
+<span class="c1"># See: https://codelabs.developers.google.com/codelabs/cloud-text-speech-python3</span>
+
+<span class="c1"># NOTE: The "serivce account" JSON was copied into this Python script for demonstration purposes.</span>
+<span class="c1">#       You could also just set GOOGLE_APPLICATION_CREDENTIALS to point to your service account .json file and</span>
+<span class="c1">#       and remove the following.</span>
+<span class="c1">#</span>
+<span class="c1">#       If you do copy and paste into this script, be sure that the "private_key" is on a single line, e.g.:</span>
+<span class="c1">#       "private_key_id": ...,</span>
+<span class="c1">#       "private_key": "-----BEGIN PRIVATE KEY---- ....",</span>
+<span class="c1">#       "client_email":  ...,</span>
+<span class="c1">#</span>
+<span class="c1">#       NOT:</span>
+<span class="c1">#</span>
+<span class="c1">#       "private_key": "-----BEGIN PRIVATE KEY--- ...</span>
+<span class="c1">#       NEB6Y5ZODG2DYJmM+JdAHcNaPRD9/hAMRG3jl2jisVZO ...</span>
+<span class="c1">#       03aEXJYOEWTbLWfPYxpNQyz4wKBgQDD+yVYWCrbXEECn ...</span>
+<span class="c1">#       ... -----END PRIVATE KEY-----\n",</span>
+<span class="c1">#       "client_email": ...,</span>
+<span class="c1">#       "client_id": ...,</span>
+<span class="c1">#</span>
+<span class="n">gcp_service_account_json_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">()</span><span class="si">}</span><span class="s1">/gcp_key.json'</span>
+<span class="n">gcp_service_account_json</span> <span class="o">=</span> <span class="s2">"""</span>
+<span class="s2">{</span>
+<span class="s2">  "type": "service_account",</span>
+<span class="s2">  "project_id": "strange-firefly-374023",</span>
+<span class="s2">  "private_key_id": "8e074b2dc4da026810d6b728e1588e79a745a08c",</span>
+<span class="s2">  "private_key": "-----BEGIN PRIVATE KEY-----</span><span class="se">\n</span><span class="s2">MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCuQ4FpO6IlIB78</span><span class="se">\n</span><span class="s2">mHYRHb1Ei2PCEgtthRlXbQwE6RsWppTtopQVpLSBXs30FRarpd6d4hgqeL46gC2d</span><span class="se">\n</span><span class="s2">CRHH8oMrgKMB4pAGzHCEfJd/XjKckNsyIPLTqGBjAu3pT/wMukIHdYiYzDD6qjr3</span><span class="se">\n</span><span class="s2">uGghP8HkT1gXgcGdFkpLWVoj9b3M6b5/3cVgBthciycCCYkHqnFOn6MTEe6OFMPZ</span><span class="se">\n</span><span class="s2">WXY3FrEwyWjIWIIIvPbQaNoIJs92Gb+FFGsG2Ta63TgsZmBvVHjtd3A98EwmvwSz</span><span class="se">\n</span><span class="s2">bIPXjqh5qLh3YCHdGT42MqBXrInN11kMyOC56A2Ic4mvrQ3I8oAPOs2L6ugLwX9J</span><span class="se">\n</span><span class="s2">S6Sq5JW1AgMBAAECggEAT7pS2vKNnK61fpvCaNJSZangWkonMFRU48rgVN7RpetQ</span><span class="se">\n</span><span class="s2">9+gKGFziuM3HLIT5ek7JKzLmG4higCFkvRQJLpGlsaGI8rPVcUbXs8XNCljujvM3</span><span class="se">\n</span><span class="s2">Vhf9ARln/+S3NKeDic8tpnv/oujI/+YiVHPqMEwbSXmDtD2Jd3VbSF34/7rOu5Dz</span><span class="se">\n</span><span class="s2">56bGmBbNEB6Y5ZODG2DYJmM+JdAHcNaPRD9/hAMRG3jl2jisVZOgrleNelkZnrPe</span><span class="se">\n</span><span class="s2">9t0uWqIv5EJItoVBZd+EzADFfjfTDrKfWv1QixeMiak1aTbs5bHKNK5ecYFFMpms</span><span class="se">\n</span><span class="s2">CIVgp3wRxq7nFrJkTnWdJzeAFjQw4CKWLmN4xc2FgQKBgQDjobnxjGO7GQ1pfEiQ</span><span class="se">\n</span><span class="s2">VsSuWJiXy63trU6jwrrhR1B9XUPh6VivH2dZ4lPfPywER9LX6oMTn6AIzihTPq1I</span><span class="se">\n</span><span class="s2">19eskH0H6hwBw2yDzWgHZRMHB9xs5Ys+HiBKWrZ9NW77uWH1D9g/EJcN6A2ZL2ig</span><span class="se">\n</span><span class="s2">K03aEXJYOEWTbLWfPYxpNQyz4wKBgQDD+yVYWCrbXEECnA0fohw8wIRo6dS6G84M</span><span class="se">\n</span><span class="s2">MCzkr0YooxPb8zrIIm+mv7PAcCElaSz4LZbC2Hcb1mvV9p6o2IEUHqNgabWLFWiD</span><span class="se">\n</span><span class="s2">g7CC7rm4qEE87p5U4oBUhPCiuZpA3UeAqBhxMWd1oXw5rJVXenNe+7G4JZKxERU/</span><span class="se">\n</span><span class="s2">QIf7cw6zhwKBgBy5dctjWdpsSOL8yfNc36jYiTjufN43Nms30XlIFIIdWMmTNpuy</span><span class="se">\n</span><span class="s2">rMoM42SShi1sGtEgSLYbOIij6zbF+/vrMM4X1Y9AHZSjYngnXW9Bc+s5NLmRJccK</span><span class="se">\n</span><span class="s2">6iw30jtumLivJgtUmocqwsUAeWbRMrSzgjl4ZiN3xl/aIfkcPTGxfg7dAoGAVz6b</span><span class="se">\n</span><span class="s2">jmuZkJPOIRJFSVrKhUUS7P2DhOJR5N0hbyCT9A09DwKFnYiu+aWHqNiB+PyMV2M8</span><span class="se">\n</span><span class="s2">JTtmMs9OrC6gzPus4r8M7iPA/Myn/TwHvRH3PbwxZqW3eIRoqrePxHEpuUyIwz6R</span><span class="se">\n</span><span class="s2">uvpKW3RrL+WjihDqAVO89wRK/GZldgYNQyQiXEsCgYEAj+8nsq1UGod7SqfPiA/n</span><span class="se">\n</span><span class="s2">3Wur4A+UYT8/nuaTK2WW/GTBC+eDDjRE1lZ3f/UQGTSXLSV7T1mw4a7EKrkFl36P</span><span class="se">\n</span><span class="s2">LnVeFBTB3UCd8JJ0LPBtOqru9I8ns+a4FqOPMljoYElGtyT1Oy+vxfwYA7cmRz/d</span><span class="se">\n</span><span class="s2">49bE21meuV3pRV1QWrrteEM=</span><span class="se">\n</span><span class="s2">-----END PRIVATE KEY-----</span><span class="se">\n</span><span class="s2">",</span>
+<span class="s2">  "client_email": "my-tts-sa@strange-firefly-374023.iam.gserviceaccount.com",</span>
+<span class="s2">  "client_id": "109154742213348109867",</span>
+<span class="s2">  "auth_uri": "https://accounts.google.com/o/oauth2/auth",</span>
+<span class="s2">  "token_uri": "https://oauth2.googleapis.com/token",</span>
+<span class="s2">  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",</span>
+<span class="s2">  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/my-tts-sa</span><span class="si">%40s</span><span class="s2">trange-firefly-374023.iam.gserviceaccount.com"</span>
+<span class="s2">}</span>
+<span class="s2">"""</span>
+<span class="n">gcp_service_account_json</span> <span class="o">=</span> <span class="n">gcp_service_account_json</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">',</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="s1">','</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\\</span><span class="s1">n'</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'{</span><span class="se">\\</span><span class="s1">n'</span><span class="p">,</span> <span class="s1">'{</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\\</span><span class="s1">n}'</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">}'</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">gcp_service_account_json_path</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">gcp_service_account_json</span><span class="p">)</span>
+
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'GOOGLE_APPLICATION_CREDENTIALS'</span><span class="p">]</span> <span class="o">=</span> <span class="n">gcp_service_account_json_path</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'GOOGLE_APPLICATION_CREDENTIALS'</span><span class="p">],</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">credentials</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'PROJECT_ID'</span><span class="p">]</span> <span class="o">=</span> <span class="n">credentials</span><span class="p">[</span><span class="s1">'project_id'</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###################################################################################################</span>
+<span class="c1"># Configure your AWS credentials</span>
+<span class="c1"># See: https://docs.aws.amazon.com/polly/latest/dg/get-started-what-next.html</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'AWS_ACCESS_KEY_ID'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'AKIATZWWZR5TWBUNF6IX'</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'AWS_SECRET_ACCESS_KEY'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'v0IRHPUGeNwj1CA7saVduF1uxW84bgkzQpOWLfdr'</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">'AWS_DEFAULT_REGION'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'us-west-2'</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###################################################################################################</span>
+<span class="c1"># Define the directory where the dataset will be generated</span>
+<span class="n">OUT_DIR</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">tempfile</span><span class="o">.</span><span class="n">gettempdir</span><span class="p">()</span><span class="si">}</span><span class="s1">/alexa_dataset'</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\\</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###################################################################################################</span>
+<span class="c1"># Define the keywords and corresponding aliases to generate</span>
+<span class="c1"># For the _unknown_ class (e.g. negative class), we want words that sound similar to "alexa".</span>
+<span class="c1"># NOTE: If the base word starts with an underscore, it is not included in the generation list.</span>
+<span class="c1"># So the generation list will be:</span>
+<span class="c1"># alexa, ehlexa, eelexa, aalexa</span>
+<span class="c1"># ah, aag, a, o, uh, ...</span>
+<span class="c1">#</span>
+<span class="c1"># The dataset will have the directory structure:</span>
+<span class="c1"># $TEMP/alexa_dataset/alexa/sample1.wav</span>
+<span class="c1"># $TEMP/alexa_dataset/alexa/sample2.wav</span>
+<span class="c1"># $TEMP/alexa_dataset/alexa/...</span>
+<span class="c1"># $TEMP/alexa_dataset/_unknown_/sample1.wav</span>
+<span class="c1"># $TEMP/alexa_dataset/_unknown_/sample2.wav</span>
+<span class="c1"># $TEMP/alexa_dataset/_unknown_/...</span>
+<span class="n">KEYWORDS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Keyword</span><span class="p">(</span><span class="s1">'alexa'</span><span class="p">,</span>
+        <span class="n">max_count</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="c1"># In practice, the max count should be much larger (e.g. 10000)</span>
+        <span class="n">aliases</span><span class="o">=</span><span class="p">(</span><span class="s1">'ehlexa'</span><span class="p">,</span> <span class="s1">'eelexa'</span><span class="p">,</span> <span class="s1">'aalexa'</span><span class="p">)</span>
+    <span class="p">),</span>
+    <span class="n">Keyword</span><span class="p">(</span><span class="s1">'_unknown_'</span><span class="p">,</span>
+        <span class="n">max_count</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="c1"># In practice, the max count should be much larger (e.g. 20000)</span>
+        <span class="n">aliases</span><span class="o">=</span><span class="p">(</span>
+        <span class="s1">'ah'</span><span class="p">,</span> <span class="s1">'aah'</span><span class="p">,</span> <span class="s1">'a'</span><span class="p">,</span> <span class="s1">'o'</span><span class="p">,</span> <span class="s1">'uh'</span><span class="p">,</span> <span class="s1">'ee'</span><span class="p">,</span> <span class="s1">'aww'</span><span class="p">,</span> <span class="s1">'ala'</span><span class="p">,</span>
+        <span class="s1">'alex'</span><span class="p">,</span> <span class="s1">'lex'</span><span class="p">,</span> <span class="s1">'lexa'</span><span class="p">,</span> <span class="s1">'lexus'</span><span class="p">,</span> <span class="s1">'alexus'</span><span class="p">,</span> <span class="s1">'exus'</span><span class="p">,</span> <span class="s1">'exa'</span><span class="p">,</span>
+        <span class="s1">'alert'</span><span class="p">,</span> <span class="s1">'alec'</span><span class="p">,</span> <span class="s1">'alef'</span><span class="p">,</span> <span class="s1">'alee'</span><span class="p">,</span> <span class="s1">'ales'</span><span class="p">,</span> <span class="s1">'ale'</span><span class="p">,</span>
+        <span class="s1">'aleph'</span><span class="p">,</span> <span class="s1">'alefs'</span><span class="p">,</span> <span class="s1">'alevin'</span><span class="p">,</span> <span class="s1">'alegar'</span><span class="p">,</span> <span class="s1">'alexia'</span><span class="p">,</span>
+        <span class="s1">'alexin'</span><span class="p">,</span> <span class="s1">'alexine'</span><span class="p">,</span> <span class="s1">'alencon'</span><span class="p">,</span> <span class="s1">'alexias'</span><span class="p">,</span>
+        <span class="s1">'aleuron'</span><span class="p">,</span> <span class="s1">'alembic'</span><span class="p">,</span> <span class="s1">'alice'</span><span class="p">,</span> <span class="s1">'aleeyah'</span>
+    <span class="p">))</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###################################################################################################</span>
+<span class="c1"># Define the augmentations to apply the keywords</span>
+<span class="n">AUGMENTATIONS</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">Augmentation</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">VoiceRate</span><span class="o">.</span><span class="n">xslow</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">VoicePitch</span><span class="o">.</span><span class="n">low</span><span class="p">),</span>
+    <span class="n">Augmentation</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">VoiceRate</span><span class="o">.</span><span class="n">xslow</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">VoicePitch</span><span class="o">.</span><span class="n">medium</span><span class="p">),</span>
+    <span class="n">Augmentation</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">VoiceRate</span><span class="o">.</span><span class="n">xslow</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">VoicePitch</span><span class="o">.</span><span class="n">high</span><span class="p">),</span>
+    <span class="n">Augmentation</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">VoiceRate</span><span class="o">.</span><span class="n">medium</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">VoicePitch</span><span class="o">.</span><span class="n">low</span><span class="p">),</span>
+    <span class="n">Augmentation</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">VoiceRate</span><span class="o">.</span><span class="n">medium</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">VoicePitch</span><span class="o">.</span><span class="n">medium</span><span class="p">),</span>
+    <span class="n">Augmentation</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">VoiceRate</span><span class="o">.</span><span class="n">medium</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">VoicePitch</span><span class="o">.</span><span class="n">high</span><span class="p">),</span>
+    <span class="n">Augmentation</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">VoiceRate</span><span class="o">.</span><span class="n">xfast</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">VoicePitch</span><span class="o">.</span><span class="n">low</span><span class="p">),</span>
+    <span class="n">Augmentation</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">VoiceRate</span><span class="o">.</span><span class="n">xfast</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">VoicePitch</span><span class="o">.</span><span class="n">medium</span><span class="p">),</span>
+    <span class="n">Augmentation</span><span class="p">(</span><span class="n">rate</span><span class="o">=</span><span class="n">VoiceRate</span><span class="o">.</span><span class="n">xfast</span><span class="p">,</span> <span class="n">pitch</span><span class="o">=</span><span class="n">VoicePitch</span><span class="o">.</span><span class="n">high</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">###################################################################################################</span>
+<span class="c1"># Instantiate the AudioDatasetGenerator</span>
+<span class="k">with</span> <span class="n">AudioDatasetGenerator</span><span class="p">(</span>
+    <span class="n">out_dir</span><span class="o">=</span><span class="n">OUT_DIR</span><span class="p">,</span>
+    <span class="n">n_jobs</span><span class="o">=</span><span class="mi">8</span> <span class="c1"># We want to generate the keywords across 8 parallel jobs</span>
+<span class="p">)</span> <span class="k">as</span> <span class="n">generator</span><span class="p">:</span>
+    <span class="c1"># Load the cloud backends, installing the Python packages if necessary</span>
+    <span class="n">generator</span><span class="o">.</span><span class="n">load_backend</span><span class="p">(</span><span class="s1">'aws'</span><span class="p">,</span> <span class="n">install_python_package</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">generator</span><span class="o">.</span><span class="n">load_backend</span><span class="p">(</span><span class="s1">'gcp'</span><span class="p">,</span> <span class="n">install_python_package</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">generator</span><span class="o">.</span><span class="n">load_backend</span><span class="p">(</span><span class="s1">'azure'</span><span class="p">,</span> <span class="n">install_python_package</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Listing voices ...'</span><span class="p">)</span>
+    <span class="n">voices</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">list_voices</span><span class="p">()</span>
+
+    <span class="c1"># Generate a list of all possible configurations, randomly shuffle, then truncate</span>
+    <span class="c1"># based on the "max_count" specified for each keyword</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Listing configurations ...'</span><span class="p">)</span>
+    <span class="n">all_configurations</span> <span class="o">=</span> <span class="n">generator</span><span class="o">.</span><span class="n">list_configurations</span><span class="p">(</span>
+        <span class="n">keywords</span><span class="o">=</span><span class="n">KEYWORDS</span><span class="p">,</span>
+        <span class="n">augmentations</span><span class="o">=</span><span class="n">AUGMENTATIONS</span><span class="p">,</span>
+        <span class="n">voices</span><span class="o">=</span><span class="n">voices</span><span class="p">,</span>
+        <span class="n">truncate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">seed</span><span class="o">=</span><span class="mi">42</span>
+    <span class="p">)</span>
+    <span class="n">n_configs</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">all_configurations</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="c1"># Print a summary of the configurations</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">generator</span><span class="o">.</span><span class="n">get_summary</span><span class="p">(</span><span class="n">all_configurations</span><span class="p">))</span>
+
+    <span class="nb">input</span><span class="p">(</span>
+        <span class="s1">'</span><span class="se">\n</span><span class="s1">WARNING: Running this script is NOT FREE!</span><span class="se">\n\n</span><span class="s1">'</span>
+        <span class="s1">'Each cloud backend charges a different rate per character.</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'The character counts are listed above.</span><span class="se">\n\n</span><span class="s1">'</span>
+        <span class="s1">'Refer to each backend</span><span class="se">\'</span><span class="s1">s docs for the latest pricing:</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'- AWS: https://aws.amazon.com/polly/pricing</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'- Azure: https://azure.microsoft.com/en-us/pricing/details/cognitive-services/speech-services</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'- Google: https://cloud.google.com/text-to-speech/pricing</span><span class="se">\n</span><span class="s1">'</span>
+        <span class="s1">'</span><span class="se">\n</span><span class="s1">Press "enter" to continue and generate the dataset</span><span class="se">\n</span><span class="s1">'</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Generate the dataset (with pretty progress bars)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating keywords at: </span><span class="si">{</span><span class="n">generator</span><span class="o">.</span><span class="n">out_dir</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">total</span><span class="o">=</span><span class="n">n_configs</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">'Overall'</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s1">'word'</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="k">as</span> <span class="n">pb_outer</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">config_list</span> <span class="ow">in</span> <span class="n">all_configurations</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">with</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">desc</span><span class="o">=</span><span class="n">keyword</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">rjust</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">total</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">config_list</span><span class="p">),</span> <span class="n">unit</span><span class="o">=</span><span class="s1">'word'</span><span class="p">,</span> <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="k">as</span> <span class="n">pb_inner</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">config</span> <span class="ow">in</span> <span class="n">config_list</span><span class="p">:</span>
+                    <span class="n">generator</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span>
+                        <span class="n">config</span><span class="p">,</span>
+                        <span class="n">on_finished</span><span class="o">=</span><span class="k">lambda</span> <span class="n">_</span><span class="p">:</span> <span class="p">(</span><span class="n">pb_inner</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">pb_outer</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="p">)</span>
+                <span class="n">generator</span><span class="o">.</span><span class="n">join</span><span class="p">()</span> <span class="c1"># Wait for the current keyword to finish before continuing to the next</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Listing voices ...
+Listing configurations ...
+Voice Counts
+---------------------
+  aws   : 21
+  azure : 112
+  gcp   : 96
+  Total : 229
+
+Keyword Counts
+---------------------
+  alexa:
+    aws   : 8.0
+    azure : 60.0
+    gcp   : 32.0
+    Total : 100.0
+  _unknown_:
+    azure : 105.0
+    gcp   : 80.0
+    aws   : 15.0
+    Total : 200.0
+  Overall total: 300.0
+
+Character Counts
+---------------------
+  alexa:
+    aws   : 394.0
+    azure : 10.8k
+    gcp   : 184.0
+  _unknown_:
+    azure : 19.8k
+    gcp   : 369.0
+    aws   : 623.0
+  Backend totals:
+    aws   : 1.0k
+    azure : 30.6k
+    gcp   : 553.0
+
+Generating keywords at: E://alexa_dataset\n
+</pre></div>
+</div>
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>     alexa: 100%|██████████| 100/100 [00:07&lt;00:00, 13.52word/s]
+ _unknown_: 100%|██████████| 200/200 [00:12&lt;00:00, 16.17word/s]
+   Overall: 100%|██████████| 300/300 [00:19&lt;00:00, 15.17word/s]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Convert the generated dataset directory into an archive (.tar.gz)</span>
+<span class="kn">from</span> <span class="nn">mltk.utils.archive</span> <span class="kn">import</span> <span class="n">gzip_directory_files</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating archive from </span><span class="si">{</span><span class="n">OUT_DIR</span><span class="si">}</span><span class="s1"> (this may take awhile) ...'</span><span class="p">)</span>
+<span class="n">archive_path</span> <span class="o">=</span> <span class="n">gzip_directory_files</span><span class="p">(</span><span class="n">OUT_DIR</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Dataset archive path: </span><span class="si">{</span><span class="n">archive_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+  <span class="c1"># If this is executing from Google Colab, then download the dataset archive</span>
+  <span class="kn">from</span> <span class="nn">google.colab</span> <span class="kn">import</span> <span class="n">files</span>
+  <span class="n">files</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="n">archive_path</span><span class="p">)</span>
+<span class="k">except</span><span class="p">:</span>
+  <span class="k">pass</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="next-steps">
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this headline">¶</a></h2>
+<p>See the <a class="reference internal" href="keyword_spotting_alexa.html"><span class="doc std std-doc">Keyword Spotting - Alexa</span></a> tutorial for how to use this dataset to train a keyword spotting model.</p>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="add_existing_script_to_mltk.html" title="Add an Existing Script to the MLTK"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Add an Existing Script to the MLTK </span>
+              </div>
+            </a>
+          
+          
+            <a href="../../docs/examples.html" title="API Examples"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> API Examples </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2022, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Jan 09, 2023.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <div class="survey-link" id="dlg-survey-link"> 
+    <div>We need your feedback!</div>
+    <div>
+        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
+    </div>
+</div>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> We use cookies only for functional and traffic analytics. <br />
+        We DO NOT use cookies for any marketing purposes. By using our site you acknowledge you have read and understood our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>.
+      </p>
+      <a class="privacy-banner-accept" href="#">Got it</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>Common Model Architectures &#8212; MLTK 0.13.0 documentation</title>
+    <title>Common Model Architectures &#8212; MLTK 0.14.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
@@ -84,7 +84,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="Reference Datasets" href="../datasets/index.html" />
-    <link rel="prev" title="tflite_micro_speech" href="tflite_micro/tflite_micro_speech.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="tflite_micro/tflite_micro_speech.html" />
   
    
 
@@ -108,11 +108,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.13.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.14.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.13.0 documentation logo">
+                   alt="MLTK 0.14.0 documentation logo">
           
         </a>
       </div>
@@ -203,13 +203,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -352,6 +352,8 @@
         <li class="md-nav__item"><a href="#mobilenet-v2" class="md-nav__link">MobileNet v2</a>
         </li>
         <li class="md-nav__item"><a href="#resnetv1-10" class="md-nav__link">ResNetv1-10</a>
+        </li>
+        <li class="md-nav__item"><a href="#tenet" class="md-nav__link">TENet</a>
         </li></ul>
             </nav>
         </li>
@@ -482,6 +484,8 @@
         <li class="md-nav__item"><a href="#mobilenet-v2" class="md-nav__link">MobileNet v2</a>
         </li>
         <li class="md-nav__item"><a href="#resnetv1-10" class="md-nav__link">ResNetv1-10</a>
+        </li>
+        <li class="md-nav__item"><a href="#tenet" class="md-nav__link">TENet</a>
         </li></ul>
             </nav>
         </li>
@@ -694,6 +698,45 @@ this value must be decreased  (&lt; 1024) to be fully optimized by the MVP harda
 </dl>
 </dd></dl>
 </section>
+<section id="tenet">
+<h2 id="tenet">TENet<a class="headerlink" href="#tenet" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mltk.models.shared.tenet.TENet">
+<span class="sig-prename descclassname"><span class="pre">mltk.models.shared.tenet.</span></span><span class="sig-name descname"><span class="pre">TENet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">classes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">32</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocks</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scales</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[9]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">channel_increase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/models/shared/tenet.html#TENet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.models.shared.tenet.TENet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temporal efficient neural network (TENet)</p>
+<p>A network for processing spectrogram data using temporal and depthwise convolutions.
+The network treats the [T, F] spectrogram as a timeseries shaped [T, 1, F].</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When building the model, make sure that the input shape is concrete,
+i.e. explicitly reshape the samples to [T, 1, F] in the preprocessing pipeline.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://arxiv.org/pdf/2010.09960.pdf">https://arxiv.org/pdf/2010.09960.pdf</a></p></li>
+</ul>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>classes</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of classes the network is built to categorize</p></li>
+<li><p><strong>channels</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Base number of channels in the network</p></li>
+<li><p><strong>blocks</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of (StridedIBB -&gt; IBB -&gt; …) blocks in the networks</p></li>
+<li><p><strong>block_depth</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Number of IBBs inside each (StridedIBB -&gt; IBB -&gt; …) block, including the strided IBB</p></li>
+<li><p><strong>scales</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – The multitemporal convolution filter widths. Should be odd numbers &gt;= 3.</p></li>
+<li><p><strong>channel_increase</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – If nonzero, the network increases the channel size each time there is a strided IBB block.
+The increase (each time) is given by <cite>channels * channel_increase</cite>.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Model</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+</section>
 </section>
 
 
@@ -707,7 +750,7 @@ this value must be decreased  (&lt; 1024) to be fully optimized by the MVP harda
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
           
-            <a href="tflite_micro/tflite_micro_speech.html" title="tflite_micro_speech"
+            <a href="tflite_micro/tflite_micro_speech.html" title="&lt;no title&gt;"
                class="md-flex md-footer-nav__link md-footer-nav__link--prev"
                rel="prev">
               <div class="md-flex__cell md-flex__cell--shrink">
@@ -716,7 +759,7 @@ this value must be decreased  (&lt; 1024) to be fully optimized by the MVP harda
               <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
                 <span class="md-flex__ellipsis">
                   <span
-                      class="md-footer-nav__direction"> Previous </span> tflite_micro_speech </span>
+                      class="md-footer-nav__direction"> Previous </span> &lt;no title&gt; </span>
               </div>
             </a>
           
@@ -744,7 +787,7 @@ this value must be decreased  (&lt; 1024) to be fully optimized by the MVP harda
               
           </div>
             Last updated on
-              Nov 14, 2022.
+              Jan 09, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

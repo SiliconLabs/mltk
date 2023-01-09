@@ -148,7 +148,7 @@ endfunction()
 # Get a global variable
 #
 # key - Name of variable
-# 
+#
 # Options:
 # DEFAULT <value>  - Optional, value to set variable if it is not defined
 function(mltk_get key)
@@ -171,7 +171,7 @@ function(mltk_get key)
   else()
     get_property(_value GLOBAL PROPERTY ${key})
   endif()
-  
+
   if(DEFINED _value)
     set(${key} ${_value} PARENT_SCOPE)
   endif()
@@ -182,7 +182,7 @@ endfunction()
 #
 # Append a value to a global list variable
 # NOTE:
-# - Duplicates are automatically removed 
+# - Duplicates are automatically removed
 # - The updated list is locally available after this is invoked
 #
 # key - Variable key
@@ -217,7 +217,7 @@ endfunction()
 # mltk_contains
 #
 # Return if the given list contains the given target
-# NOTE: Comparsion is case-insensitive, the target can be a 
+# NOTE: Comparsion is case-insensitive, the target can be a
 # CMake list OR a comma-separated string
 #
 # key - Key of variable to searcch
@@ -279,7 +279,7 @@ function(mltk_define key description)
   else()
     get_property(_value GLOBAL PROPERTY ${key})
   endif()
-  
+
   if(${key}_is_set)
     set(${key} ${_value} PARENT_SCOPE)
   endif()
@@ -347,7 +347,7 @@ endfunction()
 ####################################################################
 # mltk_update_module_path
 #
-# Update the CMAKE_MODULE_PATH to enable finding packages 
+# Update the CMAKE_MODULE_PATH to enable finding packages
 # at the given directory via:
 # find_package()
 #
@@ -376,7 +376,7 @@ endmacro()
 # Append to the global C/C++ build defines.
 # The defines will be made available to ALL C/C++ source files
 #
-# NOTE: -D is automatically prepended to the defines. 
+# NOTE: -D is automatically prepended to the defines.
 #       See mltk_append_global_cxx_flags() to append flags
 #
 # defines - List of define to append
@@ -454,7 +454,7 @@ endfunction()
 #
 # Arguments:
 # package_name - The name of the package
-# package_path - Package to package relative to MLTK_CPP_DIR 
+# package_path - Package to package relative to MLTK_CPP_DIR
 #                OR absolute path which is treated as an external project
 #
 # Options:
@@ -541,7 +541,7 @@ mltk_set(MLTK_PLATFORM_NAME brd2601)\n \
   # If a platform target has NOT been specified
   if(NOT MLTK_PLATFORM)
     # IF the platform name HAS been specified
-    if(MLTK_PLATFORM_NAME) 
+    if(MLTK_PLATFORM_NAME)
       mltk_debug("Searching for platform: ${MLTK_PLATFORM_NAME}")
       mltk_find_package("^.*_platform_${MLTK_PLATFORM_NAME}$" REQUIRED FIND_ONLY TARGET_VARIABLE MLTK_PLATFORM)
     else()
@@ -588,7 +588,7 @@ mltk_set(MLTK_PLATFORM_NAME brd2601)\n \
       mltk_error("MLTK_PLATFORM_NAME=${MLTK_PLATFORM_NAME} but NOT using ARM toolchain, you probably need to switch toolchains or comment out MLTK_PLATFORM_NAME in user_options.cmake. You likely need to clean your build directory as well")
     endif()
     set(MLTK_PREVIOUS_PLATFORM_NAME ${MLTK_PLATFORM_NAME} CACHE STRING "Name of last built platform")
-    
+
     # Load any platform-specific settings
     if(COMMAND mltk_platform_load_options)
       mltk_debug("Loading platform options")
@@ -614,7 +614,7 @@ endmacro()
 # Then try to include the resolved target name with find_package()
 # otherwise manually include the subdirectory:
 # add_subdirectory(<found dir>)
-# 
+#
 # NOTE: <name> can be a CMake target or a regex for a target
 #
 # Arguments:
@@ -635,13 +635,14 @@ macro(mltk_find_package name)
   if(NOT ${name}_FOUND)
     # Else try to find the package using a Python script
     mltk_load_python()
+    mltk_get(MLTK_TARGET_PATH)
     execute_process(
-      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/find_package_with_target.py "${name}" --paths "${CMAKE_MODULE_PATH}" 
-      RESULT_VARIABLE result 
-      OUTPUT_VARIABLE target_and_dir    
-      OUTPUT_STRIP_TRAILING_WHITESPACE       
+      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/find_package_with_target.py "${name}" --paths "${CMAKE_MODULE_PATH}"
+      RESULT_VARIABLE result
+      OUTPUT_VARIABLE target_and_dir
+      OUTPUT_STRIP_TRAILING_WHITESPACE
     )
-    if(result) 
+    if(result)
       if(_ARGS_REQUIRED)
         mltk_error("Failed to find package in MLTK with target: ${name} Search paths: ${CMAKE_MODULE_PATH}")
       elseif(NOT _ARGS_QUIET)
@@ -653,7 +654,7 @@ macro(mltk_find_package name)
 
       if(NOT _ARGS_FIND_ONLY)
         mltk_debug("Including ${target} -> ${package_dir}")
-      
+
         # Try to find the package one more time using the resolved target
         find_package(${target} QUIET)
 
@@ -667,7 +668,7 @@ macro(mltk_find_package name)
       if(_ARGS_TARGET_VARIABLE)
         set(${_ARGS_TARGET_VARIABLE} ${target})
       endif()
-      
+
     endif()
   endif()
 endmacro()
@@ -683,7 +684,7 @@ endmacro()
 # to an embedded device.
 #
 # This should be called by each application's CMakeLists.txt
-# See cpp/hello_world/CMakieLists.txt 
+# See cpp/hello_world/CMakieLists.txt
 #
 # exe_target - Executable CMake target
 macro(mltk_add_exe_targets exe_target)
@@ -710,11 +711,13 @@ macro(mltk_load_python)
     mltk_get(MLTK_PYTHON_VENV_DIR)
     if(NOT MLTK_PYTHON_VENV_DIR)
       get_filename_component(MLTK_PYTHON_VENV_DIR ${MLTK_DIR}/../.venv ABSOLUTE)
+      mltk_debug("Using local MLTK_PYTHON_VENV_DIR=${MLTK_PYTHON_VENV_DIR}")
+    else()
+      mltk_debug("Using command-line MLTK_PYTHON_VENV_DIR=${MLTK_PYTHON_VENV_DIR}")
     endif()
 
     if(EXISTS "${MLTK_PYTHON_VENV_DIR}")
       # Ensure we find the Python in the virtual environment if one exists
-      mltk_debug("MLTK_PYTHON_VENV_DIR=${MLTK_PYTHON_VENV_DIR}")
       set(Python3_FIND_VIRTUALENV ONLY)
       set(Python3_FIND_STRATEGY LOCATION)
       set(Python3_FIND_REGISTRY NEVER)
@@ -723,6 +726,8 @@ macro(mltk_load_python)
       unset(Python3_FOUND) # Ensure Python is found again
       unset(Python3_Interpreter_FOUND)
       unset(Python3_EXECUTABLE)
+    elseif(NOT MLTK_ALLOW_EXTERNAL_PYTHON_EXECUTABLE)
+      mltk_warn("Directory not found: MLTK_PYTHON_VENV_DIR=${MLTK_PYTHON_VENV_DIR}")
     endif()
 
     find_package(Python3 REQUIRED)
@@ -732,12 +737,17 @@ macro(mltk_load_python)
     string(TOLOWER "${Python3_EXECUTABLE}" Python3_EXECUTABLE_lower)
     string(TOLOWER "${MLTK_PYTHON_VENV_DIR}" MLTK_PYTHON_VENV_DIR_lower)
     if(NOT MLTK_ALLOW_EXTERNAL_PYTHON_EXECUTABLE AND NOT "${Python3_EXECUTABLE_lower}" MATCHES "^${MLTK_PYTHON_VENV_DIR_lower}/.*")
-      get_filename_component(mltk_root_dir "${MLTK_DIR}/.." ABSOLUTE)
-      mltk_error("\n\nFailed to find the Python executable in ${MLTK_PYTHON_VENV_DIR}\nBe sure to first run:\npython ${mltk_root_dir}/install_mltk.py\nOr set the CMake variable: MLTK_ALLOW_EXTERNAL_PYTHON_EXECUTABLE=ON  (not recommended)\n\n")
+      # If the the compiler hasn't been set yet then we're likely in the toolchain.cmake
+      # in this case, just issue a warning
+      if(NOT CMAKE_C_COMPILER)
+        mltk_warn("\n\nFailed to find the Python executable in ${MLTK_PYTHON_VENV_DIR} (Python3_EXECUTABLE=${Python3_EXECUTABLE})\nBe sure to first run:\npython ${mltk_root_dir}/install_mltk.py\nOr set the CMake variable: MLTK_ALLOW_EXTERNAL_PYTHON_EXECUTABLE=ON  (not recommended)\n\n")
+      else()
+        mltk_error("\n\nFailed to find the Python executable in ${MLTK_PYTHON_VENV_DIR} (Python3_EXECUTABLE=${Python3_EXECUTABLE})\nBe sure to first run:\npython ${mltk_root_dir}/install_mltk.py\nOr set the CMake variable: MLTK_ALLOW_EXTERNAL_PYTHON_EXECUTABLE=ON  (not recommended)\n\n")
+      endif()
     endif()
 
     set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE} CACHE INTERNAL "Python executable path")
-    
+
   endif()
 endmacro()
 
@@ -782,7 +792,7 @@ endfunction()
 # and add them to the dst_target.
 #
 # dst_target - Target to add src_target's properties
-# src_target - Target or list of targets to recursively retrieve 
+# src_target - Target or list of targets to recursively retrieve
 #              INTERFACE_INCLUDE_DIRECTORIES and INFERFACE_COMPILE_ properties
 #
 # Options:
@@ -804,25 +814,25 @@ function(mltk_add_interface_compile_properties dst_target)
 
   mltk_get_recursive_properties(INTERFACE_INCLUDE_DIRECTORIES "${src_target}" _interface_props)
   target_include_directories(${dst_target}
-  ${VISIBLITY} 
+  ${VISIBLITY}
     ${_interface_props}
   )
 
   mltk_get_recursive_properties(INTERFACE_COMPILE_DEFINITIONS "${src_target}" _interface_props)
   target_compile_definitions(${dst_target}
-  ${VISIBLITY} 
+  ${VISIBLITY}
     ${_interface_props}
   )
 
   mltk_get_recursive_properties(INTERFACE_COMPILE_FEATURES "${src_target}" _interface_props)
   target_compile_features(${dst_target}
-  ${VISIBLITY} 
+  ${VISIBLITY}
     ${_interface_props}
   )
 
   mltk_get_recursive_properties(INTERFACE_COMPILE_OPTIONS "${src_target}" _interface_props)
   target_compile_options(${dst_target}
-  ${VISIBLITY} 
+  ${VISIBLITY}
     ${_interface_props}
   )
 
@@ -838,7 +848,7 @@ endfunction()
 # Adapted from:
 # https://cristianadam.eu/20190501/bundling-together-static-libraries-with-cmake/
 #
-# tgt_name - Name of CMake target to gather all static libraries 
+# tgt_name - Name of CMake target to gather all static libraries
 # bundled_tgt_name - Name of generated static library
 #
 # Options:
@@ -884,18 +894,18 @@ function(mltk_bundle_static_library tgt_name bundled_tgt_name)
   mltk_info("Bundling: ${static_libs}")
   set(tgt_location ${CMAKE_CURRENT_BINARY_DIR})
 
-  set(bundled_tgt_full_name 
+  set(bundled_tgt_full_name
     ${tgt_location}/${CMAKE_STATIC_LIBRARY_PREFIX}${bundled_tgt_name}${CMAKE_STATIC_LIBRARY_SUFFIX})
 
   if (CMAKE_CXX_COMPILER_ID MATCHES "^(Clang|GNU)$")
     file(WRITE ${tgt_location}/${bundled_tgt_name}.ar.in
       "CREATE ${bundled_tgt_full_name}\n" )
-        
+
     foreach(tgt IN LISTS static_libs)
       file(APPEND ${tgt_location}/${bundled_tgt_name}.ar.in
         "ADDLIB $<TARGET_FILE:${tgt}>\n")
     endforeach()
-    
+
     file(APPEND ${tgt_location}/${bundled_tgt_name}.ar.in "SAVE\n")
     file(APPEND ${tgt_location}/${bundled_tgt_name}.ar.in "END\n")
 
@@ -933,8 +943,8 @@ function(mltk_bundle_static_library tgt_name bundled_tgt_name)
   add_dependencies(${bundled_tgt_name}_generate ${tgt_name})
 
   add_library(${bundled_tgt_name} STATIC IMPORTED)
-  set_target_properties(${bundled_tgt_name} 
-    PROPERTIES 
+  set_target_properties(${bundled_tgt_name}
+    PROPERTIES
       IMPORTED_LOCATION ${bundled_tgt_full_name}
       INTERFACE_INCLUDE_DIRECTORIES $<TARGET_PROPERTY:${tgt_name},INTERFACE_INCLUDE_DIRECTORIES>)
   add_dependencies(${bundled_tgt_name} ${bundled_tgt_name}_generate)
@@ -972,7 +982,7 @@ macro(mltk_add_tflite_model target tflite_path)
   if(TFLITE_MICRO_ACCELERATOR)
     set(_accelerator_arg --accelerator ${TFLITE_MICRO_ACCELERATOR})
   endif()
-  
+
   add_custom_target(${target}_generate_model
       COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/generate_model_header.py "${tflite_path}" --name "sl_tflite_model_array" --length_name "sl_tflite_model_len" --output "${_generated_model_output_path}" ${_accelerator_arg}
       COMMENT "Generating ${target}_generated_model.tflite.c from ${tflite_path}"
@@ -981,7 +991,7 @@ macro(mltk_add_tflite_model target tflite_path)
   add_dependencies(${target} ${target}_generate_model)
 
   target_sources(${target}
-  PRIVATE 
+  PRIVATE
       ${_generated_model_output_path}
   )
   unset(_generated_model_output_path)

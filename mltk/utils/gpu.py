@@ -1,3 +1,8 @@
+"""GPU utilities
+
+See the source code on Github: `mltk/utils/gpu.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/gpu.py>`_
+"""
+
 import os
 import sys
 import re
@@ -39,13 +44,13 @@ def initialize(logger=None):
 
     selected_gpus = globals().get('selected_gpus', [])
     if selected_gpus:
-        return 
+        return
     globals()['selected_gpus'] = []
 
 
     CUDA_VISIBLE_DEVICES = get_user_setting(
-        'cuda_visible_devices', 
-            os.getenv('MLTK_CUDA_VISIBLE_DEVICES', 
+        'cuda_visible_devices',
+            os.getenv('MLTK_CUDA_VISIBLE_DEVICES',
                 os.getenv('CUDA_VISIBLE_DEVICES', '')
             )
         ).strip()
@@ -61,16 +66,16 @@ def initialize(logger=None):
     try:
         # %% Select available GPU
         import GPUtil
-        import tensorflow as tf 
+        import tensorflow as tf
 
         os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
         gpus = GPUtil.getGPUs()
-        
+
         if len(gpus) == 0:
             logger.info("No GPUs found, using CPU for training")
             os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
             return
-        
+
         logger.debug(f"Available GPUs:\n" + "\n".join([f"- {g.name} (id={g.id})" for g in gpus]))
 
         if not CUDA_VISIBLE_DEVICES:
@@ -84,8 +89,8 @@ def initialize(logger=None):
         elif CUDA_VISIBLE_DEVICES == 'all':
             logger.debug('Using all available GPUs')
             CUDA_VISIBLE_DEVICES = ','.join(str(x.id) for x in gpus)
-        
-        
+
+
         os.environ['CUDA_VISIBLE_DEVICES'] = CUDA_VISIBLE_DEVICES
 
         # Enable dynamic memory growth for GPU
@@ -95,7 +100,7 @@ def initialize(logger=None):
                 _print_warning_msg(logger)
                 deinitialize(force=True)
                 os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
-                return 
+                return
 
             gpu_ids = [int(x) for x in CUDA_VISIBLE_DEVICES.split(',')]
             for gpu_id in gpu_ids:
@@ -104,11 +109,11 @@ def initialize(logger=None):
                     if tf_gpu.name.endswith(f'GPU:{gpu_id}'):
                         tf.config.experimental.set_memory_growth(tf_gpu, True)
                         logger.info(f"Selecting GPU : {gpus[gpu_id].name} (id={gpu_id})")
-                
+
         except Exception as e:
             logger.debug(f'Error configuring GPU(s),  err: {e}')
 
-        # The TfLiteConverter adds a StreamHandler to the root logger, 
+        # The TfLiteConverter adds a StreamHandler to the root logger,
         # remove it so we don't double print everything to the console
         logging.getLogger().handlers.clear()
         atexit.register(deinitialize)
@@ -121,7 +126,7 @@ def initialize(logger=None):
         logger.info("Using CPU for training")
         deinitialize()
         os.environ['CUDA_VISIBLE_DEVICES'] = "-1"
-      
+
 
 
 def deinitialize(force=False):
@@ -161,9 +166,9 @@ def check_tensorflow_cuda_compatibility_error(log_file_path:str) -> str:
         with open(log_file_path, 'r') as f:
             log_lines = f.read().splitlines()
     except:
-        return None 
+        return None
 
-    required_tensorflow_version = None 
+    required_tensorflow_version = None
     invalid_gpu_driver = False
     cuda_error_re = re.compile(r'.*Loaded runtime CuDNN library: (\d+\.\d+\.\d+) but source was compiled with: (\d+\.\d+\.\d+).*')
     for line in log_lines:
@@ -173,11 +178,11 @@ def check_tensorflow_cuda_compatibility_error(log_file_path:str) -> str:
             expected_cudnn_ver = match.group(2)
             required_tensorflow_version = get_tensorflow_version_with_cudnn_version(installed_cudnn_ver)
         elif 'DNN library is not found' in line:
-            invalid_gpu_driver = True 
+            invalid_gpu_driver = True
 
 
     if not(required_tensorflow_version or invalid_gpu_driver):
-        return None 
+        return None
 
     def _current_python_version_supported(ver:TensorflowCudaVersions) -> bool:
         def _version_to_int(v):
@@ -210,12 +215,12 @@ def check_tensorflow_cuda_compatibility_error(log_file_path:str) -> str:
 
         retval += '\n'
 
-        count += 1 
+        count += 1
 
     retval += f'{count}. Update your GPU driver to match the installed Tensorflow version in the MLTK venv, see:\n'
     retval += '   https://www.tensorflow.org/install/gpu\n'
     retval += '   https://www.tensorflow.org/install/source#gpu\n\n'
-    count += 1 
+    count += 1
 
     retval += f'{count}. Disable the GPU by defining the environment variable: CUDA_VISIBLE_DEVICES=-1, e.g.:\n'
     if os.name == 'nt':

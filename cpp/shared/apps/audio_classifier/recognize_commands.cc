@@ -86,6 +86,7 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
       return kTfLiteError;
   }
 
+#ifndef AUDIO_IO_ENABLED
   if(VERBOSE_MODEL_OUTPUT_LOGS) {
     char buffer[256];
     char *ptr = buffer;
@@ -99,6 +100,7 @@ TfLiteStatus RecognizeCommands::ProcessLatestResults(
     puts(buffer);
     fflush(stdout);
   }
+#endif
 
 
   // If the min count is 0, then disable averaging and only consider the latest result

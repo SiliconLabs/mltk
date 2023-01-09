@@ -4,6 +4,7 @@
 #include "sl_iostream_eusart.h"
 // Include instance config 
  #include "sl_iostream_eusart_vcom_config.h"
+ #include "src/uart_stream_internal.h"
 
 // MACROs for generating name and IRQ handler function  
 #define SL_IOSTREAM_EUSART_CONCAT_PASTER(first, second, third)        first ##  second ## third
@@ -125,6 +126,7 @@ void SL_IOSTREAM_EUSART_TX_IRQ_HANDLER(SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO)(vo
 
 void SL_IOSTREAM_EUSART_RX_IRQ_HANDLER(SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO)(void)
 {
+  UART_STREAM_INVOKE_IRQ();
   sl_iostream_eusart_irq_handler(sl_iostream_vcom.stream.context);
 }
 

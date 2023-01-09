@@ -5,16 +5,13 @@ import os
 from typing import Dict
 
 import numpy as np
-
-try:
-    from keras_preprocessing.image import ImageDataGenerator
-except ModuleNotFoundError:
-    from tensorflow.keras.preprocessing.image import ImageDataGenerator
-from keras_preprocessing.image.utils import (array_to_img, img_to_array)
-
-
 from PIL import ImageEnhance
 
+from mltk.core.keras import (
+    ImageDataGenerator,
+    array_to_img, 
+    img_to_array
+)
 
 
 from .directory_iterator import ParallelDirectoryIterator 

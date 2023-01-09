@@ -26,8 +26,14 @@ import sphinx_material
 os.environ['MLTK_BUILD_DOCS'] = '1'
 
 import mltk
-from mltk import MLTK_DIR
-from mltk.utils.path import clean_directory, get_user_setting, recursive_listdir, fullpath
+from mltk import MLTK_DIR, MLTK_ROOT_DIR
+from mltk.utils.path import (
+    clean_directory,
+    get_user_setting,
+    recursive_listdir,
+    fullpath,
+    walk_with_depth
+)
 
 
 
@@ -128,7 +134,7 @@ html_theme_options = {
     'repo_url': repo_url,
     'repo_name': 'MLTK Github Repository',
 
-    # Visible levels of the global TOC; 
+    # Visible levels of the global TOC;
     'globaltoc_depth': 2,
     # If False, expand all TOC entries
     'globaltoc_collapse': True,
@@ -173,7 +179,7 @@ html_theme_options = {
     'css_minify': False,
 
     'version_dropdown': False,
-    'version_json': None, 
+    'version_json': None,
     'version_info': None
 }
 
@@ -190,10 +196,10 @@ source_suffix = ['.rst', '.md']
 
 pygments_style = 'trac'
 
-autosummary_generate = True 
+autosummary_generate = True
 #autosummary_imported_members = True
 
-numpydoc_show_class_members = False 
+numpydoc_show_class_members = False
 typehints_fully_qualified = False
 set_type_checking_flag  = True
 panels_add_bootstrap_css = False
@@ -221,7 +227,7 @@ build_dir = sys.argv[-1]
 
 
 # Copy all the .md files in <mltk root>/docs
-# to <mltk root>/docs/website_builder/source/docs 
+# to <mltk root>/docs/website_builder/source/docs
 # This allows for sphinx to generate HTML for each .md
 docs_src_dir = fullpath(f'{curdir}/../..')
 docs_dst_dir = f'{curdir}/docs'
@@ -238,7 +244,7 @@ for fn in recursive_listdir(docs_src_dir, return_relative_paths=True):
     src_path = f'{docs_src_dir}/{fn}'
     dst_path = f'{docs_dst_dir}/{fn}'
     os.makedirs(os.path.dirname(dst_path), exist_ok=True)
-    
+
     # First check if the file contains:
     # ```{include} <path>
     #
@@ -293,16 +299,14 @@ clean_directory(img_dst_dir)
 shutil.copytree(img_src_dir, img_dst_dir, dirs_exist_ok=True)
 
 
-# Copy each .ipynb file in <mltk root>/mltk/examples
+# Copy each .ipynb or .md file in <mltk root>/mltk/examples
 # to <mltk root>/docs/website_builder/source/mltk/examples directory
 # Also update the Github project name as necessary
-examples_src_dir = f'{curdir}/../../../mltk/examples'
-examples_dst_dir = f'{curdir}/mltk/examples'
-os.makedirs(examples_dst_dir, exist_ok=True)
-
-tutorials_src_dir = f'{curdir}/../../../mltk/tutorials'
-tutorials_dst_dir = f'{curdir}/mltk/tutorials'
-os.makedirs(tutorials_dst_dir, exist_ok=True)
+EXAMPLE_SRC_DIS = [
+    'mltk/examples',
+    'mltk/tutorials',
+    'cpp/shared/uart_stream'
+]
 
 url_re = re.compile(r'.*\((https:\/\/siliconlabs\.github\.io\/mltk\/).*', re.I)
 url_re2 = re.compile(r'.*\((https:\/\/siliconlabs\.github\.io\/mltk\/).*(\.html).*', re.I)
@@ -312,33 +316,38 @@ docs_img_re = re.compile(r'.*\((https:\/\/github.com\/SiliconLabs\/mltk\/raw\/ma
 # Then we cannot convert it to it's corresponding relative markdown URL, so it's not supported
 not_supported_url_re = re.compile(r'.*\(https:\/\/siliconlabs\.github\.io\/mltk\/.*\.html#.*[\.\-].*\)', re.I)
 
-for src_dir, dst_dir in zip((examples_src_dir, tutorials_src_dir), (examples_dst_dir, tutorials_dst_dir)):
-    for fn in os.listdir(src_dir):
-        if not fn.endswith('.ipynb'):
-            continue
-        shutil.copy(f'{src_dir}/{fn}', f'{dst_dir}/{fn}')
-        data = ''
-        with open(f'{dst_dir}/{fn}', 'r', encoding='utf-8') as fp:
-            for line in fp:
-                # The notebooks use full URLs.
-                # Convert the URLs to a relative path when we're generating
-                # so we can generate HTML with relative links
-                match = url_re.match(line)
-                not_supported_match = not_supported_url_re.match(line)
-                if not_supported_match is None and match:
-                    match2 = url_re2.match(line)
-                    line = line.replace(match.group(1), '../../')
-                    if match2:
-                        line = line.replace(match2.group(2), '.md')
+for src_dir in EXAMPLE_SRC_DIS:
+    for root, _, files in walk_with_depth(f'{MLTK_ROOT_DIR}/{src_dir}', depth=10):
+        for fn in files:
+            if not fn.endswith(('.ipynb', '.md')):
+                continue
+            rel_dir = os.path.relpath(root, MLTK_ROOT_DIR)
+            dst_dir = f'{curdir}/{rel_dir}'
+            os.makedirs(dst_dir, exist_ok=True)
+            shutil.copy(f'{root}/{fn}', f'{dst_dir}/{fn}')
+            data = ''
+            with open(f'{dst_dir}/{fn}', 'r', encoding='utf-8') as fp:
+                for line in fp:
+                    # The notebooks use full URLs.
+                    # Convert the URLs to a relative path when we're generating
+                    # so we can generate HTML with relative links
+                    match = url_re.match(line)
+                    not_supported_match = not_supported_url_re.match(line)
+                    rel_path_to_root = os.path.relpath(curdir, dst_dir).replace('\\', '/') + '/'
+                    if not_supported_match is None and match:
+                        match2 = url_re2.match(line)
+                        line = line.replace(match.group(1), rel_path_to_root)
+                        if match2:
+                            line = line.replace(match2.group(2), '.md')
 
-                match = docs_img_re.match(line)
-                if match:
-                    line = line.replace(match.group(1), '../../docs/img/')
+                    match = docs_img_re.match(line)
+                    if match:
+                        line = line.replace(match.group(1), f'{rel_path_to_root}docs/img/')
 
-                data += line + '\n'
+                    data += line + '\n'
 
-        with open(f'{dst_dir}/{fn}', 'w', encoding='utf-8') as fp:
-            fp.write(data)
+            with open(f'{dst_dir}/{fn}', 'w', encoding='utf-8') as fp:
+                fp.write(data)
 
 
 
@@ -358,7 +367,7 @@ def autodoc_skip_member(app, what, name, obj, skip, opts):
     module = getattr(obj, '__module__', '')
     fullname = f'{module}.{qual_name}'
 
-    if 'keras_preprocessing.image.image_data_generator.ImageDataGenerator.flow_from_dataframe' in fullname:
+    if 'keras.preprocessing.image.ImageDataGenerator.flow_from_dataframe' in fullname:
         return True
 
     return None

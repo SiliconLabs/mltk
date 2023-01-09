@@ -120,3 +120,44 @@ mltk_add_tflite_model(mltk_audio_classifier ${AUDIO_CLASSIFIER_MODEL})
 
 # Generate the exe output files (if necessary for the build platform)
 mltk_add_exe_targets(mltk_audio_classifier)
+
+
+
+#####################################################
+# Optional support for the Audio I/O
+
+mltk_get(AUDIO_CLASSIFIER_ENABLE_AUDIO_IO)
+if(AUDIO_CLASSIFIER_ENABLE_AUDIO_IO)
+    set(AUDIO_CLASSIFIER_AUDIO_IO_SUPPORTED_PLATFORMS brd2601)
+    if(NOT ${MLTK_PLATFORM_NAME} IN_LIST AUDIO_CLASSIFIER_AUDIO_IO_SUPPORTED_PLATFORMS)
+        mltk_info("Audio Classifier: Audio I/O support in the is NOT currently supported by platform: ${MLTK_PLATFORM_NAME}")
+        return()
+    endif()
+
+    mltk_info("Audio Classifier: Enabling audio I/O")
+
+    find_package(mltk_opus REQUIRED)
+    find_package(mltk_minimp3 REQUIRED)
+    find_package(mltk_voice_activity_detector REQUIRED)
+
+    target_link_libraries(mltk_audio_classifier
+    PRIVATE 
+        mltk_opus
+        mltk_minimp3
+        mltk_voice_activity_detector
+    )
+
+    target_sources(mltk_audio_classifier
+    PRIVATE 
+        audio_io.cc
+    )
+
+    target_compile_definitions(mltk_audio_classifier
+    PRIVATE 
+        AUDIO_IO_ENABLED=1
+    )
+
+endif()
+
+
+

@@ -29,6 +29,9 @@ mltk_set(SILABS_PART_NUMBER EFR32MG24B210F1536IM48=1)
 mltk_set(MLTK_CPU_CLOCK 78000000 DEFAULT)
 # Default stack size
 mltk_set(MLTK_STACK_SIZE 5120 DEFAULT)
+# Default BAUD rate
+mltk_set(MLTK_BAUD_RATE 115200 DEFAULT)
+
 
 target_include_directories(${PROJECT_NAME}
 PUBLIC 
@@ -114,6 +117,7 @@ PUBLIC
     mltk::gecko_sdk::udelay_service
     mltk::gecko_sdk::device_efr32mg24
     mltk::jlink_stream
+    mltk::uart_stream
 )
 
 target_link_options(${PROJECT_NAME} 
@@ -128,6 +132,7 @@ target_compile_definitions(${PROJECT_NAME}
 PUBLIC 
     SL_COMPONENT_CATALOG_PRESENT
     MLTK_CPU_CLOCK=${MLTK_CPU_CLOCK}
+    MLTK_BAUD_RATE=${MLTK_BAUD_RATE}
 PRIVATE 
     MLTK_STACK_SIZE=${MLTK_STACK_SIZE}
 )
@@ -138,6 +143,7 @@ add_library(${PROJECT_NAME}_api STATIC)
 target_sources(${PROJECT_NAME}_api
 PRIVATE 
     hardfault_handler.c
+    uart_stream_internal.c
 )
 target_link_options(${PROJECT_NAME}_api
 INTERFACE 
@@ -147,6 +153,7 @@ INTERFACE
 target_link_libraries(${PROJECT_NAME}_api
 PRIVATE 
     ${PROJECT_NAME}
+    mltk::uart_stream
 )
 
 
@@ -173,7 +180,7 @@ find_package(mltk_cpputils REQUIRED)
 find_package(mltk_commander REQUIRED)
 find_package(mltk_gecko_sdk REQUIRED)
 find_package(mltk_jlink_stream REQUIRED)
-
+find_package(mltk_uart_stream REQUIRED)
 
 
 #############################################

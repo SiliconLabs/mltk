@@ -81,7 +81,7 @@ def install_mltk_for_local_dev(
         extras = '[full]'
     elif extras == 'dev':
         install_dev_requirements = True 
-        extras = ''
+        extras = '[full]'
     else:
         extras = ''
 
@@ -109,6 +109,9 @@ def install_mltk_for_local_dev(
         additional_msg = ''
         if 'ensurepip' in err_msg:
             additional_msg += '\n\nTry running the following commands first:\n'
+            additional_msg += 'sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test\n'
+            additional_msg += 'sudo add-apt-repository -y ppa:deadsnakes/ppa\n'
+            additional_msg += 'sudo apt update\n'
             additional_msg += f'sudo apt-get -y install build-essential g++-9 ninja-build gdb python{python_version}-dev libportaudio2 pulseaudio p7zip-full git-lfs\n\n'
         raise Exception(f'{err_msg}{additional_msg}') #pylint: disable=raise-missing-from
 
@@ -149,6 +152,9 @@ def install_mltk_for_local_dev(
         additional_msg = ''
         if os.name != 'nt':
             additional_msg += '\n\nTry running the following commands first:\n'
+            additional_msg += 'sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test\n'
+            additional_msg += 'sudo add-apt-repository ppa:deadsnakes/ppa\n'
+            additional_msg += 'sudo apt update\n'
             additional_msg += f'sudo apt-get -y install build-essential g++-9 ninja-build gdb python{python_version}-dev libportaudio2 pulseaudio p7zip-full git-lfs\n'
             additional_msg += '\n\n'
         raise Exception(f'{err_msg}{additional_msg}') #pylint: disable=raise-missing-from

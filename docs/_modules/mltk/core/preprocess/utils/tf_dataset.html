@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.preprocess.utils.tf_dataset &#8212; MLTK 0.13.0 documentation</title>
+    <title>mltk.core.preprocess.utils.tf_dataset &#8212; MLTK 0.14.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
@@ -105,11 +105,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../index.html" title="MLTK 0.13.0 documentation"
+        <a href="../../../../../index.html" title="MLTK 0.14.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../_static/logo.png"
-                   alt="MLTK 0.13.0 documentation logo">
+                   alt="MLTK 0.14.0 documentation logo">
           
         </a>
       </div>
@@ -200,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../index.html"
-       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -430,7 +430,8 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-preprocess-utils-tf-dataset--page-root">Source code for mltk.core.preprocess.utils.tf_dataset</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">"""Utilities for processing `Tensorflow Datasets &lt;https://www.tensorflow.org/api_docs/python/tf/data/Dataset&gt;`_"""</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">wave</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
@@ -446,7 +447,7 @@
 <span class="kn">from</span> <span class="nn">.image</span> <span class="kn">import</span> <span class="n">read_image_file</span>
 
 
-<div class="viewcode-block" id="load_audio_directory"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.tf_dataset.load_audio_directory">[docs]</a><span class="k">def</span> <span class="nf">load_audio_directory</span><span class="p">(</span>
+<div class="viewcode-block" id="load_audio_directory"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.load_audio_directory">[docs]</a><span class="k">def</span> <span class="nf">load_audio_directory</span><span class="p">(</span>
     <span class="n">directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">classes</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">unknown_class_percentage</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
@@ -459,6 +460,7 @@
     <span class="n">max_samples_per_class</span><span class="p">:</span><span class="nb">int</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">sample_rate_hz</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">return_audio_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">return_audio_sample_rate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">white_list_formats</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">follow_links</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">shuffle_index_directory</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -466,7 +468,7 @@
     <span class="n">process_samples_function</span><span class="p">:</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">,</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]],</span><span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">]:</span>
     <span class="sd">"""Load a directory of audio samples and return a tuple of `Tensorflow Datasets &lt;https://www.tensorflow.org/api_docs/python/tf/data/Dataset&gt;`_ (samples, label_ids)</span>
-<span class="sd">    </span>
+
 <span class="sd">    The given audio directory should have the structure::</span>
 
 <span class="sd">        &lt;class1&gt;/sample1.wav</span>
@@ -478,11 +480,11 @@
 <span class="sd">        ...</span>
 <span class="sd">        &lt;class3&gt;/sample1.wav</span>
 <span class="sd">        &lt;class3&gt;/sample2.wav</span>
-<span class="sd">    </span>
+
 <span class="sd">    Where each &lt;class&gt; is found in the given ``classes`` argument.</span>
 
 <span class="sd">    .. seealso::</span>
-<span class="sd">        See the `Tensor Dataset API &lt;https://www.tensorflow.org/api_docs/python/tf/data/Dataset&gt;`_ </span>
+<span class="sd">        See the `Tensor Dataset API &lt;https://www.tensorflow.org/api_docs/python/tf/data/Dataset&gt;`_</span>
 <span class="sd">        for more details of how to use the returned datasets</span>
 
 <span class="sd">    Args:</span>
@@ -501,23 +503,25 @@
 <span class="sd">            be added to batches. This specifies the percentage of of samples to generate relative the smallest number</span>
 <span class="sd">            of samples of other classes. For instance, if another class has 1000 samples and unknown_class_percentage=0.8,</span>
 <span class="sd">            then the number of 'unknown' class samples generated will be 800.</span>
-
+<span class="sd">            Set this parameter to None to disable this feature</span>
 <span class="sd">        silence_class_percentage: If a ``_silence_`` class is added to the class list, then 'silence' class samples will automatically</span>
 <span class="sd">            be added to batches. This specifies the percentage of of samples to generate relative the smallest number</span>
 <span class="sd">            of samples of other classes. For instance, if another class has 1000 samples and silence_class_percentage=0.8,</span>
 <span class="sd">            then the number of 'silence' class samples generated will be 800.</span>
+<span class="sd">            Set this parameter to None to disable this feature</span>
 <span class="sd">        class_counts: Dictionary which will be populated with the sample counts for each class</span>
 <span class="sd">        onehot_encode: If true then the audio labels are onehot-encoded</span>
 <span class="sd">            If false, then only the class id (corresponding to it index in the ``classes`` argument) is returned</span>
 <span class="sd">        shuffle: If true, then shuffle the dataset</span>
 <span class="sd">        seed: The seed to use for shuffling the dataset</span>
-<span class="sd">        split: A tuple indicating the (start,stop) percentage of the dataset to return, </span>
+<span class="sd">        split: A tuple indicating the (start,stop) percentage of the dataset to return,</span>
 <span class="sd">            e.g. (.75, 1.0) -&gt; return last 25% of dataset</span>
 <span class="sd">            If omitted then return the entire dataset</span>
 <span class="sd">        max_samples_per_class: Maximum number of samples to return per class, this can be useful for debug to limit the dataset size</span>
 <span class="sd">        sample_rate_hz: Sample rate to convert audio samples, if omitted then return native sample rate</span>
 <span class="sd">        return_audio_data: If true then the audio file data is returned, if false then only the audio file path is returned</span>
-<span class="sd">        white_list_formats: List of file extensions to include in the search. </span>
+<span class="sd">        return_audio_sample_rate: If true and return_audio_data is True, then the audio file data and corresponding sample rate is returned, if false then only the audio file data is return</span>
+<span class="sd">        white_list_formats: List of file extensions to include in the search.</span>
 <span class="sd">            If omitted then only return ``.wav`` files</span>
 <span class="sd">        follow_links: If true then follow symbolic links when recursively searching the given dataset directory</span>
 <span class="sd">        shuffle_index_directory: Path to directory to hold generated index of the dataset</span>
@@ -528,28 +532,28 @@
 
 <span class="sd">            .. highlight:: python</span>
 <span class="sd">            .. code-block:: python</span>
-<span class="sd">                </span>
+
 <span class="sd">                def list_valid_filenames_in_directory(</span>
-<span class="sd">                        base_directory:str, </span>
-<span class="sd">                        search_class:str, </span>
-<span class="sd">                        white_list_formats:List[str], </span>
-<span class="sd">                        split:Tuple[float,float], </span>
-<span class="sd">                        follow_links:bool, </span>
+<span class="sd">                        base_directory:str,</span>
+<span class="sd">                        search_class:str,</span>
+<span class="sd">                        white_list_formats:List[str],</span>
+<span class="sd">                        split:Tuple[float,float],</span>
+<span class="sd">                        follow_links:bool,</span>
 <span class="sd">                        shuffle_index_directory:str</span>
 <span class="sd">                ) -&gt; Tuple[str, List[str]]</span>
 <span class="sd">                    ...</span>
 <span class="sd">                    return search_class, filenames</span>
-<span class="sd">        </span>
+
 <span class="sd">        process_samples_function: This allows for processing the samples BEFORE they're returned by this API.</span>
 <span class="sd">            This allows for adding/removing samples.</span>
 <span class="sd">            It has the following function signature:</span>
 
 <span class="sd">            .. highlight:: python</span>
 <span class="sd">            .. code-block:: python</span>
-<span class="sd">                </span>
+
 <span class="sd">                def process_samples(</span>
 <span class="sd">                    directory:str, # The provided directory to this API</span>
-<span class="sd">                    sample_paths:Dict[str,str] # A dictionary: &lt;class name&gt;, [&lt;sample paths relative to directory&gt;],</span>
+<span class="sd">                    sample_paths:Dict[str,str], # A dictionary: &lt;class name&gt;, [&lt;sample paths relative to directory&gt;]</span>
 <span class="sd">                    split:Tuple[float,float],</span>
 <span class="sd">                    follow_links:bool,</span>
 <span class="sd">                    white_list_formats:List[str],</span>
@@ -568,7 +572,7 @@
     <span class="n">sample_paths</span><span class="p">,</span> <span class="n">sample_labels</span> <span class="o">=</span> <span class="n">list_dataset_directory</span><span class="p">(</span>
         <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">,</span>
         <span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">,</span>
-        <span class="n">max_samples_per_class</span><span class="o">=</span><span class="n">max_samples_per_class</span><span class="p">,</span> 
+        <span class="n">max_samples_per_class</span><span class="o">=</span><span class="n">max_samples_per_class</span><span class="p">,</span>
         <span class="n">list_valid_filenames_in_directory_function</span><span class="o">=</span><span class="n">list_valid_filenames_in_directory_function</span><span class="p">,</span>
         <span class="n">shuffle_index_directory</span><span class="o">=</span><span class="n">shuffle_index_directory</span><span class="p">,</span>
         <span class="n">unknown_class_percentage</span><span class="o">=</span><span class="n">unknown_class_percentage</span><span class="p">,</span>
@@ -591,7 +595,9 @@
     <span class="n">path_ds</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">sample_paths</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">return_audio_data</span><span class="p">:</span>
-        <span class="n">feature_ds</span> <span class="o">=</span> <span class="n">path_ds</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">read_audio_file</span><span class="p">)</span>
+        <span class="n">feature_ds</span> <span class="o">=</span> <span class="n">path_ds</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">read_audio_file</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">return_numpy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_sample_rate</span><span class="o">=</span><span class="n">return_audio_sample_rate</span><span class="p">)</span>
+        <span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="n">feature_ds</span> <span class="o">=</span> <span class="n">path_ds</span>
@@ -604,7 +610,7 @@
     <span class="k">return</span> <span class="n">feature_ds</span><span class="p">,</span> <span class="n">label_ds</span></div>
 
 
-<div class="viewcode-block" id="load_image_directory"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.tf_dataset.load_image_directory">[docs]</a><span class="k">def</span> <span class="nf">load_image_directory</span><span class="p">(</span>
+<div class="viewcode-block" id="load_image_directory"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.load_image_directory">[docs]</a><span class="k">def</span> <span class="nf">load_image_directory</span><span class="p">(</span>
     <span class="n">directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">classes</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">unknown_class_percentage</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
@@ -622,7 +628,7 @@
     <span class="n">process_samples_function</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">]:</span>
     <span class="sd">"""Load a directory of images samples and return a tuple of `Tensorflow Datasets &lt;https://www.tensorflow.org/api_docs/python/tf/data/Dataset&gt;`_ (samples, label_ids)</span>
-<span class="sd">    </span>
+
 <span class="sd">    The given images directory should have the structure::</span>
 
 <span class="sd">        &lt;class1&gt;/sample1.png</span>
@@ -634,11 +640,11 @@
 <span class="sd">        ...</span>
 <span class="sd">        &lt;class3&gt;/sample1.jpg</span>
 <span class="sd">        &lt;class3&gt;/sample2.jpg</span>
-<span class="sd">    </span>
+
 <span class="sd">    Where each &lt;class&gt; is found in the given ``classes`` argument.</span>
 
 <span class="sd">    .. seealso::</span>
-<span class="sd">        See the `Tensor Dataset API &lt;https://www.tensorflow.org/api_docs/python/tf/data/Dataset&gt;`_ </span>
+<span class="sd">        See the `Tensor Dataset API &lt;https://www.tensorflow.org/api_docs/python/tf/data/Dataset&gt;`_</span>
 <span class="sd">        for more details of how to use the returned datasets</span>
 
 <span class="sd">    Args:</span>
@@ -649,23 +655,23 @@
 <span class="sd">              add an 'unknown' class to the generated batches.</span>
 <span class="sd">              Unused classes in the dataset directory will be randomly selected and used as an 'unknown' class.</span>
 <span class="sd">              Use the ``unknown_class_percentage`` setting to control the size of this class.</span>
-<span class="sd">        </span>
+
 <span class="sd">        unknown_class_percentage: If an ``_unknown_`` class is added to the class list, then 'unknown' class samples will automatically</span>
 <span class="sd">            be added to batches. This specifies the percentage of of samples to generate relative the smallest number</span>
 <span class="sd">            of samples of other classes. For instance, if another class has 1000 samples and unknown_class_percentage=0.8,</span>
 <span class="sd">            then the number of 'unknown' class samples generated will be 800.</span>
-
+<span class="sd">            Set this parameter to None to disable this feature</span>
 <span class="sd">        class_counts: Dictionary which will be populated with the sample counts for each class</span>
 <span class="sd">        onehot_encode: If true then the audio labels are onehot-encoded</span>
 <span class="sd">            If false, then only the class id (corresponding to it index in the ``classes`` argument) is returned</span>
 <span class="sd">        shuffle: If true, then shuffle the dataset</span>
 <span class="sd">        seed: The seed to use for shuffling the dataset</span>
-<span class="sd">        split: A tuple indicating the (start,stop) percentage of the dataset to return, </span>
+<span class="sd">        split: A tuple indicating the (start,stop) percentage of the dataset to return,</span>
 <span class="sd">            e.g. (.75, 1.0) -&gt; return last 25% of dataset</span>
 <span class="sd">            If omitted then return the entire dataset</span>
 <span class="sd">        max_samples_per_class: Maximum number of samples to return per class, this can be useful for debug to limit the dataset size</span>
 <span class="sd">        return_image_data: If true then the image file data is returned, if false then only the image file path is returned</span>
-<span class="sd">        white_list_formats: List of file extensions to include in the search. </span>
+<span class="sd">        white_list_formats: List of file extensions to include in the search.</span>
 <span class="sd">            If omitted then only return ``.png``, ``.jpg`` files</span>
 <span class="sd">        follow_links: If true then follow symbolic links when recursively searching the given dataset directory</span>
 <span class="sd">        shuffle_index_directory: Path to directory to hold generated index of the dataset</span>
@@ -676,13 +682,13 @@
 
 <span class="sd">            .. highlight:: python</span>
 <span class="sd">            .. code-block:: python</span>
-<span class="sd">                </span>
+
 <span class="sd">                def list_valid_filenames_in_directory(</span>
-<span class="sd">                        base_directory:str, </span>
-<span class="sd">                        search_class:str, </span>
-<span class="sd">                        white_list_formats:List[str], </span>
-<span class="sd">                        split:Tuple[float,float], </span>
-<span class="sd">                        follow_links:bool, </span>
+<span class="sd">                        base_directory:str,</span>
+<span class="sd">                        search_class:str,</span>
+<span class="sd">                        white_list_formats:List[str],</span>
+<span class="sd">                        split:Tuple[float,float],</span>
+<span class="sd">                        follow_links:bool,</span>
 <span class="sd">                        shuffle_index_directory:str</span>
 <span class="sd">                ) -&gt; Tuple[str, List[str]]</span>
 <span class="sd">                    ...</span>
@@ -694,10 +700,10 @@
 
 <span class="sd">            .. highlight:: python</span>
 <span class="sd">            .. code-block:: python</span>
-<span class="sd">                </span>
+
 <span class="sd">                def process_samples(</span>
 <span class="sd">                    directory:str, # The provided directory to this API</span>
-<span class="sd">                    sample_paths:Dict[str,str] # A dictionary: &lt;class name&gt;, [&lt;sample paths relative to directory&gt;],</span>
+<span class="sd">                    sample_paths:Dict[str,str], # A dictionary: &lt;class name&gt;, [&lt;sample paths relative to directory&gt;]</span>
 <span class="sd">                    split:Tuple[float,float],</span>
 <span class="sd">                    follow_links:bool,</span>
 <span class="sd">                    white_list_formats:List[str],</span>
@@ -706,7 +712,7 @@
 <span class="sd">                    **kwargs</span>
 <span class="sd">                )</span>
 <span class="sd">                    ...</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns:</span>
 <span class="sd">        Returns a tuple of two tf.data.Dataset, (samples, label_ids)</span>
 <span class="sd">    """</span>
@@ -716,7 +722,7 @@
     <span class="n">sample_paths</span><span class="p">,</span> <span class="n">sample_labels</span> <span class="o">=</span> <span class="n">list_dataset_directory</span><span class="p">(</span>
         <span class="n">directory</span><span class="o">=</span><span class="n">directory</span><span class="p">,</span>
         <span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">,</span>
-        <span class="n">max_samples_per_class</span><span class="o">=</span><span class="n">max_samples_per_class</span><span class="p">,</span> 
+        <span class="n">max_samples_per_class</span><span class="o">=</span><span class="n">max_samples_per_class</span><span class="p">,</span>
         <span class="n">list_valid_filenames_in_directory_function</span><span class="o">=</span><span class="n">list_valid_filenames_in_directory_function</span><span class="p">,</span>
         <span class="n">shuffle_index_directory</span><span class="o">=</span><span class="n">shuffle_index_directory</span><span class="p">,</span>
         <span class="n">unknown_class_percentage</span><span class="o">=</span><span class="n">unknown_class_percentage</span><span class="p">,</span>
@@ -735,7 +741,7 @@
     <span class="n">path_ds</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">sample_paths</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">return_image_data</span><span class="p">:</span>
-        <span class="n">feature_ds</span> <span class="o">=</span> <span class="n">path_ds</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">read_image_file</span><span class="p">)</span>
+        <span class="n">feature_ds</span> <span class="o">=</span> <span class="n">path_ds</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">read_image_file</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">return_numpy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">target_channels</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="n">feature_ds</span> <span class="o">=</span> <span class="n">path_ds</span>
@@ -748,7 +754,7 @@
     <span class="k">return</span> <span class="n">feature_ds</span><span class="p">,</span> <span class="n">label_ds</span></div>
 
 
-<div class="viewcode-block" id="parallel_process"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.tf_dataset.parallel_process">[docs]</a><span class="k">def</span> <span class="nf">parallel_process</span><span class="p">(</span>
+<div class="viewcode-block" id="parallel_process"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.parallel_process">[docs]</a><span class="k">def</span> <span class="nf">parallel_process</span><span class="p">(</span>
     <span class="n">dataset</span><span class="p">:</span><span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
     <span class="n">callback</span><span class="p">:</span><span class="n">Callable</span><span class="p">,</span>
     <span class="n">dtype</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
@@ -760,19 +766,19 @@
     <span class="n">disable_gpu_in_subprocesses</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span> <span class="n">ProcessPool</span><span class="p">]:</span>
     <span class="sd">"""Parallel process the dataset</span>
-<span class="sd">    </span>
+
 <span class="sd">    This will invoke the given ``callback``</span>
 <span class="sd">    across the available CPUs in the system which can greatly improve throughput.</span>
 
 <span class="sd">    .. note::</span>
-<span class="sd">        This uses the `tf.numpy_function &lt;https://www.tensorflow.org/api_docs/python/tf/numpy_function&gt;`_ </span>
+<span class="sd">        This uses the `tf.numpy_function &lt;https://www.tensorflow.org/api_docs/python/tf/numpy_function&gt;`_</span>
 <span class="sd">        API which can slow processing in some instances.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        dataset: The Tensorflow dataset to parallel process</span>
 <span class="sd">        callback: The callback to invoke in parallel processes</span>
 <span class="sd">            This callback must be at the root of the python module (i.e. it cannot be nested or a class method)</span>
-<span class="sd">        dtype: The data type that the ``callback`` returns, </span>
+<span class="sd">        dtype: The data type that the ``callback`` returns,</span>
 <span class="sd">            this can also be a list of dtypes if the callback returns multiple np.ndarrays</span>
 <span class="sd">        n_jobs: The number of jobs (i.e. CPU cores) to use for processing</span>
 <span class="sd">            This can either be an integer or a float between (0,1.0]</span>
@@ -784,7 +790,7 @@
 <span class="sd">        disable_gpu_in_subprocesses: By default the GPU is disabled in the parallel subprocesses</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        (tf.data.Dataset, ProcessPool), </span>
+<span class="sd">        (tf.data.Dataset, ProcessPool),</span>
 <span class="sd">        a tuple of the updated dataset with the parallel processing and the associated process pool</span>
 
 <span class="sd">    """</span>
@@ -829,12 +835,12 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
-    
+
     <span class="nd">@tf</span><span class="o">.</span><span class="n">function</span><span class="c1">#(autograph=False)</span>
     <span class="k">def</span> <span class="nf">_tf_parallel_process</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">numpy_function</span><span class="p">(</span>
-            <span class="n">_np_parallel_process</span><span class="p">,</span> 
-            <span class="n">args</span><span class="p">,</span> 
+            <span class="n">_np_parallel_process</span><span class="p">,</span>
+            <span class="n">args</span><span class="p">,</span>
             <span class="n">dtype</span>
         <span class="p">)</span>
 
@@ -846,11 +852,11 @@
     <span class="k">return</span> <span class="n">ds</span><span class="p">,</span> <span class="n">process_pool</span></div>
 
 
-<div class="viewcode-block" id="enable_numpy_behavior"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.tf_dataset.enable_numpy_behavior">[docs]</a><span class="k">def</span> <span class="nf">enable_numpy_behavior</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="enable_numpy_behavior"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.enable_numpy_behavior">[docs]</a><span class="k">def</span> <span class="nf">enable_numpy_behavior</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="sd">"""Enable NumPy behavior on Tensors.</span>
 
 <span class="sd">    NOTE: This requires Tensorflow 2.5+</span>
-<span class="sd">    </span>
+
 <span class="sd">    Enabling NumPy behavior has three effects:</span>
 
 <span class="sd">    - It adds to tf.Tensor some common NumPy methods such as T, reshape and ravel.</span>
@@ -858,7 +864,7 @@
 <span class="sd">    - It enhances tf.Tensor's indexing capability to be on par with NumPy's.</span>
 
 <span class="sd">    Refer to the `Tensorflow docs &lt;https://tensorflow.org/versions/r2.5/api_docs/python/tf/experimental/numpy/experimental_enable_numpy_behavior&gt;`_ for more details.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns:</span>
 <span class="sd">        True if the numpy behavior was enabled, False else</span>
 <span class="sd">    """</span>
@@ -894,14 +900,14 @@
             <span class="n">compname</span> <span class="o">=</span> <span class="s1">'not compressed'</span>
             <span class="n">wav</span><span class="o">.</span><span class="n">setparams</span><span class="p">((</span><span class="n">nchannels</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sample_rate_hz</span><span class="p">,</span> <span class="n">nframes</span><span class="p">,</span> <span class="n">comptype</span><span class="p">,</span> <span class="n">compname</span><span class="p">))</span>
             <span class="n">wav</span><span class="o">.</span><span class="n">writeframes</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">nframes</span> <span class="o">*</span> <span class="mi">2</span><span class="p">))</span>
-        
+
 
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sample_paths</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">p</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">sample_paths</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">silence_wav_path</span>
 
-           
-            
+
+
 </pre></div>
 
           </article>
@@ -927,7 +933,7 @@
               
           </div>
             Last updated on
-              Nov 14, 2022.
+              Jan 09, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

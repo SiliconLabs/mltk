@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.preprocess.utils.image &#8212; MLTK 0.13.0 documentation</title>
+    <title>mltk.core.preprocess.utils.image &#8212; MLTK 0.14.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
@@ -105,11 +105,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../index.html" title="MLTK 0.13.0 documentation"
+        <a href="../../../../../index.html" title="MLTK 0.14.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../_static/logo.png"
-                   alt="MLTK 0.13.0 documentation logo">
+                   alt="MLTK 0.14.0 documentation logo">
           
         </a>
       </div>
@@ -200,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../index.html"
-       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -430,19 +430,21 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-preprocess-utils-image--page-root">Source code for mltk.core.preprocess.utils.image</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="sd">"""Utilities for processing image data"""</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span> 
+<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 
-<div class="viewcode-block" id="read_image_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.image.read_image_file">[docs]</a><span class="k">def</span> <span class="nf">read_image_file</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> 
+<div class="viewcode-block" id="read_image_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/image.html#mltk.core.preprocess.utils.image.read_image_file">[docs]</a><span class="k">def</span> <span class="nf">read_image_file</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
     <span class="n">target_channels</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
     <span class="n">return_numpy</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
     <span class="sd">"""Reads and decodes an image file.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        path: Path to image file as a python string, numpy string, or tensorflow string</span>
 <span class="sd">        target_channels: Number of channels to return image as, if 0 then use native channels</span>
@@ -453,21 +455,21 @@
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="n">target_channels</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">target_channels</span> <span class="o">=</span> <span class="mi">0</span>
-    
+
     <span class="n">raw</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="n">sample</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">decode_image</span><span class="p">(</span>
-        <span class="n">raw</span><span class="p">,</span> 
-        <span class="n">expand_animations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
-        <span class="n">channels</span><span class="o">=</span><span class="n">target_channels</span><span class="p">,</span> 
+        <span class="n">raw</span><span class="p">,</span>
+        <span class="n">expand_animations</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">channels</span><span class="o">=</span><span class="n">target_channels</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">uint8</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">return_numpy</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">sample</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
-    
+
     <span class="k">return</span> <span class="n">sample</span></div>
 
 
-<div class="viewcode-block" id="write_image_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.image.write_image_file">[docs]</a><span class="k">def</span> <span class="nf">write_image_file</span><span class="p">(</span>
+<div class="viewcode-block" id="write_image_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/image.html#mltk.core.preprocess.utils.image.write_image_file">[docs]</a><span class="k">def</span> <span class="nf">write_image_file</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">sample</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
     <span class="n">auto_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -486,7 +488,7 @@
 <span class="sd">        batch_size: This allows for using this function within a tf.keras.layers.Lambda layer</span>
 <span class="sd">            If used, this will write each image in the given batch</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        Path to written file. If this is executing in a non-eager TF function </span>
+<span class="sd">        Path to written file. If this is executing in a non-eager TF function</span>
 <span class="sd">        then the path is a TF Tensor, otherwise it is a Python string</span>
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
@@ -521,7 +523,7 @@
             <span class="n">sample</span> <span class="o">=</span> <span class="p">(</span><span class="n">sample</span> <span class="o">*</span> <span class="mf">255.0</span> <span class="o">/</span> <span class="p">((</span><span class="n">max_val</span> <span class="o">-</span> <span class="n">min_val</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">))</span>
 
         <span class="n">sample</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">clip_by_value</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">255.0</span><span class="p">)</span>
-    
+
     <span class="n">sample</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 
     <span class="n">path</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">strings</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path</span><span class="p">),))</span>
@@ -529,7 +531,7 @@
         <span class="n">ts</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span> <span class="o">*</span> <span class="mi">1000</span>
         <span class="n">fn</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">strings</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">'</span><span class="si">{}</span><span class="s1">.jpg'</span><span class="p">,</span> <span class="n">ts</span><span class="p">)</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">strings</span><span class="o">.</span><span class="n">join</span><span class="p">((</span><span class="n">path</span><span class="p">,</span> <span class="n">fn</span><span class="p">),</span> <span class="n">separator</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
-    
+
     <span class="n">img</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">encode_jpeg</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">quality</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">)</span>
     <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">img</span><span class="p">)</span>
 
@@ -562,7 +564,7 @@
               
           </div>
             Last updated on
-              Nov 14, 2022.
+              Jan 09, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

@@ -10,7 +10,7 @@ from typing import List, Tuple
 import random
 import numpy as np
 
-from keras_preprocessing.image.utils import (
+from mltk.core.keras import (
     array_to_img,
     img_to_array,
     load_img

@@ -453,21 +453,7 @@ class DatasetMixin(BaseMixin):
 
         class_counts = self.class_counts
         if not summary and class_counts:
-            if 'training' in class_counts:
-                for subset, counts in class_counts.items():
-                    n_samples = sum(counts.values())
-                    if n_samples == 0:
-                        continue
-                    max_class_name_len = max([len(x) for x in counts.keys()])
-                    summary += f'Dataset subset: {subset}, found {n_samples} samples:\n'
-                    for key, value in counts.items():
-                        summary += f'  {key.rjust(max_class_name_len)}: {value}\n'
-            else:
-                n_samples = sum(class_counts.values())
-                max_class_name_len = max([len(x) for x in counts.keys()])
-                summary += f'Dataset found {n_samples} samples:\n'
-                for key, value in class_counts.items():
-                    summary += f'  {key.rjust(max_class_name_len)}: {value}\n'
+            summary += MltkDataset.summarize_class_counts(class_counts)
         
         return summary
 
@@ -530,3 +516,26 @@ class MltkDataset:
     def summarize_dataset(self) -> str: 
         """Return a string summary of the dataset"""
         return ''
+
+
+    @staticmethod
+    def summarize_class_counts(class_counts:dict) -> str:
+        """Generate a text summary of the given class counts dictionary"""
+        summary = ''
+        if 'training' in class_counts:
+            for subset, counts in class_counts.items():
+                n_samples = sum(counts.values())
+                if n_samples == 0:
+                    continue
+                max_class_name_len = max([len(x) for x in counts.keys()])
+                summary += f'Dataset subset: {subset}, found {n_samples} samples:\n'
+                for key, value in counts.items():
+                    summary += f'  {key.rjust(max_class_name_len)}: {value}\n'
+        else:
+            n_samples = sum(class_counts.values())
+            max_class_name_len = max([len(x) for x in counts.keys()])
+            summary += f'Dataset found {n_samples} samples:\n'
+            for key, value in class_counts.items():
+                summary += f'  {key.rjust(max_class_name_len)}: {value}\n'
+
+        return summary

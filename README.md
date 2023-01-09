@@ -7,11 +7,11 @@ This package is made available as a self-serve reference supported only by the o
 There are no Silicon Labs support services for this software at this time.
 ```
 
-<a href="https://siliconlabs.github.io/mltk" target="_blank">![version](https://img.shields.io/badge/MLTK%20Version-0.13.0-red?style=for-the-badge)</a>
+<a href="https://siliconlabs.github.io/mltk" target="_blank">![version](https://img.shields.io/badge/MLTK%20Version-0.14.0-red?style=for-the-badge)</a>
 <a href="https://pypi.org/project/silabs-mltk" target="_blank">![PyPI - Python Version](https://img.shields.io/pypi/pyversions/silabs-mltk?style=for-the-badge)</a>
 <a href="https://github.com/siliconlabs/gecko_sdk/tree/3abe1693dfe8f8968de38efe403cd26d138eeeed" target="_blank">![gsdk](https://img.shields.io/badge/Gecko%20SDK-4.1.3-green?style=for-the-badge)</a>
 <a href="https://github.com/tensorflow/tflite-micro/tree/370d7bbc85f72bdb6004a8bfb7e778c271864ee2" target="_blank">![tflm](https://img.shields.io/badge/Tensorflow--Lite%20Micro-November%202022-orange?style=for-the-badge)</a>
-<a href="https://www.tensorflow.org/api_docs" target="_blank">![tf](https://img.shields.io/badge/Tensorflow-2.10-yellow?style=for-the-badge)</a>
+<a href="https://www.tensorflow.org/api_docs" target="_blank">![tf](https://img.shields.io/badge/Tensorflow-2.11-yellow?style=for-the-badge)</a>
 
 This is a Python package with command-line utilities and scripts to aid the development 
 of machine learning models for Silicon Lab's embedded platforms.
@@ -19,7 +19,7 @@ of machine learning models for Silicon Lab's embedded platforms.
 The features of this Python package include:
 - [Command-line](./docs/command_line.md) - Execute all ML operations from a simple command-line interface
 - [Python API](./docs/python_api/index.md) - Execute all ML operations from a Python script
-- [Model Profiler](./docs/guides/model_profiler.md) - Determine how efficient an ML model will execute on an embedded platform
+- [Model Profiler](./docs/guides/model_profiler.md) - Determine how efficiently an ML model will execute on an embedded platform
 - [Model Training](./docs/guides/model_training.md) - Train an ML model using [Google Tensorflow](https://www.tensorflow.org/)
 - [Remote Training via SSH](./docs/guides/model_training_via_ssh.md) - Securely and seamlessly train the model on a remote "cloud" machine
 - [Model Training Monitor](./docs/guides/model_training_monitor.md) - Monitor/profile the training of a model using [Tensorboard](https://www.tensorflow.org/tensorboard)

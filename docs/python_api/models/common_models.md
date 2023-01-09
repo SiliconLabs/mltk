@@ -37,3 +37,9 @@ __NOTE:__ You may find additional model architectures at [tf.keras.applications]
 .. autofunction:: mltk.models.shared.resnet_v1.ResNet10V1
 ```
 
+##  TENet
+
+```{eval-rst}
+.. autofunction:: mltk.models.shared.tenet.TENet
+```
+

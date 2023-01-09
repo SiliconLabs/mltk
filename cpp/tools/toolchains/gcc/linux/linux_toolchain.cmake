@@ -27,7 +27,10 @@ execute_process(
 )
 if(result)
   message(FATAL_ERROR "gcc${GCC_VERSION} must be installed and available on the exeuctable PATH. \
-  Run the command: \
+  Run the commands: \
+  sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test \
+  sudo add-apt-repository -y ppa:deadsnakes/ppa \
+  sudo apt update \
   sudo apt-get -y install build-essential g++-${GCC_VERSION} ninja-build gdb p7zip-full git-lfs python3-dev python3-venv libusb-1.0-0 libgl1 \
   ")
 endif()

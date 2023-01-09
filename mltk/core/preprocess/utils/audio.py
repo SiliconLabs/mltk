@@ -1,3 +1,5 @@
+"""Utilities for processing audio data"""
+
 import os
 from typing import Union
 import numpy as np
@@ -5,7 +7,7 @@ import tensorflow as tf
 
 from mltk.utils.python import append_exception_msg
 from mltk.core.preprocess.audio.audio_feature_generator import (
-    AudioFeatureGeneratorSettings, 
+    AudioFeatureGeneratorSettings,
     AudioFeatureGenerator
 )
 
@@ -21,7 +23,7 @@ resample = librosa.resample
 
 
 def read_audio_file(
-    path:Union[str,np.ndarray,tf.Tensor], 
+    path:Union[str,np.ndarray,tf.Tensor],
     return_sample_rate=False,
     return_numpy=True,
     **kwargs
@@ -42,8 +44,8 @@ def read_audio_file(
     """
     raw = tf.io.read_file(path)
     sample, original_sample_rate = tf.audio.decode_wav(
-        raw, 
-        desired_channels=1, 
+        raw,
+        desired_channels=1,
 
     )
     sample = tf.squeeze(sample, axis=-1)
@@ -56,7 +58,7 @@ def read_audio_file(
             original_sample_rate = int(original_sample_rate.numpy())
 
         return sample, original_sample_rate
-    
+
     return sample
 
 
@@ -66,7 +68,7 @@ def write_audio_file(
     sample_rate:int
 ) -> Union[str,tf.Tensor]:
     """Write audio data to a file
-    
+
     Args:
         path: File path to save audio
             If this is does NOT end with .wav, then the path is assumed to be a directory.
@@ -75,9 +77,9 @@ def write_audio_file(
             - ``int16`` then it is converted to float32 and scaled by 32768
         sample_rate: Sample rate of audio
     Returns:
-        Path to written file. If this is executing in a non-eager TF function 
+        Path to written file. If this is executing in a non-eager TF function
         then the path is a TF Tensor, otherwise it is a Python string
-    
+
     """
     if isinstance(sample, np.ndarray):
         sample = tf.convert_to_tensor(sample)
@@ -106,9 +108,9 @@ def write_audio_file(
 
 
 def adjust_length(
-    sample:np.ndarray, 
-    target_sr:int=None, 
-    original_sr:int=None, 
+    sample:np.ndarray,
+    target_sr:int=None,
+    original_sr:int=None,
     out_length:int=None,
     offset=0.0,
     trim_threshold_db=30.0,
@@ -146,16 +148,16 @@ def adjust_length(
             diff = in_length - out_length
             before = int(diff*offset)
             sample = sample_trimmed[before : before + out_length]
-        
+
         elif in_length < out_length:
             diff = out_length - in_length
             before = int(diff * offset)
-            
+
             pad_before = np.zeros((before, ), dtype=sample.dtype)
             pad_after = np.zeros((diff - before, ), dtype=sample.dtype)
-            
+
             sample = np.concatenate((pad_before, sample_trimmed, pad_after), axis=0)
-            
+
         if sample.shape[0] != out_length:
             sample = sample[:out_length]
 
@@ -165,29 +167,29 @@ def adjust_length(
             diff = in_length - out_length
             before = int(diff*offset)
             sample = sample_trimmed[before : before + out_length, :]
-        
+
         elif in_length < out_length:
             diff = out_length - in_length
             before = int(diff * offset)
-            
+
             pad_before = np.zeros((before, n_channels), dtype=sample.dtype)
             pad_after = np.zeros((diff - before, n_channels), dtype=sample.dtype)
-            
+
             sample = np.concatenate((pad_before, sample_trimmed, pad_after), axis=0)
-            
+
         if sample.shape[0] != out_length:
             sample = sample[:out_length, :]
 
-    return sample 
+    return sample
 
 
 def apply_frontend(
-    sample:np.ndarray, 
-    settings:AudioFeatureGeneratorSettings, 
+    sample:np.ndarray,
+    settings:AudioFeatureGeneratorSettings,
     dtype=np.float32
 ) -> np.ndarray:
     """Send the audio sample through the AudioFeatureGenerator and return the generated spectrogram
-    
+
     Args:
         sample: The audio sample to process in the AudioFeatureGenerator
         settings: The settings to use in the AudioFeatureGenerator
@@ -200,7 +202,7 @@ def apply_frontend(
     if np.issubdtype(sample.dtype, np.floating):
         # Convert the floating point data to int16
         # which is what the AudioFeatureGenerator expects it to be
-        # sample = librosa.util.normalize(sample, norm=np.inf, axis=None) 
+        # sample = librosa.util.normalize(sample, norm=np.inf, axis=None)
         sample = sample * 32768
         sample = sample.astype(np.int16)
 

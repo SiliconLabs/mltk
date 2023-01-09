@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.preprocess.audio.audio_feature_generator.audio_feature_generator &#8212; MLTK 0.13.0 documentation</title>
+    <title>mltk.core.preprocess.audio.audio_feature_generator.audio_feature_generator &#8212; MLTK 0.14.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../../_static/mystnb.css" />
@@ -105,11 +105,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../../index.html" title="MLTK 0.13.0 documentation"
+        <a href="../../../../../../index.html" title="MLTK 0.14.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../../_static/logo.png"
-                   alt="MLTK 0.13.0 documentation logo">
+                   alt="MLTK 0.14.0 documentation logo">
           
         </a>
       </div>
@@ -200,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../../index.html"
-       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -437,7 +437,75 @@
 
 
 <div class="viewcode-block" id="AudioFeatureGenerator"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator">[docs]</a><span class="k">class</span> <span class="nc">AudioFeatureGenerator</span><span class="p">:</span>
-    <span class="sd">"""AudioFeatureGenerator Interface</span>
+    <span class="sd">"""Converts raw audio into a spectrogram (gray-scale 2D image)</span>
+
+<span class="sd">    **Example Usage**</span>
+
+<span class="sd">    .. highlight:: python</span>
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        import numpy as np</span>
+<span class="sd">        from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings</span>
+<span class="sd">        from mltk.core.preprocess.utils import audio as audio_utils</span>
+
+<span class="sd">        # Define the settings used to convert the audio into a spectrogram</span>
+<span class="sd">        frontend_settings = AudioFeatureGeneratorSettings()</span>
+
+<span class="sd">        frontend_settings.sample_rate_hz = 16000</span>
+<span class="sd">        frontend_settings.sample_length_ms = 1200</span>
+<span class="sd">        frontend_settings.window_size_ms = 30</span>
+<span class="sd">        frontend_settings.window_step_ms = 10</span>
+<span class="sd">        frontend_settings.filterbank_n_channels = 108</span>
+<span class="sd">        frontend_settings.filterbank_upper_band_limit = 7500.0</span>
+<span class="sd">        frontend_settings.filterbank_lower_band_limit = 125.0</span>
+<span class="sd">        frontend_settings.noise_reduction_enable = True</span>
+<span class="sd">        frontend_settings.noise_reduction_smoothing_bits = 10</span>
+<span class="sd">        frontend_settings.noise_reduction_even_smoothing =  0.025</span>
+<span class="sd">        frontend_settings.noise_reduction_odd_smoothing = 0.06</span>
+<span class="sd">        frontend_settings.noise_reduction_min_signal_remaining = 0.40</span>
+<span class="sd">        frontend_settings.quantize_dynamic_scale_enable = True # Enable dynamic quantization</span>
+<span class="sd">        frontend_settings.quantize_dynamic_scale_range_db = 40.0</span>
+
+<span class="sd">        # Read the raw audio file</span>
+<span class="sd">        sample, original_sample_rate = audio_utils.read_audio_file(</span>
+<span class="sd">            'my_audio.wav',</span>
+<span class="sd">            return_numpy=True,</span>
+<span class="sd">            return_sample_rate=True</span>
+<span class="sd">        )</span>
+
+<span class="sd">        # Clip/pad the audio so that it's length matches the values configured in "frontend_settings"</span>
+<span class="sd">        out_length = int((original_sample_rate * frontend_settings.sample_length_ms) / 1000)</span>
+<span class="sd">        sample = audio_utils.adjust_length(</span>
+<span class="sd">            sample,</span>
+<span class="sd">            out_length=out_length,</span>
+<span class="sd">            trim_threshold_db=30,</span>
+<span class="sd">            offset=np.random.uniform(0, 1)</span>
+<span class="sd">        )</span>
+
+<span class="sd">        # Convert the sample rate (if necessary)</span>
+<span class="sd">        if original_sample_rate != frontend_settings.sample_rate_hz:</span>
+<span class="sd">            sample = audio_utils.resample(</span>
+<span class="sd">                sample,</span>
+<span class="sd">                orig_sr=original_sample_rate,</span>
+<span class="sd">                target_sr=frontend_settings.sample_rate_hz</span>
+<span class="sd">            )</span>
+
+<span class="sd">        # Generate a spectrogram from the audio sample</span>
+<span class="sd">        #</span>
+<span class="sd">        # NOTE: audio_utils.apply_frontend() is a helper function.</span>
+<span class="sd">        #       Internally, it converts from float32 to int16 (audio_utils.read_audio_file() returns float32)</span>
+<span class="sd">        #       then calls the AudioFeatureGenerator, e.g.:</span>
+<span class="sd">        #       sample = sample * 32768</span>
+<span class="sd">        #       sample = sample.astype(np.int16)</span>
+<span class="sd">        #       sample = np.squeeze(sample, axis=-1)</span>
+<span class="sd">        #       frontend = AudioFeatureGenerator(frontend_settings)</span>
+<span class="sd">        #       spectrogram = frontend.process_sample(sample, dtype=np.int8)</span>
+
+<span class="sd">        spectrogram = audio_utils.apply_frontend(</span>
+<span class="sd">            sample=sample,</span>
+<span class="sd">            settings=frontend_settings,</span>
+<span class="sd">            dtype=np.int8</span>
+<span class="sd">        )</span>
 
 <span class="sd">    .. seealso::</span>
 <span class="sd">       - `AudioFeatureGenerator documentation &lt;https://siliconlabs.github.io/mltk/docs/audio/audio_feature_generator.html&gt;`_</span>
@@ -484,7 +552,7 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            sample: [sample_length] int16 audio sample</span>
-<span class="sd">            dtype: Output data type, must be int8, uint16, or float32 </span>
+<span class="sd">            dtype: Output data type, must be int8, uint16, or float32</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            [n_features, n_channels] int8, uint16, or float32  spectrogram</span>
@@ -522,7 +590,7 @@
               
           </div>
             Last updated on
-              Nov 14, 2022.
+              Jan 09, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

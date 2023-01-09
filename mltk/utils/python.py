@@ -1,3 +1,8 @@
+"""Common Python utilities
+
+See the source code on Github: `mltk/utils/python.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/python.py>`_
+"""
+
 import collections
 import sys
 import os
@@ -25,6 +30,7 @@ e.g.: 3.9
 def _defaultdict_not_found():
     return None
 
+
 def DefaultDict(d: dict = None, **kwargs) -> collections.defaultdict:
     """Creates a directory that returns None if a key does not exist
     NOTE: Nested dictionaries are also updated to a defaultdict
@@ -36,23 +42,47 @@ def DefaultDict(d: dict = None, **kwargs) -> collections.defaultdict:
         elif isinstance(obj, list):
             for i, x in enumerate(obj):
                 obj[i] = _convert_to_default_dict(x)
-        return obj 
-        
+        return obj
+
     if d is not None:
         kwargs.update(d)
 
     for key, value in kwargs.items():
         kwargs[key] = _convert_to_default_dict(value)
-    
+
 
     return collections.defaultdict(_defaultdict_not_found, kwargs)
+
+
+class DictObject(dict):
+    """Standard Python dictionary that allows for accessing entries as object properties, e.g.:
+
+    my_dict_obj = DictObject({'foo': 1, 'bar': False})
+
+    # Both lines do the same thing
+    foo = my_dict_obj.foo
+    foo = my_dict_obj['foo']
+
+    my_dict_obj.bar = True
+    my_dict_obj['bar'] = True
+
+    """
+    def __getattr__(self, name):
+        try:
+            return self[name]
+        except KeyError as e:
+            raise AttributeError(e)
+
+    def __setattr__(self, name, value):
+        self[name] = value
+
 
 
 def merge_dict(destination: dict, source: dict, copy_destination=False) -> dict:
     """Merge the source dictionary into the destination and return the destination"""
     if copy_destination:
         destination = copy.deepcopy(destination)
-    
+
     for key, value in source.items():
         if isinstance(value, dict):
             # get node or create one
@@ -66,16 +96,14 @@ def merge_dict(destination: dict, source: dict, copy_destination=False) -> dict:
 
 def as_list(obj: Any, split: str=None) -> list:
     """Convert the given object to a list
-    
-    If obj is None, then return empty list
-    If obj is a string,
-      If the `split` argument is given then return obj.split(split)
-      else just wrap the string in a list
+
+    - If obj is None, then return empty list
+    - If obj is a string, If the `split` argument is given then return obj.split(split) else just wrap the string in a list
     """
     if obj is None:
         return []
     elif isinstance(obj, list):
-        return obj 
+        return obj
     elif isinstance(obj, str):
         return [obj] if not split else [x.strip() for x in obj.split(split)]
     elif isinstance(obj, collections.abc.Iterable):
@@ -98,7 +126,7 @@ def flatten_list(l : Iterable) -> list:
         if is_iterable:
             retval.extend(flatten_list(x))
         else:
-            retval.append(x) 
+            retval.append(x)
     return retval
 
 
@@ -107,7 +135,7 @@ def list_rindex(lst: Iterable, value: Any) -> int:
     for i, v in enumerate(reversed(lst)):
         if v == value:
             return len(lst) - i - 1  # return the index in the original list
-    return -1  
+    return -1
 
 
 def contains_class_type(l: Iterable, cls: Any) -> bool:
@@ -125,7 +153,7 @@ def get_case_insensitive(value: str, l: Iterable) -> str:
     value = value.lower()
     for v in l:
         if v.lower() == value:
-            return v 
+            return v
     return None
 
 
@@ -134,7 +162,7 @@ def is_true(arg) -> bool:
     if isinstance(arg, str):
         return arg.lower() in ('yes', 'true', 'on', '1')
     if isinstance(arg, bool):
-        return arg 
+        return arg
     if isinstance(arg, int):
         return arg != 0
     raise Exception(f'Invalid boolean arg: {arg}')
@@ -144,7 +172,7 @@ def is_false(arg) -> bool:
     if isinstance(arg, str):
         return arg.lower() in ('no', 'false', 'off', '0')
     if isinstance(arg, bool):
-        return arg 
+        return arg
     if isinstance(arg, int):
         return arg == 0
     raise Exception(f'Invalid boolean arg: {arg}')
@@ -155,7 +183,7 @@ def forward_method_kwargs(**kwargs) -> dict:
     retval = {}
     for key, value in kwargs.items():
         if key == 'self' or key.startswith('_'):
-            continue 
+            continue
         elif key == 'kwargs':
             retval.update(value)
         else:
@@ -166,13 +194,13 @@ def forward_method_kwargs(**kwargs) -> dict:
 def prepend_exception_msg(e:Exception, msg:str) -> Exception:
     """Prepend a message to the given exception"""
     e.args = (msg, *e.args)
-    all_str = True 
+    all_str = True
     for x in e.args:
         try:
             str(x)
         except:
-            all_str = False 
-            break 
+            all_str = False
+            break
 
     # If every entry in the exception msg is a string
     # then make it look pretty by combining into a coma-separated string
@@ -180,31 +208,31 @@ def prepend_exception_msg(e:Exception, msg:str) -> Exception:
         s = ', '.join(str(x) for x in e.args)
         e.args = (s, )
 
-    return e 
+    return e
 
 
 def append_exception_msg(e:Exception, msg:str) -> Exception:
     """Append a message to the given exception"""
     e.args = (*e.args, msg)
-    all_str = True 
+    all_str = True
     for x in e.args:
         try:
             str(x)
         except:
-            all_str = False 
-            break 
+            all_str = False
+            break
 
     # If every entry in the exception msg is a string
     # then make it look pretty by combining into a coma-separated string
     if all_str:
         s = ', '.join(str(x) for x in e.args)
         e.args = (s, )
-    return e 
+    return e
 
 
 def debugger_is_active() -> bool:
     """Return if the debugger is currently active"""
-    gettrace = getattr(sys, 'gettrace', lambda : None) 
+    gettrace = getattr(sys, 'gettrace', lambda : None)
     return gettrace() is not None
 
 
@@ -217,7 +245,7 @@ def notebook_is_active() ->  bool:
 
 
 def install_pip_package(
-    package:str, 
+    package:str,
     module_name:str=None,
     logger: logging.Logger=None,
     install_dir:str=None,
@@ -263,7 +291,7 @@ def install_pip_package(
     retcode, retval = run_shell_cmd(cmd, outfile=logger)
     if retcode != 0:
         raise Exception(f'Failed to install pip package: {package}, err:\n{retval}')
-        
+
 
 def import_module_at_path(path:str, reload=False):
     """Import the Python module at the given path and return the imported module
@@ -299,7 +327,7 @@ def import_module_at_path(path:str, reload=False):
     else:
         if not os.path.exists(f'{path}/__init__.py'):
             raise Exception(f'Given path to directory: {path} does not contain a __init__.py file')
-        
+
         parent_dir = os.path.dirname(path).replace('\\', '/')
         module_name = os.path.basename(path)
         if os.path.exists(f'{parent_dir}/__init__.py'):
@@ -321,14 +349,14 @@ def import_module_at_path(path:str, reload=False):
             return importlib.reload(sys.modules[module_name])
         else:
             return sys.modules[module_name]
-  
+
     # Otherwise import the module
     return importlib.import_module(module_name, package=module_package)
 
 
 def load_json_safe(path:str, *args, **kwargs) -> object:
     """Load a JSON file and ignoring any single-line, multi-line comments and trailing commas
-    
+
     Args:
         path: Path to JSON file
         args, kwargs: Arguments to pass into json.loads
@@ -348,32 +376,32 @@ def load_json_safe(path:str, *args, **kwargs) -> object:
 
     return json.loads(filtered_json_string, *args, **kwargs)
 
-    
+
 def find_object_key_with_value(
-    obj:object, 
+    obj:object,
     needle:object,
     throw_exception=False
 ) -> str:
-    """Given an  class or class instance, search the 
+    """Given an  class or class instance, search the
     attribute values of the object for the given "needle" and return its corresponding key.
 
     Note: If a class if given then it must be instantiable using a default constructor.
-    
+
     Args:
         obj: Class or class instance
-        needle: Class attribute value to find in class instance 
+        needle: Class attribute value to find in class instance
         throw_exception: If true, throw an exception if the needle is not found, return 'none' otherwise
     Return:
         Lowercase key of found attribute value or "none" if value is not found
     """
-    
+
     if inspect.isclass(obj) and not issubclass(obj, Enum):
         obj = obj()
-    
+
     for key in dir(obj):
         if getattr(obj, key) == needle:
             return key.lower()
-        
+
     if throw_exception:
         raise ValueError(f'{needle} not found in {obj}')
 
@@ -381,33 +409,33 @@ def find_object_key_with_value(
 
 
 def find_object_value_with_key(
-    obj:object, 
-    needle:str, 
+    obj:object,
+    needle:str,
     ignore_case=False,
     throw_exception=False
 ):
-    """Given a class or class instance, search the 
+    """Given a class or class instance, search the
     attribute keys of the object for the given "needle" and return its corresponding value.
 
     NOTE: If a class if given then it must be instantiable using a default constructor (except of Enum classes).
-    
+
     Args:
         obj: Class or class instance
-        needle: Class attribute key to find in class instance 
+        needle: Class attribute key to find in class instance
         ignore_case: Ignore the key's case if True
         throw_exception: If true, throw an exception if the needle is not found, return None otherwise
     Return:
         Value of found attribute key or None if key is not found
     """
     if needle is None:
-        return None 
+        return None
 
     if inspect.isclass(obj) and not issubclass(obj, Enum):
         obj = obj()
 
     if ignore_case:
         needle = needle.lower()
-    
+
     for key in dir(obj):
         if ignore_case:
             if key.lower() == needle:
@@ -415,7 +443,7 @@ def find_object_value_with_key(
         else:
             if key == needle:
                 return getattr(obj, key)
-        
+
     if throw_exception:
         raise ValueError(f'{needle} not found in {obj}')
 
@@ -423,25 +451,25 @@ def find_object_value_with_key(
 
 
 def find_object_value_with_key_or_value(
-    obj:object, needle:Union[str,object], 
-    ignore_case=False, 
+    obj:object, needle:Union[str,object],
+    ignore_case=False,
     throw_exception=False
 ):
-    """Given a class or class instance, search the 
+    """Given a class or class instance, search the
     attribute keys and values of the object for the given "needle" and return its corresponding value.
 
     NOTE: If a class if given then it must be instantiable using a default constructor (except of Enum classes).
-    
+
     Args:
         obj: Class or class instance
-        needle: Class attribute key or value to find in class instance 
+        needle: Class attribute key or value to find in class instance
         ignore_case: Ignore the key's case if True (needle must be a string)
         throw_exception: If true, throw an exception if the needle is not found, return None otherwise
     Return:
         Value of found attribute key or None if key/value is not found
     """
     if needle is None:
-        return None 
+        return None
 
     if inspect.isclass(obj) and not issubclass(obj, Enum):
         obj = obj()
@@ -449,7 +477,7 @@ def find_object_value_with_key_or_value(
     needle_lower = None
     if ignore_case and isinstance(needle, str):
         needle_lower = needle.lower()
-    
+
     for key in dir(obj):
         value = getattr(obj, key)
         if (needle_lower is None and key == needle) or \
@@ -459,7 +487,7 @@ def find_object_value_with_key_or_value(
 
     if throw_exception:
         raise ValueError(f'{needle} not found in {obj}')
-        
+
     return None
 
 
@@ -469,7 +497,7 @@ def timeit(method):
         try:
             ts = time.time()
             return method(*args, **kw)
-        finally: 
+        finally:
             te = time.time()
             diff = (te - ts) * 1000
             print(f'{method.__name__} {diff:4f}ms')

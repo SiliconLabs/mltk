@@ -1,3 +1,4 @@
+"""Utilities for processing `Tensorflow Datasets <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_"""
 import os
 from typing import Callable, Tuple, List, Dict, Union
 import wave
@@ -27,6 +28,7 @@ def load_audio_directory(
     max_samples_per_class:int=-1,
     sample_rate_hz:int=None,
     return_audio_data=False,
+    return_audio_sample_rate=False,
     white_list_formats:List[str]=None,
     follow_links=False,
     shuffle_index_directory:str=None,
@@ -34,7 +36,7 @@ def load_audio_directory(
     process_samples_function:Callable[[str,Dict[str,str]],None]=None
 ) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
     """Load a directory of audio samples and return a tuple of `Tensorflow Datasets <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_ (samples, label_ids)
-    
+
     The given audio directory should have the structure::
 
         <class1>/sample1.wav
@@ -46,11 +48,11 @@ def load_audio_directory(
         ...
         <class3>/sample1.wav
         <class3>/sample2.wav
-    
+
     Where each <class> is found in the given ``classes`` argument.
 
     .. seealso::
-        See the `Tensor Dataset API <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_ 
+        See the `Tensor Dataset API <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_
         for more details of how to use the returned datasets
 
     Args:
@@ -69,23 +71,25 @@ def load_audio_directory(
             be added to batches. This specifies the percentage of of samples to generate relative the smallest number
             of samples of other classes. For instance, if another class has 1000 samples and unknown_class_percentage=0.8,
             then the number of 'unknown' class samples generated will be 800.
-
+            Set this parameter to None to disable this feature
         silence_class_percentage: If a ``_silence_`` class is added to the class list, then 'silence' class samples will automatically
             be added to batches. This specifies the percentage of of samples to generate relative the smallest number
             of samples of other classes. For instance, if another class has 1000 samples and silence_class_percentage=0.8,
             then the number of 'silence' class samples generated will be 800.
+            Set this parameter to None to disable this feature
         class_counts: Dictionary which will be populated with the sample counts for each class
         onehot_encode: If true then the audio labels are onehot-encoded
             If false, then only the class id (corresponding to it index in the ``classes`` argument) is returned
         shuffle: If true, then shuffle the dataset
         seed: The seed to use for shuffling the dataset
-        split: A tuple indicating the (start,stop) percentage of the dataset to return, 
+        split: A tuple indicating the (start,stop) percentage of the dataset to return,
             e.g. (.75, 1.0) -> return last 25% of dataset
             If omitted then return the entire dataset
         max_samples_per_class: Maximum number of samples to return per class, this can be useful for debug to limit the dataset size
         sample_rate_hz: Sample rate to convert audio samples, if omitted then return native sample rate
         return_audio_data: If true then the audio file data is returned, if false then only the audio file path is returned
-        white_list_formats: List of file extensions to include in the search. 
+        return_audio_sample_rate: If true and return_audio_data is True, then the audio file data and corresponding sample rate is returned, if false then only the audio file data is return
+        white_list_formats: List of file extensions to include in the search.
             If omitted then only return ``.wav`` files
         follow_links: If true then follow symbolic links when recursively searching the given dataset directory
         shuffle_index_directory: Path to directory to hold generated index of the dataset
@@ -96,28 +100,28 @@ def load_audio_directory(
 
             .. highlight:: python
             .. code-block:: python
-                
+
                 def list_valid_filenames_in_directory(
-                        base_directory:str, 
-                        search_class:str, 
-                        white_list_formats:List[str], 
-                        split:Tuple[float,float], 
-                        follow_links:bool, 
+                        base_directory:str,
+                        search_class:str,
+                        white_list_formats:List[str],
+                        split:Tuple[float,float],
+                        follow_links:bool,
                         shuffle_index_directory:str
                 ) -> Tuple[str, List[str]]
                     ...
                     return search_class, filenames
-        
+
         process_samples_function: This allows for processing the samples BEFORE they're returned by this API.
             This allows for adding/removing samples.
             It has the following function signature:
 
             .. highlight:: python
             .. code-block:: python
-                
+
                 def process_samples(
                     directory:str, # The provided directory to this API
-                    sample_paths:Dict[str,str] # A dictionary: <class name>, [<sample paths relative to directory>],
+                    sample_paths:Dict[str,str], # A dictionary: <class name>, [<sample paths relative to directory>]
                     split:Tuple[float,float],
                     follow_links:bool,
                     white_list_formats:List[str],
@@ -136,7 +140,7 @@ def load_audio_directory(
     sample_paths, sample_labels = list_dataset_directory(
         directory=directory,
         classes=classes,
-        max_samples_per_class=max_samples_per_class, 
+        max_samples_per_class=max_samples_per_class,
         list_valid_filenames_in_directory_function=list_valid_filenames_in_directory_function,
         shuffle_index_directory=shuffle_index_directory,
         unknown_class_percentage=unknown_class_percentage,
@@ -159,7 +163,9 @@ def load_audio_directory(
     path_ds = tf.data.Dataset.from_tensor_slices(sample_paths)
 
     if return_audio_data:
-        feature_ds = path_ds.map(read_audio_file)
+        feature_ds = path_ds.map(
+            lambda x: read_audio_file(x, return_numpy=False, return_sample_rate=return_audio_sample_rate)
+        )
 
     else:
         feature_ds = path_ds
@@ -190,7 +196,7 @@ def load_image_directory(
     process_samples_function=None,
 ) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
     """Load a directory of images samples and return a tuple of `Tensorflow Datasets <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_ (samples, label_ids)
-    
+
     The given images directory should have the structure::
 
         <class1>/sample1.png
@@ -202,11 +208,11 @@ def load_image_directory(
         ...
         <class3>/sample1.jpg
         <class3>/sample2.jpg
-    
+
     Where each <class> is found in the given ``classes`` argument.
 
     .. seealso::
-        See the `Tensor Dataset API <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_ 
+        See the `Tensor Dataset API <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_
         for more details of how to use the returned datasets
 
     Args:
@@ -217,23 +223,23 @@ def load_image_directory(
               add an 'unknown' class to the generated batches.
               Unused classes in the dataset directory will be randomly selected and used as an 'unknown' class.
               Use the ``unknown_class_percentage`` setting to control the size of this class.
-        
+
         unknown_class_percentage: If an ``_unknown_`` class is added to the class list, then 'unknown' class samples will automatically
             be added to batches. This specifies the percentage of of samples to generate relative the smallest number
             of samples of other classes. For instance, if another class has 1000 samples and unknown_class_percentage=0.8,
             then the number of 'unknown' class samples generated will be 800.
-
+            Set this parameter to None to disable this feature
         class_counts: Dictionary which will be populated with the sample counts for each class
         onehot_encode: If true then the audio labels are onehot-encoded
             If false, then only the class id (corresponding to it index in the ``classes`` argument) is returned
         shuffle: If true, then shuffle the dataset
         seed: The seed to use for shuffling the dataset
-        split: A tuple indicating the (start,stop) percentage of the dataset to return, 
+        split: A tuple indicating the (start,stop) percentage of the dataset to return,
             e.g. (.75, 1.0) -> return last 25% of dataset
             If omitted then return the entire dataset
         max_samples_per_class: Maximum number of samples to return per class, this can be useful for debug to limit the dataset size
         return_image_data: If true then the image file data is returned, if false then only the image file path is returned
-        white_list_formats: List of file extensions to include in the search. 
+        white_list_formats: List of file extensions to include in the search.
             If omitted then only return ``.png``, ``.jpg`` files
         follow_links: If true then follow symbolic links when recursively searching the given dataset directory
         shuffle_index_directory: Path to directory to hold generated index of the dataset
@@ -244,13 +250,13 @@ def load_image_directory(
 
             .. highlight:: python
             .. code-block:: python
-                
+
                 def list_valid_filenames_in_directory(
-                        base_directory:str, 
-                        search_class:str, 
-                        white_list_formats:List[str], 
-                        split:Tuple[float,float], 
-                        follow_links:bool, 
+                        base_directory:str,
+                        search_class:str,
+                        white_list_formats:List[str],
+                        split:Tuple[float,float],
+                        follow_links:bool,
                         shuffle_index_directory:str
                 ) -> Tuple[str, List[str]]
                     ...
@@ -262,10 +268,10 @@ def load_image_directory(
 
             .. highlight:: python
             .. code-block:: python
-                
+
                 def process_samples(
                     directory:str, # The provided directory to this API
-                    sample_paths:Dict[str,str] # A dictionary: <class name>, [<sample paths relative to directory>],
+                    sample_paths:Dict[str,str], # A dictionary: <class name>, [<sample paths relative to directory>]
                     split:Tuple[float,float],
                     follow_links:bool,
                     white_list_formats:List[str],
@@ -274,7 +280,7 @@ def load_image_directory(
                     **kwargs
                 )
                     ...
-    
+
     Returns:
         Returns a tuple of two tf.data.Dataset, (samples, label_ids)
     """
@@ -284,7 +290,7 @@ def load_image_directory(
     sample_paths, sample_labels = list_dataset_directory(
         directory=directory,
         classes=classes,
-        max_samples_per_class=max_samples_per_class, 
+        max_samples_per_class=max_samples_per_class,
         list_valid_filenames_in_directory_function=list_valid_filenames_in_directory_function,
         shuffle_index_directory=shuffle_index_directory,
         unknown_class_percentage=unknown_class_percentage,
@@ -303,7 +309,7 @@ def load_image_directory(
     path_ds = tf.data.Dataset.from_tensor_slices(sample_paths)
 
     if return_image_data:
-        feature_ds = path_ds.map(read_image_file)
+        feature_ds = path_ds.map(lambda x: read_image_file(x, return_numpy=False, target_channels=0))
 
     else:
         feature_ds = path_ds
@@ -328,19 +334,19 @@ def parallel_process(
     disable_gpu_in_subprocesses=True,
 ) -> Tuple[tf.data.Dataset, ProcessPool]:
     """Parallel process the dataset
-    
+
     This will invoke the given ``callback``
     across the available CPUs in the system which can greatly improve throughput.
 
     .. note::
-        This uses the `tf.numpy_function <https://www.tensorflow.org/api_docs/python/tf/numpy_function>`_ 
+        This uses the `tf.numpy_function <https://www.tensorflow.org/api_docs/python/tf/numpy_function>`_
         API which can slow processing in some instances.
-    
+
     Args:
         dataset: The Tensorflow dataset to parallel process
         callback: The callback to invoke in parallel processes
             This callback must be at the root of the python module (i.e. it cannot be nested or a class method)
-        dtype: The data type that the ``callback`` returns, 
+        dtype: The data type that the ``callback`` returns,
             this can also be a list of dtypes if the callback returns multiple np.ndarrays
         n_jobs: The number of jobs (i.e. CPU cores) to use for processing
             This can either be an integer or a float between (0,1.0]
@@ -352,7 +358,7 @@ def parallel_process(
         disable_gpu_in_subprocesses: By default the GPU is disabled in the parallel subprocesses
 
     Returns:
-        (tf.data.Dataset, ProcessPool), 
+        (tf.data.Dataset, ProcessPool),
         a tuple of the updated dataset with the parallel processing and the associated process pool
 
     """
@@ -397,12 +403,12 @@ def parallel_process(
 
         else:
             return np.array(results, dtype=dtype)
-    
+
     @tf.function#(autograph=False)
     def _tf_parallel_process(*args):
         return tf.numpy_function(
-            _np_parallel_process, 
-            args, 
+            _np_parallel_process,
+            args,
             dtype
         )
 
@@ -418,7 +424,7 @@ def enable_numpy_behavior() -> bool:
     """Enable NumPy behavior on Tensors.
 
     NOTE: This requires Tensorflow 2.5+
-    
+
     Enabling NumPy behavior has three effects:
 
     - It adds to tf.Tensor some common NumPy methods such as T, reshape and ravel.
@@ -426,7 +432,7 @@ def enable_numpy_behavior() -> bool:
     - It enhances tf.Tensor's indexing capability to be on par with NumPy's.
 
     Refer to the `Tensorflow docs <https://tensorflow.org/versions/r2.5/api_docs/python/tf/experimental/numpy/experimental_enable_numpy_behavior>`_ for more details.
-    
+
     Returns:
         True if the numpy behavior was enabled, False else
     """
@@ -462,11 +468,11 @@ def _update_silence_samples(sample_paths:List[str], sample_rate_hz:int):
             compname = 'not compressed'
             wav.setparams((nchannels, 2, sample_rate_hz, nframes, comptype, compname))
             wav.writeframes(bytearray([0] * nframes * 2))
-        
+
 
     for i, p in enumerate(sample_paths):
         if p is None:
             sample_paths[i] = silence_wav_path
 
-           
-            
+
+

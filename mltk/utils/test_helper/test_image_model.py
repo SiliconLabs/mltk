@@ -12,7 +12,7 @@ from tensorflow.keras.layers import (
     Conv2D,
     AveragePooling2D
 )
-
+from mltk.core.keras import ImageDataGenerator
 from mltk.datasets.image import cifar10
 from mltk.core.model import (
     MltkModel,

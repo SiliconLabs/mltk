@@ -1,4 +1,7 @@
-"""File path utilities"""
+"""File path utilities
+
+See the source code on Github: `mltk/utils/path.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/path.py>`_
+"""
 import os
 import time
 import re
@@ -16,7 +19,7 @@ from .system import get_username
 # This is the base directory used for temporary files
 # It includes the the current user's name in the path
 # to separate temp files for different user's that use the same tempdir
-TEMP_BASE_DIR = f'{tempfile.gettempdir()}/{get_username()}/mltk'
+TEMP_BASE_DIR = os.environ.get('MLTK_TEMP_DIR', f'{tempfile.gettempdir()}/{get_username()}/mltk')
 
 
 def fullpath(path : str, cwd:str=None) -> str:
@@ -54,7 +57,7 @@ def get_actual_path(path: str):
         if not res:
             #File not found
             return None
-        
+
         return res[0]
     except:
         return None
@@ -64,7 +67,7 @@ def extension(path : str) -> str:
     """Return the extension of the given path"""
     idx = path.rfind('.')
     if idx == -1:
-        return '' 
+        return ''
 
     if idx == 0:
         return ''
@@ -87,7 +90,7 @@ def create_dir(path:str):
     path = fullpath(path)
     if has_filename(path):
         path = os.path.dirname(path)
-    
+
     if not path:
         return
 
@@ -110,7 +113,7 @@ def create_tempdir(subdir='') -> str:
 
 def create_user_dir(suffix:str='', base_dir:str=None) -> str:
     """Create a user directory
-    
+
     This creates the directory in one of the following base directories
     based on availability:
     - base_dir argument
@@ -121,7 +124,7 @@ def create_user_dir(suffix:str='', base_dir:str=None) -> str:
     Args:
         suffix: Optional suffix to append to the base directory
         base_dir: Optional base directory, default to MLTK_CACHE_DIR, ~/.mltk, or <user temp dir>/<user name>/mltk if omitted
-    
+
     Returns:
         path to created directory
 
@@ -136,7 +139,7 @@ def create_user_dir(suffix:str='', base_dir:str=None) -> str:
     user_dir = fullpath(user_dir + suffix)
 
     # If the MLTK_READONLY environment variable is set
-    # then don't check if the user_dir directory is writable  
+    # then don't check if the user_dir directory is writable
     if not is_read_only:
         try:
             # Try to create the directory in MLTK_CACHE_DIR or ~/.mltk
@@ -153,22 +156,24 @@ def create_user_dir(suffix:str='', base_dir:str=None) -> str:
 
 def get_user_setting(name:str, default=None):
     """Return the value of a user setting if it exists
-    
+
     User settings are defined in the file:
-    Environment variable: MLTK_USER_SETTINGS_PATH
-    OR <user home>/.mltk/user_settings.yaml
+
+    - Environment variable: MLTK_USER_SETTINGS_PATH
+    - OR <user home>/.mltk/user_settings.yaml
 
     User settings include:
+
     - model_paths: list of directories to search for MLTK models
     - commander: Simplicity Commander options
-        device: Device code
-        serial_number: Adapter serial number
-        ip_address: Adapter IP address
+      device: Device code
+      serial_number: Adapter serial number
+      ip_address: Adapter IP address
 
-    See https://siliconlabs.github.io/mltk/docs/other/settings_file.html
-    
+    See `settings_file <https://siliconlabs.github.io/mltk/docs/other/settings_file.html>`_
+
     """
-    user_settings_path = fullpath(os.environ.get('MLTK_USER_SETTINGS_PATH', '~/.mltk/user_settings.yaml')) 
+    user_settings_path = fullpath(os.environ.get('MLTK_USER_SETTINGS_PATH', '~/.mltk/user_settings.yaml'))
     if not os.path.exists(user_settings_path):
         return default
 
@@ -191,8 +196,8 @@ def get_user_setting(name:str, default=None):
 
 
 def add_user_setting(name:str, value:object):
-    """"Add an entry to the user settings
-    
+    """Add an entry to the user settings
+
     User settings are defined in the file:
     <user home>/.mltk/user_settings.yaml
     """
@@ -207,7 +212,7 @@ def add_user_setting(name:str, value:object):
     else:
         user_settings = dict()
 
-    user_settings[name] = value 
+    user_settings[name] = value
 
     with open(user_settings_paths, 'w') as f:
         yaml.dump(user_settings, f, Dumper=yaml.SafeDumper)
@@ -216,9 +221,9 @@ def add_user_setting(name:str, value:object):
 
 def remove_directory(path:str):
     """Remove the directory at the given path
-    
+
     This will remove non-empty directories and retry a few times if necessary
-    
+
     """
     if not path:
         return
@@ -264,7 +269,7 @@ def copy_directory(src, dst, exclude_dirs=None):
 
     if not os.path.exists(dst):
         os.makedirs(dst)
-        
+
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
@@ -285,17 +290,17 @@ def set_file_last_modified(file_path: str, dt: datetime.datetime = None):
 
 def file_is_newer(source_path: str, other_path: str):
     if not os.path.exists(source_path) or not os.path.exists(other_path):
-        return False 
+        return False
     return os.stat(source_path).st_mtime > os.stat(other_path).st_mtime
 
 
 def file_is_in_use(file_path:str) -> bool:
     """Return if the file is currently opened"""
     path = Path(file_path)
-    
+
     if not path.exists():
         raise FileNotFoundError
-    
+
     try:
         path.rename(path)
     except PermissionError:
@@ -305,13 +310,13 @@ def file_is_in_use(file_path:str) -> bool:
 
 
 def recursive_listdir(
-    base_dir:str, 
-    followlinks=True, 
+    base_dir:str,
+    followlinks=True,
     regex:Union[str,re.Pattern,Callable[[str],bool]]=None,
     return_relative_paths:bool=False
 ) -> List[str]:
     """Return list of all files recursively found in base_dir
-    
+
     Args:
         base_dir: The base directory to recursively search
         followlinks: IF true then follow symbolic links
@@ -327,7 +332,7 @@ def recursive_listdir(
     """
 
     base_dir = fullpath(base_dir)
-    
+
     if regex is not None:
         if isinstance(regex, str):
             regex = re.compile(regex)
@@ -337,7 +342,7 @@ def recursive_listdir(
         else:
             regex_func = regex
     else:
-        regex_func = lambda p: True 
+        regex_func = lambda p: True
 
     retval = []
     for root, _, files in os.walk(base_dir, followlinks=followlinks):
@@ -353,9 +358,9 @@ def recursive_listdir(
 
 
 def walk_with_depth(
-    base_dir:str, 
-    depth=1, 
-    followlinks=True, 
+    base_dir:str,
+    depth=1,
+    followlinks=True,
 ) -> Iterator[Tuple[str, List[str], List[str]]]:
     """Walk a directory with a max depth.
 

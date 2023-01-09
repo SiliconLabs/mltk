@@ -1,20 +1,20 @@
 import struct
 from .jlink_stream import JlinkStream, JlinkStreamOptions
-from .data_stream import JLinkDataStream 
+from .data_stream import JLinkDataStream
 
 
-class JlinkCommandStream(object):
-
+class JlinkCommandStream:
+    """Helper class for issuing a command/response to embedded device via J-Link"""
     def __init__(
-        self, 
-        command_stream='cmd', 
+        self,
+        command_stream='cmd',
         response_stream='res',
         options:JlinkStreamOptions = None,
     ):
         self._jlink_ifc = JlinkStream(options=options)
-        self._command_stream_name = command_stream 
+        self._command_stream_name = command_stream
         self._response_stream_name = response_stream
-        self._command_stream:JLinkDataStream = None 
+        self._command_stream:JLinkDataStream = None
         self._response_stream:JLinkDataStream = None
 
 
@@ -41,7 +41,7 @@ class JlinkCommandStream(object):
         try:
             self._jlink_ifc.disconnect()
         finally:
-            self._command_stream = None 
+            self._command_stream = None
             self._response_stream = None
 
 
@@ -49,16 +49,16 @@ class JlinkCommandStream(object):
         """Send a command to the device and receive the command response"""
         if self._command_stream is None:
             raise Exception('Not connected')
-        
+
         cmd_length = len(data)
         cmd_data = bytearray(struct.pack('<L', cmd_length))
         cmd_data.extend(data)
-        
+
         self._command_stream.write(cmd_data, timeout=timeout, flush=True)
 
         if no_response:
-            return None 
-        
+            return None
+
         length_bytes = self._response_stream.read(4, timeout=timeout)
         if length_bytes is None or len(length_bytes) != 4:
             raise TimeoutError('Timed-out waiting for response')

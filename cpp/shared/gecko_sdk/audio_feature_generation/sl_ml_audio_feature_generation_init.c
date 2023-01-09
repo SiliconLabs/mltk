@@ -33,7 +33,7 @@
 #include "sl_ml_audio_feature_generation.h"
 
 
-extern int16_t* sl_ml_audio_feature_generation_audio_buffer;
+static sl_ml_audio_feature_generation_mic_callback_t mic_callback = NULL;
 
 
 /***************************************************************************//**
@@ -41,6 +41,10 @@ extern int16_t* sl_ml_audio_feature_generation_audio_buffer;
  ******************************************************************************/
 static void mic_buffer_ready_callback(const int16_t *buffer, uint32_t n_frames)
 {
+  if(mic_callback != NULL)
+  {
+    mic_callback(buffer, n_frames);
+  }
   sli_ml_audio_feature_generation_audio_buffer_write_chunk(buffer, n_frames);
 }
 
@@ -72,4 +76,9 @@ sl_status_t sl_ml_audio_feature_generation_init()
   }
 
   return sl_ml_audio_feature_generation_frontend_init();
+}
+
+sl_status_t sl_ml_audio_feature_generation_set_mic_callback(sl_ml_audio_feature_generation_mic_callback_t callback)
+{
+  mic_callback = callback;
 }

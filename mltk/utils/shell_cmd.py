@@ -1,10 +1,15 @@
+"""Shell command utility
+
+See the source code on Github: `mltk/utils/shell_cmd.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/shell_cmd.py>`_
+"""
+
 import os
 import tempfile
 import logging
 import queue
 import time
 from concurrent.futures import ThreadPoolExecutor
-from typing import Tuple,Union,Iterable,Callable
+from typing import Tuple,Union,Iterable,Callable,IO
 import subprocess
 
 from .signal_handler import SignalHandler
@@ -12,15 +17,22 @@ from .signal_handler import SignalHandler
 
 
 def run_shell_cmd(
-    cmd: Union[str,Iterable], 
-    cwd:str=None, 
-    env:dict=None, 
-    outfile=None, 
+    cmd: Union[str,Iterable],
+    cwd:str=None,
+    env:dict=None,
+    outfile:IO=None,
     line_processor: Callable[[str],str]=None,
     logger:logging.Logger=None
 ) -> Tuple[int,str]:
     """Issue shell command
-    
+
+    Args:
+        cmd: The shell command. This may be a string or a list of strings
+        cwd: A path to a directory to change to before executing. If omitted then use the current working directory
+        env: Dictionary of environment variables. If omitted then use current environment variables
+        outfile:An opened, file-like object to write the shell command's output
+        line_processor: Callback to be invoked for each line returned by shell command
+        logger: Logger to dump shell command output
     Return:
         (retcode, retmsg)
     """
@@ -31,12 +43,12 @@ def run_shell_cmd(
         try:
             cmd[0] = cmd[0].replace('/', '\\')
         except:
-            pass 
-        
+            pass
+
     if isinstance(cmd, str):
-        use_shell = True 
+        use_shell = True
     else:
-        use_shell = False 
+        use_shell = False
         cmd = [str(x) for x in cmd]
 
     if logger is not None:
@@ -48,7 +60,7 @@ def run_shell_cmd(
         else:
             cmd_str += ' ' + cmd
         logger.debug(cmd_str)
-     
+
     process_line_by_line = line_processor is not None or outfile is not None
 
     out_pipe = subprocess.PIPE if process_line_by_line else tempfile.SpooledTemporaryFile()
@@ -68,10 +80,10 @@ def run_shell_cmd(
         )
     except FileNotFoundError as e:
         return -1, f'{e}'
-   
+
     if process_line_by_line:
         return _run_with_line_processing(
-            p, 
+            p,
             line_processor=line_processor,
             outfile=outfile,
         )
@@ -99,13 +111,13 @@ def run_shell_cmd(
 def _run_with_line_processing(p:subprocess.Popen, outfile, line_processor):
     flush_func = None
     saved_terminators = None
-    
+
     if outfile is not None:
         if hasattr(outfile, 'set_terminator'):
             saved_terminators = outfile.set_terminator('')
-        
+
         if hasattr(outfile, 'flush'):
-            flush_func = outfile.flush 
+            flush_func = outfile.flush
 
     def _write_line(line):
         if line_processor is not None:
@@ -130,7 +142,7 @@ def _run_with_line_processing(p:subprocess.Popen, outfile, line_processor):
                 err_line = _write_line(err_line)
 
             if out_line:
-                retval += out_line 
+                retval += out_line
             if err_line:
                 retval += err_line
 
@@ -169,7 +181,7 @@ def _read_popen_pipes(p:subprocess.Popen, sigint:SignalHandler):
             if sigint.interrupted:
                 p.kill()
                 break
-            
+
             if p.poll() is not None and q_stdout.empty() and q_stderr.empty():
                 break
 

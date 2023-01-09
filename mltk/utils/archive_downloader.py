@@ -1,3 +1,9 @@
+"""Utilities for downloading and extracting archives
+
+See the source code on Github: `mltk/utils/archive_downloader.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/archive_downloader.py>`_
+"""
+
+
 
 import sys
 import os
@@ -25,16 +31,16 @@ MLTK_CHUNK_DELIMITER = '?mltk_chunk_count='
 
 
 def download_verify_extract(
-    url: str, 
+    url: str,
     dest_dir:str=None,
     dest_subdir:str=None,
-    download_dir:str=None, 
+    download_dir:str=None,
     archive_fname:str=None,
-    show_progress:bool=False, 
-    file_hash:str=None, 
-    file_hash_algorithm:str='auto', 
+    show_progress:bool=False,
+    file_hash:str=None,
+    file_hash_algorithm:str='auto',
     logger:logging.Logger=None,
-    extract_nested:bool=False, 
+    extract_nested:bool=False,
     remove_root_dir:bool=False,
     clean_dest_dir:bool=True,
     update_onchange_only:bool=True,
@@ -54,14 +60,14 @@ def download_verify_extract(
                  If omitted, defaults to MLTK_CACHE_DIR/downloads/<archive_fname> OR
                  ~/.mltk/downloads/<archive_fname>
         archive_fname: Name of downloaded archive file, if omitted default to URL filename
-        show_progress: Show a download progressbar 
+        show_progress: Show a download progressbar
         file_hash: md5, sha1, sha256 hash of file
         file_hash_algorithm: File hashing algorithm, if auto then determine automatically
         extract_nested: If the archive has a sub archive, then extract that as well
         remove_root_dir: If the archive has a root directory, then remove it from the extracted path
         clean_dest_dir: Remove the destination directory BEFORE extracting
         update_onchange_only: Only download and extract if given url hasn't been previously downloaded and extracted, otherwise return immediately
-        download_details_fname: If update_onchange_only=True then a download details .json file is generated. 
+        download_details_fname: If update_onchange_only=True then a download details .json file is generated.
                                 This argument specifies the name of that file. If omitted, then the filename is <archive filename>-mltk.json
         extract: If false, then do NOT extract the downloaded file. In this case, return the path to the downloaded file
 
@@ -79,7 +85,7 @@ def download_verify_extract(
         download_dir = create_user_dir(suffix='downloads')
     else:
         download_dir = create_user_dir(base_dir=download_dir)
-    
+
     archive_path = f'{download_dir}/{archive_fname}'
     download_details_fname = download_details_fname or f'{archive_fname}-mltk.json'
 
@@ -94,7 +100,7 @@ def download_verify_extract(
         retval = create_user_dir(base_dir=dest_dir)
         downloads_details_path = f'{retval}/{download_details_fname}'
 
-    
+
     download_details = dict(
         url=url,
         retval=retval,
@@ -107,7 +113,7 @@ def download_verify_extract(
 
     if update_onchange_only:
         if _check_if_up_to_date(
-            details_path=downloads_details_path, 
+            details_path=downloads_details_path,
             details=download_details
         ):
             logger.debug(f'Up-to-date: {url} -> {retval}')
@@ -116,7 +122,7 @@ def download_verify_extract(
     for i in range(2):
         # Download the archive or use the cached version in the download_dir
         download_url(
-            url, 
+            url,
             dst_path=archive_path,
             show_progress=show_progress,
             logger=logger
@@ -137,13 +143,13 @@ def download_verify_extract(
             try:
                 os.remove(archive_path)
             except:
-                pass 
+                pass
             # If this was the first attempt,
             # Then continue to the beginning and try one more time
             # by re-downloading the file instead of using the cache downloaded archive
             if i == 0:
                 logger.debug(f'Download failed: {e}, retrying')
-                continue 
+                continue
 
             # Otherwise just through the exception
             raise e
@@ -151,9 +157,9 @@ def download_verify_extract(
     if extract:
         logger.warning(f"Extracting: {archive_path}\nto: {retval}\n(This may take awhile, please be patient ...)")
         extract_archive(
-            archive_path=archive_path, 
-            dest_dir=retval, 
-            extract_nested=extract_nested, 
+            archive_path=archive_path,
+            dest_dir=retval,
+            extract_nested=extract_nested,
             clean_dest_dir=clean_dest_dir,
             remove_root_dir=remove_root_dir
         )
@@ -169,14 +175,14 @@ def download_verify_extract(
 
 
 def verify_extract(
-    archive_path: str, 
+    archive_path: str,
     dest_dir:str=None,
     dest_subdir:str=None,
-    show_progress:bool=False, 
-    file_hash:str=None, 
-    file_hash_algorithm:str='auto', 
+    show_progress:bool=False,
+    file_hash:str=None,
+    file_hash_algorithm:str='auto',
     logger:logging.Logger=None,
-    extract_nested:bool=False, 
+    extract_nested:bool=False,
     remove_root_dir:bool=False,
     clean_dest_dir:bool=True,
     update_onchange_only:bool=True,
@@ -191,14 +197,14 @@ def verify_extract(
                   ~/.mltk/<dest_subdir>/
         dest_subdir: Destination sub-directory, if omitted default to archive path's basename
                      This is only used if dest_dir is omitted
-        show_progress: Show a download progressbar 
+        show_progress: Show a download progressbar
         file_hash: md5, sha1, sha256 hash of file
         file_hash_algorithm: File hashing algorithm, if auto then determine automatically
         extract_nested: If the archive has a sub archive, then extract that as well
         remove_root_dir: If the archive has a root directory, then remove it from the extracted path
         clean_dest_dir: Remove the destination directory BEFORE extracting
         update_onchange_only: Only download and extract if given url hasn't been previously downloaded and extracted, otherwise return immediately
-        extract_details_fname: If update_onchange_only=True then a details .json file is generated. 
+        extract_details_fname: If update_onchange_only=True then a details .json file is generated.
                                 This argument specifies the name of that file. If omitted, then the filename is <archive filename>-mltk.json
 
     Returns:
@@ -217,7 +223,7 @@ def verify_extract(
     else:
         dest_dir = create_user_dir(base_dir=dest_dir)
 
- 
+
     extract_details_fname = extract_details_fname or f'{archive_fname}-mltk.json'
     extract_details_path = f'{dest_dir}/{extract_details_fname}'
     extract_details = dict(
@@ -233,7 +239,7 @@ def verify_extract(
 
     if update_onchange_only:
         if _check_if_up_to_date(
-            details_path=extract_details_path, 
+            details_path=extract_details_path,
             details=extract_details,
         ):
             logger.debug(f'Up-to-date: {archive_path} -> {dest_dir}')
@@ -251,9 +257,9 @@ def verify_extract(
 
     logger.warning(f"Extracting: {archive_path}\nto: {dest_dir}\n(This may take awhile, please be patient ...)")
     extract_archive(
-        archive_path=archive_path, 
-        dest_dir=dest_dir, 
-        extract_nested=extract_nested, 
+        archive_path=archive_path,
+        dest_dir=dest_dir,
+        extract_nested=extract_nested,
         clean_dest_dir=clean_dest_dir,
         remove_root_dir=remove_root_dir
     )
@@ -266,9 +272,9 @@ def verify_extract(
 
 
 def download_url(
-    url:str, 
-    dst_path:str, 
-    show_progress=False, 
+    url:str,
+    dst_path:str,
+    show_progress=False,
     logger=None
 ) -> str:
     """Downloads the tarball or zip file from url into dst_path.
@@ -277,7 +283,7 @@ def download_url(
       dst_path: The path where the file is download
       show_progress: Show a progress bar while downloading
 
-    If the file at ``dst_path`` is already found, 
+    If the file at ``dst_path`` is already found,
     then just return the local version without downloading
     """
     logger = logger or get_logger()
@@ -292,9 +298,9 @@ def download_url(
 
     if MLTK_CHUNK_DELIMITER in url:
         _download_chunks(
-            url, 
-            dst_path=dst_path, 
-            logger=logger, 
+            url,
+            dst_path=dst_path,
+            logger=logger,
             show_progress=show_progress
         )
         return dst_path
@@ -306,7 +312,7 @@ def download_url(
     try:
         os.remove(tmp_filepath)
     except:
-        pass 
+        pass
 
     os.makedirs(os.path.dirname(tmp_filepath), exist_ok=True)
 
@@ -324,7 +330,7 @@ def download_url(
         try:
             os.remove(tmp_filepath)
         except:
-            pass 
+            pass
         prepend_exception_msg(e, f'Failed to download: {url}')
         raise
 
@@ -332,9 +338,9 @@ def download_url(
 
 
 def verify_file_hash(
-    file_path:str, 
+    file_path:str,
     file_hash:str,
-    file_hash_algorithm:str 
+    file_hash_algorithm:str
 ):
     """Return True if the calculated hash of the file matches the given hash, false else"""
 
@@ -386,7 +392,7 @@ def verify_sha256(file_path, expected_sha256):
         for chunk in iter(lambda: f.read(4096), b""):
             hasher.update(chunk)
     calc_hash = hasher.hexdigest().lower()
-    
+
     if callable(expected_sha256):
         expected_sha256(calc_hash)
         return
@@ -397,7 +403,7 @@ def verify_sha256(file_path, expected_sha256):
 
 
 def _check_if_up_to_date(
-    details_path:str, 
+    details_path:str,
     details:dict
 ):
     try:
@@ -409,12 +415,12 @@ def _check_if_up_to_date(
         pass
 
     return False
-    
+
 
 def _download_chunks(
-    url:str, 
-    dst_path:str, 
-    show_progress=False, 
+    url:str,
+    dst_path:str,
+    show_progress=False,
     logger=None
 ):
     delimiter_index = url.find(MLTK_CHUNK_DELIMITER)
@@ -425,7 +431,7 @@ def _download_chunks(
     try:
         os.remove(tmp_filepath)
     except:
-        pass 
+        pass
 
 
     logger.warning(f'Downloading {url}\nto {dst_path}\n(This may take awhile, please be patient ...)')
@@ -433,7 +439,7 @@ def _download_chunks(
 
     try:
         if show_progress and have_tqdm:
-            for chunkno in range(chunk_count): 
+            for chunkno in range(chunk_count):
                 chunk_url = f'{url}.chunk{chunkno}.bin'
                 chunk_path = f'{dst_path}.chunk{chunkno}.bin'
                 chunk_paths.append(chunk_path)
@@ -455,7 +461,7 @@ def _download_chunks(
         shutil.move(tmp_filepath, dst_path)
     except Exception as e:
         prepend_exception_msg(e, f'Failed to download chunks: {url}')
-        raise 
+        raise
     finally:
         for chunk_path in chunk_paths:
             try:

@@ -17,20 +17,21 @@ def get_mltk_logger() -> logging.Logger:
         logger = _get_logger('mltk', console=True)
         set_mltk_logger(logger)
 
-    logger = globals()['logger'] 
+    logger = globals()['logger']
 
     # Try to add TF logs to the MLTK log file
     try:
         tf_logger = logging.getLogger('tensorflow')
         mltk_file_handler = logger.file_handler
-        already_added = False
-        for h in tf_logger.handlers:
-            if h == mltk_file_handler:
-                already_added = True 
-                break
+        if mltk_file_handler:
+            already_added = False
+            for h in tf_logger.handlers:
+                if h == mltk_file_handler:
+                    already_added = True
+                    break
 
-        if not already_added:
-            tf_logger.addHandler(mltk_file_handler)
+            if not already_added:
+                tf_logger.addHandler(mltk_file_handler)
     except:
         pass
 

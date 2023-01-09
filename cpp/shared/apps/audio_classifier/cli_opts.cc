@@ -41,7 +41,7 @@ void parse_cli_opts()
         ("h,help", "Print usage")
     ;
 
-    try 
+    try
     {
         auto result = options.parse(_host_argc, _host_argv);
 
@@ -61,7 +61,7 @@ void parse_cli_opts()
         {
             cli_opts.latency_ms = result["latency"].as<uint32_t>();
             cli_opts.latency_ms_provided = true;
-            
+
         }
 
         if(result.count("model"))
@@ -74,10 +74,10 @@ void parse_cli_opts()
                 exit(-1);
             }
 
-            fseek(fp, 0, SEEK_END); 
-            auto file_size = ftell(fp); 
-            fseek(fp, 0, SEEK_SET); 
-            auto buffer = malloc(file_size); 
+            fseek(fp, 0, SEEK_END);
+            auto file_size = ftell(fp);
+            fseek(fp, 0, SEEK_SET);
+            auto buffer = malloc(file_size);
             auto result = fread(buffer, 1, file_size, fp);
             fclose(fp);
             if(result != file_size)
@@ -144,8 +144,8 @@ void parse_cli_opts()
             dump_spectrograms_dir = result["dump_spectrograms"].as<std::string>();
         }
 
-    } 
-    catch(std::exception &e) 
+    }
+    catch(std::exception &e)
     {
         std::cout << e.what() << std::endl;
         std::cout << options.help() << std::endl;

@@ -1,13 +1,14 @@
 long_description = """Silicon Labs Machine Learning Toolkit (MLTK)
 ==============================================
 
-__NOTICE:__  
-This package is considered EXPERIMENTAL - SILICON LABS DOES NOT OFFER ANY WARRANTIES AND DISCLAIMS ALL IMPLIED WARRANTIES CONCERNING THIS SOFTWARE. 
-This package is made available as a self-serve reference supported only by the on-line documentation, and community support. 
+__NOTICE:__
+
+This package is considered EXPERIMENTAL - SILICON LABS DOES NOT OFFER ANY WARRANTIES AND DISCLAIMS ALL IMPLIED WARRANTIES CONCERNING THIS SOFTWARE.
+This package is made available as a self-serve reference supported only by the on-line documentation, and community support.
 There are no Silicon Labs support services for this software at this time.
 
 
-This is a Python package with command-line utilities and scripts to aid the development 
+This is a Python package with command-line utilities and scripts to aid the development
 of machine learning models for Silicon Lab's embedded platforms.
 
 See the [MLTK Overview](https://siliconlabs.github.io/mltk/docs/overview.html) for an overview of how the various features of the MLTK are used to
@@ -16,13 +17,13 @@ create machine learning models for embedded devices.
 The features of this Python package include:
 - [Command-line](https://siliconlabs.github.io/mltk/docs/command_line.html) - Execute all ML operations from simple command-line interface
 - [Python API](https://siliconlabs.github.io/mltk/docs/python_api/python_api.html) - Execute all ML operations from a Python script
-- [Model Profiler](https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html) - Determine how efficient an ML model will execute on an embedded platform
+- [Model Profiler](https://siliconlabs.github.io/mltk/docs/guides/model_profiler.html) - Determine how efficiently an ML model will execute on an embedded platform
 - [Model Training](https://siliconlabs.github.io/mltk/docs/guides/model_training.html) - Train an ML model using [Google Tensorflow](https://www.tensorflow.org/)
 - [Model Training Monitor](https://siliconlabs.github.io/mltk/docs/guides/model_training_monitor.html) - Monitor/profile the training of a model using [Tensorboard](https://www.tensorflow.org/tensorboard)
 - [Remote Training via SSH](https://siliconlabs.github.io/mltk/docs/guides/model_training_via_ssh.html) - Securely and seamlessly train the model on a remote "cloud" machine
 - [Model Evaluation](https://siliconlabs.github.io/mltk/docs/guides/model_evaluation.html) - Evaluate a trained ML model's accuracy and other metrics
 - [Model Summary](https://siliconlabs.github.io/mltk/docs/guides/model_summary.html) - Generate a summary of the model's contents
-- [Model Visualization](https://siliconlabs.github.io/mltk/docs/guides/model_visualizer.html) - Interactively view the ML model's structure 
+- [Model Visualization](https://siliconlabs.github.io/mltk/docs/guides/model_visualizer.html) - Interactively view the ML model's structure
 - [Model Quantization](https://siliconlabs.github.io/mltk/docs/guides/model_quantization.html) - Reduce the memory footprint of an ML model by using the [Tensorflow-Lite Converter](https://www.tensorflow.org/lite/convert)
 - [Model Parameters](https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html) - Embed custom parameters into the generated model file
 - [Audio Utilities](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html) - Utilities to visualize and classify real-time audio for keyword spotting
@@ -98,7 +99,7 @@ if os.environ.get('MLTK_NO_BUILD_WRAPPERS', None) != '1':
         from cpp.tools.setup.build_wrappers_command import BuildWrappersCommand
         cmdclass['build_ext'] = BuildWrappersCommand
     except:
-        pass 
+        pass
 
     class CustomBuildPy(build_py):
         def run(self):
@@ -128,7 +129,7 @@ try:
 
     cmdclass['bdist_wheel'] = BdistWheelCommand
 except:
-    pass 
+    pass
 
 
 additional_install_dependencies = []
@@ -154,7 +155,7 @@ install_dependencies = [
     'pyaml<22.0',
     'tensorflow>=2.3,<3.0',
     'tensorflow_probability>=0.12.2',
-    'tflite-support', 
+    'tflite-support',
     'protobuf>=3.18,<3.20', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
     'onnx',
     'onnxruntime<1.13',
@@ -174,7 +175,7 @@ install_dependencies = [
 ] + additional_install_dependencies
 
 extra_dependencies = {
-    'full': [ 
+    'full': [
         'opencv-python',
         'netron',
         'paramiko',
@@ -193,12 +194,12 @@ for dep in setup_dependencies_py:
     dep_name = match.group(1).lower()
     modified = False
     for i, req in enumerate(install_dependencies):
-        # If the MLTK_SETUP_PY_DEPS is already an install requirement, 
+        # If the MLTK_SETUP_PY_DEPS is already an install requirement,
         # then just replace it
-        if req.lower().startswith(dep_name): 
-            install_dependencies[i] = dep 
+        if req.lower().startswith(dep_name):
+            install_dependencies[i] = dep
             print(f'Modifying install requirement: {dep}')
-            modified = True 
+            modified = True
             break
     # Otherwise add the new MLTK_SETUP_PY_DEPS to the install requirements
     if not modified:
@@ -227,15 +228,15 @@ setup(
     extras_require=extra_dependencies,
     packages=find_packages(include=['mltk', 'mltk.*']),
     package_dir={'': '.'},
-    package_data={ 
+    package_data={
         'mltk.core.tflite_micro': [f'_tflite_micro_wrapper.{wrapper_extension}'],
         'mltk.core.tflite_micro.accelerators.mvp': [f'_mvp_wrapper.{wrapper_extension}'],
         'mltk.core.tflite_micro.accelerators.mvp.estimator': ['estimators_url.yaml'],
         'mltk.core.preprocess.audio.audio_feature_generator': [f'_audio_feature_generator_wrapper.{wrapper_extension}'],
         'mltk.core.tflite_model_parameters.schema': ['dictionary.fbs', 'generate_schema.sh'],
         'mltk.models.examples': [
-            'audio_example1.mltk.zip', 
-            'image_example1.mltk.zip', 
+            'audio_example1.mltk.zip',
+            'image_example1.mltk.zip',
             'autoencoder_example.mltk.zip',
         ],
         'mltk.models.siliconlabs': [
@@ -246,16 +247,17 @@ setup(
             'keyword_spotting_with_transfer_learning.mltk.zip',
             'keyword_spotting_pacman.mltk.zip',
             'keyword_spotting_pacman_v2.mltk.zip',
-            'rock_paper_scissors.mltk.zip'
+            'rock_paper_scissors.mltk.zip',
+            'keyword_spotting_alexa.mltk.zip'
         ],
         'mltk.models.tflite_micro': [
             'tflite_micro_speech.mltk.zip',
             'tflite_micro_magic_wand.mltk.zip'
         ],
         'mltk.models.tinyml': [
-            'anomaly_detection.mltk.zip', 
-            'image_classification.mltk.zip', 
-            'keyword_spotting.mltk.zip', 
+            'anomaly_detection.mltk.zip',
+            'image_classification.mltk.zip',
+            'keyword_spotting.mltk.zip',
             'visual_wake_words.mltk.zip'
         ],
         'mltk.utils.firmware_apps': ['download_urls.yaml'],

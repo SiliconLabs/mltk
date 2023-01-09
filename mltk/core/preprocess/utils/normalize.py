@@ -1,5 +1,4 @@
-
-
+"""Utilities for normalizing data"""
 import numpy as np
 
 
@@ -34,7 +33,7 @@ def normalize(
         # and convert if it's not
         if x.dtype !=  dtype:
             x = x.astype(dtype)
-        
+
         # Return the non-standardized x
         return x
 
@@ -57,6 +56,6 @@ def normalize(
 
     if dtype is not None:
         x = x.astype(dtype)
-    
+
     return x
 

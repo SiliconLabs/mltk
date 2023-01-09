@@ -17,7 +17,7 @@ from mltk.utils.archive_downloader import download_verify_extract
 from mltk.utils.hasher import generate_hash
 from mltk.utils.python import prepend_exception_msg
 from mltk.utils.path import fullpath, recursive_listdir
-from keras_preprocessing.image.utils import (img_to_array, load_img, array_to_img)
+from mltk.core.keras import (img_to_array, load_img, array_to_img)
 
 
 

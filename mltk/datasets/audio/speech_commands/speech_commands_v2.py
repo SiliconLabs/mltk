@@ -133,7 +133,7 @@ VERIFY_SHA1 = '4264eb9753e38eef2ec1d15dfac8441f09751ca9'
 
 def load_data(
     dest_dir:str=None,
-    dest_subdir='datasets/speech_commands/v2'
+    dest_subdir='datasets/speech_commands/v2',
 ) -> str:
     """Download and extract the Google Speech commands dataset v2, 
     and return the directory path to the extracted dataset
@@ -150,6 +150,7 @@ def load_data(
 
     path = download_verify_extract(
         url=DOWNLOAD_URL,
+        dest_dir=dest_dir,
         dest_subdir=dest_subdir,
         file_hash=VERIFY_SHA1,
         show_progress=True

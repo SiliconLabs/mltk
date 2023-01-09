@@ -13,10 +13,10 @@ def silabs_commander_command(ctx: typer.Context):
     """Silab's Commander Utility
 
     This utility allows for accessing a Silab's embedded device via JLink.
-    
-    For more details issue command: mltk commander --help 
+
+    For more details issue command: mltk commander --help
     """
-    
+
     # Import all required packages here instead of at top
     # to help improve the CLI's responsiveness
     from mltk.utils.commander import issue_command
@@ -27,6 +27,69 @@ def silabs_commander_command(ctx: typer.Context):
         issue_command(*ctx.meta['vargs'], outfile=logger)
     except Exception as e:
         cli.handle_exception('Commander failed', e)
+
+
+
+@cli.root_cli.command('program_app')
+def program_app_command(
+    firmware_image_path:str = typer.Argument(..., help='Path to firmware executable'),
+    model: str = typer.Option(None, '--model', '-m',
+        help='''\bOne of the following:
+- Name of previously trained MLTK model
+- Path to .tflite model file
+- Path to .mltk.zip model archive file''',
+        metavar='<model>'
+    ),
+    platform:str = typer.Option(None, help='Platform name. If omitted then platform is automatically determined based on the connected device'),
+    verbose:bool = typer.Option(False, '-v', '--verbose', help='Enable verbose logging'),
+):
+    """Program the given firmware image to the connected device"""
+    from mltk.utils import firmware_apps
+    from mltk.utils.path import fullpath
+    from mltk.core import load_tflite_model
+
+    tflite_model = None
+    logger = cli.get_logger(verbose=verbose)
+
+    if model:
+        try:
+            tflite_model = load_tflite_model(
+                model,
+                print_not_found_err=True,
+                logger=logger
+            )
+        except Exception as e:
+            cli.handle_exception('Failed to load model', e)
+
+    app_name = None
+    accelerator = None
+
+    if re.match(r'.*\..*', firmware_image_path):
+        firmware_image_path = fullpath(firmware_image_path)
+    else:
+        toks = firmware_image_path.split('-')
+        firmware_image_path = None
+        if len(toks) >= 3:
+            accelerator = toks[-1]
+            platform = toks[-2]
+        if len(toks) == 3:
+            app_name = toks[0]
+        elif len(toks) == 4:
+            app_name = '-'.join(toks[:2])
+        else:
+            cli.abort(msg='Invalid firmware image path argument')
+
+
+    firmware_apps.program_image_with_model(
+        name=app_name,
+        platform=platform,
+        accelerator=accelerator,
+        tflite_model=tflite_model,
+        logger=logger,
+        halt=False,
+        firmware_image_path=firmware_image_path,
+    )
+
 
 
 
@@ -87,7 +150,7 @@ def download_run_command(
         except Exception as e:
             cli.handle_exception('Failed to run command on remote', e)
         return
-    
+
     stop_regex =[re.compile(r'.*done.*', re.IGNORECASE)]
     if completed_msg:
         logger.debug(f'Completed msg regex: {completed_msg}')
@@ -107,14 +170,14 @@ def download_run_command(
 
     logger.info(f'Programming {firmware_image_path} to device ...')
     commander.program_flash(
-        firmware_image_path, 
+        firmware_image_path,
         platform=platform,
         device=device,
         show_progress=False,
         halt=True,
     )
 
-    # If no serial COM port is provided, 
+    # If no serial COM port is provided,
     # then attemp to resolve it based on common Silab's board COM port description
     port = port or 'regex:JLink CDC UART Port'
     baud = baud or 115200
@@ -123,13 +186,13 @@ def download_run_command(
     for retry_count in range(1, max_retries+1):
         logger.error(f'Executing application on device (attempt {retry_count} of {max_retries}) ...')
         logger.debug(f'Opening serial connection, BAUD={baud}, port={port}')
-        with SerialReader( 
+        with SerialReader(
             port=port,
-            baud=baud, 
+            baud=baud,
             outfile=logger,
             stop_regex=stop_regex,
             fail_regex=[
-                re.compile(r'.*hardfault.*', re.IGNORECASE), 
+                re.compile(r'.*hardfault.*', re.IGNORECASE),
                 re.compile(r'.*error.*', re.IGNORECASE),
                 re.compile(r'.*failed to alloc memory.*', re.IGNORECASE),
                 re.compile(r'.*assert failed.*', re.IGNORECASE)
@@ -227,7 +290,7 @@ def _download_run_on_remote(
 
         ssh_client.create_remote_dir(ssh_client.remote_dir, remote_cwd='.')
 
-        
+
         retcode, retmsg = ssh_client.execute_command(f'{ssh_client.python_exe} -m venv {ssh_client.remote_dir}')
         if retcode != 0:
             raise RuntimeError(f'Failed to create MLTK venv, err: {retmsg}')
@@ -250,7 +313,7 @@ def _download_run_on_remote(
             raise RuntimeError(f'Failed to get mltk path on remote, err: {retmsg}')
         idx = retmsg.index('MLTK_REMOTE_PATH=')
         remote_mltk_dir = retmsg[idx + len('MLTK_REMOTE_PATH='):].strip().replace('\\', '/')
-      
+
         firmware_image_path = fullpath(firmware_image_path)
         remote_firmwage_image_path = f'{ssh_client.remote_dir}/{os.path.basename(firmware_image_path)}'
 
@@ -266,7 +329,7 @@ def _download_run_on_remote(
             cmd += f' --setup-script "{remote_setup_script}"'
             if setup_script_args:
                 cmd += f' --setup-script-args "{setup_script_args}"'
-        
+
         if platform:
             cmd  += f' --platform {platform}'
         if device:

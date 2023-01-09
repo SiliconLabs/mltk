@@ -1,3 +1,8 @@
+"""Utilities for invoking CMake
+
+See the source code on Github: `mltk/utils/cmake.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/cmake.py>`_
+"""
+
 from typing import List
 import sys
 import os
@@ -27,7 +32,7 @@ PLATFORM_TOOLCHAIN_MAPPING = {
 
 
 def build_mltk_target(
-    target:str, 
+    target:str,
     mltk_target:str=None,
     additional_variables:List[str]=None,
     debug:bool=False,
@@ -38,12 +43,12 @@ def build_mltk_target(
     platform:str=None,
     logger:logging.Logger=None,
     verbose:bool=False,
-    jobs:int=None, 
+    jobs:int=None,
     accelerator:str=None,
     use_user_options:bool=False
 ) -> str:
     """Build an MLTK CMake target
-    
+
     Args:
         target: Name of CMake target to build
         mltk_target: Name of MLTK_TARGET, if omitted use target
@@ -57,7 +62,7 @@ def build_mltk_target(
         logger: Optional python logger
         verbose: Enable verbose logging while building
         accelerator: Name of accelerator to use for TFLITE_MICRO_ACCELERATOR CMake variable
-        jobs: Number of parallel build jobs 
+        jobs: Number of parallel build jobs
         use_user_options: Use the user_options.cmake in the source directory. Default is to IGNORE user_options.cmake
     Returns:
         The path to the build directory
@@ -81,7 +86,7 @@ def build_mltk_target(
     platform = platform or get_current_os()
 
     build_dir = get_build_directory(
-        platform=platform, 
+        platform=platform,
         target=target,
         debug=debug,
         build_dir=build_dir,
@@ -117,7 +122,7 @@ def build_mltk_target(
     for v in additional_variables:
         cmd.append(f'-D{v}')
 
-    cmd.extend([ 
+    cmd.extend([
         f'-S{source_dir}',
         f'-B{build_dir}',
         '-G Ninja'
@@ -126,13 +131,13 @@ def build_mltk_target(
     cmd_str = '\n'.join(cmd)
     logger.info('Invoking:\n' + cmd_str + '\n')
     retcode, _ = run_shell_cmd(
-        cmd=cmd, 
+        cmd=cmd,
         outfile=logger,
     )
     if retcode != 0:
         raise Exception('Failed to configure CMake project')
 
-    cmd = [ 
+    cmd = [
         f'{CMAKE_BIN_DIR}/cmake'.replace('\\', '/'),
         '--build', build_dir,
         '--config', build_type,
@@ -141,7 +146,7 @@ def build_mltk_target(
 
     if verbose or jobs:
         cmd.append('--')
-    
+
     if verbose:
         cmd.extend(['-d', 'keeprsp'])
         cmd.append('-v')
@@ -152,7 +157,7 @@ def build_mltk_target(
     cmd_str = '\n'.join(cmd)
     logger.info(f'Invoking {cmd_str}')
     retcode, _ = run_shell_cmd(
-        cmd=cmd, 
+        cmd=cmd,
         outfile=logger,
     )
     if retcode != 0:
@@ -162,7 +167,7 @@ def build_mltk_target(
 
 
 def invoke_mltk_target(
-    target:str, 
+    target:str,
     build_target:str=None,
     debug:bool=False,
     build_dir:str=None,
@@ -181,7 +186,7 @@ def invoke_mltk_target(
     build_dir = get_build_directory(
         platform=platform,
         target=build_target,
-        debug=debug, 
+        debug=debug,
         build_dir=build_dir,
         build_subdir=build_subdir
     )
@@ -191,10 +196,10 @@ def invoke_mltk_target(
     cmd.extend(['--target', target])
     if verbose or (logger is not None and hasattr(logger, 'verbose') and logger.verbose):
         cmd.append('-v')
-    
+
     logger.info(f'Invoking {" ".join(cmd)}')
     retcode, retval = run_shell_cmd(
-        cmd=cmd, 
+        cmd=cmd,
         outfile=logger,
     )
     if retcode != 0:

@@ -2,15 +2,17 @@ __NOTE:__ Refer to the [online documentation](https://siliconlabs.github.io/mltk
 # Tensorflow-Lite Model
 
 This allows for accessing [.tflite](https://www.tensorflow.org/lite/models/convert) model files.
-A `.tflite` uses a binary format called a [flatbuffer](https://google.github.io/flatbuffers/). 
+A `.tflite` uses a binary format called a [flatbuffer](https://google.github.io/flatbuffers/).
 The flatbuffer "schema" used by a `.tflite` model is defined in [schema.fbs](https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/schema/schema.fbs).
 
+
+## Example Usage
 
 Example usage of this package is as follows:
 
 ```python
 # Import the TfliteModel class
-from mltk.core import TfliteModel 
+from mltk.core import TfliteModel
 
 # Load the .tflite
 tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)
@@ -24,6 +26,7 @@ print(summary)
 
 See the [TfliteModel API examples](https://siliconlabs.github.io/mltk/mltk/examples/tflite_model.html) for more examples.
 
+## API Reference
 
 
 ```{eval-rst}

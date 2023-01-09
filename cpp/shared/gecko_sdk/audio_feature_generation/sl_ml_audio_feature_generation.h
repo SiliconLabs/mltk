@@ -460,6 +460,12 @@ void sl_ml_audio_feature_generation_reset();
 sl_status_t sl_ml_audio_feature_generation_activity_detected();
 
 
+typedef void (*sl_ml_audio_feature_generation_mic_callback_t)(const int16_t* data, uint32_t n_frames);
+sl_status_t sl_ml_audio_feature_generation_set_mic_callback(sl_ml_audio_feature_generation_mic_callback_t callback);
+
+
+extern int16_t* sl_ml_audio_feature_generation_audio_buffer;
+
 
 /** @} (end addtogroup ml_audio_feature_generation) */
 

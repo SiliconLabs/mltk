@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include <cstdint>
 #include "logging/logging.hpp"
@@ -9,7 +9,7 @@
 #ifndef VERBOSE
 #define VERBOSE false
 #define VERBOSE_PROVIDED false
-#else 
+#else
 #define VERBOSE_PROVIDED true
 #endif
 
@@ -17,49 +17,49 @@
 #ifndef WINDOW_MS
 #define WINDOW_MS 1000
 #define WINDOW_MS_PROVIDED false
-#else 
+#else
 #define WINDOW_MS_PROVIDED true
 #endif
 
 #ifndef THRESHOLD
 #define THRESHOLD 185
-#define THRESHOLD_PROVIDED false 
-#else 
+#define THRESHOLD_PROVIDED false
+#else
 #define THRESHOLD_PROVIDED true
 #endif
 
 #ifndef SUPPRESSION_MS
 #define SUPPRESSION_MS 1500
 #define SUPPRESSION_MS_PROVIDED false
-#else 
+#else
 #define SUPPRESSION_MS_PROVIDED true
-#endif 
+#endif
 
 #ifndef COUNT
 #define COUNT 3
 #define COUNT_PROVIDED false
-#else 
+#else
 #define COUNT_PROVIDED true
 #endif
 
 #ifndef VOLUME_GAIN
 #define VOLUME_GAIN 1
 #define VOLUME_GAIN_PROVIDED false
-#else 
+#else
 #define VOLUME_GAIN_PROVIDED true
 #endif
 
 #ifndef LATENCY_MS
 #define LATENCY_MS 100
 #define LATENCY_MS_PROVIDED false
-#else 
+#else
 #define LATENCY_MS_PROVIDED true
 #endif
 
 #ifndef SENSITIVITY
 #define SENSITIVITY .5f
 #define SENSITIVITY_PROVIDED false
-#else 
+#else
 #define SENSITIVITY_PROVIDED true
 #endif
 

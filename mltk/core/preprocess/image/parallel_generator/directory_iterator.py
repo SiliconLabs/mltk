@@ -8,7 +8,6 @@ from typing import List, Tuple, Dict
 
 import numpy as np
 
-from keras_preprocessing.image.utils import _list_valid_filenames_in_directory
 
 from mltk.core.utils import get_mltk_logger
 from mltk.core.preprocess.utils import list_dataset_directory

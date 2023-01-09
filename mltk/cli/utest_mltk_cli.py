@@ -1,6 +1,7 @@
 import os
 from contextlib import redirect_stdout
-
+import tempfile
+import time
 import pytest
 import typer
 
@@ -32,6 +33,9 @@ Comma separated list of unit test types, options are:
     ),
     clear_cache: bool = typer.Option(False, 
         help='Clear the MLTK cache directory before running tests'
+    ),
+    unique_temp_dir: bool = typer.Option(False, 
+        help='Use a unique path for the tmp directory'
     ),
 ):
     """Run the all unit tests"""
@@ -86,6 +90,11 @@ Comma separated list of unit test types, options are:
     logger = get_logger('utest_cli', console=True)
     logger.set_terminator('')
     logger.info(f'Generating logs at: {pytest_results_dir}\n')
+
+    if unique_temp_dir:
+        from mltk.utils import path
+        path.TEMP_BASE_DIR = f'{tempfile.gettempdir()}/mltk/{int(time.time())}'
+        logger.warning(f'Setting temp dir as {path.TEMP_BASE_DIR}')
 
     if clear_cache:
         utest_cache_dir = create_tempdir('utest_cache')

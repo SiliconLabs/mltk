@@ -1,3 +1,7 @@
+"""Data hashing utilities
+
+See the source code on Github: `mltk/utils/hasher.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/hasher.py>`_
+"""
 import hashlib
 
 
@@ -9,8 +13,8 @@ def generate_hash(*args) -> str:
 
 
 def hash_file(
-    path: str, 
-    algorithm: str = 'md5', 
+    path: str,
+    algorithm: str = 'md5',
     include_filename: bool = False
 ) -> str:
     """Generate a hash of the given file"""
@@ -28,23 +32,23 @@ def hash_file(
     with open(path, 'rb') as f:
         if include_filename:
             hasher.update(path.encode('utf-8'))
-        
+
         for chunk in iter(lambda: f.read(4096), b""):
             hasher.update(chunk)
-    
+
     return hasher.hexdigest().lower()
 
 
 
 def hash_object(*objects, hasher=None):
     """Hash the given object(s) and return the hashlib hasher instance
-    
+
     If no hasher argument is provided, then automatically created
     a hashlib.md5()
     """
     if hasher is None:
         hasher = hashlib.md5()
-    
+
     for obj in objects:
         if isinstance(obj, dict):
             for key, value in obj.items():

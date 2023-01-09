@@ -5,8 +5,8 @@ Installation
 
 The MLTK supports three modes of installation:  
 - [Standard Python Package](#standard-python-package) - Use the MLTK like any other package in your local Python3 environment
-- [Google Colab](#google-colab) - Run the MLTK in the [Google Colab](https://colab.research.google.com/notebooks/welcome.ipynb) cloud servers. This is useful for training models.
-- [Local Development](#local-development) - Locally build the MLTK Python C++ wrappers from source
+- [Google Colab](#google-colab) - Run the MLTK in the [Google Colab](https://colab.research.google.com/notebooks/welcome.ipynb) cloud servers. This allows for running the MLTK _without_ installing it locally
+- [Local Development](#local-development) - Locally build the MLTK C++ [Python wrappers](https://siliconlabs.github.io/mltk/docs/cpp_development/wrappers/index.html) and [examples](https://siliconlabs.github.io/mltk/docs/cpp_development/examples/index.html) from source
 
 
 ```{note} 
@@ -141,16 +141,16 @@ Alternatively, you can update to a specific version with:
 
    .. code-block:: shell
 
-      pip  install silabs-mltk[full]==0.13.0
+      pip  install silabs-mltk[full]==0.14.0
 
 .. tabbed:: Linux
 
    .. code-block:: shell
 
-      pip3 install silabs-mltk[full]==0.13.0
+      pip3 install silabs-mltk[full]==0.14.0
 ```
 
-and replace `0.13.0` with the desired version.
+and replace `0.14.0` with the desired version.
 
 
 

@@ -2,10 +2,12 @@ import re
 import os
 import argparse
 import sys
-
+from typing import Callable, List, Union, Iterator, Tuple
 
 CURDIR = os.path.abspath(os.path.dirname(__file__))
-MLTK_CPP_DIR = os.path.abspath(f'{CURDIR}/..').replace('\\', '/')
+MLTK_CPP_DIR = os.path.normpath(f'{CURDIR}/../..').replace('\\', '/')
+MLTK_PYTHON_DIR = os.path.normpath(f'{CURDIR}/../../../mltk').replace('\\', '/')
+
 
 
 def main():
@@ -19,6 +21,7 @@ def main():
     if args.paths:
         search_dirs.extend(args.paths.split(';'))
     search_dirs.append(MLTK_CPP_DIR)
+    search_dirs.append(MLTK_PYTHON_DIR)
 
     target_re = re.compile(args.target)
     add_executable_re = re.compile(r'add_executable\s*\(\s*([\w_]+)')
@@ -30,13 +33,18 @@ def main():
         if not os.path.isdir(search_dir):
             raise Exception(f'Bunk dir: {search_dir}')
 
-        for root, _, files in os.walk(search_dir):
+        if search_dir in (MLTK_PYTHON_DIR, MLTK_CPP_DIR):
+            search_depth=5
+        else:
+            search_depth=10
+
+        for root, _, files in walk_with_depth(search_dir, depth=search_depth):
             root = root.replace('\\', '/')
 
             # Do not search the mltk/cpp/tools directory
             if root.startswith(f'{MLTK_CPP_DIR}/tools'):
                 continue
-        
+
             for fn in files:
                 if fn.lower() == 'cmakelists.txt': 
                     cmake_path = f'{root}/{fn}'
@@ -74,6 +82,25 @@ def _find_target(regex: re.Pattern, target_dir: str, contents: str, target: re.P
 def _print_result(target, targe_dir):
     sys.stdout.write(f'{target};{targe_dir}\n')
     sys.exit()
+
+
+def walk_with_depth(
+    base_dir:str, 
+    depth=1, 
+    followlinks=True, 
+) -> Iterator[Tuple[str, List[str], List[str]]]:
+    """Walk a directory with a max depth.
+
+    This is similar to os.walk except it has an optional maximum directory depth that it will walk
+    """
+    base_dir = base_dir.rstrip(os.path.sep)
+    assert os.path.isdir(base_dir)
+    num_sep = base_dir.count(os.path.sep)
+    for root, dirs, files in os.walk(base_dir, followlinks=followlinks):
+        yield root, dirs, files
+        num_sep_this = root.count(os.path.sep)
+        if depth and num_sep + depth <= num_sep_this:
+            del dirs[:]
 
 
 

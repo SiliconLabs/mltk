@@ -1,39 +1,41 @@
 from typing import List, Dict
 import sys
-import time 
+import time
 import re
 import threading
 import queue
 
-import serial 
+import serial
 import serial.tools.list_ports
 from .python import as_list
 
 
 class SerialReader(object):
-    """Utility for reading data from a serial COM port"""
+    """Utility for reading data from a serial COM port
+
+    Args:
+        port: Name of serial COM port, if starts with "regex:" then try to find a matching port by listing all ports
+        baud: Baud rate
+        outfile: File-like object to write received serial data, use sys.stdout if omitted
+        mode: outfile mode, if mode='r' then write as ASCII (ignore char > 127 and \\r), if mode='rb' then write as binary
+        start_regex: Regex or list of Regex to use match against received serial data before writing to the captured_data buffer during read()
+        stop_regex: Regex or list of Regex to use match against received serial data to stop writing to the captured_data buffer and read() returns
+        fail_regex: Regex or list of Regex to use match against received serial data to abort read()
+
+    See the source code on Github: `mltk/utils/serial_reader.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/serial_reader.py>`_
+    """
     def __init__(
-        self, 
-        port: str, 
-        baud=115200, 
-        outfile=None, 
+        self,
+        port: str,
+        baud=115200,
+        outfile=None,
         mode = 'r',
         start_regex: re.Pattern = None,
         stop_regex: re.Pattern = None,
         fail_regex: re.Pattern = None,
     ):
-        """
-        Args:
-            port: Name of serial COM port, if starts with "regex:" then try to find a matching port by listing all ports
-            baud: Baud rate 
-            outfile: File-like object to write received serial data, use sys.stdout if omitted
-            mode: outfile mode, if mode='r' then write as ASCII (ignore char > 127 and \r), if mode='rb' then write as binary
-            start_regex: Regex or list of Regex to use match against received serial data before writing to the captured_data buffer during read()
-            stop_regex: Regex or list of Regex to use match against received serial data to stop writing to the captured_data buffer and read() returns
-            fail_regex: Regex or list of Regex to use match against received serial data to abort read()
-        """
-        self.port = port 
-        self.baud = baud 
+        self.port = port
+        self.baud = baud
         self.mode = mode
         self.outfile = outfile or sys.stdout
         self.start_regex = start_regex
@@ -41,8 +43,8 @@ class SerialReader(object):
         self.fail_regex = fail_regex
         self._handle : serial.Serial = None
 
-        self._started = False  
-        self._stopped = False 
+        self._started = False
+        self._stopped = False
         self._failed = False
 
         self._captured_data = ''
@@ -61,22 +63,22 @@ class SerialReader(object):
     @property
     def started(self) -> bool:
         """Return if the start_regex condition has been found"""
-        return self._started 
+        return self._started
 
     @property
     def stopped(self) -> bool:
         """Return if the stop_regex condition has been found"""
-        return self._stopped 
-    
+        return self._stopped
+
     @property
     def failed(self) -> bool:
         """Return if the fail_regex condition has been found"""
-        return self._failed 
+        return self._failed
 
     @property
     def captured_data(self) -> str:
         """Data received by read() between the start_regex and stop_regex conditions"""
-        return self._captured_data 
+        return self._captured_data
 
     @property
     def error_message(self) -> str:
@@ -98,7 +100,7 @@ class SerialReader(object):
         """List the COM ports and try to find the given port in the list"""
         if not port:
             raise ValueError('Null port provided')
-        
+
         ports = SerialReader.list_ports()
 
         port_re = None
@@ -120,7 +122,7 @@ class SerialReader(object):
             available_ports = 'Available COM ports:\n' + '\n'.join([x['port'] for x in ports])
         else:
             available_ports = 'No serial COM ports available'
-        
+
         raise RuntimeError(
             f'Serial COM port not found: {port}\n' \
             f'{available_ports}\n\n' \
@@ -137,7 +139,7 @@ class SerialReader(object):
 
         try:
             self._handle = serial.Serial(
-                port=port, 
+                port=port,
                 baudrate=self.baud,
                 parity=serial.PARITY_NONE,
                 stopbits=serial.STOPBITS_ONE,
@@ -149,7 +151,7 @@ class SerialReader(object):
                 'Ensure the development board is on and properly enumerated.\n' \
                 'Also ensure no other serial terminals are connected to the COM port.\n' \
                 f'Error details: {e}'
-            ) 
+            )
         self.flush()
 
         self.start_regex = as_list(self.start_regex)
@@ -157,11 +159,11 @@ class SerialReader(object):
         self.fail_regex = as_list(self.fail_regex)
         self._captured_data = ''
 
-        self._started = False 
-        self._stopped = False 
+        self._started = False
+        self._stopped = False
         self._failed = False
         if not self.start_regex and (self.stop_regex or self.fail_regex):
-            self._started = True 
+            self._started = True
 
         self._rx_thread_active.clear()
         self._rx_thread = threading.Thread(
@@ -178,7 +180,7 @@ class SerialReader(object):
             self._rx_thread_active.set()
             self._rx_thread.join(5)
             self._rx_thread = None
-        
+
         while not self._rx_queue.empty():
             self._rx_queue.get()
 
@@ -200,9 +202,9 @@ class SerialReader(object):
 
 
     def read(self, timeout:float=None) -> bool:
-        """Read data for the given timeout or until stop_regex or fail_regex 
+        """Read data for the given timeout or until stop_regex or fail_regex
         have been found in the received data.
-        
+
         The captured_data property will contain the received data between the start_regex and stop_regex conditions.
         The error_message property will contain any data received after the fail_regex conditions.
 
@@ -210,8 +212,9 @@ class SerialReader(object):
 
         Args:
             timeout: Maximum time in seconds to receive serial data. If None then read until stop_regex/fail_regex found.
+
         Returns:
-            True if the stop_regex or fail_regex were found in the received data. 
+            True if the stop_regex or fail_regex were found in the received data.
             False on on timeout.
         """
 
@@ -234,7 +237,7 @@ class SerialReader(object):
                     return True
 
                 if not self._wait_for_start_condition():
-                    continue 
+                    continue
 
                 if self._check_for_stop_condition():
                     return True
@@ -248,7 +251,7 @@ class SerialReader(object):
 
     def _buffer_data(self):
         """Receive data from the COM port and write the the outfile and _captured_data buffer
-        
+
         """
         if not self.is_open:
             raise Exception('Connection not opened')
@@ -295,8 +298,8 @@ class SerialReader(object):
         for regex in self.start_regex:
             match = regex.search(self._captured_data)
             if match is not None:
-                found = True 
-                break 
+                found = True
+                break
 
         if not found:
             return False
@@ -316,8 +319,8 @@ class SerialReader(object):
         for regex in self.stop_regex:
             match = regex.search(self._captured_data)
             if match is not None:
-                found = True 
-                break 
+                found = True
+                break
 
         if not found:
             return False
@@ -325,7 +328,7 @@ class SerialReader(object):
         self._stopped = True
         self._captured_data = self._captured_data[:match.start(0)]
 
-        return True 
+        return True
 
 
     def _check_for_fail_condition(self):
@@ -337,8 +340,8 @@ class SerialReader(object):
         for regex in self.fail_regex:
             match = regex.search(self._captured_data)
             if match is not None:
-                found = True 
-                break 
+                found = True
+                break
 
         if not found:
             return False
@@ -351,7 +354,7 @@ class SerialReader(object):
 
     def __enter__ (self):
         self.open()
-        return self 
+        return self
 
 
     def __exit__ (self, *args, **kwargs):

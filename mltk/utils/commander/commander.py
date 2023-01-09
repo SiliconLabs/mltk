@@ -14,8 +14,8 @@ from mltk.utils.python import DefaultDict
 
 
 
-if not __package__:       
-    CURDIR = os.path.dirname(os.path.abspath(__file__))           
+if not __package__:
+    CURDIR = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, os.path.dirname(CURDIR))
     __package__ = os.path.basename(CURDIR)# pylint: disable=redefined-builtin
 
@@ -35,15 +35,15 @@ DEVICE_MAPPING = {
 class DeviceInfo:
     part_number:str
     die_revision:str
-    production_ver:str 
-    flash_size:int 
-    sram_size:int 
+    production_ver:str
+    flash_size:int
+    sram_size:int
     unique_id:str
 
     @property
     def part_number_tokens(self) -> Tuple[str]:
         """Tokenize part number
-        
+
         e.g. EFR32MG24B110F1536GM48
         token 0: EFR32
         token 1: MG
@@ -70,15 +70,15 @@ class DeviceInfo:
 
 
 def issue_command(
-    *args, 
-    platform:str=None, 
+    *args,
+    platform:str=None,
     outfile=None,
     line_processor: Callable[[str],str]=None,
     device:str=None,
     logger:logging.Logger=None
     ) -> str:
     """Issue a Commander command
-    
+
     This has similar functionality to the command-line, e.g.:
     issue_command('--help')         -> commander.exe --help
     issue_command('device', 'info') -> commander.exe device info
@@ -96,7 +96,7 @@ def issue_command(
     Raises:
         RuntimeError: Raise if command failed
     """
-    
+
     cmd = _update_commander_args(*args, platform=platform, device=device)
     cmd_str = ' '.join(cmd)
 
@@ -104,7 +104,7 @@ def issue_command(
         logger.debug(cmd_str)
 
     retcode, retmsg = run_shell_cmd(
-        cmd, 
+        cmd,
         outfile=outfile,
         line_processor=line_processor
     )
@@ -132,18 +132,18 @@ def issue_command(
 
 
 def program_flash(
-    path: Union[str,bytes], 
-    platform: str, 
-    address:int=None, 
+    path: Union[str,bytes],
+    platform: str,
+    address:int=None,
     show_progress=False,
-    halt = False, 
+    halt = False,
     reset = False,
     device:str = None,
     verify = True,
     logger:logging.Logger=None
 ):
     """Program flash memory of embedded device
-    
+
     Args:
         path: Path to .bin/.s37 file or binary data to program to device
         platform: Name of embedded platform
@@ -185,20 +185,20 @@ def program_flash(
         if show_progress:
             with _ProgressBar(unit = 'B', unit_scale = True, unit_divisor = 1024, miniters = 1, desc = 'Initializing') as pb:
                 issue_command(
-                    *cmd, 
-                    line_processor=pb.line_processor, 
-                    platform=platform, 
-                    device=device, 
+                    *cmd,
+                    line_processor=pb.line_processor,
+                    platform=platform,
+                    device=device,
                     logger=logger
                 )
         else:
             issue_command(
-                *cmd, 
-                platform=platform, 
-                device=device, 
+                *cmd,
+                platform=platform,
+                device=device,
                 logger=logger
             )
-        
+
     finally:
         if tmp_path:
             os.remove(tmp_path)
@@ -208,12 +208,12 @@ def program_flash(
 
 
 def reset_device(
-    platform: str=None, 
+    platform: str=None,
     device:str=None,
     logger:logging.Logger=None
 ):
     """Invoke software reset on device
-    
+
     Args:
         platform: Name of embeddded platform
     """
@@ -222,22 +222,37 @@ def reset_device(
     if logger is not None:
         logger.debug('Resetting device')
     issue_command(
-        'device', 'reset', 
-        platform=platform, 
-        device=device, 
+        'device', 'reset',
+        platform=platform,
+        device=device,
         logger=logger
     )
 
 
 def masserse_device(platform: str=None, device:str=None):
     """Mass erase the device's flash
-    
+
     Args:
         platform: Name of embeddded platform
     """
     if platform is None and device is None:
         platform = query_platform()
     issue_command('device', 'masserase', platform=platform, device=device)
+
+
+def erase_last_flash_address(device:str=None):
+    """Erase the last 32-bit word of the flash memory
+
+    This is useful to clear a programmed model
+    """
+    device_info = retrieve_device_info()
+    platform = query_platform(device_info=device_info)
+    device = device or device_info.part_number_tokens[0].lower()
+
+    flash_end_addr = device_info.flash_base_address + (device_info.flash_size-4)
+    patch_arg = f'0x{flash_end_addr:08X}:0xFFFFFFFF:4'
+
+    issue_command('flash', '--patch', patch_arg, platform=platform, device=device)
 
 
 def retrieve_device_info() -> DeviceInfo:
@@ -275,12 +290,12 @@ def retrieve_device_info() -> DeviceInfo:
 
 def query_platform(device_info:DeviceInfo = None) -> str:
     """Return the platform name of the currently connected device
-    
+
     Raises:
         RuntimeError: If connected device is not supported
     """
     device_info = device_info or retrieve_device_info()
-    
+
     # EFR32MG24B110F1536GM48
     # group 0: EFR32
     # group 1: MG
@@ -290,17 +305,18 @@ def query_platform(device_info:DeviceInfo = None) -> str:
     # group 5: 1536
     # group 6: GM48
     toks = device_info.part_number_tokens
-   
+
     for platform, device_codes in DEVICE_MAPPING.items():
         for device_code in device_codes:
             # For right now, just match on: EFM32xx11A / EFR32xx24B
             # This will have to get more complicated as more platforms are added
             if device_code[:5] == toks[0]:
                 if device_code[7:9] == toks[2] and device_code[9] == toks[3] and device_code[10:13] == toks[4]:
-                    return platform 
+                    return platform
 
     supported_devices = ', '.join(map(lambda x: f'{x[0]} ({x[1]})', DEVICE_MAPPING.items()))
     raise RuntimeError(f'Device not supported: {device_info.part_number}, supported devices are: {supported_devices}')
+
 
 
 def get_device_from_platform(platform: str) -> str:
@@ -331,7 +347,7 @@ def _update_commander_args(*args, platform:str=None, device:str=None) -> List[st
     if len(cmd) > 1:
         base_command = cmd[1]
 
-    if base_command == 'flash' or (base_command == 'extflash' and cmd[2] == 'write'):
+    if (base_command == 'flash' and '--patch' not in cmd) or (base_command == 'extflash' and cmd[2] == 'write'):
         file_path = cmd.pop()
 
     if base_command in ('device', 'flash', 'extflash', 'adapter', 'verify'):
@@ -366,9 +382,9 @@ try:
     class _ProgressBar(tqdm):
         def __init__(self, *args, **kwargs):
             tqdm.__init__(
-                self, 
-                *args, 
-                file=sys.stdout, 
+                self,
+                *args,
+                file=sys.stdout,
                 bar_format='{desc}{percentage:3.0f}% | {bar} | {rate_fmt}{postfix}',
                 **kwargs
             )
@@ -422,12 +438,12 @@ try:
                 self.update(self.total - self.n)
 
             if self._printed_progress:
-                self._printed_progress = False 
+                self._printed_progress = False
                 line ='\n' + line
 
             return line
 except:
-    pass 
+    pass
 
 
 def main():
@@ -438,7 +454,8 @@ def main():
     parser.add_argument('--reset', action='store_true', default=False, help='Reset the device')
     parser.add_argument('--device', default=None, help='--device argument to pass to Commander')
     parser.add_argument('--masserase', action='store_true', default=False, help='Mass erase the device flash')
-    
+    parser.add_argument('--clear_end_of_flash', action='store_true', default=False, help='Erase the very last 32-bit word of the flash')
+
     args = parser.parse_args()
 
     if args.masserase:
@@ -450,19 +467,28 @@ def main():
         except:
             # Just ignore this error if it fails
             pass
-    
+
+    if args.clear_end_of_flash:
+        try:
+            erase_last_flash_address(
+                device=args.device
+            )
+        except:
+            # Just ignore this error if it fails
+            pass
+
     if args.path:
         program_flash(
-            path=args.path, 
-            platform=args.platform, 
+            path=args.path,
+            platform=args.platform,
             halt=args.halt,
             show_progress=True,
             device=args.device
         )
-    
+
     if args.reset:
         reset_device(
-            platform=args.platform, 
+            platform=args.platform,
             device=args.device
         )
 

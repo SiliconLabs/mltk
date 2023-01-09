@@ -51,7 +51,7 @@ import numpy as np
 from mltk.utils.path import create_user_dir
 from mltk.utils.archive_downloader import download_verify_extract
 from mltk.utils.logger import get_logger
-from keras_preprocessing.image.utils import array_to_img
+from mltk.core.keras import array_to_img
 
 
 INPUT_SHAPE = (28, 28)

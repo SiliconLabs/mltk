@@ -167,7 +167,7 @@ import numpy as np
 import typer
 
 import matplotlib.pyplot as plt
-from keras_preprocessing.image.utils import (img_to_array, load_img)
+from mltk.core.keras import (img_to_array, load_img)
 from mltk.core.model import (
     MltkModel,
     TrainMixin,

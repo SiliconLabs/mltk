@@ -25,7 +25,7 @@ First, we need to install a few tools:
    Also install the Visual Studio C++ compiler (this is needed to build some of the 3rd party Python packages for Python 3.10):
    https://visualstudio.microsoft.com/visual-cpp-build-tools/
 
-   Be sure to check the __Desktop Development with C++__ workload in the installer GUI.
+   Be sure to check the **Desktop Development with C++** workload in the installer GUI.
 
 .. tabbed:: Linux
 
@@ -33,6 +33,9 @@ First, we need to install a few tools:
 
    .. code-block:: shell
 
+      sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+      sudo add-apt-repository -y ppa:deadsnakes/ppa
+      sudo apt update
       sudo apt-get -y install build-essential g++-9 cmake ninja-build gdb p7zip-full git-lfs python3-dev python3-venv libusb-1.0-0 libgl1
 
 ```

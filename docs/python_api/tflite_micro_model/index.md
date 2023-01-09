@@ -3,6 +3,9 @@ __NOTE:__ Refer to the [online documentation](https://siliconlabs.github.io/mltk
 
 This package allows for executing a quantized `.tflite` model file in the [Tensorflow-Lite Micro](https://github.com/tensorflow/tflite-micro) interpreter.
 
+
+## Example Usage
+
 Example usage of this package is as follows:
 
 ```python
@@ -17,6 +20,7 @@ print(profiling_results)
 See the [TfliteMicroModel API examples](https://siliconlabs.github.io/mltk/mltk/examples/tflite_micro_model.html) for more examples.
 
 
+## API Reference
 
 
 ```{eval-rst}

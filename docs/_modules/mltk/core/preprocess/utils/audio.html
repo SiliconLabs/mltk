@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.preprocess.utils.audio &#8212; MLTK 0.13.0 documentation</title>
+    <title>mltk.core.preprocess.utils.audio &#8212; MLTK 0.14.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
@@ -105,11 +105,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../index.html" title="MLTK 0.13.0 documentation"
+        <a href="../../../../../index.html" title="MLTK 0.14.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../_static/logo.png"
-                   alt="MLTK 0.13.0 documentation logo">
+                   alt="MLTK 0.14.0 documentation logo">
           
         </a>
       </div>
@@ -200,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../index.html" title="MLTK 0.13.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../index.html"
-       title="MLTK 0.13.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -430,14 +430,16 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-preprocess-utils-audio--page-root">Source code for mltk.core.preprocess.utils.audio</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">"""Utilities for processing audio data"""</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 
 <span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">append_exception_msg</span>
 <span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">AudioFeatureGeneratorSettings</span><span class="p">,</span> 
+    <span class="n">AudioFeatureGeneratorSettings</span><span class="p">,</span>
     <span class="n">AudioFeatureGenerator</span>
 <span class="p">)</span>
 
@@ -452,8 +454,8 @@
 <span class="n">resample</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">resample</span>
 
 
-<div class="viewcode-block" id="read_audio_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.audio.read_audio_file">[docs]</a><span class="k">def</span> <span class="nf">read_audio_file</span><span class="p">(</span>
-    <span class="n">path</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span> 
+<div class="viewcode-block" id="read_audio_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.read_audio_file">[docs]</a><span class="k">def</span> <span class="nf">read_audio_file</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
     <span class="n">return_sample_rate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">return_numpy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
@@ -474,8 +476,8 @@
 <span class="sd">    """</span>
     <span class="n">raw</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
     <span class="n">sample</span><span class="p">,</span> <span class="n">original_sample_rate</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">audio</span><span class="o">.</span><span class="n">decode_wav</span><span class="p">(</span>
-        <span class="n">raw</span><span class="p">,</span> 
-        <span class="n">desired_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+        <span class="n">raw</span><span class="p">,</span>
+        <span class="n">desired_channels</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 
     <span class="p">)</span>
     <span class="n">sample</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
@@ -488,17 +490,17 @@
             <span class="n">original_sample_rate</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">original_sample_rate</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
 
         <span class="k">return</span> <span class="n">sample</span><span class="p">,</span> <span class="n">original_sample_rate</span>
-    
+
     <span class="k">return</span> <span class="n">sample</span></div>
 
 
-<div class="viewcode-block" id="write_audio_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.audio.write_audio_file">[docs]</a><span class="k">def</span> <span class="nf">write_audio_file</span><span class="p">(</span>
+<div class="viewcode-block" id="write_audio_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.write_audio_file">[docs]</a><span class="k">def</span> <span class="nf">write_audio_file</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">sample</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
     <span class="n">sample_rate</span><span class="p">:</span><span class="nb">int</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]:</span>
     <span class="sd">"""Write audio data to a file</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        path: File path to save audio</span>
 <span class="sd">            If this is does NOT end with .wav, then the path is assumed to be a directory.</span>
@@ -507,9 +509,9 @@
 <span class="sd">            - ``int16`` then it is converted to float32 and scaled by 32768</span>
 <span class="sd">        sample_rate: Sample rate of audio</span>
 <span class="sd">    Returns:</span>
-<span class="sd">        Path to written file. If this is executing in a non-eager TF function </span>
+<span class="sd">        Path to written file. If this is executing in a non-eager TF function</span>
 <span class="sd">        then the path is a TF Tensor, otherwise it is a Python string</span>
-<span class="sd">    </span>
+
 <span class="sd">    """</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="n">sample</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">convert_to_tensor</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
@@ -537,10 +539,10 @@
     <span class="k">return</span> <span class="n">path</span></div>
 
 
-<div class="viewcode-block" id="adjust_length"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.audio.adjust_length">[docs]</a><span class="k">def</span> <span class="nf">adjust_length</span><span class="p">(</span>
-    <span class="n">sample</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
-    <span class="n">target_sr</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-    <span class="n">original_sr</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+<div class="viewcode-block" id="adjust_length"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.adjust_length">[docs]</a><span class="k">def</span> <span class="nf">adjust_length</span><span class="p">(</span>
+    <span class="n">sample</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">target_sr</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">original_sr</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">out_length</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
     <span class="n">trim_threshold_db</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
@@ -578,16 +580,16 @@
             <span class="n">diff</span> <span class="o">=</span> <span class="n">in_length</span> <span class="o">-</span> <span class="n">out_length</span>
             <span class="n">before</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">diff</span><span class="o">*</span><span class="n">offset</span><span class="p">)</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="n">sample_trimmed</span><span class="p">[</span><span class="n">before</span> <span class="p">:</span> <span class="n">before</span> <span class="o">+</span> <span class="n">out_length</span><span class="p">]</span>
-        
+
         <span class="k">elif</span> <span class="n">in_length</span> <span class="o">&lt;</span> <span class="n">out_length</span><span class="p">:</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="n">out_length</span> <span class="o">-</span> <span class="n">in_length</span>
             <span class="n">before</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">diff</span> <span class="o">*</span> <span class="n">offset</span><span class="p">)</span>
-            
+
             <span class="n">pad_before</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">before</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
             <span class="n">pad_after</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">diff</span> <span class="o">-</span> <span class="n">before</span><span class="p">,</span> <span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-            
+
             <span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">pad_before</span><span class="p">,</span> <span class="n">sample_trimmed</span><span class="p">,</span> <span class="n">pad_after</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            
+
         <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">out_length</span><span class="p">:</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[:</span><span class="n">out_length</span><span class="p">]</span>
 
@@ -597,29 +599,29 @@
             <span class="n">diff</span> <span class="o">=</span> <span class="n">in_length</span> <span class="o">-</span> <span class="n">out_length</span>
             <span class="n">before</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">diff</span><span class="o">*</span><span class="n">offset</span><span class="p">)</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="n">sample_trimmed</span><span class="p">[</span><span class="n">before</span> <span class="p">:</span> <span class="n">before</span> <span class="o">+</span> <span class="n">out_length</span><span class="p">,</span> <span class="p">:]</span>
-        
+
         <span class="k">elif</span> <span class="n">in_length</span> <span class="o">&lt;</span> <span class="n">out_length</span><span class="p">:</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="n">out_length</span> <span class="o">-</span> <span class="n">in_length</span>
             <span class="n">before</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">diff</span> <span class="o">*</span> <span class="n">offset</span><span class="p">)</span>
-            
+
             <span class="n">pad_before</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">before</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
             <span class="n">pad_after</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">diff</span> <span class="o">-</span> <span class="n">before</span><span class="p">,</span> <span class="n">n_channels</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sample</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-            
+
             <span class="n">sample</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">pad_before</span><span class="p">,</span> <span class="n">sample_trimmed</span><span class="p">,</span> <span class="n">pad_after</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-            
+
         <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">out_length</span><span class="p">:</span>
             <span class="n">sample</span> <span class="o">=</span> <span class="n">sample</span><span class="p">[:</span><span class="n">out_length</span><span class="p">,</span> <span class="p">:]</span>
 
-    <span class="k">return</span> <span class="n">sample</span> </div>
+    <span class="k">return</span> <span class="n">sample</span></div>
 
 
-<div class="viewcode-block" id="apply_frontend"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/utilities.html#mltk.core.preprocess.utils.audio.apply_frontend">[docs]</a><span class="k">def</span> <span class="nf">apply_frontend</span><span class="p">(</span>
-    <span class="n">sample</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
-    <span class="n">settings</span><span class="p">:</span><span class="n">AudioFeatureGeneratorSettings</span><span class="p">,</span> 
+<div class="viewcode-block" id="apply_frontend"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.apply_frontend">[docs]</a><span class="k">def</span> <span class="nf">apply_frontend</span><span class="p">(</span>
+    <span class="n">sample</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+    <span class="n">settings</span><span class="p">:</span><span class="n">AudioFeatureGeneratorSettings</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="sd">"""Send the audio sample through the AudioFeatureGenerator and return the generated spectrogram</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        sample: The audio sample to process in the AudioFeatureGenerator</span>
 <span class="sd">        settings: The settings to use in the AudioFeatureGenerator</span>
@@ -632,7 +634,7 @@
     <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
         <span class="c1"># Convert the floating point data to int16</span>
         <span class="c1"># which is what the AudioFeatureGenerator expects it to be</span>
-        <span class="c1"># sample = librosa.util.normalize(sample, norm=np.inf, axis=None) </span>
+        <span class="c1"># sample = librosa.util.normalize(sample, norm=np.inf, axis=None)</span>
         <span class="n">sample</span> <span class="o">=</span> <span class="n">sample</span> <span class="o">*</span> <span class="mi">32768</span>
         <span class="n">sample</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
 
@@ -666,7 +668,7 @@
               
           </div>
             Last updated on
-              Nov 14, 2022.
+              Jan 09, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.

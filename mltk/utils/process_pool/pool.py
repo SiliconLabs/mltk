@@ -15,7 +15,7 @@ from ._utils import (read_data, write_data)
 
 class ProcessPool:
     """Parallel Processing Pool
-    
+
     This allows for executing a Python function across multiple CPU cores.
     The function executes in separate processes and thus is not limited by
     the Global Interpreter Lock (GIL) which can slow down parallel processing
@@ -30,8 +30,8 @@ class ProcessPool:
         def my_processing_func(x):
             y = x * x
             return y
-            
-        # And we instantiate the pool as 
+
+        # And we instantiate the pool as
         pool = ProcessPool(my_processing_func, 0.5)
 
 
@@ -69,7 +69,7 @@ class ProcessPool:
 
         # Main thread waits for the results to complete
         results = batch.wait()
-        
+
         # ----------------------------
         # Wait for each result
         #
@@ -82,6 +82,8 @@ class ProcessPool:
             y = pool(i)
             results.append(y)
 
+
+    See the source code on Github: `mltk/utils/process_pool <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/process_pool>`_
 
     Args:
         entry_point: The Python function to execute in separate subprocesses.
@@ -96,7 +98,7 @@ class ProcessPool:
         logger: Optional Python logger
     """
     def __init__(
-        self, 
+        self,
         entry_point:Callable,
         n_jobs:int,
         name='ProcessPool',
@@ -108,9 +110,9 @@ class ProcessPool:
     ):
         if os.environ.get('MLTK_PROCESS_POOL_SUBPROCESS', ''):
             return
-        
+
         self.logger = logger or logging.getLogger(name)
-        
+
         self._n_jobs = 1 if debug else calculate_n_jobs(n_jobs)
         self._name = name
         self._entry_point = entry_point
@@ -122,7 +124,7 @@ class ProcessPool:
         self._lock = threading.Lock()
         self._detected_pthread_error = False
         self._detected_subprocess_error:str = None
-        
+
         self.logger.info(f'{self.name} is using {self.n_jobs} subprocesses')
 
         if disable_gpu_in_subprocesses:
@@ -183,7 +185,7 @@ class ProcessPool:
         for i in range(self._n_jobs):
             subprocess = _Subprocess(
                 name=f'{self._name}-ProcessPool-{i}',
-                pool=self, 
+                pool=self,
                 entry_point=self._entry_point,
                 debug=self._debug,
                 env=self._env,
@@ -209,7 +211,7 @@ class ProcessPool:
     def __enter__(self):
         if not self.is_running:
             self.start()
-        return self 
+        return self
 
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -217,16 +219,16 @@ class ProcessPool:
 
 
     def __call__(
-        self, 
-        *args, 
-        pool_callback:Callable=None, 
-        pool_batch:ProcessPoolBatch=None, 
+        self,
+        *args,
+        pool_callback:Callable=None,
+        pool_batch:ProcessPoolBatch=None,
         **kwargs
     ):
         try:
            return self.process(
-            *args, 
-            pool_callback=pool_callback, 
+            *args,
+            pool_callback=pool_callback,
             pool_batch=pool_batch,
             **kwargs
         )
@@ -242,10 +244,10 @@ class ProcessPool:
 
 
     def process(
-        self, 
-        *args, 
-        pool_callback:Callable=None, 
-        pool_batch:ProcessPoolBatch=None, 
+        self,
+        *args,
+        pool_callback:Callable=None,
+        pool_batch:ProcessPoolBatch=None,
         **kwargs
     ) -> Union[ProcessPoolBatch,object]:
         """Process the given args, kwargs in the next available subprocess
@@ -265,19 +267,19 @@ class ProcessPool:
                 break
             except queue.Empty:
                 continue
-        
+
         subprocess.invoke(args, kwargs, batch=batch)
-            
+
         if pool_callback is None and pool_batch is None:
             results = batch.wait()
             if not self.is_running:
                 raise RuntimeError('ProcessPool shutdown')
-            
+
             return results
 
         return batch
 
-    
+
 
 
 class ProcessPoolBatch:
@@ -285,9 +287,9 @@ class ProcessPoolBatch:
     This is used to store the results of a processing batch of data.
     """
     def __init__(
-        self, 
-        pool:ProcessPool,  
-        pool_callback:Callable=None, 
+        self,
+        pool:ProcessPool,
+        pool_callback:Callable=None,
         size:int=0
     ):
         self.pool = pool
@@ -298,7 +300,7 @@ class ProcessPoolBatch:
         self._remaining = max(1, size)
         self._next_index_count = 0
         self._results = [None for _ in range(self._remaining)]
-        
+
     @property
     def size(self) -> int:
         """The size of the batch"""
@@ -313,9 +315,9 @@ class ProcessPoolBatch:
         with self._condition:
             while self._remaining > 0:
                 if not self.pool.is_running:
-                    return None 
+                    return None
                 self._condition.wait()
-            
+
             return self._results[0] if self._return_scalar else self._results
 
 
@@ -323,17 +325,17 @@ class ProcessPoolBatch:
         with self._condition:
             if self._remaining <= 0:
                 raise RuntimeError('Batch overflow')
-            
+
             retval = self._next_index_count
             self._next_index_count += 1
-        
+
         return retval
 
     def _add_results(self, index:int, results):
         if self.pool_callback is not None:
             if index != -1:
                 self.pool_callback(results)
-            return 
+            return
 
         with self._condition:
             if index != -1:
@@ -348,7 +350,7 @@ class ProcessPoolBatch:
 
 class _Subprocess(threading.Thread):
     def __init__(
-        self, 
+        self,
         name:str,
         pool:ProcessPool,
         entry_point:Callable,
@@ -357,7 +359,7 @@ class _Subprocess(threading.Thread):
         logger:logging
     ):
         threading.Thread.__init__(
-            self, 
+            self,
             name=name,
             daemon=True,
             target=self._process_thread_loop
@@ -367,8 +369,8 @@ class _Subprocess(threading.Thread):
         self.logger = logger
         self._entry_point = entry_point
         self._invoke_sem = threading.Semaphore(value=0)
-        self._invoke_args=None 
-        self._invoke_kwargs=None 
+        self._invoke_args=None
+        self._invoke_kwargs=None
         self._invoke_batch:ProcessPoolBatch=None
         self._invoke_batch_index:int=-1
         self._shutdown_event = threading.Event()
@@ -405,17 +407,17 @@ class _Subprocess(threading.Thread):
             self._process_thread_loop_unsafe = self._debug_thread_loop_unsafe
 
         self.start()
-      
+
 
     def invoke(
-        self, 
+        self,
         args, kwargs,
         batch:ProcessPoolBatch
     ):
         assert self._invoke_args is None, 'Bad processing Q state'
 
-        self._invoke_args = args 
-        self._invoke_kwargs = kwargs 
+        self._invoke_args = args
+        self._invoke_kwargs = kwargs
         self._invoke_batch = batch
         self._invoke_batch_index = batch._next_index()
         self._invoke_sem.release()
@@ -444,7 +446,7 @@ class _Subprocess(threading.Thread):
                 if retcode != 0:
                     raise RuntimeError(f'{self.name} terminated with error code: {retcode}')
                 return
-           
+
             write_data(
                 self._subprocess.stdin,
                 self._invoke_args,
@@ -470,7 +472,7 @@ class _Subprocess(threading.Thread):
                     # So throw an exception
                     if retcode != 0:
                         raise RuntimeError(f'{self.name} terminated with error code: {retcode}')
-                    
+
                     # Otherwise just return as the subprocess is being gracefully terminated
                     return
 
@@ -480,7 +482,7 @@ class _Subprocess(threading.Thread):
 
             if isinstance(result, (tuple,list)) and len(result) == 1:
                 result = result[0]
-        
+
             self._invoke_batch._add_results(self._invoke_batch_index, result)
             self._invoke_batch = None
             self._invoke_batch_index = -1
@@ -503,7 +505,7 @@ class _Subprocess(threading.Thread):
 
             if isinstance(result, (tuple,list)) and len(result) == 1:
                 result = result[0]
-        
+
             self._invoke_batch._add_results(self._invoke_batch_index, result)
             self._invoke_batch = None
             self._invoke_batch_index = -1
@@ -528,7 +530,7 @@ class _Subprocess(threading.Thread):
             # Close the data output pipe
             self._subprocess.stdout.close()
         except:
-            pass 
+            pass
         try:
             # Wait a moment for the log monitor thread to complete
             self._monitor_thread.join(3)
@@ -538,17 +540,17 @@ class _Subprocess(threading.Thread):
             # Close the log pipe
             self._subprocess.stderr.close()
         except:
-            pass 
+            pass
         try:
             # Forcefully kill the subprocess if necessary
-            self._subprocess.kill() 
+            self._subprocess.kill()
         except:
             pass
-    
+
         self._shutdown_event.set()
         self._invoke_sem.release()
         batch = self._invoke_batch
-        self._invoke_batch = None 
+        self._invoke_batch = None
         if batch is not None:
             batch._add_results(-1, None)
 
@@ -558,9 +560,9 @@ class _Subprocess(threading.Thread):
             while True:
                 line = self._subprocess.stderr.readline()
                 if not line:
-                    return 
+                    return
                 if not self.pool.detected_subprocess_error and self._subprocess.poll():
-                    self.pool.detected_subprocess_error = self.name 
+                    self.pool.detected_subprocess_error = self.name
 
                 detected_subprocess_error = self.pool.detected_subprocess_error
                 if (self.pool.is_running and detected_subprocess_error is None) or detected_subprocess_error == self.name:
@@ -568,7 +570,7 @@ class _Subprocess(threading.Thread):
                     if not self.pool._detected_pthread_error and 'pthread_create() failed' in line:
                         self.pool._detected_pthread_error = True
                     if 'Traceback' in line:
-                        self.pool.detected_subprocess_error = self.name 
+                        self.pool.detected_subprocess_error = self.name
                     self.logger.info(f'{self.name}: {line}')
         except:
             pass
@@ -579,7 +581,7 @@ class _Subprocess(threading.Thread):
 
 def calculate_n_jobs(n_jobs:Union[float,int]) -> int:
     """Calculate the number of subprocesses to use for the processing pool
-    
+
     Args:
         n_jobs: This should be one of:
             - A float value between (0, 1.0], which specifies the percentage of the available CPUs
@@ -596,7 +598,7 @@ def calculate_n_jobs(n_jobs:Union[float,int]) -> int:
         if n_jobs < 0 or n_jobs > 1:
             raise ValueError('Must either be an integer or a float in the range (0, 1.0]')
         n_jobs = round(n_cpus * n_jobs)
-    
+
     return min(max(n_jobs, 1), n_cpus)
-        
+
 

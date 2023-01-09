@@ -3,7 +3,7 @@
 
 Image classification example using the Tensorflow dataset API
 
-- Source code: `audio_tf_dataset.py <https://github.com/siliconlabs/mltk/blob/master/mltk/models/examples/image_tf_dataset.py>`_
+- Source code: `image_tf_dataset.py <https://github.com/siliconlabs/mltk/blob/master/mltk/models/examples/image_tf_dataset.py>`_
 
 This provides an example of how to use the `Tensorflow Dataset API <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_
 with the various Tensorflow `image augmentations <https://www.tensorflow.org/api_docs/python/tf/image>`_
