@@ -138,6 +138,7 @@ additional_install_dependencies = []
 if python_version == '37':
     print('Adding pickle5 to install dependencies')
     additional_install_dependencies.append('pickle5')
+    additional_install_dependencies.append('gast<=0.4.0')  # The MLTK does NOT have a dependency on this, but tensorflow does
 # Other ensure pickle5 is NOT installed as that will break other dependencies
 else:
     print('Uninstalling pickle5 (if necessary)')
@@ -157,7 +158,7 @@ install_dependencies = [
     'tensorflow_probability>=0.12.2',
     'tflite-support',
     'protobuf>=3.18,<3.20', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
-    'onnx',
+    'onnx<1.13', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow depend on protobuf and this does as well
     'onnxruntime<1.13',
     #'flatbuffers<2.0', # This is required by TF
     'numpy<1.23', # Numba, which is installed by TF, has a requirement of < 1.23
