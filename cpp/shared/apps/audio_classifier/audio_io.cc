@@ -51,7 +51,7 @@
 
 #define SPEAKER_FRAMES_PER_DMA                        ALIGN_DOWN(LDMA_MAX_XFER_LENGTH, MPEG2_FRAME_LENGTH)
 #define SPEAKER_DMA_COUNT                             8
-#define SPEAKER_MP3_BUFFER_LENGTH                     4*1024
+#define SPEAKER_MP3_BUFFER_LENGTH                     8*1024
 
 
 // --------------------------------------------------------
