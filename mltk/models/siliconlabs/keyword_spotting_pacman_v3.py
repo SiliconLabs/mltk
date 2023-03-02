@@ -582,7 +582,7 @@ Model Specification
 
 ..  literalinclude:: ../../../../../../../mltk/models/siliconlabs/keyword_spotting_pacman_v3.py
     :language: python
-    :lines: 462-
+    :lines: 590-
 
 """
 # pylint: disable=redefined-outer-name
