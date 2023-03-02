@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -424,113 +424,69 @@
 
           <article class="md-content__inner md-typeset" role="main">
             
-  <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>                                                                               
- Usage: mltk train [OPTIONS] &lt;model&gt;                                           
-                                                                               
- Train an ML model                                                             
- This trains a model using the configuration specified in the given MLTK       
- model.                                                                        
-                                                                               
- All training results are stored &lt;model log dir&gt;/train.                        
- After training completes, an archive file is generated at:                    
-   &lt;MLTK model directory&gt;/&lt;MLTK model name&gt;.mltk.zip                           
- which contains:                                                               
- - MLTK model specification python script                                      
- - Keras model in .h5 format                                                   
- - Quantized .tflite model                                                     
- - Model summary                                                               
- - Training log                                                                
-                                                                               
- For more details see:                                                         
- https://siliconlabs.github.io/mltk/docs/guides/model_training                 
-                                                                               
- ----------                                                                    
-  Examples                                                                     
- ----------                                                                    
-                                                                               
- # Execute model training dryrun                                               
- mltk train image_example1-test                                                
-                                                                               
- # Clean any previous training logs &amp; checkpoints,                             
- # then train for 100 epochs                                                   
- mltk train image_example1 --clean --epochs 100                                
-                                                                               
- # Resume model from previous session at the last save checkpoint              
- mltk train image_example1 --resume                                            
-                                                                               
- # Resume model from previous session at epoch 43                              
- mltk train image_example1 --resume-epoch 43                                   
-                                                                               
- # Do NOT evaluate the model after training                                    
- mltk train image_example1 --no-evaluate                                       
-                                                                               
+  <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>                                                                                                                                                                                                                                                                                               
+ Usage: mltk train [OPTIONS] &lt;model&gt;                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                               
+ Train an ML model                                                                                                                                                                                                                                                                             
+ This trains a model using the configuration specified in the given MLTK model.                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                               
+ All training results are stored &lt;model log dir&gt;/train.                                                                                                                                                                                                                                        
+ After training completes, an archive file is generated at:                                                                                                                                                                                                                                    
+   &lt;MLTK model directory&gt;/&lt;MLTK model name&gt;.mltk.zip                                                                                                                                                                                                                                           
+ which contains:                                                                                                                                                                                                                                                                               
+ - MLTK model specification python script                                                                                                                                                                                                                                                      
+ - Keras model in .h5 format                                                                                                                                                                                                                                                                   
+ - Quantized .tflite model                                                                                                                                                                                                                                                                     
+ - Model summary                                                                                                                                                                                                                                                                               
+ - Training log                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                               
+ For more details see:                                                                                                                                                                                                                                                                         
+ https://siliconlabs.github.io/mltk/docs/guides/model_training                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                               
+ ----------                                                                                                                                                                                                                                                                                    
+  Examples                                                                                                                                                                                                                                                                                     
+ ----------                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                               
+ # Execute model training dryrun                                                                                                                                                                                                                                                               
+ mltk train image_example1-test                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                               
+ # Clean any previous training logs &amp; checkpoints,                                                                                                                                                                                                                                             
+ # then train for 100 epochs                                                                                                                                                                                                                                                                   
+ mltk train image_example1 --clean --epochs 100                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                               
+ # Resume model from previous session at the last save checkpoint                                                                                                                                                                                                                              
+ mltk train image_example1 --resume                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                               
+ # Resume model from previous session at epoch 43                                                                                                                                                                                                                                              
+ mltk train image_example1 --resume-epoch 43                                                                                                                                                                                                                                                   
+                                                                                                                                                                                                                                                                                               
+ # Do NOT evaluate the model after training                                                                                                                                                                                                                                                    
+ mltk train image_example1 --no-evaluate                                                                                                                                                                                                                                                       
+                                                                                                                                                                                                                                                                                               
  Arguments 
- *    model      &lt;model&gt;  Name of MLTK model OR path to model specification  
-                          python script.                                     
-                          If MLTK model name given, optionally append        
-                          "-test" to execute a training "dryrun".            
-                          This ensures everything works by quickly training  
-                          the model;                                         
-                          Dry-run training limits the number of epochs and   
-                          dataset size.                                      
-                          All results are stored in a test directory and     
-                          archive.                                           
-                          [default: None]                                    
-                          [required]                                         
+ *    model      &lt;model&gt;  Name of MLTK model OR path to model specification python script.                    [default: None] [required]                                                                                                                                                     
+                          If MLTK model name given, optionally append "-test" to execute a training "dryrun".                                                                                                                                                                                
+                          This ensures everything works by quickly training the model;                                                                                                                                                                                                       
+                          Dry-run training limits the number of epochs and dataset size.                                                                                                                                                                                                     
+                          All results are stored in a test directory and archive.                                                                                                                                                                                                            
 
  Options 
- --epochs        -e                   &lt;epochs&gt;   Override the number of      
-                                                 training epochs define by   
-                                                 the MLTK model              
-                                                 [default: None]             
- --weights       -w                   &lt;weights&gt;  Optional, load weights from 
-                                                 previous training session.  
-                                                 May be one of the           
-                                                 following:                  
-                                                 - If option omitted then    
-                                                 trained with initial        
-                                                 weights                     
-                                                 - Absolute path to a        
-                                                 generated weights .h5 file  
-                                                 generated by Keras during   
-                                                 training                    
-                                                 - The keyword 'best'; find  
-                                                 the best weights from the   
-                                                 previous training session   
-                                                 - Filename of .h5 in &lt;model 
-                                                 log dir&gt;/train/weights      
-                                                 [default: None]             
- --verbose       -v                              Enable verbose console logs 
- --resume            --no-resume                 Resume the training from a  
-                                                 previous training session   
-                                                 using the last stored       
-                                                 checkpoint weights          
-                                                 [default: no-resume]        
- --resume-epoch                       &lt;epoch&gt;    Specify the epoch to resume 
-                                                 training                    
-                                                 [default: 0]                
- --clean             --no-clean                  Clean all previous training 
-                                                 logs files, weights, and    
-                                                 checkpoints                 
-                                                 [default: no-clean]         
- --show              --no-show                   Display the generated model 
-                                                 training history diagram    
-                                                 [default: no-show]          
- --evaluate          --no-evaluate               After training, evaluate    
-                                                 the .h5 and .tflite models  
-                                                 [default: evaluate]         
- --test              --no-test                   Do a dryrun of training the 
-                                                 model. This does the same   
-                                                 thing as: mltk train        
-                                                 my_model-test               
-                                                 [default: no-test]          
- --post                                          This allows for             
-                                                 post-processing the         
-                                                 training results (e.g.      
-                                                 uploading to a cloud) if    
-                                                 supported by the given      
-                                                 MltkModel                   
- --help                                          Show this message and exit. 
+ --epochs        -e                   &lt;epochs&gt;   Override the number of training epochs define by the MLTK model [default: None]                                                                                                                                                             
+ --weights       -w                   &lt;weights&gt;  Optional, load weights from previous training session.                             [default: None]                                                                                                                                          
+                                                 May be one of the following:                                                                                                                                                                                                                
+                                                 - If option omitted then trained with initial weights                                                                                                                                                                                       
+                                                 - Absolute path to a generated weights .h5 file generated by Keras during training                                                                                                                                                          
+                                                 - The keyword 'best'; find the best weights from the previous training session                                                                                                                                                              
+                                                 - Filename of .h5 in &lt;model log dir&gt;/train/weights                                                                                                                                                                                          
+ --verbose       -v                              Enable verbose console logs                                                                                                                                                                                                                 
+ --resume            --no-resume                 Resume the training from a previous training session using the last stored checkpoint weights [default: no-resume]                                                                                                                          
+ --resume-epoch                       &lt;epoch&gt;    Specify the epoch to resume training [default: 0]                                                                                                                                                                                           
+ --clean             --no-clean                  Clean all previous training logs files, weights, and checkpoints [default: no-clean]                                                                                                                                                        
+ --show              --no-show                   Display the generated model training history diagram [default: no-show]                                                                                                                                                                     
+ --evaluate          --no-evaluate               After training, evaluate the .h5 and .tflite models [default: evaluate]                                                                                                                                                                     
+ --test              --no-test                   Do a dryrun of training the model. This does the same thing as: mltk train my_model-test [default: no-test]                                                                                                                                 
+ --post                                          This allows for post-processing the training results (e.g. uploading to a cloud) if supported by the given MltkModel                                                                                                                        
+ --help                                          Show this message and exit.                                                                                                                                                                                                                 
 </pre></div>
 </div>
 

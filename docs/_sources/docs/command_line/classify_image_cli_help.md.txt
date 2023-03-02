@@ -1,133 +1,68 @@
 ```text
-                                                                               
- Usage: mltk classify_image [OPTIONS] <model>                                  
-                                                                               
- Classify images detected by a camera connected to an embedded device.         
- NOTE: A supported embedded device must be locally connected to use this       
- command.                                                                      
- Additionally, an Arducam camera module:                                       
- https://www.arducam.com/product/arducam-2mp-spi-camera-b0067-arduino          
- must be connected to the development board.                                   
- Refer to the online documentation for how to connect it to the development    
- board:                                                                        
- https://siliconlabs.github.io/mltk/docs/cpp_development/examples/image_classi 
- fier.html#hardware-setup                                                      
-                                                                               
- For more details see:                                                         
- https://siliconlabs.github.io/mltk/mltk/tutorials/image_classification        
-                                                                               
- ----------                                                                    
-  Examples                                                                     
- ----------                                                                    
-                                                                               
- # Classify images using the rock_paper_scissors model                         
- # Verbosely print the inference results                                       
- mltk classify_image rock_paper_scissors --verbose                             
-                                                                               
- # Classify images using the rock_paper_scissors model                         
- # using the MVP hardware accelerator                                          
- mltk classify_image rock_paper_scissors --accelerator MVP                     
-                                                                               
- # Classify images using the rock_paper_scissors model                         
- # and dump the images to the local PC                                         
- mltk classify_image rock_paper_scissors --dump-images --dump-threshold 0.1    
-                                                                               
+                                                                                                                                                                                                                                                                                               
+ Usage: mltk classify_image [OPTIONS] <model>                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                                                               
+ Classify images detected by a camera connected to an embedded device.                                                                                                                                                                                                                         
+ NOTE: A supported embedded device must be locally connected to use this command.                                                                                                                                                                                                              
+ Additionally, an Arducam camera module:                                                                                                                                                                                                                                                       
+ https://www.arducam.com/product/arducam-2mp-spi-camera-b0067-arduino                                                                                                                                                                                                                          
+ must be connected to the development board.                                                                                                                                                                                                                                                   
+ Refer to the online documentation for how to connect it to the development board:                                                                                                                                                                                                             
+ https://siliconlabs.github.io/mltk/docs/cpp_development/examples/image_classifier.html#hardware-setup                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                               
+ For more details see:                                                                                                                                                                                                                                                                         
+ https://siliconlabs.github.io/mltk/mltk/tutorials/image_classification                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                               
+ ----------                                                                                                                                                                                                                                                                                    
+  Examples                                                                                                                                                                                                                                                                                     
+ ----------                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                               
+ # Classify images using the rock_paper_scissors model                                                                                                                                                                                                                                         
+ # Verbosely print the inference results                                                                                                                                                                                                                                                       
+ mltk classify_image rock_paper_scissors --verbose                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                                                               
+ # Classify images using the rock_paper_scissors model                                                                                                                                                                                                                                         
+ # using the MVP hardware accelerator                                                                                                                                                                                                                                                          
+ mltk classify_image rock_paper_scissors --accelerator MVP                                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                                                                               
+ # Classify images using the rock_paper_scissors model                                                                                                                                                                                                                                         
+ # and dump the images to the local PC                                                                                                                                                                                                                                                         
+ mltk classify_image rock_paper_scissors --dump-images --dump-threshold 0.1                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                               
  Arguments 
- *    model      <model>  On of the following:                               
-                          - MLTK model name                                  
-                          - Path to .tflite file                             
-                          - Path to model archive file (.mltk.zip)           
-                          NOTE: The model must have been previously trained  
-                          for image classification                           
-                          [default: None]                                    
-                          [required]                                         
+ *    model      <model>  On of the following:                                                       [default: None] [required]                                                                                                                                                              
+                          - MLTK model name                                                                                                                                                                                                                                                  
+                          - Path to .tflite file                                                                                                                                                                                                                                             
+                          - Path to model archive file (.mltk.zip)                                                                                                                                                                                                                           
+                          NOTE: The model must have been previously trained for image classification                                                                                                                                                                                         
 
  Options 
- --accelerator      -a      <name>         Name of accelerator to use while  
-                                           executing the image               
-                                           classification ML model           
-                                           [default: None]                   
- --port                     <port>         Serial COM port of a locally      
-                                           connected embedded device.        
-                                           'If omitted, then attempt to      
-                                           automatically determine the       
-                                           serial COM port                   
-                                           [default: None]                   
- --verbose          -v                     Enable verbose console logs       
- --window_duration  -w      <duration ms>  Controls the smoothing. Drop all  
-                                           inference results that are older  
-                                           than <now> minus window_duration. 
-                                           Longer durations (in              
-                                           milliseconds) will give a higher  
-                                           confidence that the results are   
-                                           correct, but may miss some images 
-                                           [default: None]                   
- --count            -c      <count>        The *minimum* number of inference 
-                                           results to average when           
-                                           calculating the detection value   
-                                           [default: None]                   
- --threshold        -t      <threshold>    Minimum averaged model output     
-                                           threshold for a class to be       
-                                           considered detected, 0-255.       
-                                           Higher values increase precision  
-                                           at the cost of recall             
-                                           [default: None]                   
- --suppression      -s      <count>        Number of samples that should be  
-                                           different than the last detected  
-                                           sample before detecting again     
-                                           [default: None]                   
- --latency          -l      <latency ms>   This the amount of time in        
-                                           milliseconds between processing   
-                                           loops                             
-                                           [default: None]                   
- --sensitivity      -i      FLOAT          Sensitivity of the activity       
-                                           indicator LED. Much less than 1.0 
-                                           has higher sensitivity            
-                                           [default: None]                   
- --dump-images      -x                     Dump the raw images from the      
-                                           device camera to a directory on   
-                                           the local PC.                     
-                                           NOTE: Use the --no-inference      
-                                           option to ONLY dump images and    
-                                           NOT run inference on the device   
-                                           Use the --dump-threshold option   
-                                           to control how unique the images  
-                                           must be to dump                   
- --dump-threshold           FLOAT          This controls how unique the      
-                                           camera images must be before      
-                                           they're dumped.                   
-                                           This is useful when generating a  
-                                           dataset.                          
-                                           If this value is set to 0 then    
-                                           every image from the camera is    
-                                           dumped.                           
-                                           if this value is closer to 1.     
-                                           then the images from the camera   
-                                           should be sufficiently unique     
-                                           from                              
-                                           prior images that have been       
-                                           dumped.                           
-                                           [default: 0.1]                    
- --no-inference                            By default inference is executed  
-                                           on the device. Use --no-inference 
-                                           to disable inference on the       
-                                           device which can improve image    
-                                           dumping throughput                
- --app                      <path>         By default, the image_classifier  
-                                           app is automatically downloaded.  
-                                           This option allows for overriding 
-                                           with a custom built app.          
-                                           Alternatively, set this option to 
-                                           "none" to NOT program the         
-                                           image_classifier app to the       
-                                           device.                           
-                                           In this case, ONLY the .tflite    
-                                           will be programmed and the        
-                                           existing image_classifier app     
-                                           will be re-used.                  
-                                           [default: None]                   
- --test                                    Run as a unit test                
- --help                                    Show this message and exit.       
+ --accelerator      -a      <name>         Name of accelerator to use while executing the image classification ML model [default: None]                                                                                                                                                      
+ --port                     <port>         Serial COM port of a locally connected embedded device.                  [default: None]                                                                                                                                                          
+                                           'If omitted, then attempt to automatically determine the serial COM port                                                                                                                                                                          
+ --verbose          -v                     Enable verbose console logs                                                                                                                                                                                                                       
+ --window_duration  -w      <duration ms>  Controls the smoothing. Drop all inference results that are older than <now> minus window_duration.                     [default: None]                                                                                                           
+                                           Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some images                                                                                                                           
+ --count            -c      <count>        The *minimum* number of inference results to average when calculating the detection value [default: None]                                                                                                                                         
+ --threshold        -t      <threshold>    Minimum averaged model output threshold for a class to be considered detected, 0-255. Higher values increase precision at the cost of recall [default: None]                                                                                      
+ --suppression      -s      <count>        Number of samples that should be different than the last detected sample before detecting again [default: None]                                                                                                                                   
+ --latency          -l      <latency ms>   This the amount of time in milliseconds between processing loops [default: None]                                                                                                                                                                  
+ --sensitivity      -i      FLOAT          Sensitivity of the activity indicator LED. Much less than 1.0 has higher sensitivity [default: None]                                                                                                                                              
+ --dump-images      -x                     Dump the raw images from the device camera to a directory on the local PC.                                                                                                                                                                        
+                                           NOTE: Use the --no-inference option to ONLY dump images and NOT run inference on the device                                                                                                                                                       
+                                           Use the --dump-threshold option to control how unique the images must be to dump                                                                                                                                                                  
+ --dump-threshold           FLOAT          This controls how unique the camera images must be before they're dumped.                        [default: 0.1]                                                                                                                                   
+                                           This is useful when generating a dataset.                                                                                                                                                                                                         
+                                           If this value is set to 0 then every image from the camera is dumped.                                                                                                                                                                             
+                                           if this value is closer to 1. then the images from the camera should be sufficiently unique from                                                                                                                                                  
+                                           prior images that have been dumped.                                                                                                                                                                                                               
+ --no-inference                            By default inference is executed on the device. Use --no-inference to disable inference on the device which can improve image dumping throughput                                                                                                  
+ --app                      <path>         By default, the image_classifier app is automatically downloaded.                                        [default: None]                                                                                                                          
+                                           This option allows for overriding with a custom built app.                                                                                                                                                                                        
+                                           Alternatively, set this option to "none" to NOT program the image_classifier app to the device.                                                                                                                                                   
+                                           In this case, ONLY the .tflite will be programmed and the existing image_classifier app will be re-used.                                                                                                                                          
+ --test                                    Run as a unit test                                                                                                                                                                                                                                
+ --help                                    Show this message and exit.                                                                                                                                                                                                                       
 
 
 ```

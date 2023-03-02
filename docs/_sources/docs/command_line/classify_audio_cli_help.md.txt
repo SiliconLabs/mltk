@@ -1,188 +1,80 @@
 ```text
-                                                                               
- Usage: mltk classify_audio [OPTIONS] <model>                                  
-                                                                               
- Classify keywords/events detected in a microphone's streaming audio           
- NOTE: This command is experimental. Use at your own risk!                     
- This command runs an audio classification application on either the local PC  
- OR                                                                            
- on an embedded target. The audio classification application loads the given   
- audio classification ML model (e.g. Keyword Spotting) and streams real-time   
- audio                                                                         
- from the local PC's/embedded target's microphone into the ML model.           
-                                                                               
- System Dataflow:                                                              
- Microphone -> AudioFeatureGenerator -> ML Model -> Command Recognizer ->      
- Local Terminal                                                                
-                                                                               
- Refer to the mltk.models.tflite_micro.tflite_micro_speech model for a         
- reference on how to train                                                     
- an ML model that works the audio classification application.                  
-                                                                               
- For more details see:                                                         
- https://siliconlabs.github.io/mltk/docs/audio/audio_utilities                 
-                                                                               
- ----------                                                                    
-  Examples                                                                     
- ----------                                                                    
-                                                                               
- # Classify audio on local PC using tflite_micro_speech model                  
- # Simulate the audio loop latency to be 200ms                                 
- # i.e. If the app was running on an embedded target, it would take 200ms per  
- audio loop                                                                    
- # Also enable verbose logs                                                    
- mltk classify_audio tflite_micro_speech --latency 200 --verbose               
-                                                                               
- # Classify audio on an embedded target using model:                           
- ~/workspace/my_model.tflite                                                   
- # and the following classifier settings:                                      
- # - Set the averaging window to 1200ms (i.e. drop samples older than <now>    
- minus window)                                                                 
- # - Set the minimum sample count to 3 (i.e. must have at last 3 samples       
- before classifying)                                                           
- # - Set the threshold to 175 (i.e. the average of the inference results       
- within the averaging window must be at least 175 of 255)                      
- # - Set the suppression to 750ms (i.e. Once a keyword is detected, wait 750ms 
- before detecting more keywords)                                               
- # i.e. If the app was running on an embedded target, it would take 200ms per  
- audio loop                                                                    
- mltk classify_audio /home/john/my_model.tflite --device --window 1200ms       
- --count 3 --threshold 175 --suppression 750                                   
-                                                                               
- # Classify audio and also dump the captured raw audio and spectrograms        
- mltk classify_audio tflite_micro_speech --dump-audio --dump-spectrograms      
-                                                                               
+                                                                                                                                                                                                                                                                                               
+ Usage: mltk classify_audio [OPTIONS] <model>                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                                                               
+ Classify keywords/events detected in a microphone's streaming audio                                                                                                                                                                                                                           
+ NOTE: This command is experimental. Use at your own risk!                                                                                                                                                                                                                                     
+ This command runs an audio classification application on either the local PC OR                                                                                                                                                                                                               
+ on an embedded target. The audio classification application loads the given                                                                                                                                                                                                                   
+ audio classification ML model (e.g. Keyword Spotting) and streams real-time audio                                                                                                                                                                                                             
+ from the local PC's/embedded target's microphone into the ML model.                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                               
+ System Dataflow:                                                                                                                                                                                                                                                                              
+ Microphone -> AudioFeatureGenerator -> ML Model -> Command Recognizer -> Local Terminal                                                                                                                                                                                                       
+                                                                                                                                                                                                                                                                                               
+ Refer to the mltk.models.tflite_micro.tflite_micro_speech model for a reference on how to train                                                                                                                                                                                               
+ an ML model that works the audio classification application.                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                                                               
+ For more details see:                                                                                                                                                                                                                                                                         
+ https://siliconlabs.github.io/mltk/docs/audio/audio_utilities                                                                                                                                                                                                                                 
+                                                                                                                                                                                                                                                                                               
+ ----------                                                                                                                                                                                                                                                                                    
+  Examples                                                                                                                                                                                                                                                                                     
+ ----------                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                               
+ # Classify audio on local PC using tflite_micro_speech model                                                                                                                                                                                                                                  
+ # Simulate the audio loop latency to be 200ms                                                                                                                                                                                                                                                 
+ # i.e. If the app was running on an embedded target, it would take 200ms per audio loop                                                                                                                                                                                                       
+ # Also enable verbose logs                                                                                                                                                                                                                                                                    
+ mltk classify_audio tflite_micro_speech --latency 200 --verbose                                                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                               
+ # Classify audio on an embedded target using model: ~/workspace/my_model.tflite                                                                                                                                                                                                               
+ # and the following classifier settings:                                                                                                                                                                                                                                                      
+ # - Set the averaging window to 1200ms (i.e. drop samples older than <now> minus window)                                                                                                                                                                                                      
+ # - Set the minimum sample count to 3 (i.e. must have at last 3 samples before classifying)                                                                                                                                                                                                   
+ # - Set the threshold to 175 (i.e. the average of the inference results within the averaging window must be at least 175 of 255)                                                                                                                                                              
+ # - Set the suppression to 750ms (i.e. Once a keyword is detected, wait 750ms before detecting more keywords)                                                                                                                                                                                 
+ # i.e. If the app was running on an embedded target, it would take 200ms per audio loop                                                                                                                                                                                                       
+ mltk classify_audio /home/john/my_model.tflite --device --window 1200ms --count 3 --threshold 175 --suppression 750                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                               
+ # Classify audio and also dump the captured raw audio and spectrograms                                                                                                                                                                                                                        
+ mltk classify_audio tflite_micro_speech --dump-audio --dump-spectrograms                                                                                                                                                                                                                      
+                                                                                                                                                                                                                                                                                               
  Arguments 
- *    model      <model>  On of the following:                               
-                          - MLTK model name                                  
-                          - Path to .tflite file                             
-                          - Path to model archive file (.mltk.zip)           
-                          NOTE: The model must have been previously trained  
-                          for keyword spotting                               
-                          [default: None]                                    
-                          [required]                                         
+ *    model      <model>  On of the following:                                                   [default: None] [required]                                                                                                                                                                  
+                          - MLTK model name                                                                                                                                                                                                                                                  
+                          - Path to .tflite file                                                                                                                                                                                                                                             
+                          - Path to model archive file (.mltk.zip)                                                                                                                                                                                                                           
+                          NOTE: The model must have been previously trained for keyword spotting                                                                                                                                                                                             
 
  Options 
- --accelerator            -a      <name>            Name of accelerator to   
-                                                    use while executing the  
-                                                    audio classification ML  
-                                                    model.                   
-                                                    If omitted, then use the 
-                                                    reference kernels        
-                                                    NOTE: It is recommended  
-                                                    to NOT use an            
-                                                    accelerator if running   
-                                                    on the PC since the HW   
-                                                    simulator can be slow.   
-                                                    [default: None]          
- --device                 -d                        If provided, then run    
-                                                    the keyword spotting     
-                                                    model on an embedded     
-                                                    device, otherwise use    
-                                                    the PC's local           
-                                                    microphone.              
-                                                    If this option is        
-                                                    provided, then the       
-                                                    device must be locally   
-                                                    connected                
- --port                           <port>            Serial COM port of a     
-                                                    locally connected        
-                                                    embedded device.         
-                                                    This is only used with   
-                                                    the --device option.     
-                                                    'If omitted, then        
-                                                    attempt to automatically 
-                                                    determine the serial COM 
-                                                    port                     
-                                                    [default: None]          
- --verbose                -v                        Enable verbose console   
-                                                    logs                     
- --window_duration        -w      <duration ms>     Controls the smoothing.  
-                                                    Drop all inference       
-                                                    results that are older   
-                                                    than <now> minus         
-                                                    window_duration.         
-                                                    Longer durations (in     
-                                                    milliseconds) will give  
-                                                    a higher confidence that 
-                                                    the results are correct, 
-                                                    but may miss some        
-                                                    commands                 
-                                                    [default: None]          
- --count                  -c      <count>           The *minimum* number of  
-                                                    inference results to     
-                                                    average when calculating 
-                                                    the detection value. Set 
-                                                    to 0 to disable          
-                                                    averaging                
-                                                    [default: None]          
- --threshold              -t      <threshold>       Minimum averaged model   
-                                                    output threshold for a   
-                                                    class to be considered   
-                                                    detected, 0-255. Higher  
-                                                    values increase          
-                                                    precision at the cost of 
-                                                    recall                   
-                                                    [default: None]          
- --suppression            -s      <suppression ms>  Amount of milliseconds   
-                                                    to wait after a keyword  
-                                                    is detected before       
-                                                    detecting new keywords   
-                                                    [default: None]          
- --latency                -l      <latency ms>      This the amount of time  
-                                                    in milliseconds between  
-                                                    processing loops         
-                                                    [default: None]          
- --microphone             -m      <name>            For non-embedded, this   
-                                                    specifies the name of    
-                                                    the PC microphone to use 
-                                                    [default: None]          
- --volume                 -u      <volume gain>     Set the volume gain      
-                                                    scaler (i.e. amplitude)  
-                                                    to apply to the          
-                                                    microphone data. If 0 or 
-                                                    omitted, no scaler is    
-                                                    applied                  
-                                                    [default: None]          
- --dump-audio             -x                        Dump the raw microphone  
-                                                    and generate a           
-                                                    corresponding .wav file  
- --dump-raw-spectrograms  -w                        Dump the raw (i.e.       
-                                                    unquantized) generated   
-                                                    spectrograms to .jpg     
-                                                    images and .mp4 video    
- --dump-spectrograms      -z                        Dump the quantized       
-                                                    generated spectrograms   
-                                                    to .jpg images and .mp4  
-                                                    video                    
- --sensitivity            -i      FLOAT             Sensitivity of the       
-                                                    activity indicator LED.  
-                                                    Much less than 1.0 has   
-                                                    higher sensitivity       
-                                                    [default: None]          
- --app                            <path>            By default, the          
-                                                    audio_classifier app is  
-                                                    automatically            
-                                                    downloaded.              
-                                                    This option allows for   
-                                                    overriding with a custom 
-                                                    built app.               
-                                                    Alternatively, if using  
-                                                    the --device option, set 
-                                                    this option to "none" to 
-                                                    NOT program the          
-                                                    audio_classifier app to  
-                                                    the device.              
-                                                    In this case, ONLY the   
-                                                    .tflite will be          
-                                                    programmed and the       
-                                                    existing                 
-                                                    audio_classifier app     
-                                                    will be re-used.         
-                                                    [default: None]          
- --test                                             Run as a unit test       
- --help                                             Show this message and    
-                                                    exit.                    
+ --accelerator            -a      <name>            Name of accelerator to use while executing the audio classification ML model.                              [default: None]                                                                                                               
+                                                    If omitted, then use the reference kernels                                                                                                                                                                                               
+                                                    NOTE: It is recommended to NOT use an accelerator if running on the PC since the HW simulator can be slow.                                                                                                                               
+ --device                 -d                        If provided, then run the keyword spotting model on an embedded device, otherwise use the PC's local microphone.                                                                                                                         
+                                                    If this option is provided, then the device must be locally connected                                                                                                                                                                    
+ --port                           <port>            Serial COM port of a locally connected embedded device.                  [default: None]                                                                                                                                                 
+                                                    This is only used with the --device option.                                                                                                                                                                                              
+                                                    'If omitted, then attempt to automatically determine the serial COM port                                                                                                                                                                 
+ --verbose                -v                        Enable verbose console logs                                                                                                                                                                                                              
+ --window_duration        -w      <duration ms>     Controls the smoothing. Drop all inference results that are older than <now> minus window_duration.                       [default: None]                                                                                                
+                                                    Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some commands                                                                                                                
+ --count                  -c      <count>           The *minimum* number of inference results to average when calculating the detection value. Set to 0 to disable averaging [default: None]                                                                                                 
+ --threshold              -t      <threshold>       Minimum averaged model output threshold for a class to be considered detected, 0-255. Higher values increase precision at the cost of recall [default: None]                                                                             
+ --suppression            -s      <suppression ms>  Amount of milliseconds to wait after a keyword is detected before detecting new keywords [default: None]                                                                                                                                 
+ --latency                -l      <latency ms>      This the amount of time in milliseconds between processing loops [default: None]                                                                                                                                                         
+ --microphone             -m      <name>            For non-embedded, this specifies the name of the PC microphone to use [default: None]                                                                                                                                                    
+ --volume                 -u      <volume gain>     Set the volume gain scaler (i.e. amplitude) to apply to the microphone data. If 0 or omitted, no scaler is applied [default: None]                                                                                                       
+ --dump-audio             -x                        Dump the raw microphone and generate a corresponding .wav file                                                                                                                                                                           
+ --dump-raw-spectrograms  -w                        Dump the raw (i.e. unquantized) generated spectrograms to .jpg images and .mp4 video                                                                                                                                                     
+ --dump-spectrograms      -z                        Dump the quantized generated spectrograms to .jpg images and .mp4 video                                                                                                                                                                  
+ --sensitivity            -i      FLOAT             Sensitivity of the activity indicator LED. Much less than 1.0 has higher sensitivity [default: None]                                                                                                                                     
+ --app                            <path>            By default, the audio_classifier app is automatically downloaded.                                                             [default: None]                                                                                            
+                                                    This option allows for overriding with a custom built app.                                                                                                                                                                               
+                                                    Alternatively, if using the --device option, set this option to "none" to NOT program the audio_classifier app to the device.                                                                                                            
+                                                    In this case, ONLY the .tflite will be programmed and the existing audio_classifier app will be re-used.                                                                                                                                 
+ --test                                             Run as a unit test                                                                                                                                                                                                                       
+ --help                                             Show this message and exit.                                                                                                                                                                                                              
 
 
 ```

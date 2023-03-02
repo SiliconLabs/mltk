@@ -4,7 +4,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
@@ -424,94 +424,55 @@
 
           <article class="md-content__inner md-typeset" role="main">
             
-  <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>                                                                               
- Usage: mltk quantize [OPTIONS] &lt;model&gt;                                        
-                                                                               
- Quantize a model into a .tflite file                                          
- The model is automatically quantized after training completes.                
- This is useful if the mltk_model.tflite_converter parameters                  
- are modified after the model is trained.                                      
-                                                                               
- For more details see:                                                         
- https://siliconlabs.github.io/mltk/docs/guides/model_quantization             
-                                                                               
- ----------                                                                    
-  Examples                                                                     
- ----------                                                                    
-                                                                               
- # Quantize the previously trained model                                       
- # and update its associated model archive audio_example1.mltk.zip             
- # with the generated .tflite model file                                       
- mltk quantize audio_example1                                                  
-                                                                               
- # Generate a .tflite in the current directory from the given model archive    
- mltk quantize audio_example1.mltk.zip --output .                              
-                                                                               
- # Generate a .tflite from the given model python script                       
- # The .tflite is generated in the same directory as the Python script         
- mltk quantize my_model.py --build                                             
-                                                                               
+  <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>                                                                                                                                                                                                                                                                                               
+ Usage: mltk quantize [OPTIONS] &lt;model&gt;                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                               
+ Quantize a model into a .tflite file                                                                                                                                                                                                                                                          
+ The model is automatically quantized after training completes.                                                                                                                                                                                                                                
+ This is useful if the mltk_model.tflite_converter parameters                                                                                                                                                                                                                                  
+ are modified after the model is trained.                                                                                                                                                                                                                                                      
+                                                                                                                                                                                                                                                                                               
+ For more details see:                                                                                                                                                                                                                                                                         
+ https://siliconlabs.github.io/mltk/docs/guides/model_quantization                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                                                               
+ ----------                                                                                                                                                                                                                                                                                    
+  Examples                                                                                                                                                                                                                                                                                     
+ ----------                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                               
+ # Quantize the previously trained model                                                                                                                                                                                                                                                       
+ # and update its associated model archive audio_example1.mltk.zip                                                                                                                                                                                                                             
+ # with the generated .tflite model file                                                                                                                                                                                                                                                       
+ mltk quantize audio_example1                                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                                                               
+ # Generate a .tflite in the current directory from the given model archive                                                                                                                                                                                                                    
+ mltk quantize audio_example1.mltk.zip --output .                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                                               
+ # Generate a .tflite from the given model python script                                                                                                                                                                                                                                       
+ # The .tflite is generated in the same directory as the Python script                                                                                                                                                                                                                         
+ mltk quantize my_model.py --build                                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                                                               
  Arguments 
- *    model      &lt;model&gt;  One of the following:                              
-                          - Name of MLTK model                               
-                          - Path to trained model's archive (.mltk.zip)      
-                          - Path to MLTK model's python script               
-                          [default: None]                                    
-                          [required]                                         
+ *    model      &lt;model&gt;  One of the following:                         [default: None] [required]                                                                                                                                                                                           
+                          - Name of MLTK model                                                                                                                                                                                                                                               
+                          - Path to trained model's archive (.mltk.zip)                                                                                                                                                                                                                      
+                          - Path to MLTK model's python script                                                                                                                                                                                                                               
 
  Options 
- --verbose         -v                                  Enable verbose        
-                                                       console logs          
- --output          -o                         &lt;path&gt;   One of the following: 
-                                                       - Path to generated   
-                                                       output .tflite file   
-                                                       - Directory where     
-                                                       output .tflite is     
-                                                       generated             
-                                                       - If omitted, .tflite 
-                                                       is generated in the   
-                                                       MLTK model's log      
-                                                       directory and the     
-                                                       model archive is      
-                                                       updated               
-                                                       [default: None]       
- --build           -b                                  Build the Keras model 
-                                                       rather than loading   
-                                                       from a pre-trained    
-                                                       .h5 file in the MLTK  
-                                                       model's archive.      
-                                                       This is useful if a   
-                                                       .tflite needs to be   
-                                                       generated to view its 
-                                                       structure             
- --weights         -w                         &lt;value&gt;  Optional, load        
-                                                       weights from previous 
-                                                       training session.     
-                                                       May be one of the     
-                                                       following:            
-                                                       - If option omitted   
-                                                       then quantize using   
-                                                       output .h5 from       
-                                                       training              
-                                                       - Absolute path to a  
-                                                       generated weights .h5 
-                                                       file generated by     
-                                                       Keras during training 
-                                                       - The keyword `best`; 
-                                                       find the best weights 
-                                                       in &lt;model log         
-                                                       dir&gt;/train/weights    
-                                                       - Filename of .h5 in  
-                                                       &lt;model log            
-                                                       dir&gt;/train/weights    
-                                                       [default: None]       
- --update-archive      --no-update-archive             Update the model      
-                                                       archive with the      
-                                                       quantized model       
-                                                       [default:             
-                                                       no-update-archive]    
- --help                                                Show this message and 
-                                                       exit.                 
+ --verbose         -v                                  Enable verbose console logs                                                                                                                                                                                                           
+ --output          -o                         &lt;path&gt;   One of the following:                                                                                 [default: None]                                                                                                                 
+                                                       - Path to generated output .tflite file                                                                                                                                                                                               
+                                                       - Directory where output .tflite is generated                                                                                                                                                                                         
+                                                       - If omitted, .tflite is generated in the MLTK model's log directory and the model archive is updated                                                                                                                                 
+ --build           -b                                  Build the Keras model rather than loading from a pre-trained .h5 file in the MLTK model's archive.                                                                                                                                    
+                                                       This is useful if a .tflite needs to be generated to view its structure                                                                                                                                                               
+ --weights         -w                         &lt;value&gt;  Optional, load weights from previous training session.                             [default: None]                                                                                                                                    
+                                                       May be one of the following:                                                                                                                                                                                                          
+                                                       - If option omitted then quantize using output .h5 from training                                                                                                                                                                      
+                                                       - Absolute path to a generated weights .h5 file generated by Keras during training                                                                                                                                                    
+                                                       - The keyword `best`; find the best weights in &lt;model log dir&gt;/train/weights                                                                                                                                                          
+                                                       - Filename of .h5 in &lt;model log dir&gt;/train/weights                                                                                                                                                                                    
+ --update-archive      --no-update-archive             Update the model archive with the quantized model [default: no-update-archive]                                                                                                                                                        
+ --help                                                Show this message and exit.                                                                                                                                                                                                           
 </pre></div>
 </div>
 

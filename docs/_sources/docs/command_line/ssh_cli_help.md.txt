@@ -1,172 +1,96 @@
 ```text
-                                                                               
- Usage: mltk ssh [OPTIONS] <command>                                           
-                                                                               
- Execute an MLTK command on a remote SSH server                                
- This allows for executing an MLTK command on a remote SSH server.             
- This is useful for training a model in the "cloud" and then downloading       
- the training results back to the local computer.                              
-                                                                               
- The command executes the basic flow:                                          
-                                                                               
- 1. Open SSH connection to remote server                                       
-    Using the settings specified in the --host option, in                      
- ~/.mltk/user_settings.yaml, or in ~/.ssh/config                               
- 2. Create remote working directory                                            
-    Specified in --host option or in ~/.mltk/user_settings.yaml                
- 3. Create and activate an MLTK python virtual environment                     
-    (if not disabled in model specification or ~/.mltk/user_settings.yaml)     
- 4. Upload files configured in model specification and/or                      
- ~/.mltk/user_settings.yaml                                                    
- 5. Export any environment variables configured in model specification and/or  
- ~/.mltk/user_settings.yaml                                                    
- 6. Execute any startup shell commands configured in model specification       
- and/or ~/.mltk/user_settings.yaml                                             
- 7. Execute the MLTK command in a detached subprocess                          
-    This way, the command continues to execute even if the SSH session         
- prematurely closes                                                            
- 8. If --no-wait was NOT given, then poll the remote MLTK command subprocess   
- while dumping the remote log file to the local terminal                       
-    Issuing CTRL+C will abort the remote command subprocess                    
- 9. Once the MLTK command completes, download the model archive file (if       
- available)                                                                    
- 10. Download any files configured in model specification and/or               
- ~/.mltk/user_settings.yaml                                                    
- 11. Download any other logs files                                             
- 12. Execute any shutdown shell commands configured in model specification     
- and/or ~/.mltk/user_settings.yaml                                             
-                                                                               
- # Example Usage                                                               
-                                                                               
- # Train model on the remote SSH server using the SSH credentials configured   
- in ~/.mltk/user_settings.yaml.                                                
- # After training completes, the model will be copied to the local machine     
- mltk ssh train keyword_spotting_on_off_v2                                     
-                                                                               
- # Train model on the remote SSH server using the SSH credentials provided on  
- the command-line.                                                             
- # After training completes, the model will be copied to the local machine     
- mltk ssh --host root@ssh4.vast.ai -p 18492 -i ~/.ssh/id_vast_ai train         
- keyword_spotting_on_off_v2                                                    
-                                                                               
- # Start model training but do NOT wait for it to complete.                    
- # The model will train on the remote server                                   
- # We can later poll the results using the --resume option                     
- # NOTE: In this example, the SSH settings are stored in the                   
- ~/.mltk/user_settings.yaml file                                               
- mltk ssh train keyword_spotting_on_off_v2 --no-wait                           
-                                                                               
- # Retrieve the results of a previously started command                        
- # This can be used if the SSH connection prematurely disconnects OR if        
- --no-wait was previously called                                               
- mltk ssh train keyword_spotting_on_off_v2 --resume                            
-                                                                               
- # Train a model and discard a previously invoked command                      
- mltk ssh train audio_example1 --force                                         
-                                                                               
- # SSH Settings                                                                
-                                                                               
- The various SSH settings may be configured in the model mixin: SshMixin       
- and/or in the file ~/.mltk/user_settings.yaml and/or ~/.ssh/config.           
-                                                                               
- For more details, see:                                                        
- https://siliconlabs.github.io/mltk/docs/guides/model_training_via_ssh         
-                                                                               
- NOTE: Issuing Ctrl+C will cancel the command on the remote server             
-                                                                               
+                                                                                                                                                                                                                                                                                               
+ Usage: mltk ssh [OPTIONS] <command>                                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                               
+ Execute an MLTK command on a remote SSH server                                                                                                                                                                                                                                                
+ This allows for executing an MLTK command on a remote SSH server.                                                                                                                                                                                                                             
+ This is useful for training a model in the "cloud" and then downloading                                                                                                                                                                                                                       
+ the training results back to the local computer.                                                                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                                               
+ The command executes the basic flow:                                                                                                                                                                                                                                                          
+                                                                                                                                                                                                                                                                                               
+ 1. Open SSH connection to remote server                                                                                                                                                                                                                                                       
+    Using the settings specified in the --host option, in ~/.mltk/user_settings.yaml, or in ~/.ssh/config                                                                                                                                                                                      
+ 2. Create remote working directory                                                                                                                                                                                                                                                            
+    Specified in --host option or in ~/.mltk/user_settings.yaml                                                                                                                                                                                                                                
+ 3. Create and activate an MLTK python virtual environment                                                                                                                                                                                                                                     
+    (if not disabled in model specification or ~/.mltk/user_settings.yaml)                                                                                                                                                                                                                     
+ 4. Upload files configured in model specification and/or ~/.mltk/user_settings.yaml                                                                                                                                                                                                           
+ 5. Export any environment variables configured in model specification and/or ~/.mltk/user_settings.yaml                                                                                                                                                                                       
+ 6. Execute any startup shell commands configured in model specification and/or ~/.mltk/user_settings.yaml                                                                                                                                                                                     
+ 7. Execute the MLTK command in a detached subprocess                                                                                                                                                                                                                                          
+    This way, the command continues to execute even if the SSH session prematurely closes                                                                                                                                                                                                      
+ 8. If --no-wait was NOT given, then poll the remote MLTK command subprocess while dumping the remote log file to the local terminal                                                                                                                                                           
+    Issuing CTRL+C will abort the remote command subprocess                                                                                                                                                                                                                                    
+ 9. Once the MLTK command completes, download the model archive file (if available)                                                                                                                                                                                                            
+ 10. Download any files configured in model specification and/or ~/.mltk/user_settings.yaml                                                                                                                                                                                                    
+ 11. Download any other logs files                                                                                                                                                                                                                                                             
+ 12. Execute any shutdown shell commands configured in model specification and/or ~/.mltk/user_settings.yaml                                                                                                                                                                                   
+                                                                                                                                                                                                                                                                                               
+ # Example Usage                                                                                                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                               
+ # Train model on the remote SSH server using the SSH credentials configured in ~/.mltk/user_settings.yaml.                                                                                                                                                                                    
+ # After training completes, the model will be copied to the local machine                                                                                                                                                                                                                     
+ mltk ssh train keyword_spotting_on_off_v2                                                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                                                                               
+ # Train model on the remote SSH server using the SSH credentials provided on the command-line.                                                                                                                                                                                                
+ # After training completes, the model will be copied to the local machine                                                                                                                                                                                                                     
+ mltk ssh --host root@ssh4.vast.ai -p 18492 -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2                                                                                                                                                                                              
+                                                                                                                                                                                                                                                                                               
+ # Start model training but do NOT wait for it to complete.                                                                                                                                                                                                                                    
+ # The model will train on the remote server                                                                                                                                                                                                                                                   
+ # We can later poll the results using the --resume option                                                                                                                                                                                                                                     
+ # NOTE: In this example, the SSH settings are stored in the ~/.mltk/user_settings.yaml file                                                                                                                                                                                                   
+ mltk ssh train keyword_spotting_on_off_v2 --no-wait                                                                                                                                                                                                                                           
+                                                                                                                                                                                                                                                                                               
+ # Retrieve the results of a previously started command                                                                                                                                                                                                                                        
+ # This can be used if the SSH connection prematurely disconnects OR if --no-wait was previously called                                                                                                                                                                                        
+ mltk ssh train keyword_spotting_on_off_v2 --resume                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                               
+ # Train a model and discard a previously invoked command                                                                                                                                                                                                                                      
+ mltk ssh train audio_example1 --force                                                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                               
+ # SSH Settings                                                                                                                                                                                                                                                                                
+                                                                                                                                                                                                                                                                                               
+ The various SSH settings may be configured in the model mixin: SshMixin and/or in the file ~/.mltk/user_settings.yaml and/or ~/.ssh/config.                                                                                                                                                   
+                                                                                                                                                                                                                                                                                               
+ For more details, see:                                                                                                                                                                                                                                                                        
+ https://siliconlabs.github.io/mltk/docs/guides/model_training_via_ssh                                                                                                                                                                                                                         
+                                                                                                                                                                                                                                                                                               
+ NOTE: Issuing Ctrl+C will cancel the command on the remote server                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                                                               
  Arguments 
- *    mltk_command      <command>  MLTK command to run on remote SSH server  
-                                   The currently supported commands are:     
-                                   train                                     
-                                   [default: None]                           
-                                   [required]                                
+ *    mltk_command      <command>  MLTK command to run on remote SSH server    [default: None] [required]                                                                                                                                                                                    
+                                   The currently supported commands are: train                                                                                                                                                                                                               
 
  Options 
- --host           -h                 <host>      SSH hostname. With format:  
-                                                 [<user                      
-                                                 name>@]<host>[:<port>][/<p 
-                                                                             
-                                                 Where:                      
-                                                 - <user name> - Optional,   
-                                                 user login name             
-                                                 - <host> - Required, SSH    
-                                                 hostname                    
-                                                 - <port> - Optional, SSH    
-                                                 port, default is 22         
-                                                 - <path> - Optional, remote 
-                                                 directory path              
-                                                                             
-                                                 Examples:                   
-                                                 --host myserver.com         
-                                                 --host 192.168.1.56         
-                                                 --host ubuntu@192.168.1.56  
-                                                 --host                      
-                                                 ubuntu@192.168.1.56:456     
-                                                 --host                      
-                                                 ubuntu@192.168.1.56/worksp 
-                                                                             
-                                                 If omitted, then use the    
-                                                 settings defined in         
-                                                 ~/.mltk/user_settings.yaml  
-                                                                             
-                                                 NOTE: If the given hostname 
-                                                 exists in ~/.ssh/config or  
-                                                 the config file path        
-                                                 defined                     
-                                                 ~/.mltk/user_settings.yaml, 
-                                                 then the settings defined   
-                                                 there will be used          
-                                                 [default: None]             
- --identity_file  -i                 <key>       Path to SSH private key     
-                                                 file in PEM format. If      
-                                                 omitted, then use the       
-                                                 settings defined in         
-                                                 ~/.mltk/user_settings.yaml  
-                                                 or ~/.ssh/config            
-                                                 [default: None]             
- --port           -p                 <port>      SSH server listening port.  
-                                                 If omitted, then use the    
-                                                 --host port or settings     
-                                                 defined in                  
-                                                 ~/.mltk/user_settings.yaml  
-                                                 or ~/.ssh/config            
-                                                 [default: None]             
- --password                          <password>  SSH user password. If       
-                                                 omitted, then use the       
-                                                 settings defined in         
-                                                 ~/.mltk/user_settings.yaml  
-                                                 [default: None]             
- --resume             --no-resume                Resume a previously         
-                                                 executed command. This is   
-                                                 useful if the SSH           
-                                                 connection prematurely      
-                                                 disconnects or using the    
-                                                 --no-wait option            
-                                                 [default: no-resume]        
- --wait               --no-wait                  Wait for the command to     
-                                                 complete on the remote      
-                                                 server. If using --no-wait, 
-                                                 then --resume can later be  
-                                                 used to retrieve the        
-                                                 command results             
-                                                 [default: wait]             
- --force              --no-force                 Only one command can be     
-                                                 active on the remote        
-                                                 server. Use this to         
-                                                 abort/discard a previously  
-                                                 executed command            
-                                                 [default: no-force]         
- --clean              --no-clean                 If running the "train"      
-                                                 command, then clean the     
-                                                 local AND remote model log  
-                                                 directories before invoking 
-                                                 command.  This will also    
-                                                 clean the existing model    
-                                                 archive on the local        
-                                                 machine                     
-                                                 [default: no-clean]         
- --verbose        -v                             Enable verbose logging      
- --help                                          Show this message and exit. 
+ --host           -h                 <host>      SSH hostname. With format: [<user name>@]<host>[:<port>][/<path>]                                                                                            [default: None]                                                                
+                                                                                                                                                                                                                                                                                             
+                                                 Where:                                                                                                                                                                                                                                      
+                                                 - <user name> - Optional, user login name                                                                                                                                                                                                   
+                                                 - <host> - Required, SSH hostname                                                                                                                                                                                                           
+                                                 - <port> - Optional, SSH port, default is 22                                                                                                                                                                                                
+                                                 - <path> - Optional, remote directory path                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                                                             
+                                                 Examples:                                                                                                                                                                                                                                   
+                                                 --host myserver.com                                                                                                                                                                                                                         
+                                                 --host 192.168.1.56                                                                                                                                                                                                                         
+                                                 --host ubuntu@192.168.1.56                                                                                                                                                                                                                  
+                                                 --host ubuntu@192.168.1.56:456                                                                                                                                                                                                              
+                                                 --host ubuntu@192.168.1.56/workspace                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                             
+                                                 If omitted, then use the settings defined in ~/.mltk/user_settings.yaml                                                                                                                                                                     
+                                                                                                                                                                                                                                                                                             
+                                                 NOTE: If the given hostname exists in ~/.ssh/config or the config file path defined ~/.mltk/user_settings.yaml, then the settings defined there will be used                                                                                
+ --identity_file  -i                 <key>       Path to SSH private key file in PEM format. If omitted, then use the settings defined in ~/.mltk/user_settings.yaml or ~/.ssh/config [default: None]                                                                                        
+ --port           -p                 <port>      SSH server listening port. If omitted, then use the --host port or settings defined in ~/.mltk/user_settings.yaml or ~/.ssh/config [default: None]                                                                                          
+ --password                          <password>  SSH user password. If omitted, then use the settings defined in ~/.mltk/user_settings.yaml [default: None]                                                                                                                                  
+ --resume             --no-resume                Resume a previously executed command. This is useful if the SSH connection prematurely disconnects or using the --no-wait option [default: no-resume]                                                                                       
+ --wait               --no-wait                  Wait for the command to complete on the remote server. If using --no-wait, then --resume can later be used to retrieve the command results [default: wait]                                                                                  
+ --force              --no-force                 Only one command can be active on the remote server. Use this to abort/discard a previously executed command [default: no-force]                                                                                                            
+ --clean              --no-clean                 If running the "train" command, then clean the local AND remote model log directories before invoking command.  This will also clean the existing model archive on the local machine [default: no-clean]                                    
+ --verbose        -v                             Enable verbose logging                                                                                                                                                                                                                      
+ --help                                          Show this message and exit.                                                                                                                                                                                                                 
 
 
 ```

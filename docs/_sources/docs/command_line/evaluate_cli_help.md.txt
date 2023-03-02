@@ -1,155 +1,60 @@
 ```text
-                                                                               
- Usage: mltk evaluate [OPTIONS] <model>                                        
-                                                                               
- Evaluate a trained ML model                                                   
- This passes validation samples through a trained MLTK model and generates a   
- model performance summary.                                                    
- For more details see:                                                         
- https://siliconlabs.github.io/mltk/docs/guides/model_evaluation               
-                                                                               
- ----------                                                                    
-  Examples                                                                     
- ----------                                                                    
-                                                                               
- # Evaluate the .h5 (i.e. float32) model                                       
- mltk evaluate audio_example1                                                  
-                                                                               
- # Evaluate the .h5 (i.e. float32) using model archive                         
- mltk evaluate ~/workspace/my_model.mltk.zip                                   
-                                                                               
- # Evaluate the .tflite (i.e. quantized) model                                 
- # and limit the max samples per class to 100                                  
- mltk evaluate audio_example1 --tflite --count 100                             
-                                                                               
- # Evaluate the .tflite (i.e. quantized) auto encoder model                    
- # and dump the input/output images                                            
- mltk evaluate fully_connected_autoencoder --tflite --dump                     
-                                                                               
- Note: All log files are generated in the <model log dir>/eval directory.      
- It a MLTK model is provided, the model's archive is updated with the          
- evaluation results.                                                           
-                                                                               
+                                                                                                                                                                                                                                                                                               
+ Usage: mltk evaluate [OPTIONS] <model>                                                                                                                                                                                                                                                        
+                                                                                                                                                                                                                                                                                               
+ Evaluate a trained ML model                                                                                                                                                                                                                                                                   
+ This passes validation samples through a trained MLTK model and generates a model performance summary.                                                                                                                                                                                        
+ For more details see:                                                                                                                                                                                                                                                                         
+ https://siliconlabs.github.io/mltk/docs/guides/model_evaluation                                                                                                                                                                                                                               
+                                                                                                                                                                                                                                                                                               
+ ----------                                                                                                                                                                                                                                                                                    
+  Examples                                                                                                                                                                                                                                                                                     
+ ----------                                                                                                                                                                                                                                                                                    
+                                                                                                                                                                                                                                                                                               
+ # Evaluate the .h5 (i.e. float32) model                                                                                                                                                                                                                                                       
+ mltk evaluate audio_example1                                                                                                                                                                                                                                                                  
+                                                                                                                                                                                                                                                                                               
+ # Evaluate the .h5 (i.e. float32) using model archive                                                                                                                                                                                                                                         
+ mltk evaluate ~/workspace/my_model.mltk.zip                                                                                                                                                                                                                                                   
+                                                                                                                                                                                                                                                                                               
+ # Evaluate the .tflite (i.e. quantized) model                                                                                                                                                                                                                                                 
+ # and limit the max samples per class to 100                                                                                                                                                                                                                                                  
+ mltk evaluate audio_example1 --tflite --count 100                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                                                               
+ # Evaluate the .tflite (i.e. quantized) auto encoder model                                                                                                                                                                                                                                    
+ # and dump the input/output images                                                                                                                                                                                                                                                            
+ mltk evaluate fully_connected_autoencoder --tflite --dump                                                                                                                                                                                                                                     
+                                                                                                                                                                                                                                                                                               
+ Note: All log files are generated in the <model log dir>/eval directory.                                                                                                                                                                                                                      
+ It a MLTK model is provided, the model's archive is updated with the evaluation results.                                                                                                                                                                                                      
+                                                                                                                                                                                                                                                                                               
  Arguments 
- *    model      <model>  Name of previously trained MLTK model or path to   
-                          trained model's archive (.mltk.zip)                
-                          [default: None]                                    
-                          [required]                                         
+ *    model      <model>  Name of previously trained MLTK model or path to trained model's archive (.mltk.zip) [default: None] [required]                                                                                                                                                    
 
  Options 
- --tflite                                                 Evaluate the       
-                                                          .tflite (i.e.      
-                                                          quantized) model   
-                                                          file.              
-                                                          If omitted,        
-                                                          evaluate the Keras 
-                                                          .h5 model (i.e.    
-                                                          float)             
- --weights         -w                       <weights>     Optional, load     
-                                                          weights from       
-                                                          previous training  
-                                                          session.           
-                                                          May be one of the  
-                                                          following:         
-                                                          - If option        
-                                                          omitted then       
-                                                          evaluate using     
-                                                          output .h5 or      
-                                                          .tflite from       
-                                                          training           
-                                                          - Absolute path to 
-                                                          a generated        
-                                                          weights .h5 file   
-                                                          generated by Keras 
-                                                          during training    
-                                                          - The keyword      
-                                                          `best`; find the   
-                                                          best weights in    
-                                                          <model log         
-                                                          dir>/train/weights 
-                                                          - Filename of .h5  
-                                                          in <model log      
-                                                          dir>/train/weights 
-                                                          Note: This option  
-                                                          may only be used   
-                                                          if the "--tflite"  
-                                                          option is *not*    
-                                                          used               
-                                                          [default: None]    
- --classes                                  <class-list>  If evaluating a    
-                                                          model with the     
-                                                          EvaluateAutoEncod 
-                                                          mixin,             
-                                                          then this should   
-                                                          be a               
-                                                          comma-seperated    
-                                                          list of classes in 
-                                                          the dataset.       
-                                                          The first element  
-                                                          should be          
-                                                          considered the     
-                                                          "normal" class,    
-                                                          every other class  
-                                                          is considered      
-                                                          abnormal and       
-                                                          compared           
-                                                          independently.     
-                                                          If not provided,   
-                                                          then the classes   
-                                                          default to:        
-                                                          [normal, abnormal] 
-                                                          [default: None]    
- --count           -c                       <value>       By default, all    
-                                                          validation samples 
-                                                          are used.          
-                                                          This option places 
-                                                          an upper limit on  
-                                                          the number of      
-                                                          samples per class  
-                                                          that are used for  
-                                                          evaluation         
-                                                          [default: -1]      
- --dump                --no-dump                          If evaluating a    
-                                                          model with the     
-                                                          EvaluateAutoEncod 
-                                                          mixin, then, for   
-                                                          each sample, an    
-                                                          image will be      
-                                                          generated          
-                                                          comparing the      
-                                                          sample to the      
-                                                          decoded sample     
-                                                          [default: no-dump] 
- --show                --no-show                          Display the        
-                                                          generated          
-                                                          performance        
-                                                          diagrams           
-                                                          [default: no-show] 
- --verbose         -v                                     Enable verbose     
-                                                          console logs       
- --update-archive      --no-update-arch                  Update the model   
-                                                          archive with the   
-                                                          evaluation results 
-                                                          [default:          
-                                                          update-archive]    
- --test                --no-test                          Use the model      
-                                                          created by the     
-                                                          test training.     
-                                                          This does the same 
-                                                          thing as: mltk     
-                                                          evaluate           
-                                                          my_model-test      
-                                                          [default: no-test] 
- --post                                                   This allows for    
-                                                          post-processing    
-                                                          the evaluation     
-                                                          results (e.g.      
-                                                          uploading to a     
-                                                          cloud) if          
-                                                          supported by the   
-                                                          given MltkModel    
- --help                                                   Show this message  
-                                                          and exit.          
+ --tflite                                                   Evaluate the .tflite (i.e. quantized) model file.                                                                                                                                                                                
+                                                            If omitted, evaluate the Keras .h5 model (i.e. float)                                                                                                                                                                            
+ --weights         -w                         <weights>     Optional, load weights from previous training session.                             [default: None]                                                                                                                               
+                                                            May be one of the following:                                                                                                                                                                                                     
+                                                            - If option omitted then evaluate using output .h5 or .tflite from training                                                                                                                                                      
+                                                            - Absolute path to a generated weights .h5 file generated by Keras during training                                                                                                                                               
+                                                            - The keyword `best`; find the best weights in <model log dir>/train/weights                                                                                                                                                     
+                                                            - Filename of .h5 in <model log dir>/train/weights                                                                                                                                                                               
+                                                            Note: This option may only be used if the "--tflite" option is *not* used                                                                                                                                                        
+ --classes                                    <class-list>  If evaluating a model with the EvaluateAutoEncoderMixin mixin,        [default: None]                                                                                                                                            
+                                                            then this should be a comma-seperated list of classes in the dataset.                                                                                                                                                            
+                                                            The first element should be considered the "normal" class,                                                                                                                                                                       
+                                                            every other class is considered abnormal and compared independently.                                                                                                                                                             
+                                                            If not provided, then the classes default to: [normal, abnormal]                                                                                                                                                                 
+ --count           -c                         <value>       By default, all validation samples are used.                                                      [default: -1]                                                                                                                  
+                                                            This option places an upper limit on the number of samples per class that are used for evaluation                                                                                                                                
+ --dump                --no-dump                            If evaluating a model with the EvaluateAutoEncoderMixin mixin, then, for each sample, an image will be generated comparing the sample to the decoded sample [default: no-dump]                                                   
+ --show                --no-show                            Display the generated performance diagrams [default: no-show]                                                                                                                                                                    
+ --verbose         -v                                       Enable verbose console logs                                                                                                                                                                                                      
+ --update-archive      --no-update-archive                  Update the model archive with the evaluation results [default: update-archive]                                                                                                                                                   
+ --test                --no-test                            Use the model created by the test training. This does the same thing as: mltk evaluate my_model-test [default: no-test]                                                                                                          
+ --post                                                     This allows for post-processing the evaluation results (e.g. uploading to a cloud) if supported by the given MltkModel                                                                                                           
+ --help                                                     Show this message and exit.                                                                                                                                                                                                      
 
 
 ```
