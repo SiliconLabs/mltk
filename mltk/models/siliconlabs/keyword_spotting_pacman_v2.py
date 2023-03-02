@@ -36,7 +36,7 @@ and get similar accuracy to the much larger "teacher" model.
 To train the teacher model, define the environment variable ``TRAIN_TEACHER=1`` then train:
 
 .. code-block:: shell
-  
+
     export TRAIN_TEACHER=1
     mltk train keyword_spotting_pacman_v2
 
@@ -48,7 +48,7 @@ Once the teacher is trained, the "student" model (the model that is programmed t
 trained by defining the environment variable: ``TRAIN_TEACHER=0``, e.g.:
 
 .. code-block:: shell
-  
+
     export TRAIN_TEACHER=0
     mltk train keyword_spotting_pacman_v2
 
@@ -74,7 +74,7 @@ The following changes have been made from the original `keyword_spotting_pacman 
    * More details at `Knowledge Distallation <https://keras.io/examples/vision/knowledge_distillation/>`_
 
 #. Increased the size of the model
- 
+
    * Previously, a smaller model that executed in 40ms was used, and several inferences were averaged
    * Now, a larger model that executes in 90ms and no averaging
    * This helps to make the Pac-Man game more responsive
@@ -159,9 +159,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize keyword_spotting_pacman_v2 --tflite
-    
+
     +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)        | Output(s)       | Config                                              |
     +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
@@ -243,7 +243,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile keyword_spotting_pacman_v2 --device --accelerator MVP
 
@@ -293,7 +293,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view keyword_spotting_pacman_v2 --tflite
 
 .. raw:: html
@@ -304,6 +304,14 @@ Model Diagram
             <p>Click to enlarge</p>
         </a>
     </div>
+
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/siliconlabs/keyword_spotting_pacman_v2.py
+    :language: python
+    :lines: 320-
 
 
 """
@@ -325,10 +333,10 @@ import mltk.core as mltk_core
 # This manages downloading and extracting the dataset
 from mltk.datasets.audio.speech_commands import speech_commands_v2
 
-# Import the AudioFeatureGeneratorSettings which we'll configure 
+# Import the AudioFeatureGeneratorSettings which we'll configure
 from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings
 from mltk.core.preprocess.utils import tf_dataset as tf_dataset_utils
-from mltk.core.preprocess.utils import audio as audio_utils 
+from mltk.core.preprocess.utils import audio as audio_utils
 from mltk.core.preprocess.utils import image as image_utils
 from mltk.utils.python import install_pip_package
 from mltk.utils.archive_downloader import download_verify_extract, download_url
@@ -346,7 +354,7 @@ class MyModel(
     mltk_core.MltkModel,    # We must inherit the MltkModel class
     mltk_core.TrainMixin,   # We also inherit the TrainMixin since we want to train this model
     mltk_core.DatasetMixin, # We also need the DatasetMixin mixin to provide the relevant dataset properties
-    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation stats for our classification model 
+    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation stats for our classification model
     mltk_core.SshMixin,
 ):
     pass
@@ -375,7 +383,7 @@ my_model.epochs = 100
 # before updating the training gradients.
 # Typical values are 10-64
 # NOTE: Larger values require more memory and may not fit on your GPU
-my_model.batch_size = 24 
+my_model.batch_size = 24
 
 
 ##########################################################################
@@ -386,13 +394,13 @@ def my_teacher_model_builder(model: MyModel) -> tf.keras.Model:
     """Build the "Teacher" Keras model
 
     This is used when the environment variable: TRAIN_TEACHER=1
-    
+
     This is called by the MLTK just before "teacher" training starts.
     See https://keras.io/examples/vision/knowledge_distillation/ for more details.
 
     Arguments:
         my_model: The MltkModel instance
-    
+
     Returns:
         Compiled Keras model instance
     """
@@ -405,7 +413,7 @@ def my_teacher_model_builder(model: MyModel) -> tf.keras.Model:
     keras_model.add(tf.keras.layers.BatchNormalization())
     keras_model.add(tf.keras.layers.Activation('relu'))
     keras_model.add(tf.keras.layers.MaxPooling2D(2,2))
-  
+
     keras_model.add(tf.keras.layers.Conv2D(filters*2, (3,3), padding='same',))
     keras_model.add(tf.keras.layers.BatchNormalization())
     keras_model.add(tf.keras.layers.Activation('relu'))
@@ -432,7 +440,7 @@ def my_teacher_model_builder(model: MyModel) -> tf.keras.Model:
     keras_model.add(tf.keras.layers.Dense(model.n_classes, activation='softmax'))
 
     keras_model.compile(
-        loss='categorical_crossentropy', 
+        loss='categorical_crossentropy',
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
         metrics= ['accuracy']
     )
@@ -441,8 +449,8 @@ def my_teacher_model_builder(model: MyModel) -> tf.keras.Model:
 
 
 def my_teacher_model_saver(
-    mltk_model:mltk_core.MltkModel, 
-    keras_model:tf.keras.Model, 
+    mltk_model:mltk_core.MltkModel,
+    keras_model:tf.keras.Model,
     logger:logging.Logger
 ) -> tf.keras.Model:
     """Save the teacher model
@@ -457,21 +465,21 @@ def my_teacher_model_saver(
     teacher_h5_path = get_teacher_h5_path(check_exists=False)
     logger.debug(f'Saving {teacher_h5_path}')
     keras_model.save(teacher_h5_path, save_format='tf')
-    
+
     return keras_model
 
 
 
 def my_student_model_builder(model: MyModel) -> tf.keras.Model:
     """Build the "Student" Keras model
-    
+
     This is called by the MLTK just before training starts.
     This is used when the environment variable: TRAIN_TEACHER=0
     See https://keras.io/examples/vision/knowledge_distillation/ for more details.
 
     Arguments:
         my_model: The MltkModel instance
-    
+
     Returns:
         Compiled Keras model instance
     """
@@ -484,7 +492,7 @@ def my_student_model_builder(model: MyModel) -> tf.keras.Model:
     keras_model.add(tf.keras.layers.BatchNormalization())
     keras_model.add(tf.keras.layers.Activation('relu'))
     keras_model.add(tf.keras.layers.MaxPooling2D(2,2))
-  
+
     keras_model.add(tf.keras.layers.Conv2D(filters*2, (3,3), padding='same',))
     keras_model.add(tf.keras.layers.BatchNormalization())
     keras_model.add(tf.keras.layers.Activation('relu'))
@@ -511,8 +519,8 @@ def my_student_model_builder(model: MyModel) -> tf.keras.Model:
     keras_model.add(tf.keras.layers.Dense(model.n_classes, activation='softmax'))
 
     keras_model.compile(
-        loss='categorical_crossentropy', 
-        optimizer='adam', 
+        loss='categorical_crossentropy',
+        optimizer='adam',
         metrics= ['accuracy']
     )
 
@@ -534,8 +542,8 @@ def my_student_model_builder(model: MyModel) -> tf.keras.Model:
 
 
 def my_student_model_saver(
-    mltk_model:mltk_core.MltkModel, 
-    keras_model:tf.keras.Model, 
+    mltk_model:mltk_core.MltkModel,
+    keras_model:tf.keras.Model,
     logger:logging.Logger
 ) -> tf.keras.Model:
     """Save the student model
@@ -569,7 +577,7 @@ def my_student_model_saver(
 my_model.checkpoint['monitor'] =  'val_accuracy'
 
 # https://keras.io/api/callbacks/reduce_lr_on_plateau/
-# If the test accuracy doesn't improve after 'patience' epochs 
+# If the test accuracy doesn't improve after 'patience' epochs
 # then decrease the learning rate by 'factor'
 my_model.reduce_lr_on_plateau = dict(
   monitor='accuracy',
@@ -580,35 +588,35 @@ my_model.reduce_lr_on_plateau = dict(
 
 # https://keras.io/api/callbacks/early_stopping/
 # If the validation student loss doesn't improve after 'patience' epochs then stop training
-my_model.early_stopping = dict( 
-  monitor='val_student_loss', 
-  mode='min', 
-  verbose=1, 
-  patience=50, 
+my_model.early_stopping = dict(
+  monitor='val_student_loss',
+  mode='min',
+  verbose=1,
+  patience=50,
   min_delta=0.0001
 )
 
 # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard
 # my_model.tensorboard = dict(
-#     histogram_freq=0,       # frequency (in epochs) at which to compute activation and weight histograms 
-#                             # for the layers of the model. If set to 0, histograms won't be computed. 
+#     histogram_freq=0,       # frequency (in epochs) at which to compute activation and weight histograms
+#                             # for the layers of the model. If set to 0, histograms won't be computed.
 #                             # Validation data (or split) must be specified for histogram visualizations.
 #     write_graph=False,       # whether to visualize the graph in TensorBoard. The log file can become quite large when write_graph is set to True.
 #     write_images=False,     # whether to write model weights to visualize as image in TensorBoard.
-#     update_freq="batch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics 
-#                             # to TensorBoard after each batch. The same applies for 'epoch'. 
-#                             # If using an integer, let's say 1000, the callback will write the metrics and losses 
-#                             # to TensorBoard every 1000 batches. Note that writing too frequently to 
+#     update_freq="batch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics
+#                             # to TensorBoard after each batch. The same applies for 'epoch'.
+#                             # If using an integer, let's say 1000, the callback will write the metrics and losses
+#                             # to TensorBoard every 1000 batches. Note that writing too frequently to
 #                             # TensorBoard can slow down your training.
-#     profile_batch=(51,51),        # Profile the batch(es) to sample compute characteristics. 
-#                             # profile_batch must be a non-negative integer or a tuple of integers. 
-#                             # A pair of positive integers signify a range of batches to profile. 
+#     profile_batch=(51,51),        # Profile the batch(es) to sample compute characteristics.
+#                             # profile_batch must be a non-negative integer or a tuple of integers.
+#                             # A pair of positive integers signify a range of batches to profile.
 #                             # By default, it will profile the second batch. Set profile_batch=0 to disable profiling.
-# ) 
+# )
 
 # NOTE: You can also add manually add other KerasCallbacks
 # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/
-# Any callbacks specified here will override the built-in callbacks 
+# Any callbacks specified here will override the built-in callbacks
 # (e.g. my_model.reduce_lr_on_plateau, my_model.early_stopping)
 my_model.train_callbacks = [
     tf.keras.callbacks.TerminateOnNaN()
@@ -689,8 +697,8 @@ import noisereduce
 import pyloudnorm
 
 def audio_augmentation_pipeline(
-    path_batch:np.ndarray, 
-    label_batch:np.ndarray, 
+    path_batch:np.ndarray,
+    label_batch:np.ndarray,
     seed:np.ndarray
 ) -> np.ndarray:
     """Augment a batch of audio clips and generate spectrograms
@@ -724,7 +732,7 @@ def audio_augmentation_pipeline(
     padding_length_ms = 1000
     padded_frontend_settings = frontend_settings.copy()
     padded_frontend_settings.sample_length_ms += padding_length_ms
-    
+
     # For each audio sample path in the current batch
     for i, (audio_path, labels) in enumerate(zip(path_batch, label_batch)):
         class_id = np.argmax(labels)
@@ -753,12 +761,12 @@ def audio_augmentation_pipeline(
                         continue
                     audio_path = path_batch[choice_index]
                     use_cropped_sample_as_unknown = True
-                    break 
+                    break
 
         if not using_silence_as_unknown:
             # Read the audio file
             sample, original_sample_rate = audio_utils.read_audio_file(
-                audio_path, 
+                audio_path,
                 return_sample_rate=True,
                 return_numpy=True
             )
@@ -768,7 +776,7 @@ def audio_augmentation_pipeline(
                 warnings.simplefilter("ignore")
                 sample = pyloudnorm.normalize.peak(sample, 0.0)
             sample = noisereduce.reduce_noise(
-                y=sample, 
+                y=sample,
                 sr=original_sample_rate,
                 stationary=True
             )
@@ -782,8 +790,8 @@ def audio_augmentation_pipeline(
         # Create a buffer to hold the padded sample
         padding_length = int((original_sample_rate * padding_length_ms) / 1000)
         padded_sample_length = int((original_sample_rate * padded_frontend_settings.sample_length_ms) / 1000)
-        padded_sample = np.zeros((padded_sample_length,), dtype=np.float32) 
- 
+        padded_sample = np.zeros((padded_sample_length,), dtype=np.float32)
+
         # If we want to crop a "known" sample and use it as an unknown sample
         if use_cropped_sample_as_unknown:
             # Trim any silence from the sample
@@ -817,12 +825,12 @@ def audio_augmentation_pipeline(
             dataset_dir = speech_commands_v2.load_clean_data()
             audio_augmentations = audiomentations.Compose(
                 p=1.0,
-                transforms=[ 
+                transforms=[
                 #audiomentations.PitchShift(min_semitones=-1, max_semitones=1, p=0.5),
                 audiomentations.TimeStretch(min_rate=0.90, max_rate=1.1, p=1.0),
                 audiomentations.Gain(min_gain_in_db=0.95, max_gain_in_db=1.5, p=1.0),
                 audiomentations.AddBackgroundNoise(
-                    f'{dataset_dir}/_background_noise_/brd2601', 
+                    f'{dataset_dir}/_background_noise_/brd2601',
                     min_absolute_rms_in_db=-75.0,
                     max_absolute_rms_in_db=-60.0,
                     noise_rms="absolute",
@@ -830,7 +838,7 @@ def audio_augmentation_pipeline(
                     p=1.0
                 ),
                 audiomentations.AddBackgroundNoise(
-                    f'{dataset_dir}/_background_noise_/pacman', 
+                    f'{dataset_dir}/_background_noise_/pacman',
                     min_absolute_rms_in_db=-60,
                     max_absolute_rms_in_db=-35,
                     noise_rms="absolute",
@@ -838,7 +846,7 @@ def audio_augmentation_pipeline(
                     p=0.60
                 ),
                 audiomentations.AddBackgroundNoise(
-                    f'{dataset_dir}/_background_noise_/ambient', 
+                    f'{dataset_dir}/_background_noise_/ambient',
                     min_absolute_rms_in_db=-70,
                     max_absolute_rms_in_db=-30,
                     noise_rms="absolute",
@@ -855,8 +863,8 @@ def audio_augmentation_pipeline(
         # Convert the sample rate (if necessary)
         if original_sample_rate != frontend_settings.sample_rate_hz:
             augmented_sample, _ = audio_utils.resample(
-                augmented_sample, 
-                orig_sr=original_sample_rate, 
+                augmented_sample,
+                orig_sr=original_sample_rate,
                 target_sr=frontend_settings.sample_rate_hz
             )
 
@@ -865,8 +873,8 @@ def audio_augmentation_pipeline(
 
         # Generate a spectrogram from the augmented audio sample
         spectrogram = audio_utils.apply_frontend(
-            sample=augmented_sample, 
-            settings=padded_frontend_settings, 
+            sample=augmented_sample,
+            settings=padded_frontend_settings,
             dtype=np.int8
         )
 
@@ -883,7 +891,7 @@ def audio_augmentation_pipeline(
         data_dump_dir = globals().get('data_dump_dir', None)
         if data_dump_dir:
             try:
-                from cv2 import cv2 
+                from cv2 import cv2
             except:
                 import cv2
 
@@ -892,14 +900,14 @@ def audio_augmentation_pipeline(
             spectrogram_dumped = np.squeeze(spectrogram, axis=-1)
             # Transpose to put the time on the x-axis
             spectrogram_dumped = np.transpose(spectrogram_dumped)
-            # Convert from int8 to uint8 
+            # Convert from int8 to uint8
             spectrogram_dumped = np.clip(spectrogram_dumped +128, 0, 255)
             spectrogram_dumped = spectrogram_dumped.astype(np.uint8)
             # Increase the size of the spectrogram to make it easier to see as a jpeg
             spectrogram_dumped = cv2.resize(spectrogram_dumped, (height*3,width*3))
             audio_dump_path = audio_utils.write_audio_file(
-                audio_dump_path, 
-                augmented_sample, 
+                audio_dump_path,
+                augmented_sample,
                 sample_rate=frontend_settings.sample_rate_hz
             )
             image_dump_path = audio_dump_path.replace('.wav', '.jpg')
@@ -921,16 +929,16 @@ class MyDataset(mltk_core.MltkDataset):
         self.pools = []
 
     def load_dataset(
-        self, 
-        subset: str,  
+        self,
+        subset: str,
         test:bool = False,
         **kwargs
     ) -> Tuple[tf.data.Dataset, None, tf.data.Dataset]:
         """Load the dataset subset
-        
+
         This is called automatically by the MLTK before training
         or evaluation.
-        
+
         Args:
             subset: The dataset subset to return: 'training' or 'evaluation'
             test: This is optional, it is used when invoking a training "dryrun", e.g.: mltk train audio_tf_dataset-test
@@ -977,8 +985,8 @@ class MyDataset(mltk_core.MltkDataset):
         # Download, extract, and clean the "Speech Commands" dataset
         dataset_dir = speech_commands_v2.load_clean_data()
         dataset_background_dir = f'{dataset_dir}/_background_noise_'
-    
-        # Download the Pac-Man video game audio and add it to the _background_noise_/pacman of the dataset 
+
+        # Download the Pac-Man video game audio and add it to the _background_noise_/pacman of the dataset
         pacman_background_noise_dst_path = f'{dataset_background_dir}/pacman/recorded_pacman_game_play.wav'
         os.makedirs(os.path.dirname(pacman_background_noise_dst_path), exist_ok=True)
         if not os.path.exists(pacman_background_noise_dst_path):
@@ -991,8 +999,8 @@ class MyDataset(mltk_core.MltkDataset):
             )
             pacman_background_noise_src_path = f'{pacman_background_noise_dir}/{os.path.basename(pacman_background_noise_dst_path)}'
             shutil.copy(pacman_background_noise_src_path, pacman_background_noise_dst_path)
-            
-        # Download the BRD2601 background microphone audio and add it to the _background_noise_/brd2601 of the dataset 
+
+        # Download the BRD2601 background microphone audio and add it to the _background_noise_/brd2601 of the dataset
         brd2601_background_noise_dst_path = f'{dataset_dir}/_background_noise_/brd2601/brd2601_background_audio.wav'
         os.makedirs(os.path.dirname(brd2601_background_noise_dst_path), exist_ok=True)
         if not os.path.exists(brd2601_background_noise_dst_path):
@@ -1006,7 +1014,7 @@ class MyDataset(mltk_core.MltkDataset):
             background_noise_src_path = f'{background_noise_dir}/{os.path.basename(brd2601_background_noise_dst_path)}'
             shutil.copy(background_noise_src_path, brd2601_background_noise_dst_path)
 
-        # Download other ambient background audio and add it to the _background_noise_/ambient of the dataset 
+        # Download other ambient background audio and add it to the _background_noise_/ambient of the dataset
         URLS = [
             'https://assets.mixkit.co/sfx/download/mixkit-very-crowded-pub-or-party-loop-360.wav',
             'https://www.soundjay.com/human/crowd-talking-1.wav',
@@ -1021,13 +1029,13 @@ class MyDataset(mltk_core.MltkDataset):
             if not os.path.exists(dst_path):
                 download_url(url=url, dst_path=dst_path)
                 sample, original_sample_rate = audio_utils.read_audio_file(
-                    dst_path, 
+                    dst_path,
                     return_sample_rate=True,
                     return_numpy=True
                 )
                 sample = audio_utils.resample(
-                    sample, 
-                    orig_sr=original_sample_rate, 
+                    sample,
+                    orig_sr=original_sample_rate,
                     target_sr=frontend_settings.sample_rate_hz
                 )
                 audio_utils.write_audio_file(dst_path, sample, sample_rate=16000)
@@ -1045,7 +1053,7 @@ class MyDataset(mltk_core.MltkDataset):
             split=split,
             unknown_class_percentage=unknown_class_multiplier,
             return_audio_data=False, # We only want to return the file paths
-            class_counts=class_counts, 
+            class_counts=class_counts,
             list_valid_filenames_in_directory_function=speech_commands_v2.list_valid_filenames_in_directory
         )
 
@@ -1085,7 +1093,7 @@ class MyDataset(mltk_core.MltkDataset):
         # A perfect shuffle would use n_samples but this can slow down training,
         # so we just shuffle batches of the data
         ds = ds.shuffle(per_job_batch_size, reshuffle_each_iteration=True)
-        
+
         # At this point we have a flat dataset of x,y tuples
         # Batch the data as necessary for training
         ds = ds.batch(my_model.batch_size)
@@ -1109,7 +1117,7 @@ my_model.dataset = MyDataset()
 # NOTE: Corresponding command-line options will override these values.
 
 
-# Controls the smoothing. 
+# Controls the smoothing.
 # Drop all inference results that are older than <now> minus window_duration
 # Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some commands
 my_model.model_parameters['average_window_duration_ms'] = 100
@@ -1163,13 +1171,13 @@ def get_teacher_h5_path(try_archive=False, check_exists=True) -> str:
 
 def prepare_teacher_or_student_model(train_teacher:bool=None):
     """This prepares the model for "teacher" or "student" training
-    
+
     This is based on the given train_teacher argument or enviroment variable: TRAIN_TEACHER
     """
     # Use the given argument or retrieve the TRAIN_TEACHER environment variable
     if train_teacher is None:
         train_teacher = os.environ.get('TRAIN_TEACHER', '0') == '1'
-    
+
     my_model.ssh_environment = dict(
         TRAIN_TEACHER='1' if train_teacher else '0'
     )
@@ -1179,11 +1187,11 @@ def prepare_teacher_or_student_model(train_teacher:bool=None):
         my_model.tflite_converter = None
         my_model.build_model_function = my_teacher_model_builder
         my_model.on_save_keras_model = my_teacher_model_saver
-        my_model.early_stopping = dict( 
-            monitor='val_accuracy', 
-            mode='auto', 
-            verbose=1, 
-            patience=25, 
+        my_model.early_stopping = dict(
+            monitor='val_accuracy',
+            mode='auto',
+            verbose=1,
+            patience=25,
             min_delta=0.0001
         )
         teacher_h5_path = get_teacher_h5_path(check_exists=False)
@@ -1198,7 +1206,7 @@ def prepare_teacher_or_student_model(train_teacher:bool=None):
         my_model.on_save_keras_model = my_student_model_saver
         my_model.tflite_converter['optimizations'] = [tf.lite.Optimize.DEFAULT]
         my_model.tflite_converter['supported_ops'] = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
-        my_model.tflite_converter['inference_input_type'] = np.int8 
+        my_model.tflite_converter['inference_input_type'] = np.int8
         my_model.tflite_converter['inference_output_type'] = np.int8
         # Automatically generate a representative dataset from the validation data
         my_model.tflite_converter['representative_dataset'] = 'generate'
@@ -1214,7 +1222,7 @@ prepare_teacher_or_student_model()
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python keyword_spotting_pacman_v2.py
 #
 # Note that this has the same functionality as:

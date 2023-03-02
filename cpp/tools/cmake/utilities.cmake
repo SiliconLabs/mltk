@@ -48,11 +48,16 @@ endfunction()
 # Print debug message
 #
 # msg - Debug message
+# TAG - Optional tag to prepend to msg
 function(mltk_debug msg)
+  cmake_parse_arguments(_PARSED "" "TAG" "" "${ARGN}")
   mltk_get_log_level(_mltk_log_level)
   set(_mltk_log_levels debug)
   if(${_mltk_log_level} IN_LIST _mltk_log_levels)
-    message(STATUS "[MLTK] ${msg}")
+    if(_PARSED_TAG)
+      set(tag "[${_PARSED_TAG}]")
+    endif()
+    message(STATUS "[MLTK]${tag} ${msg}")
   endif()
 endfunction()
 
@@ -63,11 +68,16 @@ endfunction()
 # Print info message
 #
 # msg - Info message
+# TAG - Optional tag to prepend to msg
 function(mltk_info msg)
+  cmake_parse_arguments(_PARSED "" "TAG" "" "${ARGN}")
   mltk_get_log_level(_mltk_log_level)
   set(_mltk_log_levels debug info)
   if(${_mltk_log_level} IN_LIST _mltk_log_levels)
-    message(STATUS "[MLTK] ${msg}")
+    if(_PARSED_TAG)
+      set(tag "[${_PARSED_TAG}]")
+    endif()
+    message(STATUS "[MLTK]${tag} ${msg}")
   endif()
 endfunction()
 
@@ -78,11 +88,16 @@ endfunction()
 # Print warning message
 #
 # msg - Warning message
+# TAG - Optional tag to prepend to msg
 function(mltk_warn msg)
+  cmake_parse_arguments(_PARSED "" "TAG" "" "${ARGN}")
   mltk_get_log_level(_mltk_log_level)
   set(_mltk_log_levels debug info warn warning)
   if(${_mltk_log_level} IN_LIST _mltk_log_levels)
-    message(STATUS "[MLTK] WARN: ${msg}")
+    if(_PARSED_TAG)
+      set(tag "[${_PARSED_TAG}]")
+    endif()
+    message(STATUS "[MLTK]${tag} WARN: ${msg}")
   endif()
 endfunction()
 
@@ -93,9 +108,14 @@ endfunction()
 # Print error message
 #
 # msg - Error message
-macro(mltk_error msg)
-  message(FATAL_ERROR "[MLTK] ${msg}")
-endmacro()
+# TAG - Optional tag to prepend to msg
+function(mltk_error msg)
+  cmake_parse_arguments(_PARSED "" "TAG" "" "${ARGN}")
+  if(_PARSED_TAG)
+    set(tag "[${_PARSED_TAG}]")
+  endif()
+  message(FATAL_ERROR "[MLTK]${tag} ${msg}")
+endfunction()
 
 
 ####################################################################
@@ -127,8 +147,9 @@ endfunction()
 # key - Name of variable
 # value - Value of variable
 # DEFAULT - If the "DEFAULT" keyword is provided as argument, then only set the variable if it hasn't already been defined
+# ECHO - Optional, print key/value
 function(mltk_set key value)
-  cmake_parse_arguments(MLTK_ARGS "DEFAULT" "" "" "${ARGN}")
+  cmake_parse_arguments(MLTK_ARGS "DEFAULT;ECHO" "" "" "${ARGN}")
   if (MLTK_ARGS_DEFAULT)
     if(DEFINED ${key})
       set(${key} ${${key}} PARENT_SCOPE)
@@ -139,6 +160,9 @@ function(mltk_set key value)
   set_property(GLOBAL PROPERTY ${key} "${value}")
   get_property(_value GLOBAL PROPERTY ${key})
 
+  if(MLTK_ARGS_ECHO)
+    mltk_info("${key}=${_value}")
+  endif()
   set(${key} ${_value} PARENT_SCOPE)
 endfunction()
 
@@ -151,8 +175,9 @@ endfunction()
 #
 # Options:
 # DEFAULT <value>  - Optional, value to set variable if it is not defined
+# ECHO - Optional, print key/value
 function(mltk_get key)
-  cmake_parse_arguments(MLTK_ARGS "" "DEFAULT" "" "${ARGN}")
+  cmake_parse_arguments(MLTK_ARGS "ECHO" "DEFAULT" "" "${ARGN}")
 
   unset(_value)
   get_property(_${key}_is_set GLOBAL PROPERTY ${key} SET)
@@ -173,6 +198,9 @@ function(mltk_get key)
   endif()
 
   if(DEFINED _value)
+    if(MLTK_ARGS_ECHO)
+      mltk_info("${key}=${_value}")
+    endif()
     set(${key} ${_value} PARENT_SCOPE)
   endif()
 endfunction()
@@ -371,55 +399,198 @@ endmacro()
 
 
 ####################################################################
+# mltk_list_append
+#
+# Append one or more values to the given list.
+# Duplicates will NOT be appended.
+#
+# list - Name of list variable to update in-place
+# values - One or more values to append to list (automatically ignores duplicates)
+# LIST_IS_STRING - Optional, use if the given list is a space-delimited string
+function(mltk_list_append list values)
+  cmake_parse_arguments(PARSED "LIST_IS_STRING" "" "" "${ARGN}")
+
+  string(REPLACE " " ";" _list "${${list}}")
+  string(REPLACE " " ";" _values "${values}")
+
+  foreach(new_value ${_values})
+    set(_found OFF)
+
+    foreach(existing_value ${_list})
+      if(${new_value} STREQUAL ${existing_value})
+        set(_found ON)
+        break()
+      endif()
+    endforeach(existing_value)
+
+    if(NOT _found)
+      list(APPEND _list ${new_value})
+    endif()
+
+  endforeach(new_value)
+
+  if(PARSED_LIST_IS_STRING)
+    string(REPLACE ";" " " _list "${_list}")
+    set(${list} "${_list}" PARENT_SCOPE)
+  else()
+    set(${list} ${_list} PARENT_SCOPE)
+  endif()
+endfunction()
+
+
+####################################################################
+# mltk_list_remove
+#
+# Remove one or more values to the given list.
+#
+# list - Name of list variable to update in-place
+# values - One or more values to remove from list
+# LIST_IS_STRING - Optional, use if the given list is a space-delimited string
+# WILDCARD - Optional, indicates the values to remove contain wildcards
+function(mltk_list_remove list values)
+  cmake_parse_arguments(PARSED "LIST_IS_STRING;WILDCARD" "" "" "${ARGN}")
+
+  string(REPLACE " " ";" _list "${${list}}")
+  string(REPLACE " " ";" _values "${values}")
+
+  foreach(new_value ${_values})
+    if(NOT PARSED_WILDCARD)
+      list(REMOVE_ITEM _list ${new_value})
+    else()
+      foreach(existing_value ${_list})
+        if(existing_value MATCHES ${new_value})
+          list(REMOVE_ITEM _list ${existing_value})
+        endif()
+      endforeach(existing_value)
+    endif()
+  endforeach(new_value)
+
+  if(PARSED_LIST_IS_STRING)
+    string(REPLACE ";" " " _list "${_list}")
+    set(${list} "${_list}" PARENT_SCOPE)
+  else()
+    set(${list} ${_list} PARENT_SCOPE)
+  endif()
+endfunction()
+
+
+####################################################################
 # mltk_append_global_cxx_defines
 #
-# Append to the global C/C++ build defines.
+# Append to the global C/C++ build defines (i.e. CMAKE_C_FLAGS and CMAKE_CXX_FLAGS).
 # The defines will be made available to ALL C/C++ source files
 #
 # NOTE: -D is automatically prepended to the defines.
 #       See mltk_append_global_cxx_flags() to append flags
 #
 # defines - List of define to append
-macro(mltk_append_global_cxx_defines)
+function(mltk_append_global_cxx_defines)
   set(_defines "${ARGN}")
   list(TRANSFORM _defines PREPEND "-D")
-  if(NOT ${CMAKE_C_FLAGS} MATCHES ".*${_defines}.*")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${_defines}" CACHE INTERNAL "" FORCE)
+  set(_prev_CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+  set(_prev_CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+
+  mltk_list_append(CMAKE_C_FLAGS ${_defines} LIST_IS_STRING)
+  mltk_list_append(CMAKE_CXX_FLAGS ${_defines} LIST_IS_STRING)
+
+  if(NOT "${_prev_CMAKE_C_FLAGS}" STREQUAL "${CMAKE_C_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" CACHE INTERNAL "" FORCE)
   endif()
-  if(NOT ${CMAKE_CXX_FLAGS} MATCHES ".*${_defines}.*")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${_defines}" CACHE INTERNAL "" FORCE)
+  if(NOT "${_prev_CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE INTERNAL "" FORCE)
   endif()
-  unset(_defines)
-endmacro()
+endfunction()
 
 ####################################################################
 # mltk_append_global_cxx_flags
 #
-# Append to the global C/C++ build flags.
+# Append to the global C/C++ build flags (i.e. CMAKE_C_FLAGS and CMAKE_CXX_FLAGS).
 # The flags will be made available to ALL C/C++ source files
 #
+# NOTE: This helps to ensure no duplicate flags are added
+#
 # flags - Flags to append
-macro(mltk_append_global_cxx_flags flags)
-  if(NOT ${CMAKE_C_FLAGS} MATCHES ".*${flags}.*")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${flags}" CACHE INTERNAL "" FORCE)
+# ASM - Optional, also append flags to CMAKE_ASM_FLAGS
+function(mltk_append_global_cxx_flags flags)
+  cmake_parse_arguments(PARSED "ASM" "" "" "${ARGN}")
+  set(_prev_CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+  set(_prev_CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+  set(_prev_CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS})
+
+  mltk_list_append(CMAKE_C_FLAGS ${flags} LIST_IS_STRING)
+  mltk_list_append(CMAKE_CXX_FLAGS ${flags} LIST_IS_STRING)
+  if(PARSED_ASM)
+    mltk_list_append(CMAKE_ASM_FLAGS ${flags} LIST_IS_STRING)
   endif()
-  if(NOT ${CMAKE_CXX_FLAGS} MATCHES ".*${flags}.*")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${flags}" CACHE INTERNAL "" FORCE)
+
+  if(NOT "${_prev_CMAKE_C_FLAGS}" STREQUAL "${CMAKE_C_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" CACHE INTERNAL "" FORCE)
   endif()
-endmacro()
+  if(NOT "${_prev_CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE INTERNAL "" FORCE)
+  endif()
+  if(NOT "${_prev_CMAKE_ASM_FLAGS}" STREQUAL "${CMAKE_ASM_FLAGS}")
+    set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS}" CACHE INTERNAL "" FORCE)
+  endif()
+endfunction()
+
+####################################################################
+# mltk_remove_global_cxx_flags
+#
+# Remove from the global C/C++ build flags (i.e. CMAKE_C_FLAGS and CMAKE_CXX_FLAGS).
+# The flags will be removed for ALL C/C++ source files
+#
+# flags - Flags to remove
+# WILDCARD - Optional, indicates the flags contain wildcards
+# ASM - Optional, also remove from CMAKE_ASM_FLAGS
+function(mltk_remove_global_cxx_flags flags)
+  set(_prev_CMAKE_C_FLAGS ${CMAKE_C_FLAGS})
+  set(_prev_CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+  set(_prev_CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS})
+  cmake_parse_arguments(PARSED "WILDCARD;ASM" "" "" "${ARGN}")
+
+  if(PARSED_WILDCARD)
+    mltk_list_remove(CMAKE_C_FLAGS ${flags} LIST_IS_STRING WILDCARD)
+    mltk_list_remove(CMAKE_CXX_FLAGS ${flags} LIST_IS_STRING WILDCARD)
+    if(PARSED_ASM)
+      mltk_list_remove(CMAKE_ASM_FLAGS ${flags} LIST_IS_STRING WILDCARD)
+    endif()
+  else()
+    mltk_list_remove(CMAKE_C_FLAGS ${flags} LIST_IS_STRING)
+    mltk_list_remove(CMAKE_CXX_FLAGS ${flags} LIST_IS_STRING)
+    if(PARSED_ASM)
+      mltk_list_remove(CMAKE_ASM_FLAGS ${flags} LIST_IS_STRING)
+    endif()
+  endif()
+
+  if(NOT "${_prev_CMAKE_C_FLAGS}" STREQUAL "${CMAKE_C_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" CACHE INTERNAL "" FORCE)
+  endif()
+  if(NOT "${_prev_CMAKE_CXX_FLAGS}" STREQUAL "${CMAKE_CXX_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE INTERNAL "" FORCE)
+  endif()
+  if(NOT "${_prev_CMAKE_ASM_FLAGS}" STREQUAL "${CMAKE_ASM_FLAGS}")
+    set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS}" CACHE INTERNAL "" FORCE)
+  endif()
+endfunction()
+
 
 ####################################################################
 # mltk_append_global_linker_flags
 #
-# Append to the global C/C++ linker build flags.
+# Append to the global C/C++ linker build flags (i.e. CMAKE_EXE_LINKER_FLAGS).
 # The flags will be made available to ALL C/C++ source files
 #
 # flags - Flags to append
-macro(mltk_append_global_linker_flags flags)
-  if(NOT ${CMAKE_EXE_LINKER_FLAGS} MATCHES ".*${flags}.*")
-    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${flags}" CACHE INTERNAL "" FORCE)
+function(mltk_append_global_linker_flags flags)
+  set(_prev_CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+
+  mltk_list_append(CMAKE_EXE_LINKER_FLAGS ${flags} LIST_IS_STRING)
+
+  if(NOT "${_prev_CMAKE_EXE_LINKER_FLAGS}" STREQUAL "${CMAKE_EXE_LINKER_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" CACHE INTERNAL "" FORCE)
   endif()
-endmacro()
+endfunction()
 
 
 ####################################################################
@@ -464,6 +635,9 @@ macro(mltk_add_package_directory package_name package_path)
 
   get_property(${package_name}_FOUND GLOBAL PROPERTY ${package_name}_FOUND)
   if(NOT ${package_name}_FOUND)
+    set(_saved_CPM_SOURCE_CACHE ${CPM_SOURCE_CACHE})
+    set(CPM_SOURCE_CACHE ${MLTK_CPP_DIR}/shared)
+
     if(IS_ABSOLUTE ${package_path})
       if(EXISTS "${package_path}/CMakeLists.txt")
         get_filename_component(_path ${package_path} ABSOLUTE)
@@ -492,6 +666,8 @@ macro(mltk_add_package_directory package_name package_path)
         mltk_error("MLTK Package does NOT exist or does not contain a CMakeLists.txt: ${package_name} -> ${MLTK_CPP_DIR}/${package_path}")
       endif()
     endif()
+
+    set(CPM_SOURCE_CACHE ${_saved_CPM_SOURCE_CACHE})
   endif()
 
 endmacro()
@@ -636,8 +812,9 @@ macro(mltk_find_package name)
     # Else try to find the package using a Python script
     mltk_load_python()
     mltk_get(MLTK_TARGET_PATH)
+    mltk_get(MLTK_PACKAGE_PATHS)
     execute_process(
-      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/find_package_with_target.py "${name}" --paths "${CMAKE_MODULE_PATH}"
+      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/find_package_with_target.py "${name}" --paths "${CMAKE_MODULE_PATH};${MLTK_PACKAGE_PATHS}"
       RESULT_VARIABLE result
       OUTPUT_VARIABLE target_and_dir
       OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -968,9 +1145,9 @@ endfunction()
 #
 # target - CMake build target
 # tflite_path - File path to .tflite or MLTK model name
-#
-macro(mltk_add_tflite_model target tflite_path)
-
+# MEMORY_SECTION - Optional, specify which memory section the model will be placed
+function(mltk_add_tflite_model target tflite_path)
+  cmake_parse_arguments(_PARSED "" "MEMORY_SECTION" "" "${ARGN}")
   mltk_load_python()
 
   set(_generated_model_output_path "${MLTK_BINARY_DIR}/${target}_generated_model.tflite.c")
@@ -983,8 +1160,12 @@ macro(mltk_add_tflite_model target tflite_path)
     set(_accelerator_arg --accelerator ${TFLITE_MICRO_ACCELERATOR})
   endif()
 
+  if(_PARSED_MEMORY_SECTION)
+    set(_generate_model_memory_section_arg --memory-section ${_PARSED_MEMORY_SECTION})
+  endif()
+
   add_custom_target(${target}_generate_model
-      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/generate_model_header.py "${tflite_path}" --name "sl_tflite_model_array" --length_name "sl_tflite_model_len" --output "${_generated_model_output_path}" ${_accelerator_arg}
+      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/generate_model_header.py "${tflite_path}" --name "sl_tflite_model_array" --length_name "sl_tflite_model_len" --output "${_generated_model_output_path}" ${_accelerator_arg} ${_generate_model_memory_section_arg}
       COMMENT "Generating ${target}_generated_model.tflite.c from ${tflite_path}"
       BYPRODUCTS ${_generated_model_output_path}
   )
@@ -994,10 +1175,55 @@ macro(mltk_add_tflite_model target tflite_path)
   PRIVATE
       ${_generated_model_output_path}
   )
-  unset(_generated_model_output_path)
+
+endfunction()
+
+
+####################################################################
+# mltk_add_tflite_model_op_resolver_header
+#
+# Generates a C++ header that defines a TFLM OpResolver which
+# only includes the TFLM kernels used by the given header.
+# This can *greatly* reduce the app's flash space.
+
+# This will generate the C++ header:
+# <target>_generated_model_op_resolver.hpp
+#
+# Include this header in your application which will define the variable:
+# tflite::MicroMutableOpResolver op_resolver
+#
+# The op_resolver should be given to the TFLM interpreter during instantiation.
+#
+# target - CMake build target
+# tflite_path - File path to .tflite or MLTK model name
+#
+macro(mltk_add_tflite_model_op_resolver_header target tflite_path)
+
+  mltk_load_python()
+
+  set(_generated_op_resolver_output_path "${MLTK_BINARY_DIR}/${target}_generated_model_op_resolver.hpp")
+  if(NOT EXISTS ${_generated_op_resolver_output_path})
+      file(WRITE ${_generated_op_resolver_output_path})
+  endif()
+
+  add_custom_target(${target}_generate_op_resolver_header
+      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/generate_model_op_resolver_header.py "${tflite_path}" --name "MyOpResolver" --output "${_generated_op_resolver_output_path}"
+      COMMENT "Generating ${target}_mltk_model_profiler_generated_model_op_resolver.hpp from ${tflite_path}"
+      BYPRODUCTS ${_generated_op_resolver_output_path}
+  )
+  add_dependencies(${target} ${target}_generate_op_resolver_header)
+
+  target_sources(${target}
+  PRIVATE
+      ${_generated_op_resolver_output_path}
+  )
+  target_include_directories(${target}
+  PRIVATE
+    "${MLTK_BINARY_DIR}"
+  )
+  unset(_generated_op_resolver_output_path)
 
 endmacro()
-
 
 
 

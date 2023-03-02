@@ -32,6 +32,14 @@ Commands
    # Directly invoke the model script
    python basic_tf_dataset_example.py
 
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/examples/basic_tf_dataset_example.py
+    :language: python
+    :lines: 45-
+
 """
 
 import numpy as np
@@ -60,10 +68,10 @@ epochs = 15
 # Prepare the dataset
 def my_dataset_loader(subset:str, test:bool, **kwargs) -> tf.data.Dataset:
     """Load the dataset subset
-    
+
     This is called automatically by the MLTK before training
     or evaluation.
-    
+
     Args:
         subset: The dataset subset to return: 'training' or 'evaluation'
         test: This is optional, it is used when invoking a training "dryrun", e.g.: mltk train basic_tf_dataset_example-test
@@ -113,7 +121,7 @@ def _create_dataset_subset(x:np.ndarray, y: np.ndarray, subset:str) -> tf.data.D
     features_ds = tf.data.Dataset.from_tensor_slices(x)
     labels_ds = tf.data.Dataset.from_tensor_slices(y)
 
-    # We're using categorical cross-entropy, 
+    # We're using categorical cross-entropy,
     # so we need the labels to be one-hot encoded
     labels_ds = labels_ds.map(
         lambda label: tf.one_hot(label, depth=num_classes, dtype=tf.int32),
@@ -134,12 +142,12 @@ def _create_dataset_subset(x:np.ndarray, y: np.ndarray, subset:str) -> tf.data.D
 # Build the model
 def my_model_builder(my_model: mltk_core.MltkModel) -> tf.keras.Model:
     """Build the Keras model
-    
+
     This is called by the MLTK just before training starts.
 
     Arguments:
         my_model: The MltkModel instance
-    
+
     Returns:
         Compiled Keras model instance
     """
@@ -155,8 +163,8 @@ def my_model_builder(my_model: mltk_core.MltkModel) -> tf.keras.Model:
     ])
 
     model.compile(
-        loss="categorical_crossentropy", 
-        optimizer="adam", 
+        loss="categorical_crossentropy",
+        optimizer="adam",
         metrics=["accuracy"]
     )
 
@@ -172,13 +180,13 @@ class MyModel(
     mltk_core.MltkModel,    # We must inherit the MltkModel class
     mltk_core.TrainMixin,   # We also inherit the TrainMixin since we want to train this model
     mltk_core.DatasetMixin, # We also need the DatasetMixin mixin to provide the relevant dataset properties
-    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation for our classification model 
+    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation for our classification model
 ):
     pass
 
 my_model = MyModel()
 
-# These properties are optional 
+# These properties are optional
 # but a useful for tracking the generated .tflite
 my_model.version = 1
 my_model.description = 'Basic Tensorflow Dataset API example'
@@ -214,7 +222,7 @@ my_model.train_callbacks = [
 
 ##########################################################################
 # Specify the .tflite conversion parameters
-# This is used to convert the float32 model to int8 model 
+# This is used to convert the float32 model to int8 model
 # that can run on the embedded device.
 
 
@@ -242,7 +250,7 @@ my_model.tflite_converter['representative_dataset'] = my_representative_dataset_
 #
 # While not required, user-defined parameters may be embedded into the .tflite model file.
 # These parameters may then be read by the embedded device at runtime.
-# 
+#
 # This is useful for syncing data preprocessing parameters between the model training
 # script and embedded device.
 
@@ -254,9 +262,9 @@ my_model.tflite_converter['representative_dataset'] = my_representative_dataset_
 my_model.model_parameters['samplewise_norm.rescale'] = 1/255.
 
 # Most standard Python data types may be embedded
-# See: https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html 
-my_model.model_parameters['my_boolean'] = True 
-my_model.model_parameters['my_string'] = 'This string will be embedded into the .tflite' 
+# See: https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html
+my_model.model_parameters['my_boolean'] = True
+my_model.model_parameters['my_string'] = 'This string will be embedded into the .tflite'
 my_model.model_parameters['my_bytes'] = b'This byte string will be embedded also'
 my_model.model_parameters['my_float_list'] = [4.5, 2., 3.14]
 
@@ -265,7 +273,7 @@ my_model.model_parameters['my_float_list'] = [4.5, 2., 3.14]
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python basic_tf_dataset_example.py
 #
 # Note that this has the similar functionality to:

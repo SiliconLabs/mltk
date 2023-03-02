@@ -1,6 +1,4 @@
 
-import os
-
 import numpy as np
 from mltk.core import TfliteModel
 from mltk.core.tflite_micro import TfliteMicro, TfliteMicroModel
@@ -34,7 +32,7 @@ def test_normalize_accelerator_name():
 
 def test_get_supported_accelerators():
     accs  = TfliteMicro.get_supported_accelerators()
-    assert set(accs) == {'MVP'}
+    assert 'MVP' in accs
 
 def test_accelerator_is_supported():
     assert TfliteMicro.accelerator_is_supported(None) is False
@@ -69,9 +67,16 @@ def test_profile_model():
     assert results.accelerator_cycles == 0
     assert results.macs > 0
 
+def test_profile_model_return_estimates():
+    results = TfliteMicro.profile_model(IMAGE_EXAMPLE1_TFLITE_PATH, return_estimates=True)
+    assert results.n_layers == 8
+    assert results.accelerator_cycles == 0
+    assert results.macs > 0
+    assert results.cpu_cycles > 0
+    assert results.energy > 0
 
 def test_profile_model_mvp():
-    results = TfliteMicro.profile_model(IMAGE_EXAMPLE1_TFLITE_PATH, accelerator='mvp')
+    results = TfliteMicro.profile_model(IMAGE_EXAMPLE1_TFLITE_PATH, accelerator='mvp', return_estimates=True)
     assert results.n_layers == 8
     assert results.accelerator_cycles > 0
     assert results.cpu_cycles > 0
@@ -83,8 +88,6 @@ def test_profile_model_mvp_unsupported_layer():
     assert results.n_layers == 4
     assert results.n_unsupported_layers == 1
     assert results.accelerator_cycles > 0
-    assert results.cpu_cycles > 0
-    assert results.energy > 0
     assert results.macs > 0
 
 

@@ -30,6 +30,9 @@ DEVICE_MAPPING = {
     'brd2204': ['EFM32GG11B820F2048GL192']
 }
 
+_serial_number:str=None
+_ip_address:str=None
+
 
 @dataclass
 class DeviceInfo:
@@ -97,7 +100,11 @@ def issue_command(
         RuntimeError: Raise if command failed
     """
 
-    cmd = _update_commander_args(*args, platform=platform, device=device)
+    cmd = _update_commander_args(
+        *args,
+        platform=platform,
+        device=device,
+    )
     cmd_str = ' '.join(cmd)
 
     if logger is not None:
@@ -109,7 +116,8 @@ def issue_command(
         line_processor=line_processor
     )
     if retcode != 0 or ('--help' not in cmd and 'error' in retmsg.lower()):
-        if 'ERROR: Timeout while waiting' in retmsg and 'WARNING: DCI communication failed' in retmsg:
+        if 'WARNING: DCI communication failed' in retmsg and ('ERROR: Timeout while waiting' in retmsg or 'ERROR: DP write failed' in retmsg):
+            # We can safely ignore these errors as they're really only warnings
             pass
         elif 'more than one debugger' in retmsg:
             raise RuntimeError(
@@ -208,13 +216,17 @@ def program_flash(
             os.remove(tmp_path)
 
     if reset:
-        reset_device(platform, device=device, logger=logger)
+        reset_device(
+            platform,
+            device=device,
+            logger=logger
+        )
 
 
 def reset_device(
     platform: str=None,
     device:str=None,
-    logger:logging.Logger=None
+    logger:logging.Logger=None,
 ):
     """Invoke software reset on device
 
@@ -233,7 +245,10 @@ def reset_device(
     )
 
 
-def masserse_device(platform: str=None, device:str=None):
+def masserse_device(
+    platform: str=None,
+    device:str=None,
+):
     """Mass erase the device's flash
 
     Args:
@@ -241,10 +256,16 @@ def masserse_device(platform: str=None, device:str=None):
     """
     if platform is None and device is None:
         platform = query_platform()
-    issue_command('device', 'masserase', platform=platform, device=device)
+    issue_command(
+        'device', 'masserase',
+        platform=platform,
+        device=device,
+    )
 
 
-def erase_last_flash_address(device:str=None):
+def erase_last_flash_address(
+    device:str=None,
+):
     """Erase the last 32-bit word of the flash memory
 
     This is useful to clear a programmed model
@@ -256,7 +277,12 @@ def erase_last_flash_address(device:str=None):
     flash_end_addr = device_info.flash_base_address + (device_info.flash_size-4)
     patch_arg = f'0x{flash_end_addr:08X}:0xFFFFFFFF:4'
 
-    issue_command('flash', '--patch', patch_arg, platform=platform, device=device)
+    issue_command(
+        'flash', '--patch',
+        patch_arg,
+        platform=platform,
+        device=device,
+    )
 
 
 def retrieve_device_info() -> DeviceInfo:
@@ -292,7 +318,9 @@ def retrieve_device_info() -> DeviceInfo:
     return info
 
 
-def query_platform(device_info:DeviceInfo = None) -> str:
+def query_platform(
+    device_info:DeviceInfo = None,
+) -> str:
     """Return the platform name of the currently connected device
 
     Raises:
@@ -335,10 +363,22 @@ def get_commander_settings() -> defaultdict:
     """Return the commander settings found in ~/.mltk/user_settings.yaml or None if not found"""
     return DefaultDict(get_user_setting('commander'))
 
+def set_adapter_info(
+    serial_number:str=None,
+    ip_address:str=None
+):
+    """Globally set the J-Link debugger info which will be used by all subsequent operations"""
+    if serial_number:
+        globals()['_serial_number'] = serial_number
+    if ip_address:
+        globals()['_ip_address'] = ip_address
 
 
-
-def _update_commander_args(*args, platform:str=None, device:str=None) -> List[str]:
+def _update_commander_args(
+    *args,
+    platform:str=None,
+    device:str=None,
+) -> List[str]:
     """Populate commander.exe arguments from the ~/.mltk/user_settings.yaml"""
     commander_path = download_commander()
     commander_settings = get_commander_settings()
@@ -365,11 +405,11 @@ def _update_commander_args(*args, platform:str=None, device:str=None) -> List[st
                 cmd.extend(['--device', device])
 
         if '--ip' not in cmd:
-            ip_address = commander_settings['ip_address']
+            ip_address = globals().get('_ip_address', commander_settings.get('ip_address', None))
             if ip_address:
                 cmd.extend(['--ip', ip_address])
         if not ('--serialno' in cmd or '-s' in cmd):
-            serial_number = commander_settings['serial_number']
+            serial_number = globals().get('_serial_number', commander_settings.get('serial_number', None))
             if serial_number:
                 cmd.extend(['--serialno', serial_number])
 
@@ -459,8 +499,15 @@ def main():
     parser.add_argument('--device', default=None, help='--device argument to pass to Commander')
     parser.add_argument('--masserase', action='store_true', default=False, help='Mass erase the device flash')
     parser.add_argument('--clear_end_of_flash', action='store_true', default=False, help='Erase the very last 32-bit word of the flash')
+    parser.add_argument('--serial-number', default=None, help='JLink debugger serial number')
+    parser.add_argument('--ip-address', default=None, help='JLink debugger IP address')
 
     args = parser.parse_args()
+
+    if args.serial_number:
+        set_adapter_info(serial_number=args.serial_number)
+    if args.ip_address:
+        set_adapter_info(ip_address=args.ip_address)
 
     if args.masserase:
         try:

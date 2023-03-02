@@ -21,7 +21,7 @@ _All_ model profiling is done locally. _No_ data is uploaded to a remote server
 
 ## Quick Reference
 
-- Command-line: `mltk profile --help`
+- Command-line: [mltk profile --help](../command_line/profile.md)
 - Python API: [profile_model](mltk.core.profile_model)
 - Python API examples: [profile_model.ipynb](../../mltk/examples/profile_model.ipynb)
 
@@ -109,7 +109,7 @@ All returned profiling information is calculated or estimated.
 
 
 ```{note}
-Estimated numbers are based on the __EFR32xG24__ at 80MHz
+Estimated numbers are based on the __EFR32xG24__ at 78MHz
 ```
 
 #### Physical Device Mode
@@ -145,7 +145,7 @@ This command will also provide profiling results for:
 
 
 ```shell
-mltk profile ~/workspace/my_model.tflite
+mltk profile ~/workspace/my_model.tflite --estimates
 ```
 
 
@@ -160,7 +160,7 @@ This command will also provide profiling results for:
 - Estimated energy
 
 ```shell
-mltk profile ~/workspace/my_model.tflite --accelerator MVP
+mltk profile ~/workspace/my_model.tflite --accelerator MVP --estimates
 ```
 
 ### Example 3: Profile on physical device using MVP hardware accelerator
@@ -188,7 +188,7 @@ Note that _only_ the [model specification](./model_specification.md) script is r
 it does _not_ need to be trained first.
 
 ```shell
-mltk profile image_example1 --build --accelerator MVP
+mltk profile image_example1 --build --accelerator MVP --estimates
 ```
 
 

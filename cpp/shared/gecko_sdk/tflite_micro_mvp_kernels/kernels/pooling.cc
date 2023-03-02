@@ -50,7 +50,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
       micro_context->AllocateTempInputTensor(node, kInputTensor);
   TfLiteTensor* output =
       micro_context->AllocateTempOutputTensor(node, kOutputTensor);
-      
+
   data->op_params.padding       = params->padding == kTfLitePaddingSame;
   data->op_params.stride_height = params->stride_height;
   data->op_params.stride_width  = params->stride_width;
@@ -137,7 +137,7 @@ TfLiteStatus AveragePrepare(TfLiteContext* context, TfLiteNode* node)
 
   micro_context->DeallocateTempTfLiteTensor(input);
   micro_context->DeallocateTempTfLiteTensor(output);
-  
+
   return status;
 }
 

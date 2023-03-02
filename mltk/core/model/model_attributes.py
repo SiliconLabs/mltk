@@ -14,11 +14,11 @@ DictType = (dict, collections.defaultdict,collections.OrderedDict, collections.U
 class _Attribute(object):
     """A specific model attribute"""
     def __init__(
-        self, 
+        self,
         key,
-        value, 
-        readonly=False, 
-        dtype=None, 
+        value,
+        readonly=False,
+        dtype=None,
         normalize=None,
         setter=None
     ):
@@ -27,7 +27,7 @@ class _Attribute(object):
         self.readonly = readonly
         self.normalize = normalize
         self.setter = setter
-        
+
         if dtype is not None:
             dtype = tuple(as_list(dtype))
         self.dtype = dtype
@@ -58,12 +58,12 @@ class MltkModelAttributes(object):
 
 
     def register(
-        self, 
-        key: str, 
-        value=None, 
-        readonly=False, 
-        dtype=None, 
-        override=False, 
+        self,
+        key: str,
+        value=None,
+        readonly=False,
+        dtype=None,
+        override=False,
         normalize=None,
         setter=None
     ):
@@ -72,11 +72,11 @@ class MltkModelAttributes(object):
             raise Exception(f'Model attribute: {key} has already been registered')
 
         self._entries[key] = _Attribute(
-            key, 
-            value, 
-            readonly=readonly, 
-            dtype=dtype, 
-            normalize=normalize, 
+            key,
+            value,
+            readonly=readonly,
+            dtype=dtype,
+            normalize=normalize,
             setter=setter
         )
 
@@ -95,14 +95,14 @@ class MltkModelAttributes(object):
 
         if not self._entries[key].is_set and 'default' in kwargs:
             self._entries[key].value = kwargs['default']
-        
-        # If attribute value is callable and NOT a callable dtype, 
+
+        # If attribute value is callable and NOT a callable dtype,
         # then the user provided a function to be called to generate the value,
         # so call the user function and return the value the function returns
         if callable(self._entries[key].value) and \
            (self._entries[key].dtype is None or len(set(self._entries[key].dtype) and set(CallableType)) == 0):
             return self._entries[key].value()
-        
+
         return self._entries[key].value
 
 
@@ -111,7 +111,7 @@ class MltkModelAttributes(object):
         key = self._resolve_key(key)
         if key not in self._entries:
             raise AttributeError(f'Model attribute: {key} has not been previously registered')
-        
+
         if self._entries[key].readonly:
             raise AttributeError(f'Model attribute: {key} is read-only')
 
@@ -120,7 +120,7 @@ class MltkModelAttributes(object):
                 if not callable(value) and not isinstance(value, self._entries[key].dtype):
                     s = ', '.join(f'{x.__name__}' for x in self._entries[key].dtype)
                     raise AttributeError(f'Model attribute: {key} must be a dtype of {s} or a callable function')
-            
+
             if not callable(value) and self._entries[key].normalize is not None:
                 value = self._entries[key].normalize(value)
 
@@ -148,15 +148,15 @@ class MltkModelAttributes(object):
                 if name.startswith(key[:-1]):
                     return name
         else:
-            return key 
-        
+            return key
+
         raise AttributeError(f'No model attribute found with wildcard entry: {key}')
 
 
     def __getitem__(self, key):
         return self.get_value(key)
 
-        
+
     def __setitem__(self, key, value):
         self.set_value(key, value)
 
@@ -167,13 +167,13 @@ class MltkModelAttributes(object):
 
 
 def MltkModelAttributesDecorator():
-    """Class decorator that automatically registers model mixin attributes 
-    before any class properities or public functions are accessed
+    """Class decorator that automatically registers model mixin attributes
+    before any class properties or public functions are accessed
     """
     def decorate(cls):
         for name, val in inspect.getmembers(cls):
             if name.startswith('_'):
-                continue 
+                continue
             if isinstance(val, (types.MethodType, types.FunctionType)) and os.environ.get('MLTK_BUILD_DOCS') != '1':
                 setattr(cls, name, _check_attributes_registered_decorator(val))
             elif isinstance(val, property):
@@ -190,6 +190,7 @@ def _check_attributes_registered_decorator(f):
     def wrapper(self, *args, **kwargs):
         if not hasattr(self, '_attributes_are_registered'):
             self._attributes_are_registered = True # pylint: disable=protected-access
+
             called_funcs = []
             post_registration_callbacks = []
             inherited_classes = self.__class__.mro()
@@ -200,17 +201,17 @@ def _check_attributes_registered_decorator(f):
                     post_registration_callback = register_attributes_func(self)
                     if post_registration_callback:
                         post_registration_callbacks.append(post_registration_callback)
-            
+
             for post_registration_callback in post_registration_callbacks:
                 post_registration_callback()
-        
+
         return f(self, *args, **kwargs)
     return wrapper
 
 def _decorate_property(prop: property):
-    """Update a class property to automatically register model mixin 
+    """Update a class property to automatically register model mixin
     attributes before the class property is access"""
-    getx = None 
+    getx = None
     setx = None
     if prop.fget is not None:
         getx =  _check_attributes_registered_decorator(prop.fget)

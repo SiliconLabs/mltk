@@ -9,8 +9,8 @@ add_library(mltk::microfrontend ALIAS ${PROJECT_NAME})
 
 
 
-target_include_directories(${PROJECT_NAME} 
-PUBLIC 
+target_include_directories(${PROJECT_NAME}
+PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
@@ -32,7 +32,7 @@ set(sources
     microfrontend/lib/pcan_gain_control_util.c
     microfrontend/lib/pcan_gain_control.c
     microfrontend/lib/window_util.c
-    microfrontend/lib/window.c 
+    microfrontend/lib/window.c
 )
 
 find_package(mltk_gecko_sdk REQUIRED)
@@ -42,8 +42,8 @@ set(libs mltk::gecko_sdk::includes)
 mltk_get(MLTK_PLATFORM_IS_EMBEDDED)
 if(MLTK_PLATFORM_IS_EMBEDDED)
     find_package(mltk_cmsis REQUIRED)
-    list(APPEND libs mltk::cmsis_dsp_fft_q15)
-    list(APPEND sources 
+    list(APPEND libs mltk::cmsis_dsp)
+    list(APPEND sources
         microfrontend/sl_ml_fft.cc
     )
 else()
@@ -56,12 +56,12 @@ else()
 
 endif()
 
-target_sources(${PROJECT_NAME} 
+target_sources(${PROJECT_NAME}
 PRIVATE
     ${sources}
 )
-target_link_libraries(${PROJECT_NAME} 
-PUBLIC 
+target_link_libraries(${PROJECT_NAME}
+PUBLIC
     ${libs}
 )
 
@@ -82,16 +82,16 @@ if(NOT MLTK_PLATFORM_IS_EMBEDDED)
         ${sources}
     )
 
-    target_link_libraries(microfrontend 
-    PUBLIC 
+    target_link_libraries(microfrontend
+    PUBLIC
         ${libs}
     )
 
     target_include_directories(microfrontend
-    PUBLIC 
+    PUBLIC
         ${CMAKE_CURRENT_LIST_DIR}
     )
-    
+
 endif()
 
 

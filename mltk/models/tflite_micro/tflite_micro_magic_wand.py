@@ -36,9 +36,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize tflite_micro_magic_wand --tflite
-    
+
     +-------+-----------------+-------------------+----------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)          | Output(s)      | Config                                              |
     +-------+-----------------+-------------------+----------------+-----------------------------------------------------+
@@ -78,7 +78,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile tflite_micro_magic_wand --device --accelerator MVP
 
@@ -125,7 +125,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view tflite_micro_magic_wand --tflite
 
 .. raw:: html
@@ -138,6 +138,12 @@ Model Diagram
     </div>
 
 
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/tflite_micro/tflite_micro_magic_wand.py
+    :language: python
+    :lines: 153-
 
 
 """
@@ -162,25 +168,25 @@ from mltk.datasets.accelerometer import tflm_magic_wand as tflm_magic_wand_datas
 # - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    DatasetMixin, 
+    MltkModel,
+    TrainMixin,
+    DatasetMixin,
     EvaluateClassifierMixin
 ):
     def load_dataset(
-        self, 
-        subset: str,  
+        self,
+        subset: str,
         test:bool = False,
         **kwargs
     ):
-        super().load_dataset(subset) 
+        super().load_dataset(subset)
 
         batch_size = self.batch_size
         seq_length = self.input_shape[0]
         self._data_loader = tflm_magic_wand_dataset.load_data(seq_length=seq_length)
 
-        self._data_loader.format()  
-        train_data = self._data_loader.train_data 
+        self._data_loader.format()
+        train_data = self._data_loader.train_data
         validation_data = self._data_loader.valid_data
         test_data = self._data_loader.test_data
 
@@ -205,8 +211,8 @@ class MyModel(
             self._unbatched_validation_data = validation_data
 
 
-    def summarize_dataset(self) -> str: 
-        train_data = self._data_loader.train_data 
+    def summarize_dataset(self) -> str:
+        train_data = self._data_loader.train_data
         validation_data = self._data_loader.valid_data
         s = f'Train dataset: Found {len(train_data)} samples belonging to 4 classes\n'
         s += f'Validation dataset: Found {len(validation_data)} samples belonging to 4 classes'
@@ -227,7 +233,7 @@ my_model.description = 'TFLite-Micro Magic Wand'
 # Training Basic Settings
 my_model.epochs = 50
 my_model.steps_per_epoch = 1000
-my_model.batch_size = 64 
+my_model.batch_size = 64
 my_model.optimizer = 'adam'
 my_model.metrics = ['accuracy']
 my_model.loss = 'sparse_categorical_crossentropy'
@@ -277,8 +283,8 @@ def my_model_builder(model: MyModel):
         tf.keras.layers.Dense(model.n_classes, activation="softmax")  # (batch, 4)
     ], name=model.name)
     keras_model.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
     return keras_model
@@ -288,7 +294,7 @@ my_model.build_model_function = my_model_builder
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python tflite_micro_magic_wand.py
 #
 # Note that this has the same functionality as:

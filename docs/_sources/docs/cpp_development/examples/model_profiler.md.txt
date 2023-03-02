@@ -64,7 +64,7 @@ Refer to the online [documentation](https://docs.silabs.com/gecko-platform/lates
 ### via CMake
 
 The model can also be updated when building this application from [Visual Studio Code](https://siliconlabs.github.io/mltk/docs/cpp_development/vscode.html)
-or the CMake [Command Line](https://siliconlabs.github.io/mltk/docs/command_line.html).
+or the CMake [Command Line](https://siliconlabs.github.io/mltk/docs/command_line/index.html).
 
 To update the model, create/modify the file: `<mltk repo root>/user_options.cmake`
 and add:
@@ -138,6 +138,47 @@ mltk_set(MODEL_PROFILER_MODEL image_example1)
 ```
 
 
+### MODEL_PROFILER_GENERATE_OP_RESOLVER_HEADER
+
+Automatically generate a C++ header that defined the TFLM OpResolver
+for the given .tflite model. This can *greatly* reduce the app's flash space
+as only the necessary kernels are built into the app.
+If this is not enabled, then build all available TFLM kernels into the app.
+While this consume *a lot* more flash space,
+it allows for dynamically loading .tflite models.
+
+```shell
+mltk_set(MODEL_PROFILER_GENERATE_OP_RESOLVER_HEADER ON)
+```
+
+
+### MODEL_PROFILER_MODEL_MEMORY_SECTION
+
+Specify the linker memory section where the .tflite model will be placed.
+
+```shell
+mltk_set(MODEL_PROFILER_MODEL_MEMORY_SECTION ".data")
+```
+
+### MODEL_PROFILER_RUNTIME_MEMORY_SIZE
+
+If specified, then hardcode the tensor arena size to the given value.
+If omitted, then automatically find the optimal tensor arena size and
+allocate from the heap.
+
+```shell
+mltk_set(MODEL_PROFILER_RUNTIME_MEMORY_SIZE 100000)
+```
+
+### MODEL_PROFILER_RUNTIME_MEMORY_SECTION
+
+If using `MODEL_PROFILER_RUNTIME_MEMORY_SIZE`, this will define the
+linker memory section where the runtime memory buffer will be placed.
+
+```shell
+mltk_set(MODEL_PROFILER_RUNTIME_MEMORY_SECTION ".bss")
+```
+
 
 
 ### TFLITE_MICRO_ACCELERATOR
@@ -168,17 +209,13 @@ and the model executes entirely from RAM.
 mltk_set(MLTK_RUN_MODEL_FROM_RAM ON)
 ```
 
-__NOTE:__ To use this, the `.tflite` _must_ fit into RAM along with the normal runtime working memory.
+__NOTE:__ To use this, the `.tflite` _must_ fit into RAM along with the normal runtime working memory.  
+__HINT:__ You could also use the `MODEL_PROFILER_MODEL_MEMORY_SECTION` variable to do something similar.
 
 
 ### MLTK_RUNTIME_MEMORY_SIZE
 
-If specified, then hardcode the tensor arena size to the given value.
-If omitted, then automatically find the optimal tensor arena size.
-
-```shell
-mltk_set(MLTK_RUNTIME_MEMORY_SIZE 100000)
-```
+This is deprecated, see `MODEL_PROFILER_RUNTIME_MEMORY_SIZE`
 
 
 ### TFLITE_MICRO_RECORDER_ENABLED

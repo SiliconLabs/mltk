@@ -123,10 +123,24 @@ The following [MltkModel](mltk.core.MltkModel) mixins are available:
 
 .. autosummary::
    :nosignatures:
+   :toctree: weights_and_biases_mixin
+   :template: custom-class-template.rst
+
+   mltk.core.WeightsAndBiasesMixin
+
+.. autosummary::
+   :nosignatures:
    :toctree: mltk_dataset
    :template: custom-class-template.rst
 
    mltk.core.MltkDataset
+
+.. autosummary::
+   :nosignatures:
+   :toctree: model_event
+   :template: custom-class-template.rst
+
+   mltk.core.MltkModelEvent
 
 ```
 
@@ -144,6 +158,8 @@ The following [MltkModel](mltk.core.MltkModel) mixins are available:
 ./evaluate_classifier_mixin
 ./evaluate_autoencoder_mixin
 ./ssh_mixin
+./weights_and_biases_mixin
 ./utilities
 ./mltk_dataset
+./model_event
 ```

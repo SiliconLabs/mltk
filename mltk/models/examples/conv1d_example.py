@@ -36,9 +36,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize conv1d_example --tflite --build
-    
+
     +-------+-----------------+------------------+------------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)         | Output(s)        | Config                                              |
     +-------+-----------------+------------------+------------------+-----------------------------------------------------+
@@ -132,7 +132,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view conv1d_example --tflite --build
 
 .. raw:: html
@@ -143,6 +143,14 @@ Model Diagram
             <p>Click to enlarge</p>
         </a>
     </div>
+
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/examples/conv1d_example.py
+    :language: python
+    :lines: 157-
 
 """
 
@@ -166,9 +174,9 @@ from mltk.utils.archive_downloader import download_verify_extract
 # - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    mltk_core.MltkModel, 
-    mltk_core.TrainMixin, 
-    mltk_core.AudioDatasetMixin, 
+    mltk_core.MltkModel,
+    mltk_core.TrainMixin,
+    mltk_core.AudioDatasetMixin,
     mltk_core.EvaluateClassifierMixin
 ):
     pass
@@ -183,7 +191,7 @@ my_model.description = 'Conv1D example'
 #################################################
 # Training Basic Settings
 my_model.epochs = 40
-my_model.batch_size = 5 
+my_model.batch_size = 5
 my_model.optimizer = 'adam'
 my_model.metrics = ['accuracy']
 my_model.loss = 'categorical_crossentropy'
@@ -271,7 +279,7 @@ frontend_settings.sample_rate_hz = sample_rate
 def post_processing_callback(params:ParallelProcessParams, x: np.ndarray):
     """
     X is an augmented sample as a 1D, float32 (-1., 1.) array
-    Since the frontend is disabled, 
+    Since the frontend is disabled,
     we need to manually convert it to the data type and shape expected by the model
     NOTE: If you set the debug=True setting below, you can set a breakpoint here
     """
@@ -288,7 +296,7 @@ my_model.datagen = ParallelAudioDataGenerator(
     sample_shape=my_model.input_shape, # Need to manually specify the sample shape since the frontend is disabled
     cores=0.5,
     debug=False, # Set this to true to enable debugging of the generator
-    max_batches_pending=16, 
+    max_batches_pending=16,
     validation_split= validation_split,
     validation_augmentation_enabled=True,
     samplewise_center=False,
@@ -315,7 +323,7 @@ def my_model_builder(model: MyModel):
     regularizer = regularizers.l2(weight_decay)
     input_shape = model.input_shape
     filters = 16
- 
+
     keras_model = Sequential([
         Conv1D(filters, 7, strides=4, padding='same', kernel_regularizer=regularizer, input_shape=input_shape),
         BatchNormalization(),
@@ -344,7 +352,7 @@ def my_model_builder(model: MyModel):
         Flatten(),
         Dense(model.n_classes, activation='softmax')
     ])
- 
+
     keras_model.compile(loss=model.loss, optimizer=model.optimizer, metrics=model.metrics)
     return keras_model
 
@@ -354,7 +362,7 @@ my_model.build_model_function = my_model_builder
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python conv1d_example.py
 #
 # Note that this has the same functionality as:

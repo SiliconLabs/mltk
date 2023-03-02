@@ -47,7 +47,7 @@ if(NOT TOOLCHAIN_DIR)
         mltk_load_python()
         message(NOTICE "Preparing GCC ARM toolchain (this may take awhile) ...")
         execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/download_toolchain.py --noprogress RESULT_VARIABLE result OUTPUT_VARIABLE output)
-        if(result) 
+        if(result)
             if(output)
                 list(GET output 0 _error_file_path)
                 if(EXISTS "${_error_file_path}")
@@ -78,7 +78,7 @@ if(NOT CMAKE_MAKE_PROGRAM AND "${CMAKE_GENERATOR}" STREQUAL "Ninja")
     set(_ninja_dir ${CMAKE_CURRENT_LIST_DIR}/../../../utils)
     execute_process(COMMAND ${PYTHON_EXECUTABLE} ${_ninja_dir}/get_ninja_path.py RESULT_VARIABLE result OUTPUT_VARIABLE output)
     list(GET output 0 CMAKE_MAKE_PROGRAM)
-    if(result) 
+    if(result)
       message(FATAL_ERROR "Failed to get path to Ninja executable: ${CMAKE_MAKE_PROGRAM}")
     endif()
     file(WRITE ${ninja_path_file} ${CMAKE_MAKE_PROGRAM})
@@ -108,8 +108,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 set(SPEC_PATH "${TOOLCHAIN_DIR}/arm-none-eabi/lib")
 set(CLIB_SPECS "--specs ${SPEC_PATH}/nano.specs --specs ${SPEC_PATH}/nosys.specs")
 
-set(CMAKE_C_FLAGS_INIT   "${CLIB_SPECS} -nostartfiles -ffunction-sections -fdata-sections -ffreestanding -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "c compiler flags")
-set(CMAKE_CXX_FLAGS_INIT "${CLIB_SPECS} -nostartfiles -ffunction-sections -fdata-sections -ffreestanding -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fno-threadsafe-statics -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "cxx compiler flags")
+set(CMAKE_C_FLAGS_INIT   "${CLIB_SPECS} -ffunction-sections -fdata-sections -ffreestanding -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fno-unwind-tables -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "c compiler flags")
+set(CMAKE_CXX_FLAGS_INIT "${CLIB_SPECS} -ffunction-sections -fdata-sections -ffreestanding -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fno-unwind-tables -fno-threadsafe-statics -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "cxx compiler flags")
 set(CMAKE_ASM_FLAGS_INIT "${CMAKE_C_FLAGS_INIT} -x assembler-with-cpp")
 set(CMAKE_EXE_LINKER_FLAGS_INIT "-Wl,--gc-sections -Wl,--cref" CACHE INTERNAL "exe link flags")
 
@@ -168,14 +168,15 @@ macro(mltk_toolchain_add_exe_targets target)
     mltk_get(MLTK_PLATFORM_NAME)
 
     set_target_properties(${target}
-    PROPERTIES 
+    PROPERTIES
         SUFFIX ".elf"
     )
 
     target_link_options(${target}
-    PUBLIC 
+    PUBLIC
       -Wl,-Map,${_output_prefix}.map
     )
+    set_target_properties(${target} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT_PATH})
 
     mltk_get(MLTK_STRIP_ELF_SECTIONS)
     if(MLTK_STRIP_ELF_SECTIONS)
@@ -188,7 +189,30 @@ macro(mltk_toolchain_add_exe_targets target)
 
     mltk_get(MLTK_PLATFORM_NAME)
     mltk_get(MLTK_JLINK_DEVICE)
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/post_build.cmake 
+    if(NOT MLTK_JLINK_DEVICE)
+        mltk_get(MLTK_DOWNLOAD_RUN_DEVICE)
+        if(MLTK_DOWNLOAD_RUN_DEVICE)
+            set(MLTK_JLINK_DEVICE ${MLTK_JLINK_DEVICE})
+        endif()
+    endif()
+
+    mltk_get(MLTK_JLINK_SERIAL_NUMBER)
+    if(NOT MLTK_JLINK_SERIAL_NUMBER)
+        mltk_get(MLTK_DOWNLOAD_RUN_SERIAL_NUMBER)
+        if(MLTK_DOWNLOAD_RUN_SERIAL_NUMBER)
+            set(MLTK_JLINK_SERIAL_NUMBER ${MLTK_DOWNLOAD_RUN_SERIAL_NUMBER})
+        endif()
+    endif()
+
+    mltk_get(MLTK_JLINK_IP_ADDRESS)
+    if(NOT MLTK_JLINK_IP_ADDRESS)
+        mltk_get(MLTK_DOWNLOAD_RUN_IP_ADDRESS)
+        if(MLTK_DOWNLOAD_RUN_IP_ADDRESS)
+            set(MLTK_JLINK_IP_ADDRESS ${MLTK_DOWNLOAD_RUN_IP_ADDRESS})
+        endif()
+    endif()
+
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/post_build.cmake
 "
 execute_process(COMMAND ${CMAKE_STRIP} ${_strip_args} -o \"${_output_prefix}.stripped.elf\" \"${_output_path}\")
 execute_process(COMMAND ${CMAKE_OBJCOPY} -R .bootloader -O binary \"${_output_prefix}.stripped.elf\" \"${_output_prefix}.bin\")
@@ -196,20 +220,32 @@ execute_process(COMMAND ${CMAKE_OBJCOPY} -j .bootloader -O binary \"${_output_pr
 execute_process(COMMAND ${CMAKE_OBJCOPY} -O srec \"${_output_prefix}.stripped.elf\" \"${_output_prefix}.s37\")
 execute_process(COMMAND ${CMAKE_SIZE} \"${_output_path}\")
 execute_process(COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/elf-size-analyze/elf-size-analyze.py \"${_output_path}\" --toolchain-path ${TOOLCHAIN_BIN_DIR}/arm-none-eabi- --no-color --ram --rom --human-readable --max-width 120 --output \"${_output_dir}/${target}-memory_usage.txt\")
-execute_process(COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/utils/update_launch_json.py --name ${target} --path \"${_output_path}\" --toolchain \"${TOOLCHAIN_BIN_DIR}\" --platform ${MLTK_PLATFORM_NAME} --workspace \"${CMAKE_SOURCE_DIR}\" --jlink_device \"${MLTK_JLINK_DEVICE}\" )
+execute_process(COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/utils/update_launch_json.py --name ${target} --path \"${_output_path}\" --toolchain \"${TOOLCHAIN_BIN_DIR}\" --platform ${MLTK_PLATFORM_NAME} --workspace \"${CMAKE_SOURCE_DIR}\" --device \"${MLTK_JLINK_DEVICE}\" --serial_number \"${MLTK_JLINK_SERIAL_NUMBER}\" --ip_address \"${MLTK_JLINK_IP_ADDRESS}\" )
 execute_process(COMMAND ${CMAKE_COMMAND} -E echo \"For more details, see: ${_output_dir}/${target}-memory_usage.txt\")
 ")
 
     add_custom_command(TARGET ${target}
-        POST_BUILD 
+        POST_BUILD
         COMMAND ${CMAKE_COMMAND} -P post_build.cmake
-        BYPRODUCTS 
+        BYPRODUCTS
             "${_output_prefix}.stripped.elf"
             "${_output_prefix}.bin"
             "${_output_prefix}.bootloader.bin"
             "${_output_prefix}.s37"
             "${_output_dir}/${target}-memory_usage.txt"
     )
+
+    mltk_get(MLTK_ENABLE_OUTPUT_DISASSEMBLY)
+    if(MLTK_ENABLE_OUTPUT_DISASSEMBLY)
+        set(_output_objdump_path "${_output_prefix}.objdump.txt")
+        add_custom_command(TARGET ${target}
+            POST_BUILD
+            COMMAND ${CMAKE_OBJDUMP} -fDs ${_output_path} > ${_output_objdump_path}
+            BYPRODUCTS "${_output_objdump_path}"
+        )
+        unset(_output_objdump_path)
+    endif() # MLTK_ENABLE_OUTPUT_DISASSEMBLY
+
 
     unset(_output_path)
     unset(_output_prefix)

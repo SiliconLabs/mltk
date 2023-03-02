@@ -30,28 +30,37 @@ def should_patch_file(path: str) -> object:
 
     if path.endswith('/kernels/op_macros.h'):
         return dict(func=process_op_macros_h, state=0)
-    
+
     if path.endswith('/c/builtin_op_data.h'):
         return dict(func=process_builtin_op_data_h, state=0)
 
     if path.endswith('/micro/kernels/conv_common.cc'):
         return dict(func=process_conv_common_cc, state=0)
-    
+
     if path.endswith('/micro/kernels/depthwise_conv_common.cc'):
         return dict(func=process_depthwise_conv_common_cc, state=0)
-    
+
     if path.endswith('/micro/kernels/fully_connected_common.cc'):
         return dict(func=process_fully_connected_common_cc, state=0)
-    
-    if path.endswith('/micro/kernels/pooling_common.cc'):
-        return dict(func=process_pooling_common_cc, state=0)
-    
 
-    return None 
+    if path.endswith('/micro/kernels/pooling.h'):
+        return dict(func=process_pooling_h, state=0)
+
+    if path.endswith('/micro/micro_interpreter.cc'):
+        return dict(func=process_micro_interpreter_cc, state=0)
+
+    return None
 
 
 def process_file_line(lineno: int, line: str, arg: object) -> str:
     return arg['func'](lineno, line, arg)
+
+
+
+def process_compatibility_h(lineno: int, line: str, arg: object) -> str:
+    if line.strip() == 'void operator delete(void* p) {}':
+        line = 'public: void operator delete(void* p) {} // Patched by MLTK to ensure this operator is public\n'
+    return line
 
 
 def process_kernel_util_h(lineno: int, line: str, arg: object) -> str:
@@ -60,26 +69,6 @@ def process_kernel_util_h(lineno: int, line: str, arg: object) -> str:
         line += '  // TFLITE_DCHECK(tensor != nullptr);\n'
         line += '  if(tensor == nullptr){ return nullptr; }\n'
 
-    return line
-
-
-def process_op_macros_h(lineno: int, line: str, arg: object) -> str:
-    if arg['state'] == 0 and 'Patched by the MLTK' in line:
-        return None
-
-    if arg['state'] == 0 and line.strip() == '#endif  // TENSORFLOW_LITE_KERNELS_OP_MACROS_H_':
-        arg['state'] = 1
-        line = '// Patched by the MLTK\n'
-        line += '#include <assert.h>\n'
-        line += '#undef TFLITE_ABORT\n'
-        line += '#define TFLITE_ABORT assert(!"TF-Lite Micro assertion failed");\n'
-        line += '\n\n#endif  // TENSORFLOW_LITE_KERNELS_OP_MACROS_H_\n'
-
-    return line
-
-def process_compatibility_h(lineno: int, line: str, arg: object) -> str:
-    if line.strip() == 'void operator delete(void* p) {}':
-        line = 'public: void operator delete(void* p) {} // Patched by MLTK to ensure this operator is public\n'
     return line
 
 
@@ -131,7 +120,8 @@ def process_micro_allocator_cc(lineno: int, line: str, arg: object) -> str:
             line =  '  // Patched by MLTK\n'
             line += '  if(tensor == nullptr){ return; } // TFLITE_DCHECK(tensor != nullptr);\n'
 
-    return line 
+    return line
+
 
 def process_single_arena_buffer_allocator_cc(lineno: int, line: str, arg: object) -> str:
     if arg['state'] == 0 and  'SingleArenaBufferAllocator::IsAllTempDeallocated()' in line:
@@ -142,8 +132,6 @@ def process_single_arena_buffer_allocator_cc(lineno: int, line: str, arg: object
             return '// Patch by MLTK\n  return true;\n' + line
 
     return line
-
-
 
 
 def process_greedy_memory_planner_cc(lineno: int, line: str, arg: object) -> str:
@@ -195,6 +183,21 @@ def process_kernel_util_cc(lineno: int, line: str, arg: object) -> str:
     return line
 
 
+def process_op_macros_h(lineno: int, line: str, arg: object) -> str:
+    if arg['state'] == 0 and 'Patched by the MLTK' in line:
+        return None
+
+    if arg['state'] == 0 and line.strip() == '#endif  // TENSORFLOW_LITE_KERNELS_OP_MACROS_H_':
+        arg['state'] = 1
+        line = '// Patched by the MLTK\n'
+        line += '#include <assert.h>\n'
+        line += '#undef TFLITE_ABORT\n'
+        line += '#define TFLITE_ABORT assert(!"TF-Lite Micro assertion failed");\n'
+        line += '\n\n#endif  // TENSORFLOW_LITE_KERNELS_OP_MACROS_H_\n'
+
+    return line
+
+
 def process_builtin_op_data_h(lineno: int, line: str, arg: object) -> str:
     if arg['state'] == 0 and '#endif  // __cplusplus' in line:
         arg['state'] = 1
@@ -239,7 +242,7 @@ def process_conv_common_cc(lineno: int, line: str, arg: object) -> str:
         arg['state'] = 3
         if 'TFLITE_MICRO_RECORD_CONV_PARAMS' not in line:
             line = '  TFLITE_MICRO_RECORD_CONV_PARAMS(op_params, data.per_channel_output_multiplier, data.per_channel_output_shift, data.padding.height_offset); // Patched by MLTK\n' + line
-    
+
     elif arg['state'] == 3:
         if 'int output_channels = filter->dims->data[kConvQuantizedDimension];' in line:
             arg['state'] = 4
@@ -268,7 +271,7 @@ def process_depthwise_conv_common_cc(lineno: int, line: str, arg: object) -> str
         arg['state'] = 3
         if 'TFLITE_MICRO_RECORD_DEPTHWISE_CONV_PARAMS' not in line:
             line = '  TFLITE_MICRO_RECORD_DEPTHWISE_CONV_PARAMS(op_params, data.per_channel_output_multiplier, data.per_channel_output_shift, data.padding.height_offset); // Patched by MLTK\n' + line
-    
+
     elif arg['state'] == 3:
         if 'int output_channels = filter->dims->data[kDepthwiseConvQuantizedDimension];' in line:
             arg['state'] = 4
@@ -301,7 +304,7 @@ def process_fully_connected_common_cc(lineno: int, line: str, arg: object) -> st
     return line
 
 
-def process_pooling_common_cc(lineno: int, line: str, arg: object) -> str:
+def process_pooling_h(lineno: int, line: str, arg: object) -> str:
     if arg['state'] == 0:
         if 'mltk_tflite_micro_recorder.hpp' in line:
             arg['state'] = 1
@@ -317,5 +320,27 @@ def process_pooling_common_cc(lineno: int, line: str, arg: object) -> str:
         arg['state'] += 1
         if '// Patched by MLTK' not in line:
             line = '\n  op_params.padding_type = tflite::micro::RuntimePaddingType(params->padding); // Patched by MLTK\n  TFLITE_MICRO_RECORD_POOL_PARAMS(op_params);\n' + line
+
+    return line
+
+def process_micro_interpreter_cc(lineno: int, line: str, arg: object) -> str:
+    if arg['state'] == 0 and 'Patched by MLTK' in line:
+        return None
+
+
+    if arg['state'] == 0 and 'TfLiteStatus MicroInterpreter::PrepareNodeAndRegistrationDataFromFlatbuffer() {' in line:
+        arg['state'] = 1
+        line = '// Patched by MLTK\n'
+        line += '#if 0\n'
+        line += 'TfLiteStatus MicroInterpreter::PrepareNodeAndRegistrationDataFromFlatbuffer() {\n'
+
+
+    elif arg['state'] == 1 and 'return kTfLiteOk;' in line:
+        arg['state'] = 2
+
+    elif arg['state'] == 2 and '}' in line:
+        arg['state'] = 3
+        line = '}\n'
+        line += '#endif // Patched by MLTK, if 0\n'
 
     return line

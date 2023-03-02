@@ -205,6 +205,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
     CalculateActivationRange(kTfLiteActNone,
                              &data->activation_min_f32,
                              &data->activation_max_f32);
+
   } else {
     TF_LITE_KERNEL_LOG(context, "Type %s not currently supported.",
                        TfLiteTypeGetName(input->type));
@@ -225,7 +226,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
   if (bias != nullptr) {
     micro_context->DeallocateTempTfLiteTensor(bias);
   }
-  
+
   return kTfLiteOk;
 }
 

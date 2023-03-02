@@ -12,6 +12,7 @@ from .tflite_layer import (
     TfliteConv2DLayerOptions,
     TfliteTransposeConvLayer,
     TfliteTransposeConvLayerOptions,
+    TfliteTransposeConvParams,
     TfliteFullyConnectedLayer,
     TfliteFullyConnectedLayerOptions,
     TfliteDepthwiseConv2dLayer,

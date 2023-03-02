@@ -97,10 +97,10 @@ def TENet12(
     return TENet(
         input_shape=input_shape,
         classes=classes,
-        channels=32,
-        blocks=3,
-        block_depth=4,
-        scales=[9, 7, 5, 3] if mtconv else [9],
+        channels=kwargs.pop('channels', 32),
+        blocks=kwargs.pop('blocks', 3),
+        block_depth=kwargs.pop('block_depth', 4),
+        scales= kwargs.pop('scales', [9, 7, 5, 3] if mtconv else [9]),
         **kwargs,
     )
 
@@ -114,10 +114,10 @@ def TENet6(
     return TENet(
         input_shape=input_shape,
         classes=classes,
-        channels=32,
-        blocks=3,
-        block_depth=2,
-        scales=[9, 7, 5, 3] if mtconv else [9],
+        channels=kwargs.pop('channels', 32),
+        blocks=kwargs.pop('blocks', 3),
+        block_depth=kwargs.pop('block_depth', 2),
+        scales= kwargs.pop('scales', [9, 7, 5, 3] if mtconv else [9]),
         **kwargs,
     )
 
@@ -125,15 +125,15 @@ def TENet12Narrow(
     input_shape,
     classes: int, 
     mtconv: bool = False, 
-    *kwargs
+    **kwargs
 ) -> tf.keras.Model:
     return TENet(
         input_shape=input_shape,
         classes=classes,
-        channels=16,
-        blocks=3,
-        block_depth=4,
-        scales=[9, 7, 5, 3] if mtconv else [9],
+        channels=kwargs.pop('channels', 16),
+        blocks=kwargs.pop('blocks', 3),
+        block_depth=kwargs.pop('block_depth', 4),
+        scales= kwargs.pop('scales', [9, 7, 5, 3] if mtconv else [9]),
         **kwargs,
     )
 
@@ -146,10 +146,10 @@ def TENet6Narrow(
     return TENet(
         input_shape=input_shape,
         classes=classes,
-        channels=16,
-        blocks=3,
-        block_depth=2,
-        scales=[9, 7, 5, 3] if mtconv else [9],
+        channels=kwargs.pop('channels', 16),
+        blocks=kwargs.pop('blocks', 3),
+        block_depth=kwargs.pop('block_depth', 2),
+        scales= kwargs.pop('scales', [9, 7, 5, 3] if mtconv else [9]),
         **kwargs,
     )
     
@@ -163,10 +163,10 @@ def HFTENet12(
     return TENet(
         input_shape=input_shape,
         classes=classes,
-        channels=32,
-        blocks=3,
-        block_depth=4,
-        scales=[9, 7, 5, 3] if mtconv else [9],
+        channels=kwargs.pop('channels', 32),
+        blocks=kwargs.pop('blocks', 3),
+        block_depth=kwargs.pop('block_depth', 4),
+        scales= kwargs.pop('scales', [9, 7, 5, 3] if mtconv else [9]),
         channel_increase=0.125,
         **kwargs,
     )
@@ -224,10 +224,10 @@ class MultiScaleTemporalConvolution(tf.keras.layers.Layer):
                 strides=self.stride,
                 padding="same",
                 use_bias=False,
-                name=f"mtconv{scale}-{self._layer_counter}",
+                name=f"mtconv{scale}-{i}-{self._layer_counter}",
                 input_shape=input_shape[1:],
             )
-            for scale in self.scales
+            for i, scale in enumerate(self.scales)
         ]
         self._layer_counter += 1
 

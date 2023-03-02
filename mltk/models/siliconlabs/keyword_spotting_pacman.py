@@ -69,9 +69,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize keyword_spotting_pacman --tflite
-    
+
     +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)        | Output(s)       | Config                                              |
     +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
@@ -155,7 +155,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile keyword_spotting_pacman --device --accelerator MVP
 
@@ -205,7 +205,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view keyword_spotting_pacman --tflite
 
 .. raw:: html
@@ -217,6 +217,13 @@ Model Diagram
         </a>
     </div>
 
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/siliconlabs/keyword_spotting_pacman.py
+    :language: python
+    :lines: 231-
 
 """
 # pylint: disable=redefined-outer-name
@@ -233,16 +240,16 @@ import tensorflow as tf
 from tensorflow.keras import regularizers
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (
-    Dense, 
-    Activation, 
-    Flatten, 
+    Dense,
+    Activation,
+    Flatten,
     BatchNormalization,
     Conv2D,
     MaxPooling2D,
     Dropout
 )
 
-# Import the MLTK model object 
+# Import the MLTK model object
 # and necessary mixins
 # Later in this script we configure the various properties
 from mltk import MLTK_DIR
@@ -260,10 +267,10 @@ from mltk.datasets.audio.speech_commands import speech_commands_v2
 # Import the ParallelAudioDataGenerator
 # This has two main jobs:
 # 1. Process the Google speech_commands dataset and apply random augmentations during training
-# 2. Generate a spectrogram using the AudioFeatureGenerator from each augmented audio sample 
+# 2. Generate a spectrogram using the AudioFeatureGenerator from each augmented audio sample
 #    and give the spectrogram to Tensorflow for model training
 from mltk.core.preprocess.audio.parallel_generator import ParallelAudioDataGenerator, ParallelProcessParams
-# Import the AudioFeatureGeneratorSettings which we'll configure 
+# Import the AudioFeatureGeneratorSettings which we'll configure
 # and give to the ParallelAudioDataGenerator
 from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings
 from mltk.utils.archive_downloader import download_verify_extract
@@ -275,9 +282,9 @@ from mltk.utils.archive_downloader import download_verify_extract
 # - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    AudioDatasetMixin, 
+    MltkModel,
+    TrainMixin,
+    AudioDatasetMixin,
     EvaluateClassifierMixin
 ):
     pass
@@ -312,11 +319,11 @@ my_model.epochs = 80
 # before updating the training gradients.
 # Typical values are 10-64
 # NOTE: Larger values require more memory and may not fit on your GPU
-my_model.batch_size = 16 
+my_model.batch_size = 16
 # This specifies the algorithm used to update the model gradients
 # during training. Adam is very common
 # See https://www.tensorflow.org/api_docs/python/tf/keras/optimizers
-my_model.optimizer = 'adam' 
+my_model.optimizer = 'adam'
 # List of metrics to be evaluated by the model during training and testing
 my_model.metrics = ['accuracy']
 # The "loss" function used to update the weights
@@ -333,7 +340,7 @@ my_model.loss = 'categorical_crossentropy'
 my_model.checkpoint['monitor'] =  'val_accuracy'
 
 # https://keras.io/api/callbacks/reduce_lr_on_plateau/
-# If the test loss doesn't improve after 'patience' epochs 
+# If the test loss doesn't improve after 'patience' epochs
 # then decrease the learning rate by 'factor'
 my_model.reduce_lr_on_plateau = dict(
   monitor='loss',
@@ -345,7 +352,7 @@ my_model.reduce_lr_on_plateau = dict(
 
 # If the  accuracy doesn't improve after 15 epochs then stop training
 # https://keras.io/api/callbacks/early_stopping/
-my_model.early_stopping = dict( 
+my_model.early_stopping = dict(
   monitor = 'accuracy',
   patience = 15,
   verbose=1
@@ -362,7 +369,7 @@ my_model.early_stopping = dict(
 my_model.tflite_converter['optimizations'] = [tf.lite.Optimize.DEFAULT]
 my_model.tflite_converter['supported_ops'] = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
 # NOTE: A float32 model input/output is also possible
-my_model.tflite_converter['inference_input_type'] = np.int8 
+my_model.tflite_converter['inference_input_type'] = np.int8
 my_model.tflite_converter['inference_output_type'] = np.int8
 # Automatically generate a representative dataset from the validation data
 my_model.tflite_converter['representative_dataset'] = 'generate'
@@ -372,7 +379,7 @@ my_model.tflite_converter['representative_dataset'] = 'generate'
 #################################################
 # Audio Data Provider Settings
 
-# Specify the dataset 
+# Specify the dataset
 # NOTE: This can also be an absolute path to a directory
 #       or a Python function
 # See: https://siliconlabs.github.io/mltk/docs/python_api/mltk_model/audio_dataset_mixin.html#mltk.core.AudioDatasetMixin.dataset
@@ -392,8 +399,8 @@ my_model.class_weights = 'balanced'
 
 #################################################
 # AudioFeatureGenerator Settings
-# 
-# These are the settings used by the AudioFeatureGenerator 
+#
+# These are the settings used by the AudioFeatureGenerator
 # to generate spectrograms from the audio samples
 # These settings must be used during modeling training
 # AND by embedded device at runtime
@@ -433,22 +440,22 @@ PACMAN_BACKGROUND_NOISE_PATH = f'{PACMAN_BACKGROUND_NOISE_DIR}/recorded_pacman_g
 
 
 def get_batches_samples(
-    batch_index:int, 
-    filenames:List[str], 
-    classes:List[int], 
+    batch_index:int,
+    filenames:List[str],
+    classes:List[int],
     params:ParallelProcessParams
 ) -> Tuple[int, Tuple[np.ndarray, np.ndarray]]:
     """This slightly modified from the standard function that comes with the MLTK:
     https://github.com/siliconlabs/mltk/blob/master/mltk/core/preprocess/audio/parallel_generator/iterator.py#L241
-    
+
     80% of the time it adds a snippet of the Pac-Man background noise to the sample.
-     
+
     """
 
     if 'game' not in params.audio_data_generator.bg_noises:
         PACMAN_BACKGROUND_NOISE, orignal_sr = librosa.load(PACMAN_BACKGROUND_NOISE_PATH, sr=frontend_settings.sample_rate_hz, mono=True, dtype='float32')
         params.audio_data_generator.bg_noises['game'] = PACMAN_BACKGROUND_NOISE
-   
+
 
     batch_shape = (len(filenames),) + params.sample_shape
     batch_x = np.zeros(batch_shape, dtype=params.dtype)
@@ -457,14 +464,14 @@ def get_batches_samples(
         if filename:
             filepath = os.path.join(params.directory, filename)
             x, orignal_sr = librosa.load(filepath, sr=None, mono=True, dtype='float32')
-            
+
         else:
             orignal_sr = 16000
             x = np.zeros((orignal_sr,), dtype='float32')
 
         transform_params = params.audio_data_generator.get_random_transform()
         add_game_background_noise = random.uniform(0, 1) < .8  # Add the game background noise 80% of the time
-        if add_game_background_noise: 
+        if add_game_background_noise:
             transform_params['noise_color'] = None
             transform_params['bg_noise'] = 'game'
 
@@ -473,7 +480,7 @@ def get_batches_samples(
         #       Then the audio sample is simply cropped/padded to fit the expected sample length
         x = params.audio_data_generator.apply_transform(x, orignal_sr, transform_params)
 
-        # After point through the frontend, 
+        # After point through the frontend,
         # x = [height, width] dtype=self.dtype
         x = params.audio_data_generator.apply_frontend(x, dtype=params.dtype)
 
@@ -485,7 +492,7 @@ def get_batches_samples(
     batch_y = np.zeros((len(batch_x), len(params.class_indices)), dtype=params.dtype)
     for i, class_id in enumerate(classes):
         batch_y[i, class_id] = 1.
-    
+
     return batch_index, (batch_x, batch_y)
 
 
@@ -528,12 +535,12 @@ my_model.datagen = ParallelAudioDataGenerator(
 #################################################
 # Model Layout
 #
-# This defines the actual model layout 
+# This defines the actual model layout
 # using the Keras API.
 # This particular model is a relatively standard
 # sequential Convolution Neural Network (CNN).
 #
-# It is important to the note the usage of the 
+# It is important to the note the usage of the
 # "model" argument.
 # Rather than hardcode values, the model is
 # used to build the model, e.g.:
@@ -546,15 +553,15 @@ def my_model_builder(model: MyModel):
     weight_decay = 1e-4
     regularizer = regularizers.l2(weight_decay)
     input_shape = model.input_shape
-    filters = 7 
- 
+    filters = 7
+
     keras_model = Sequential(name=model.name, layers = [
         Conv2D(filters, (3,3), padding='same', input_shape=input_shape),
         BatchNormalization(),
         Activation('relu'),
         MaxPooling2D(2,2),
 
-        Conv2D(2*filters,(3,3), padding='same'), 
+        Conv2D(2*filters,(3,3), padding='same'),
         BatchNormalization(),
         Activation('relu'),
         MaxPooling2D(2,2),
@@ -563,7 +570,7 @@ def my_model_builder(model: MyModel):
         BatchNormalization(),
         Activation('relu'),
         MaxPooling2D(2,2),
-    
+
         Conv2D(4*filters, (3,3), padding='same'),
         BatchNormalization(),
         Activation('relu'),
@@ -581,8 +588,8 @@ def my_model_builder(model: MyModel):
     ])
 
     keras_model.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
 
@@ -603,7 +610,7 @@ my_model.build_model_function = my_model_builder
 # NOTE: Corresponding command-line options will override these values.
 
 
-# Controls the smoothing. 
+# Controls the smoothing.
 # Drop all inference results that are older than <now> minus window_duration
 # Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some commands
 my_model.model_parameters['average_window_duration_ms'] = 150
@@ -631,7 +638,7 @@ my_model.model_parameters['verbose_model_output_logs'] = False
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python keyword_spotting_pacman.py
 #
 # Note that this has the same functionality as:

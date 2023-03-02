@@ -3,15 +3,16 @@ import pprint
 import logging
 from typing import Union, Tuple
 
-import numpy as np 
+import numpy as np
 import tensorflow as tf
 
 from mltk.utils import gpu
 from mltk.utils.python import DefaultDict, prepend_exception_msg, append_exception_msg
 from .model import (
-    MltkModel, 
+    MltkModel,
+    MltkModelEvent,
     KerasModel,
-    load_mltk_model, 
+    load_mltk_model,
     load_tflite_or_keras_model,
 )
 from .tflite_model import TfliteModel
@@ -27,7 +28,8 @@ def quantize_model(
     weights:str=None,
     build:bool = False,
     update_archive:bool=None,
-    tflite_converter_override:dict=None
+    tflite_converter_override:dict=None,
+    post_process:bool=False
 ) -> Union[str,TfliteModel]:
     """Generate a quantized .tflite model file
 
@@ -44,12 +46,12 @@ def quantize_model(
 
             * If none, then load keras model from MLTK model archive's `.h5` file
             * If none and build=True, then build keras model rather that loading archive's `.h5`
-        
+
         output: Optional, directory path or file path to generated `.tflite` file.
 
             * If `none` then generate in model log directory and update the model's archive.
             * If output='tflite_model', then return the :py:class:`mltk.core.TfliteModel` object instead of `.tflite` file path
-        
+
             NOTE: The model archive is NOT updated if this argument is supplied
         weights: Optional, path to model weights file. This is only used if no keras_model argument is given.
         build: If true and keras_model is None, then first build the keras model by training for 1 epoch..
@@ -60,10 +62,12 @@ def quantize_model(
         tflite_converter_override: Dictionary of zero or more :py:attr:`mltk.core.TrainMixin.tflite_converter` settings
             used to override the :py:attr:`mltk.core.TrainMixin.tflite_converter` in the model specification
             NOTE: The model archive is NOT updated if this argument is supplied
+        post_process: This allows for post-processing the quantization results (e.g. uploading to a cloud) if supported by the given MltkModel
 
     Returns:
         The file path to the generated `.tflite` OR TfliteModel object if output='tflite_model'
     """
+
     if isinstance(model, MltkModel):
         mltk_model = model
 
@@ -82,7 +86,6 @@ def quantize_model(
 
     logger = get_mltk_logger()
 
-
     tflite_converter_settings = DefaultDict()
     if hasattr(mltk_model, 'tflite_converter'):
         tflite_converter_settings.update(mltk_model.tflite_converter)
@@ -90,11 +93,21 @@ def quantize_model(
         tflite_converter_settings.update(tflite_converter_override)
 
     if not tflite_converter_settings:
-        raise Exception('MltkModel does not specify tflite_converter settings')
+        raise ValueError('MltkModel does not specify tflite_converter settings')
+
+
+    mltk_model.trigger_event(
+        MltkModelEvent.QUANTIZE_STARTUP,
+        build=build,
+        keras_model=keras_model,
+        tflite_converter_settings=tflite_converter_settings,
+        post_process=post_process,
+        logger=logger
+    )
 
     logger.debug(f'Using tflite converter settings:\n{pprint.pformat(dict(tflite_converter_settings))}')
 
-    
+
     gpu.initialize(logger=logger)
 
     if keras_model is None:
@@ -102,7 +115,7 @@ def quantize_model(
             from .train_model import train_model
 
             built_mltk_model = load_mltk_model(
-                mltk_model.model_specification_path, 
+                mltk_model.model_specification_path,
                 reload=False
             )
             built_mltk_model.enable_test_mode()
@@ -118,9 +131,9 @@ def quantize_model(
 
         else:
             keras_model = load_tflite_or_keras_model(
-                mltk_model, 
+                mltk_model,
                 model_type='h5',
-                weights=weights, 
+                weights=weights,
             )
 
 
@@ -146,7 +159,7 @@ def quantize_model(
 
 
     _update_absl_log_level('ERROR')
-    
+
     # If we should generate an unquantized/float32 .tflite model
     # NOTE: Run this IF a "representative_dataset" converter setting was provided
     float32_tflite_path = None
@@ -161,14 +174,14 @@ def quantize_model(
             prepend_exception_msg(e, 'Failed to generated unquantized tflite model')
             raise
         finally:
-            # The TfLiteConverter adds a StreamHandler to the root logger, 
+            # The TfLiteConverter adds a StreamHandler to the root logger,
             # remove it so we don't double print everything to the console
             logger.root.handlers.clear()
 
         _save_flatbuffer_file(
             mltk_model=mltk_model,
             tflite_flatbuffer=float32_tflite_flatbuffer,
-            logger=logger, 
+            logger=logger,
             output=float32_tflite_path,
             add_runtime_memory_size=False
         )
@@ -185,31 +198,41 @@ def quantize_model(
 
     if tflite_converter_settings['representative_dataset'] == 'generate':
         converter.representative_dataset = create_representative_dataset_generator(
-            mltk_model, 
-            test=mltk_model.test_mode_enabled, 
+            mltk_model,
+            test=mltk_model.test_mode_enabled,
             logger=logger
         )
     else:
         converter.representative_dataset = tflite_converter_settings['representative_dataset']
 
     logger.info(f'Generating {retval}')
+    mltk_model.trigger_event(
+        MltkModelEvent.BEFORE_QUANTIZE,
+        converter=converter,
+        logger=logger
+    )
 
     try:
         tflite_flatbuffer = converter.convert()
     except Exception as e:
         prepend_exception_msg(e, 'Failed to quantize model')
         if tflite_converter_settings['representative_dataset'] == 'generate':
-            append_exception_msg(e, 
+            append_exception_msg(e,
                 '\n\nYou may need to define a custom representative data generator\n' \
                 'e.g.: my_model.tflite_converter["representative_dataset"] = _my_data_generator_function\n' \
                 'See https://www.tensorflow.org/lite/performance/post_training_quantization\n'
             )
         raise
     finally:
-        # The TfLiteConverter adds a StreamHandler to the root logger, 
+        # The TfLiteConverter adds a StreamHandler to the root logger,
         # remove it so we don't double print everything to the console
         logger.root.handlers.clear()
 
+    mltk_model.trigger_event(
+        MltkModelEvent.AFTER_QUANTIZE,
+        tflite_flatbuffer=tflite_flatbuffer,
+        logger=logger
+    )
 
     mltk_model.unload_dataset()
     _update_absl_log_level()
@@ -217,7 +240,7 @@ def quantize_model(
     retval, tflite_model = _save_flatbuffer_file(
         mltk_model=mltk_model,
         tflite_flatbuffer=tflite_flatbuffer,
-        logger=logger, 
+        logger=logger,
         output=retval,
         add_runtime_memory_size=True
     )
@@ -235,7 +258,13 @@ def quantize_model(
         mltk_model.add_archive_file(retval)
         if float32_tflite_path:
             mltk_model.add_archive_file(float32_tflite_path)
-       
+
+
+    mltk_model.trigger_event(
+        MltkModelEvent.QUANTIZE_SHUTDOWN,
+        tflite_model=tflite_model,
+        logger=logger
+    )
 
     return retval
 
@@ -261,13 +290,13 @@ def create_representative_dataset_generator(mltk_model: MltkModel, logger: loggi
 
                 # The TF-Lite converter expects 1 sample batches
                 for x in batch_x:
-                    yield [tf.expand_dims(x, axis=0)]  
+                    yield [tf.expand_dims(x, axis=0)]
 
             else:
                 # The TF-Lite converter expects the input to be a float32 data type
                 if isinstance(batch_x, np.ndarray) and batch_x.dtype != np.float32:
                     batch_x = batch_x.astype(np.float32)
-                
+
                 elif isinstance(batch_x, (list,tuple)):
                     batch_x_norm = []
                     for batch_xi in batch_x:
@@ -279,21 +308,21 @@ def create_representative_dataset_generator(mltk_model: MltkModel, logger: loggi
 
                 # The TF-Lite converter expects 1 sample batches
                 for x in batch_x:
-                    yield [np.expand_dims(x, axis=0)]  
-        
+                    yield [np.expand_dims(x, axis=0)]
+
             # 100 batches should be enough
             # for the converter to determine the valid ranges
             # required for quantization
             if i > 100:
                 break
-    
+
     return _representative_dataset_generator
 
 
 
 def _save_flatbuffer_file(
-    mltk_model:MltkModel, 
-    tflite_flatbuffer:bytes, 
+    mltk_model:MltkModel,
+    tflite_flatbuffer:bytes,
     output:str,
     logger: logging.Logger,
     add_runtime_memory_size:bool
@@ -357,10 +386,10 @@ def _populate_converter_options(converter, tflite_converter_settings:dict):
 
     for key, value in tflite_converter_settings.items():
         if key in (
-            'optimizations', 
-            'supported_ops', 
-            'inference_input_type', 
-            'inference_output_type', 
+            'optimizations',
+            'supported_ops',
+            'inference_input_type',
+            'inference_output_type',
             'representative_dataset'
         ):
             continue
@@ -387,10 +416,10 @@ def _convert_dtype(dtype):
 
     if dtype in (np.int32, np.dtype('int32'), 'int32'):
         return tf.int32
-    
+
     if dtype in (np.float, np.float32, np.dtype('float32'), 'float32'):
         return tf.float32
-    
+
     return dtype
 
 

@@ -21,26 +21,28 @@ First, we need to install a few tools:
 ### 0) Setup OS
 
 ```{eval-rst}
-.. tabbed:: Windows
+.. tab-set::
 
-   If you're on Windows, enable `long file paths`:
-   https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=registry
+   .. tab-item:: Windows
 
-   Also install the Visual Studio C++ compiler (this is needed to build some of the 3rd party Python packages for Python 3.10):
-   https://visualstudio.microsoft.com/visual-cpp-build-tools/
+      If you're on Windows, enable `long file paths`:
+      https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=registry
 
-   Be sure to check the __Desktop Development with C++__ workload in the installer GUI.
+      Also install the Visual Studio C++ compiler (this is needed to build some of the 3rd party Python packages for Python 3.10):
+      https://visualstudio.microsoft.com/visual-cpp-build-tools/
 
-.. tabbed:: Linux
+      Be sure to check the _Desktop Development with C++_ workload in the installer GUI.
 
-   If you're on Linux, run the following command to install the necessary packages: 
+   .. tab-item:: Linux
 
-   .. code-block:: shell
+      If you're on Linux, run the following command to install the necessary packages: 
 
-      sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-      sudo add-apt-repository -y ppa:deadsnakes/ppa
-      sudo apt update
-      sudo apt-get -y install build-essential g++-9 cmake ninja-build gdb p7zip-full git-lfs python3-dev python3-venv libusb-1.0-0 libgl1
+      .. code-block:: shell
+
+         sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+         sudo add-apt-repository -y ppa:deadsnakes/ppa
+         sudo apt update
+         sudo apt-get -y install build-essential g++-9 cmake ninja-build gdb p7zip-full git-lfs python3-dev python3-venv libusb-1.0-0 libgl1
 
 ```
 
@@ -101,17 +103,19 @@ cd mltk
 
 
 ```{eval-rst}
-.. tabbed:: Windows
+.. tab-set::
 
-   .. code-block:: shell
+   .. tab-item:: Windows
 
-      python .\install_mltk.py
+      .. code-block:: shell
 
-.. tabbed:: Linux
+         python .\install_mltk.py
 
-   .. code-block:: shell
+   .. tab-item:: Linux
 
-      python3 ./install_mltk.py
+      .. code-block:: shell
+
+         python3 ./install_mltk.py
 ```
 
 
@@ -120,21 +124,23 @@ cd mltk
 Activate the MLTK's Python virtual environment:
 
 ```{eval-rst}
-.. tabbed:: Windows
+.. tab-set::
 
-   .. code-block:: shell
+   .. tab-item:: Windows
 
-      .\.venv\Scripts\activate.bat
+      .. code-block:: shell
 
-.. tabbed:: Linux
+         .\.venv\Scripts\activate.bat
 
-   .. code-block:: shell
+   .. tab-item:: Linux
 
-      source ./.venv/bin/activate
+      .. code-block:: shell
+
+         source ./.venv/bin/activate
 ```
 
 
-After activation, the `mltk` command should be available on the [command-line](../command_line.md):
+After activation, the `mltk` command should be available on the [command-line](../command_line/index.md):
 
 ```shell
 mltk --help
@@ -162,7 +168,7 @@ From Simplicity Studio,
 3. The on the sidebar, expand the __Simplicity Studio__ entry
 4. Click the __SDKs__ entry
 5. Click the __Add SDK...__ button
-6. Populate the __Location__ with the path to the locally cloned GSDK, e.g. `<mltk repo root>/cpp/shared/gecko_sdk/v4.0.2`
+6. Populate the __Location__ with the path to the locally cloned GSDK, e.g. `<mltk repo root>/cpp/shared/gecko_sdk/v4.2.1`
 7. Click: __OK__
 9. If prompted, click the __Trust__ button to "trust" the locally cloned MLTK GSDK
 9. Click: __Apply and Close__

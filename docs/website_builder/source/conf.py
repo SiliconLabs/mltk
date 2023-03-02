@@ -16,8 +16,9 @@ import shutil
 import os
 import sys
 import re
-
-
+import string
+import datetime
+from typer.testing import CliRunner
 
 # Include this to avoid circular import errors
 import prompt_toolkit
@@ -26,6 +27,7 @@ import sphinx_material
 os.environ['MLTK_BUILD_DOCS'] = '1'
 
 import mltk
+from mltk import cli
 from mltk import MLTK_DIR, MLTK_ROOT_DIR
 from mltk.utils.path import (
     clean_directory,
@@ -48,7 +50,7 @@ repo_project_name = get_user_setting('repo_project_name', 'siliconlabs')
 # -- Project information -----------------------------------------------------
 
 project = 'MLTK'
-copyright = '2022, Silicon Labs'
+copyright = f'{datetime.date.today().year}, Silicon Labs'
 author = 'Silicon Labs'
 release = mltk.__version__
 
@@ -75,7 +77,7 @@ extensions = [
      # "myst_parser", # this is not needed when myst_nb is used
     "sphinx_markdown_tables",
     "sphinx_copybutton",
-    'sphinx_panels',
+    'sphinx_design',
     'sphinx_material',
     'sphinx_autodoc_typehints', # This must come last
 ]
@@ -195,25 +197,20 @@ html_sidebars = {
 source_suffix = ['.rst', '.md']
 
 pygments_style = 'trac'
-
+add_module_names = False
 autosummary_generate = True
 #autosummary_imported_members = True
+numpydoc_class_members_toctree = False
 
 numpydoc_show_class_members = False
 typehints_fully_qualified = False
 set_type_checking_flag  = True
-panels_add_bootstrap_css = False
-panels_css_variables = {
-    "tabs-color-label-active": "#D91E2A",
-    "tabs-color-label-inactive": "rgba(128,128,128,1.0)",
-    "tabs-color-overline": "rgba(128,128,128,.3)",
-    "tabs-color-underline": "rgba(128,128,128,.3)",
-    "tabs-size-label": "1rem",
-}
 
+autodoc_typehints = 'description'
 autodoc_member_order = 'bysource'
 autoclass_content = "class"
 autosectionlabel_prefix_document = True
+autodoc_class_signature = 'separated'
 #autosectionlabel_maxdepth = 1
 myst_heading_anchors = 3
 language = "en"
@@ -279,6 +276,23 @@ for fn in recursive_listdir(docs_src_dir, return_relative_paths=True):
 
     with open(dst_path, 'w') as f:
         f.write(data)
+
+
+# Generate a markdown file containing each command's CLI --help
+runner = CliRunner()
+cli.create_cli()
+for cmd in (
+    'profile', 'train', 'tensorboard', 'ssh',
+    'evaluate', 'quantize', 'summarize', 'view',
+    'update_params', 'view_audio', 'classify_audio',
+    'classify_image', 'fingerprint_reader', 'commander'
+):
+    result = runner.invoke(cli.root_cli, [cmd, '--help'], color=False, prog_name='mltk')
+    help_str = ''.join(c for c in result.stdout if c in string.printable)
+    with open(f'{docs_dst_dir}/command_line/{cmd}_cli_help.md', 'w') as f:
+        f.write('```text\n')
+        f.write(help_str)
+        f.write('```\n')
 
 # Copy all the files in <mltk root>/docs/img
 # to <mltk root>/docs/website_builder/source/docs/img
@@ -376,3 +390,4 @@ def autodoc_skip_member(app, what, name, obj, skip, opts):
 
 def setup(app):
     app.connect('autodoc-skip-member', autodoc_skip_member)
+

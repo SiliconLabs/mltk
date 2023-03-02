@@ -9,7 +9,7 @@ This example defines a model to detect the keywords:
 
 * left
 * right
-* up 
+* up
 * down
 
 This use the Google speech_commands dataset with the :py:class:`mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator`
@@ -45,9 +45,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize audio_example1 --tflite
-    
+
     +-------+-------------------+-----------------+-----------------+-----------------------------------------------------+
     | Index | OpCode            | Input(s)        | Output(s)       | Config                                              |
     +-------+-------------------+-----------------+-----------------+-----------------------------------------------------+
@@ -113,7 +113,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile audio_example1 --device --accelerator MVP
 
@@ -158,7 +158,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view audio_example1 --tflite
 
 .. raw:: html
@@ -171,15 +171,23 @@ Model Diagram
     </div>
 
 
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/examples/audio_example1.py
+    :language: python
+    :lines: 184-
+
+
 """
 # pylint: disable=redefined-outer-name
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (
-    Dense, 
-    Activation, 
-    Flatten, 
+    Dense,
+    Activation,
+    Flatten,
     BatchNormalization,
     Conv2D,
     DepthwiseConv2D,
@@ -199,9 +207,9 @@ from mltk.datasets.audio.speech_commands import speech_commands_v2
 # - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    mltk_core.MltkModel, 
-    mltk_core.TrainMixin, 
-    mltk_core.AudioDatasetMixin, 
+    mltk_core.MltkModel,
+    mltk_core.TrainMixin,
+    mltk_core.AudioDatasetMixin,
     mltk_core.EvaluateClassifierMixin
 ):
     pass
@@ -216,7 +224,7 @@ my_model.description = 'Audio classifier example for detecting left/right/up/dow
 #################################################
 # Training Basic Settings
 my_model.epochs = -1 # We use the EarlyStopping keras callback to stop the training
-my_model.batch_size = 64 
+my_model.batch_size = 64
 my_model.optimizer = 'adam'
 my_model.metrics = ['accuracy']
 my_model.loss = 'categorical_crossentropy'
@@ -226,26 +234,26 @@ my_model.loss = 'categorical_crossentropy'
 # Training callback Settings
 
 my_model.tensorboard = dict(
-    histogram_freq=0,       # frequency (in epochs) at which to compute activation and weight histograms 
-                            # for the layers of the model. If set to 0, histograms won't be computed. 
+    histogram_freq=0,       # frequency (in epochs) at which to compute activation and weight histograms
+                            # for the layers of the model. If set to 0, histograms won't be computed.
                             # Validation data (or split) must be specified for histogram visualizations.
     write_graph=False,       # whether to visualize the graph in TensorBoard. The log file can become quite large when write_graph is set to True.
     write_images=False,     # whether to write model weights to visualize as image in TensorBoard.
-    update_freq="batch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics 
-                            # to TensorBoard after each batch. The same applies for 'epoch'. 
-                            # If using an integer, let's say 1000, the callback will write the metrics and losses 
-                            # to TensorBoard every 1000 batches. Note that writing too frequently to 
+    update_freq="batch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics
+                            # to TensorBoard after each batch. The same applies for 'epoch'.
+                            # If using an integer, let's say 1000, the callback will write the metrics and losses
+                            # to TensorBoard every 1000 batches. Note that writing too frequently to
                             # TensorBoard can slow down your training.
-    profile_batch=(51,51),        # Profile the batch(es) to sample compute characteristics. 
-                            # profile_batch must be a non-negative integer or a tuple of integers. 
-                            # A pair of positive integers signify a range of batches to profile. 
+    profile_batch=(51,51),        # Profile the batch(es) to sample compute characteristics.
+                            # profile_batch must be a non-negative integer or a tuple of integers.
+                            # A pair of positive integers signify a range of batches to profile.
                             # By default, it will profile the second batch. Set profile_batch=0 to disable profiling.
-) 
+)
 
 my_model.checkpoint['monitor'] =  'val_accuracy'
 
 # https://keras.io/api/callbacks/reduce_lr_on_plateau/
-# If the test accuracy doesn't improve after 'patience' epochs 
+# If the test accuracy doesn't improve after 'patience' epochs
 # then decrease the learning rate by 'factor'
 my_model.reduce_lr_on_plateau = dict(
   monitor='accuracy',
@@ -255,7 +263,7 @@ my_model.reduce_lr_on_plateau = dict(
 
 # https://keras.io/api/callbacks/early_stopping/
 # If the validation accuracy doesn't improve after 'patience' epochs then stop training
-my_model.early_stopping = dict( 
+my_model.early_stopping = dict(
   monitor = 'val_accuracy',
   patience = 15 # NOTE: In practice, this should be larger (e.g. 45) but it will increase training times
 )
@@ -316,7 +324,7 @@ my_model.datagen = ParallelAudioDataGenerator(
     frontend_settings=frontend_settings,
     cores=0.45,
     debug=False, # Set this to true to enable debugging of the generator
-    max_batches_pending=32, 
+    max_batches_pending=32,
     validation_split= 0.15,
     validation_augmentation_enabled=False,
     samplewise_center=False,
@@ -327,7 +335,7 @@ my_model.datagen = ParallelAudioDataGenerator(
     offset_range=(0.0,1.0),
     trim_threshold_db=20,
     noise_colors=None,
-#     loudness_range=(0.6, 3.0), # In practice, these should be enabled but they will increase training times 
+#     loudness_range=(0.6, 3.0), # In practice, these should be enabled but they will increase training times
 #     speed_range=(0.6,1.9),
 #     pitch_range=(0.7,1.4),
 #     vtlp_range=(0.7,1.4),
@@ -340,44 +348,44 @@ my_model.datagen = ParallelAudioDataGenerator(
 # Model Layout
 def my_model_builder(model: MyModel):
     keras_model = Sequential(name=model.name)
-    
-    keras_model.add(DepthwiseConv2D(kernel_size=(7,7), 
-                            depth_multiplier=8, 
-                            strides=(2,2), 
+
+    keras_model.add(DepthwiseConv2D(kernel_size=(7,7),
+                            depth_multiplier=8,
+                            strides=(2,2),
                             use_bias=True,
                             padding='same',
                             input_shape=model.input_shape))
     keras_model.add(BatchNormalization())
     keras_model.add(Activation('relu'))
-    
-    keras_model.add(Conv2D(kernel_size=(3,3), 
-                            filters=24, 
-                            strides=(2,2), 
+
+    keras_model.add(Conv2D(kernel_size=(3,3),
+                            filters=24,
+                            strides=(2,2),
                             use_bias=True,
                             padding='valid'))
     keras_model.add(BatchNormalization())
     keras_model.add(Activation('relu'))
 
-    keras_model.add(MaxPooling2D(pool_size=(2,2), 
-                                  strides=(2,2,), 
+    keras_model.add(MaxPooling2D(pool_size=(2,2),
+                                  strides=(2,2,),
                                   padding='valid'))
 
-    keras_model.add(Conv2D(kernel_size=(3,3), 
-                            filters=20, 
-                            strides=(1,1), 
+    keras_model.add(Conv2D(kernel_size=(3,3),
+                            filters=20,
+                            strides=(1,1),
                             use_bias=True,
                             padding='valid'))
     keras_model.add(BatchNormalization())
     keras_model.add(Activation('relu'))
 
-    keras_model.add(MaxPooling2D(pool_size=(2,2), 
-                                  strides=(2,2,), 
+    keras_model.add(MaxPooling2D(pool_size=(2,2),
+                                  strides=(2,2,),
                                   padding='valid'))
 
     keras_model.add(Flatten())
     keras_model.add(Dense(model.n_classes, activation='softmax'))
-    keras_model.compile(loss=model.loss, 
-                         optimizer=model.optimizer, 
+    keras_model.compile(loss=model.loss,
+                         optimizer=model.optimizer,
                          metrics=model.metrics)
 
     return keras_model
@@ -388,7 +396,7 @@ my_model.build_model_function = my_model_builder
 
 def _on_training_complete(results: mltk_core.TrainingResults):
     """This callback is invoked after training successfully completes
-    
+
     Here is where custom quantization or .tflite model generation could be done
     """
     name, score = results.get_best_metric()
@@ -419,7 +427,7 @@ my_model.on_training_complete = _on_training_complete
 # NOTE: Corresponding command-line options will override these values.
 
 
-# Controls the smoothing. 
+# Controls the smoothing.
 # Drop all inference results that are older than <now> minus window_duration
 # Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some commands
 my_model.model_parameters['average_window_duration_ms'] = 1000
@@ -445,7 +453,7 @@ my_model.model_parameters['verbose_model_output_logs'] = False
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python audio_example1.py
 #
 # Note that this has the same functionality as:

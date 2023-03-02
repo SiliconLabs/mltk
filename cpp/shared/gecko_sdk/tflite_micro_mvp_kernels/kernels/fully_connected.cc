@@ -59,16 +59,13 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
 
   MicroContext* micro_context = GetMicroContext(context);
   TfLiteTensor* input =
-      micro_context->AllocateTempInputTensor(node, kFullyConnectedInputTensor);
-  TF_LITE_ENSURE(context, input != nullptr);
-  TfLiteTensor* weight = micro_context->AllocateTempInputTensor(
-      node, kFullyConnectedWeightsTensor);
-  TF_LITE_ENSURE(context, weight != nullptr);
+      micro_context->AllocateTempInputTensor(node, kInputTensor);
+  TfLiteTensor* weight =
+      micro_context->AllocateTempInputTensor(node, kWeightsTensor);
   TfLiteTensor* bias =
-      micro_context->AllocateTempInputTensor(node, kFullyConnectedBiasTensor);
-  TfLiteTensor* output = micro_context->AllocateTempOutputTensor(
-      node, kFullyConnectedOutputTensor);
-  TF_LITE_ENSURE(context, output != nullptr);
+      micro_context->AllocateTempInputTensor(node, kBiasTensor);
+  TfLiteTensor* output =
+      micro_context->AllocateTempOutputTensor(node, kOutputTensor);
 
   int32_t             output_min;
   int32_t             output_max;

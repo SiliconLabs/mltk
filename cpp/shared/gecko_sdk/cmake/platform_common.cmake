@@ -9,19 +9,20 @@ if(NOT GECKO_SDK_BOARD_TARGET)
 endif()
 
 
-target_include_directories(${NAME} 
+target_include_directories(${NAME}
 PUBLIC
     inc
 )
 
 target_sources(${NAME}
-PRIVATE 
+PRIVATE
     src/sl_stdio.c
-    src/sl_slist.c 
+    src/sl_slist.c
+    src/sl_string.c
 )
 
 target_link_libraries(${NAME}
-PRIVATE 
+PRIVATE
     ${GECKO_SDK_BOARD_TARGET}
     mltk::gecko_sdk::iostream_service
 )

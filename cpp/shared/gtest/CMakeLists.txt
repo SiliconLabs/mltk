@@ -12,7 +12,7 @@ NAME GTest
 GITHUB_REPOSITORY google/googletest
 GIT_TAG release-1.11.0
 CACHE_VERSION v1.11.0
-OPTIONS 
+OPTIONS
     "MSVC OFF" # This is causing bugs when building with SystemC
     "BUILD_GMOCK OFF"
     "INSTALL_GTEST OFF"
@@ -21,13 +21,13 @@ OPTIONS
 
 
 
-target_link_libraries(${PROJECT_NAME} 
-INTERFACE 
+target_link_libraries(${PROJECT_NAME}
+INTERFACE
     gtest
 )
 
 target_include_directories(${PROJECT_NAME}
-INTERFACE 
+INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
 )
 
@@ -36,13 +36,8 @@ mltk_get(MLTK_PATCH_GTEST_ENABLED)
 if(${GTest_SOURCE_DIR} MATCHES "${MLTK_CPP_DIR}/.*" OR MLTK_PATCH_GTEST_ENABLED)
     mltk_load_python()
 
-    # Ensure the downloaded library is patched 
-    add_custom_command(OUTPUT ${GTest_SOURCE_DIR}/${PROJECT_NAME}_patch_complete.txt
-        DEPENDS ${GTest_SOURCE_DIR}/googletest ${CMAKE_CURRENT_LIST_DIR}/patch_gtest.py
+    execute_process(
         COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/libpatcher.py -i ${GTest_SOURCE_DIR}/googletest -p ${CMAKE_CURRENT_LIST_DIR}/patch_gtest.py -o ${GTest_SOURCE_DIR}/${PROJECT_NAME}_patch_complete.txt
-        COMMENT "Patch GTest library at ${GTest_SOURCE_DIR}"
     )
-    add_custom_target(${PROJECT_NAME}_apply_patch DEPENDS ${GTest_SOURCE_DIR}/${PROJECT_NAME}_patch_complete.txt)
-    add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_apply_patch)
 
 endif()

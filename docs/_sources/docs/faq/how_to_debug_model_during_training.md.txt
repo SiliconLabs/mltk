@@ -49,7 +49,7 @@ Using [Visual Studio Code](https://code.visualstudio.com/docs/editor/debugging) 
 
 
 ```{note}
-Any of the other mltk [commands](../command_line.md) can be debugged in a similar manner, just update the `args` in the `.vscode/launch.json` configuration. 
+Any of the other mltk [commands](../command_line/index.md) can be debugged in a similar manner, just update the `args` in the `.vscode/launch.json` configuration. 
 ```
 
 ```{note}

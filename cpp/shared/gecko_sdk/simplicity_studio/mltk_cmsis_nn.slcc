@@ -8,7 +8,9 @@ category: Utilities
 quality: development
 provides:
   - name: mltk_cmsis_nn
-root_path: shared/cmsis/v5.9.1
+requires:
+  - name: mltk_cmsis_dsp_q15
+root_path: shared/cmsis/aug15_2022
 define:
   - name: CMSIS_FORCE_BUILTIN_FUNCTIONS
   - name: "CMSIS_NN"
@@ -18,6 +20,7 @@ define:
     value: _dummy
 
 include:
+  - path: .
   - path: CMSIS/Core/Include
     file_list:
       - path: cachel1_armv7.h
@@ -50,64 +53,17 @@ include:
       - path: pac_armv81.h
       - path: pmu_armv8.h
       - path: tz_context.h
-  - path: CMSIS/DSP/Include
-  - path: CMSIS/NN/Include
   - path: CMSIS/NN
-  - path: .
+  - path: CMSIS/NN/Include
     file_list:
-      - path: CMSIS/DSP/Include/arm_common_tables.h
-      - path: CMSIS/DSP/Include/arm_common_tables_f16.h
-      - path: CMSIS/DSP/Include/arm_const_structs.h
-      - path: CMSIS/DSP/Include/arm_const_structs_f16.h
-      - path: CMSIS/DSP/Include/arm_helium_utils.h
-      - path: CMSIS/DSP/Include/arm_math.h
-      - path: CMSIS/DSP/Include/arm_math_f16.h
-      - path: CMSIS/DSP/Include/arm_math_memory.h
-      - path: CMSIS/DSP/Include/arm_math_types.h
-      - path: CMSIS/DSP/Include/arm_math_types_f16.h
-      - path: CMSIS/DSP/Include/arm_mve_tables.h
-      - path: CMSIS/DSP/Include/arm_mve_tables_f16.h
-      - path: CMSIS/DSP/Include/arm_vec_math.h
-      - path: CMSIS/DSP/Include/arm_vec_math_f16.h
-      - path: CMSIS/DSP/Include/dsp/basic_math_functions.h
-      - path: CMSIS/DSP/Include/dsp/basic_math_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/bayes_functions.h
-      - path: CMSIS/DSP/Include/dsp/bayes_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/complex_math_functions.h
-      - path: CMSIS/DSP/Include/dsp/complex_math_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/controller_functions.h
-      - path: CMSIS/DSP/Include/dsp/controller_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/distance_functions.h
-      - path: CMSIS/DSP/Include/dsp/distance_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/fast_math_functions.h
-      - path: CMSIS/DSP/Include/dsp/fast_math_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/filtering_functions.h
-      - path: CMSIS/DSP/Include/dsp/filtering_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/interpolation_functions.h
-      - path: CMSIS/DSP/Include/dsp/interpolation_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/matrix_functions.h
-      - path: CMSIS/DSP/Include/dsp/matrix_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/none.h
-      - path: CMSIS/DSP/Include/dsp/quaternion_math_functions.h
-      - path: CMSIS/DSP/Include/dsp/statistics_functions.h
-      - path: CMSIS/DSP/Include/dsp/statistics_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/support_functions.h
-      - path: CMSIS/DSP/Include/dsp/support_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/svm_defines.h
-      - path: CMSIS/DSP/Include/dsp/svm_functions.h
-      - path: CMSIS/DSP/Include/dsp/svm_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/transform_functions.h
-      - path: CMSIS/DSP/Include/dsp/transform_functions_f16.h
-      - path: CMSIS/DSP/Include/dsp/utils.h
-
-      - path: CMSIS/NN/Include/arm_nn_math_types.h
-      - path: CMSIS/NN/Include/arm_nn_tables.h
-      - path: CMSIS/NN/Include/arm_nn_types.h
-      - path: CMSIS/NN/Include/arm_nnfunctions.h
-      - path: CMSIS/NN/Include/arm_nnsupportfunctions.h
+      - path: arm_nn_math_types.h
+      - path: arm_nn_tables.h
+      - path: arm_nn_types.h
+      - path: arm_nnfunctions.h
+      - path: arm_nnsupportfunctions.h
 
 source:
-  - path: CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c 
+  - path: CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q15.c
   - path: CMSIS/NN/Source/ActivationFunctions/arm_nn_activations_q7.c
   - path: CMSIS/NN/Source/ActivationFunctions/arm_relu6_s8.c
   - path: CMSIS/NN/Source/ActivationFunctions/arm_relu_q15.c

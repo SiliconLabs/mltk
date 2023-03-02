@@ -58,9 +58,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize image_classification --tflite
-    
+
     +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)        | Output(s)       | Config                                              |
     +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
@@ -123,7 +123,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile image_classification --device --accelerator MVP
 
@@ -176,7 +176,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view image_classification --tflite
 
 .. raw:: html
@@ -187,6 +187,14 @@ Model Diagram
             <p>Click to enlarge</p>
         </a>
     </div>
+
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/tinyml/image_classification.py
+    :language: python
+    :lines: 202-
 
 
 """
@@ -211,9 +219,9 @@ from mltk.datasets.image import cifar10
 # - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings
 # @mltk_model   # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    ImageDatasetMixin, 
+    MltkModel,
+    TrainMixin,
+    ImageDatasetMixin,
     EvaluateClassifierMixin
 ):
     pass
@@ -230,7 +238,7 @@ my_model.description = 'TinyML: Image classification - ResNetv1-10 with CIFAR10'
 #################################################
 # Training parameters
 my_model.epochs = 200
-my_model.batch_size = 40 
+my_model.batch_size = 40
 my_model.optimizer = 'adam'
 my_model.metrics = ['accuracy']
 my_model.loss = 'categorical_crossentropy'
@@ -309,8 +317,8 @@ def my_model_builder(model: MyModel):
         num_classes=model.n_classes
     )
     keras_model.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
     return keras_model
@@ -321,7 +329,7 @@ my_model.build_model_function  = my_model_builder
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python image_classification.py
 #
 # Note that this has the same functionality as:

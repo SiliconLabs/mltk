@@ -9,7 +9,7 @@ This example was adapted from https://keras.io/examples/vision/siamese_contrasti
 `Siamese Networks <https://en.wikipedia.org/wiki/Siamese_neural_network>`_ are neural networks which share weights between two or more sister networks,
 each producing embedding vectors of its respective inputs.
 
-In supervised similarity learning, the networks are then trained to maximize the contrast (distance) between embeddings of inputs of different classes, 
+In supervised similarity learning, the networks are then trained to maximize the contrast (distance) between embeddings of inputs of different classes,
 while minimizing the distance between embeddings of similar classes, resulting in embedding spaces that reflect the class segmentation of the training inputs.
 
 
@@ -40,9 +40,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     >  mltk summarize siamese_contrastive --tflite --build
-    
+
     +-------+-----------------+-------------------+----------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)          | Output(s)      | Config                                              |
     +-------+-----------------+-------------------+----------------+-----------------------------------------------------+
@@ -112,7 +112,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view siamese_contrastive --tflite --build
 
 .. raw:: html
@@ -124,6 +124,13 @@ Model Diagram
         </a>
     </div>
 
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/examples/siamese_contrastive.py
+    :language: python
+    :lines: 137-
 
 """
 
@@ -152,18 +159,18 @@ from mltk.datasets.image import mnist
 # - DatasetMixin          - Generic data generation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    mltk_core.MltkModel, 
-    mltk_core.TrainMixin, 
+    mltk_core.MltkModel,
+    mltk_core.TrainMixin,
     mltk_core.DatasetMixin,
     mltk_core.EvaluateMixin
 ):
     def load_dataset(
-        self, 
-        subset: str,  
+        self,
+        subset: str,
         test:bool = False,
         **kwargs
     ):
-        super().load_dataset(subset) 
+        super().load_dataset(subset)
 
         (x_train_val, y_train_val), (x_test, y_test) = mnist.load_data()
 
@@ -205,7 +212,7 @@ class MyModel(
         if subset == 'evaluation':
             self.x = [x_test_1, x_test_2]
             self.y = labels_test
-         
+
         else:
             self.x = [x_train_1, x_train_2]
             self.y = labels_train
@@ -259,8 +266,8 @@ def make_pairs(x, y):
 
 class ContrastiveLoss(keras.losses.Loss):
     def __init__(
-        self, 
-        margin=1, 
+        self,
+        margin=1,
         **kwargs
     ):
         """Calculates the contrastive loss.
@@ -345,39 +352,39 @@ def my_model_builder(my_model: MyModel):
     # as a model layer.
     # However, TFLM doesn't not support the SQUARED_DIFFERENCE kernel
     # So, as a work-around, we just use a dense layer to emulate it
-    
+
     #merge_layer = layers.Lambda(euclidean_distance)([tower_1, tower_2])
     #normal_layer = tf.keras.layers.BatchNormalization()(merge_layer)
 
     conc = tf.keras.layers.Concatenate()([tower_1, tower_2])
     dense_1 = tf.keras.layers.Dense(64, activation="relu")(conc)
     normal_layer = tf.keras.layers.Dense(16, activation="relu")(dense_1)
-    
+
     output_layer = layers.Dense(1, activation="sigmoid")(normal_layer)
     keras_model = keras.Model(inputs=[input_1, input_2], outputs=output_layer)
 
     keras_model.compile(
-        loss=my_model.loss, 
-        optimizer=my_model.optimizer, 
+        loss=my_model.loss,
+        optimizer=my_model.optimizer,
         metrics=my_model.metrics
     )
     return keras_model
 
 
 def my_model_evaluator(
-    my_model:MyModel, 
+    my_model:MyModel,
     built_model:Union[KerasModel, TfliteModel],
     eval_dir:str,
     logger:logging.Logger,
     **kwargs
 ) -> EvaluationResults:
-    results = EvaluationResults(name=my_model.name) 
+    results = EvaluationResults(name=my_model.name)
 
     if isinstance(built_model, KerasModel):
         eval_loss, eval_accuracy = built_model.evaluate(
-            x=my_model.x, 
+            x=my_model.x,
             y=my_model.y,
-            batch_size=my_model.batch_size, 
+            batch_size=my_model.batch_size,
             verbose=1
         )
         results['overall_accuracy'] = eval_accuracy
@@ -392,7 +399,7 @@ def my_model_evaluator(
             y = y[:3]
             batch_size = 3
         tflite_interpreter = tf.lite.Interpreter(model_path=built_model.path)
-       
+
         input_tensors = tflite_interpreter.get_input_details()
         output_tensor = tflite_interpreter.get_output_details()[0]
 
@@ -463,7 +470,7 @@ my_model.tflite_converter['representative_dataset'] = 'generate'
 # generate a representative dataset from the validation data
 def my_representative_dataset_generator():
     batch_size = my_model.batch_size
-    x_1, x_2 = my_model.x 
+    x_1, x_2 = my_model.x
     retval = []
     offset = 0
     for index in range(len(x_1) // batch_size):
@@ -513,7 +520,7 @@ def visualize(x, labels, to_show=6, num_col=3, predictions=None, test=False):
     """
 
     import matplotlib.pyplot as plt
-    
+
 
     # Define num_row
     # If to_show % num_col != 0
@@ -554,7 +561,7 @@ def visualize(x, labels, to_show=6, num_col=3, predictions=None, test=False):
     #     plt.tight_layout(rect=(0, 0, 1.9, 1.9), w_pad=0.0)
     # else:
     #     plt.tight_layout(rect=(0, 0, 1.5, 1.5))
-    plt.show() 
+    plt.show()
 
 
 # Register the "visualize" custom command
@@ -573,7 +580,7 @@ def visualize_custom_command(
     )
 ):
     """Custom command to view training dataset
-    
+
     \b
     Invoke this command with:
     mltk custom siamese_contrastive visualize
@@ -586,7 +593,7 @@ def visualize_custom_command(
         keras_model = load_tflite_or_keras_model(my_model, model_type='h5')
         predictions = keras_model.predict(my_model.x)
         visualize(my_model.x, my_model.y, to_show=count, num_col=col, predictions=predictions, test=True)
-    
+
     else:
         my_model.load_dataset(subset='training')
         visualize(my_model.x, my_model.y, to_show=count, num_col=col)
@@ -597,7 +604,7 @@ def visualize_custom_command(
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python siamese_contrastive.py
 #
 # Note that this has the same functionality as:

@@ -11,6 +11,7 @@ from .tflite_types import (
     TflitePadding, 
     TfliteConvParams, 
     TfliteDepthwiseConvParams,
+    TfliteTransposeConvParams,
     TfliteFullyConnectedParams,
     TflitePoolParams
 )
@@ -483,6 +484,10 @@ class TfliteTransposeConvLayer(TfliteLayer):
     def output_data(self) -> np.ndarray:
         """Output tensor data"""
         return self.output_tensor.data
+    @property
+    def params(self) -> TfliteTransposeConvParams:
+        """Calculated layer parameters"""
+        return TfliteTransposeConvParams.calculate(self)
 
 
 class TfliteTransposeConvLayerOptions(_tflite_schema_fb.TransposeConvOptionsT, TfliteLayerOptions):

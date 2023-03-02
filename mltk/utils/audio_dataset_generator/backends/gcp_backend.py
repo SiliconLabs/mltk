@@ -39,7 +39,7 @@ class GcpBackend(BackendBase):
     """
     def __init__(self) -> None:
         super().__init__(
-            transactions_per_second=1000/60
+            transactions_per_second=1000/(60 + 10)
         )
         self._client = None
 

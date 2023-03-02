@@ -24,6 +24,16 @@ using namespace mltk;
 static void dump_recorded_data(TfliteMicroModel &model, logging::Logger& logger);
 #endif
 
+static bool load_model(
+    TfliteMicroModel &model,
+    logging::Logger& logger,
+    const uint8_t* tflite_input_flatbuffer,
+    uint32_t tflite_input_flatbuffer_len
+);
+
+
+
+
 
 // These are defined by the build scripts
 // which converts the specified .tflite to a C array
@@ -31,30 +41,48 @@ extern "C" const uint8_t sl_tflite_model_array[];
 extern "C" const uint32_t sl_tflite_model_len;
 
 
+#if __has_include("mltk_model_profiler_generated_model_op_resolver.hpp")
+    // Check if mltk_model_profiler_generated_model_op_resolver.hpp was automatically generated.
+    // If so, the header contains only the TFLM kernels that are required by the given model.
+    // This can *greatly* reduce the app's flash space.
+    // To enable this feature, add the CMake variable: MODEL_PROFILER_GENERATE_OP_RESOLVER_HEADER
+    #include "mltk_model_profiler_generated_model_op_resolver.hpp"
+    MyOpResolver op_resolver;
+#else
+    // Otherwise, just build all available TFLM kernels into the app.
+    // While this consume *a lot* more flash space,
+    // it allows for dynamically loading .tflite models.
+    tflite::AllOpsResolver op_resolver;
+#endif
 
 
-static bool load_model(
-    TfliteMicroModel &model, 
-    logging::Logger& logger, 
-    const uint8_t* tflite_input_flatbuffer, 
-    uint32_t tflite_input_flatbuffer_len
-);
-
-tflite::AllOpsResolver op_resolver;
-
+#if defined(MODEL_PROFILER_RUNTIME_MEMORY_SIZE) && MODEL_PROFILER_RUNTIME_MEMORY_SIZE > 0
+#   ifndef MODEL_PROFILER_RUNTIME_MEMORY_SECTION
+#     define MODEL_PROFILER_RUNTIME_MEMORY_SECTION ".bss"
+#   endif
+    // If the runtime memory size (i.e. tensor arena) was defined a compile-time
+    // then define a global buffer
+    const int runtime_memory_size = MODEL_PROFILER_RUNTIME_MEMORY_SIZE;
+    uint8_t __attribute__((section(MODEL_PROFILER_RUNTIME_MEMORY_SECTION))) runtime_memory_buffer[MODEL_PROFILER_RUNTIME_MEMORY_SIZE];
+#else
+    // Otherwise, we dynamically find the optimal runtime size
+    // and allocate from the heap
+    const int runtime_memory_size = -1;
+    uint8_t* runtime_memory_buffer = nullptr;
+#endif
 
 
 extern "C" int main(void)
 {
     TfliteMicroModel model;
-    
+
     sl_system_init();
 
     auto& logger = get_logger();
     logger.flags(logging::Newline);
 
     logger.info("Starting Model Profiler");
-    
+
 #ifndef __arm__
     // If this is a Windows/Linux build
     // Parse the CLI options
@@ -97,7 +125,7 @@ extern "C" int main(void)
 #ifdef TFLITE_MICRO_RECORDER_ENABLED
     dump_recorded_data(model, logger);
 #endif
-    
+
     logger.info("done");
 
     return 0;
@@ -105,9 +133,9 @@ extern "C" int main(void)
 
 
 static bool load_model(
-    TfliteMicroModel &model, 
-    logging::Logger& logger, 
-    const uint8_t* tflite_input_flatbuffer, 
+    TfliteMicroModel &model,
+    logging::Logger& logger,
+    const uint8_t* tflite_input_flatbuffer,
     uint32_t tflite_input_flatbuffer_len
 )
 {
@@ -117,7 +145,7 @@ static bool load_model(
     // Register the accelerator if the TFLM lib was built with one
     mltk_tflite_micro_register_accelerator();
 
-    // If a valid model flatbuffer is inputted use that    
+    // If a valid model flatbuffer is inputted use that
     if (tflite_input_flatbuffer != nullptr && tflite_input_flatbuffer_len > 0)
     {
         logger.info("Loading provided model");
@@ -155,18 +183,14 @@ static bool load_model(
    TfliteMicroAcceleratorRecorder::instance().set_program_recording_enabled();
    TfliteMicroAcceleratorRecorder::instance().set_data_recording_enabled();
 #endif
+
     logger.info("Loading model");
-
-#ifdef MLTK_RUNTIME_MEMORY_SIZE
-    // If the runtime memory size was defined a compile-time
-    // then use that
-    int runtime_memory_size = MLTK_RUNTIME_MEMORY_SIZE;
-#else 
-    // Otherwise, Attempt to load the model by finding the optimal tensor arena size
-    int runtime_memory_size = -1;
-#endif
-
-    if(!model.load(tflite_flatbuffer, op_resolver, nullptr, runtime_memory_size))
+    if(!model.load(
+        tflite_flatbuffer,
+        op_resolver,
+        runtime_memory_buffer,
+        runtime_memory_size
+    ))
     {
         logger.info("Failed to load model");
         return false;
@@ -200,11 +224,11 @@ static void dump_recorded_data(TfliteMicroModel &model, logging::Logger& logger)
         int n_values = 0;
         int current_index = 0;
         int layer_index = 0;
- 
+
         Context(logging::Logger& logger): logger(logger){}
     };
 
-    auto msgpack_iterator = [](const msgpack_object_t *key, const msgpack_object_t *value, void *arg) -> int 
+    auto msgpack_iterator = [](const msgpack_object_t *key, const msgpack_object_t *value, void *arg) -> int
     {
         auto& context = *(Context*)arg;
 
@@ -220,7 +244,7 @@ static void dump_recorded_data(TfliteMicroModel &model, logging::Logger& logger)
             char key_str[256];
             context.current_index = 0;
             context.logger.info("  %s:", msgpack_to_str(key, key_str, sizeof(key_str)));
-     
+
             if(MSGPACK_IS_ARRAY(value))
             {
                 context.n_values = MSGPACK_ARRAY_LENGTH(value);
@@ -229,7 +253,7 @@ static void dump_recorded_data(TfliteMicroModel &model, logging::Logger& logger)
             {
                 context.n_values = MSGPACK_DICT_LENGTH(value);
             }
-            else 
+            else
             {
                 return -1;
             }
@@ -239,7 +263,7 @@ static void dump_recorded_data(TfliteMicroModel &model, logging::Logger& logger)
             context.logger.info("    %d: %d elements", context.current_index, MSGPACK_BIN_LENGTH(value));
             context.current_index += 1;
         }
-        else 
+        else
         {
             char key_str[64];
             char val_str[64];
@@ -250,7 +274,7 @@ static void dump_recorded_data(TfliteMicroModel &model, logging::Logger& logger)
         return 0;
     };
 
-    
+
 
     Context context(logger);
 

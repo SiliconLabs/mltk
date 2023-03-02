@@ -1,11 +1,11 @@
 
 # See https://github.com/xiph/opus
 CPMAddPackage(
-    NAME opus 
+    NAME opus
     GITHUB_REPOSITORY xiph/opus
     GIT_TAG 757c53f775a0b651b0512a1992d67f4b2159a378
     CACHE_VERSION nov24_2022
-    OPTIONS 
+    OPTIONS
         "CMAKE_MESSAGE_LOG_LEVEL NOTICE"
         "OPUS_FIXED_POINT ON"
         "OPUS_ENABLE_FLOAT_API OFF"
@@ -24,3 +24,10 @@ INTERFACE
     opus
 )
 
+mltk_get(MLTK_PLATFORM_IS_EMBEDDED)
+if(MLTK_PLATFORM_IS_EMBEDDED)
+    mltk_get(MLTK_STACK_SIZE)
+    if(${MLTK_STACK_SIZE} LESS 28000)
+        mltk_error("The Opus library requires a very large stack size.\nTo ${CMAKE_SOURCE_DIR}/user_options.cmake, add:\nmltk_set(MLTK_STACK_SIZE 28000)\n")
+    endif()
+endif()

@@ -67,6 +67,24 @@ See the [TfliteModel API examples](https://siliconlabs.github.io/mltk/mltk/examp
    mltk.core.TfliteConvParams
 
 .. autosummary::
+   :toctree: transpose_conv_layer
+   :template: custom-class-template.rst
+
+   mltk.core.TfliteTransposeConvLayer
+
+.. autosummary::
+   :toctree: transpose_conv_layer_options
+   :template: custom-class-template.rst
+
+   mltk.core.TfliteTransposeConvLayerOptions
+
+.. autosummary::
+   :toctree: transpose_conv_params
+   :template: custom-class-template.rst
+
+   mltk.core.TfliteTransposeConvParams
+
+.. autosummary::
    :toctree: fully_connected_layer
    :template: custom-class-template.rst
 
@@ -188,6 +206,9 @@ See the [TfliteModel API examples](https://siliconlabs.github.io/mltk/mltk/examp
 ./conv2d_layer
 ./conv2d_layer_options
 ./conv_params
+./transpose_conv_layer
+./transpose_conv_layer_options
+./transpose_conv_params
 ./fully_connected_layer
 ./fully_connected_layer_options
 ./fully_connected_params

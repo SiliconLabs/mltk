@@ -51,7 +51,7 @@ static StaticEventGroup_t event_group;
 
 
 
-static tflite::MicroMutableOpResolver<10> opcode_resolver;
+static tflite::MicroMutableOpResolver<11> opcode_resolver;
 static RecognizeCommands *command_recognizer = nullptr;
 static mltk::TfliteMicroModel model;
 
@@ -97,9 +97,11 @@ extern "C" void ble_audio_classifier_init(void)
   opcode_resolver.AddConv2D();
   opcode_resolver.AddDepthwiseConv2D();
   opcode_resolver.AddMaxPool2D();
+  opcode_resolver.AddAveragePool2D();
   opcode_resolver.AddReshape();
   opcode_resolver.AddFullyConnected();
   opcode_resolver.AddPad();
+  opcode_resolver.AddConcatenation();
   opcode_resolver.AddAdd();
   opcode_resolver.AddMean();
   opcode_resolver.AddSoftmax();

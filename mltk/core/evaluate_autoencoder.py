@@ -26,12 +26,12 @@ from .evaluation_results import EvaluationResults
 
 class AutoEncoderEvaluationResults(EvaluationResults):
     """Auto-encoder evaluation results
-    
+
     .. seealso::
-    
+
        - :py:func:`~evaluate_autoencoder`
        - :py:func:`mltk.core.evaluate_model`
-    
+
     """
     def __init__(self, *args, **kwargs):
         EvaluationResults.__init__(self, *args,  model_type='auto_encoder', **kwargs)
@@ -89,17 +89,17 @@ class AutoEncoderEvaluationResults(EvaluationResults):
 
 
     def calculate(
-        self, 
-        y:np.ndarray, 
+        self,
+        y:np.ndarray,
         y_pred:np.ndarray,
         all_scores: np.ndarray,
         thresholds: List[float] = None
     ):
         """Calculate the evaluation results
-        
-        Given the list of expected values and corresponding predicted values with scores, 
+
+        Given the list of expected values and corresponding predicted values with scores,
         calculate the evaluation metrics.
-        
+
         Args:
             y: 1D array of expected class ids
             y_pred: 1D array of scoring results, e.g. y_pred[i] = scoring_function(x[i], y[i])
@@ -124,22 +124,22 @@ class AutoEncoderEvaluationResults(EvaluationResults):
         return s + '\n' + summarize_results(self)
 
     def generate_plots(
-        self, 
-        show=True, 
-        output_dir:str=None, 
+        self,
+        show=True,
+        output_dir:str=None,
         logger: logging.Logger=None
     ):
         """Generate plots of the evaluation results
-        
+
         Args:
             show: Display the generated plots
             output_dir: Generate the plots at the specified directory. If omitted, generated in the model's logging directory
             logger: Optional logger
         """
         plot_results(
-            self, 
-            logger=logger, 
-            output_dir=output_dir, 
+            self,
+            logger=logger,
+            output_dir=output_dir,
             show=show
         )
 
@@ -158,7 +158,7 @@ def evaluate_autoencoder(
     update_archive:bool=True
 ) -> AutoEncoderEvaluationResults:
     """Evaluate a trained auto-encoder model
-    
+
     Args:
         mltk_model: MltkModel instance
         tflite: If true then evalute the .tflite (i.e. quantized) model, otherwise evaluate the keras model
@@ -197,7 +197,7 @@ def evaluate_autoencoder(
     # Build the MLTK model's corresponding as a Keras model or .tflite
     try:
         built_model = load_tflite_or_keras_model(
-            mltk_model, 
+            mltk_model,
             model_type='tflite' if tflite else 'h5',
             weights=weights
         )
@@ -216,14 +216,16 @@ def evaluate_autoencoder(
         logger.warning(f'Failed to generate model summary, err: {e}')
 
     logger.info('Evaluating auto-encoder model ...')
-    
+
+
+
     all_scores = []
     for class_label in classes:
         logger.info(f'Loading dataset for class: {class_label}')
 
         try:
             mltk_model.load_dataset(
-                subset='evaluation', 
+                subset='evaluation',
                 max_samples_per_class=max_samples_per_class,
                 classes=[class_label],
                 logger=logger,
@@ -238,7 +240,7 @@ def evaluate_autoencoder(
         logger.info(f'Generating model predictions for {class_label} class ...')
         if isinstance(built_model, KerasModel):
             y_pred = built_model.predict(
-                x = eval_data, 
+                x = eval_data,
                 callbacks=callbacks,
                 verbose=1 if verbose else 0,
             )
@@ -254,14 +256,14 @@ def evaluate_autoencoder(
             except Exception as e:
                 prepend_exception_msg(e, 'Error executing scoring function')
                 raise
-                
+
             if dump and dump_count < 200: # Don't dump more than 200 samples
                 dump_count += 1
                 dump_path = f'{dump_dir}/{class_label}/{i}.png'
                 _save_decoded_image(dump_path, orig, decoded, class_scores[i])
-        
+
         all_scores.append(class_scores)
-    
+
     mltk_model.unload_dataset()
 
     if dump:
@@ -273,7 +275,7 @@ def evaluate_autoencoder(
         abnormal_scores = all_scores[i]
         y_pred = np.append(normal_pred, abnormal_scores)
         y_true = np.append(np.zeros_like(normal_pred), np.ones_like(abnormal_scores))
-            
+
     results = AutoEncoderEvaluationResults(
         name= mltk_model.name,
         classes=classes,
@@ -285,7 +287,7 @@ def evaluate_autoencoder(
     )
 
     summarized_results = results.generate_summary()
-    
+
     eval_results_path = f'{eval_dir}/eval-results.json'
     with open(eval_results_path, 'w') as f:
         json.dump(results, f, default=_encode_ndarray)
@@ -297,11 +299,11 @@ def evaluate_autoencoder(
     logger.debug(f'Generated {summary_path}')
 
     results.generate_plots(
-        logger=logger, 
-        output_dir=eval_dir, 
+        logger=logger,
+        output_dir=eval_dir,
         show=show
     )
-    
+
     if update_archive:
         try:
             logger.info(f'Updating {mltk_model.archive_path}')
@@ -323,7 +325,7 @@ def evaluate_autoencoder(
 def summarize_results(results: AutoEncoderEvaluationResults) -> str:
     """Generate a summary of the evaluation results"""
 
-    s = '' 
+    s = ''
     s += 'Overall accuracy: {:.3f}%\n'.format(results['overall_accuracy'] * 100)
     s += 'Precision/recall accuracy: {:.3f}%\n'.format(results['overall_pr_accuracy'] * 100)
     s += 'Overall ROC AUC: {:.3f}%\n'.format(results['overall_roc_auc'] * 100)
@@ -336,7 +338,7 @@ def summarize_results(results: AutoEncoderEvaluationResults) -> str:
     return s.strip()
 
 
-    
+
 def plot_results(results:AutoEncoderEvaluationResults, show=False, output_dir:str=None, logger: logging.Logger=None):
     """Use Matlibplot to generate plots of the evaluation results"""
 
@@ -366,7 +368,7 @@ def calculate_overall_accuracy(y_pred, y_true) -> float:
         if accuracy_tmp > accuracy:
             accuracy = accuracy_tmp
 
-    return accuracy      
+    return accuracy
 
 
 def calculate_overall_pr_accuracy(thresholds, y_pred, y_true) -> Tuple[List[float], List[float], float]:
@@ -399,7 +401,7 @@ def calculate_overall_pr_accuracy(thresholds, y_pred, y_true) -> Tuple[List[floa
         if accuracy_tmp > accuracy:
             accuracy = accuracy_tmp
 
-    return precision, recall, accuracy 
+    return precision, recall, accuracy
 
 
 def calculate_overall_roc_auc(thresholds, y_pred, y_true) -> Tuple[List[float], List[float], float]:
@@ -447,11 +449,11 @@ def calculate_class_stats(all_scores, classes) -> dict:
         total_scores += len(abnormal_scores)
         y_pred = np.append(normal_pred, abnormal_scores)
         y_true = np.append(np.zeros_like(normal_pred), np.ones_like(abnormal_scores))
-        
+
         fpr, tpr, thr = roc_curve(y_true, y_pred)
         roc_auc = auc(fpr, tpr)
         precision, recall, _ = precision_recall_curve(y_true, y_pred)
-        
+
         stats[classes[i]] = \
         {
             'fpr': fpr,
@@ -475,9 +477,9 @@ def calculate_class_stats(all_scores, classes) -> dict:
                 y_true[offset : offset + n_samples] = np.zeros_like(class_scores)
             else:
                 y_true[offset : offset + n_samples] = np.ones_like(class_scores)
-                
+
             offset += n_samples
-        
+
         fpr, tpr, thr = roc_curve(y_true, y_pred)
         roc_auc = auc(fpr, tpr)
         precision, recall, _ = precision_recall_curve(y_true, y_pred)
@@ -513,7 +515,7 @@ def plot_overall_roc(results, output_dir:str, show:bool, logger: logging.Logger)
     plt.ylabel('True Positive Rate')
     plt.title(title)
     plt.grid(which='major')
-    
+
     if output_dir:
         output_path = output_dir + f'/{name}-overall_roc.png'
         plt.savefig(output_path)
@@ -529,7 +531,7 @@ def plot_overall_roc(results, output_dir:str, show:bool, logger: logging.Logger)
 
 def plot_overall_precision_vs_recall(results: dict, output_dir:str, show, logger: logging.Logger):
     """Generate a plot of the precision vs recall"""
-    
+
     name = results['name']
     precision = results['overall_precision']
     recall = results['overall_recall']
@@ -538,7 +540,7 @@ def plot_overall_precision_vs_recall(results: dict, output_dir:str, show, logger
     fig = plt.figure(title)
 
     plt.plot(recall, precision)
-    
+
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.01])
     plt.xlabel('Recall')
@@ -550,7 +552,7 @@ def plot_overall_precision_vs_recall(results: dict, output_dir:str, show, logger
         output_path = output_dir + f'/{name}-overall_precision_vs_recall.png'
         plt.savefig(output_path)
         logger.debug(f'Generated {output_dir}')
-       
+
     if show:
         plt.show(block=False)
     else:
@@ -575,7 +577,7 @@ def plot_histogram(results: dict, output_dir:str, show, logger: logging.Logger):
 
     fig, ax = plt.subplots(2,1,figsize=(10,5))
     plt.subplots_adjust(hspace=.4)
-     
+
     ax[0].set_title('Loss')
     for i, class_scores in enumerate(all_scores):
         ax[0].plot(class_scores, label=classes[i])
@@ -614,23 +616,23 @@ def plot_class_roc(results:dict, output_dir:str, show, logger: logging.Logger):
     class_stats = results['class_stats']
 
     fig, ax = plt.subplots(2,1,figsize=(10,10))
-     
+
     ax[0].set_title(f'ROC: {name}')
     for class_label, stat in class_stats.items():
         auc = stat['auc']
-        if len(classes) > 2: 
+        if len(classes) > 2:
             label=f'AUC {class_label}: {auc:0.4f}'
-        else: 
+        else:
             label=f'AUC: {auc:0.4f}'
         ax[0].plot(stat['fpr'], stat['tpr'], label=label)
-    
+
     ax[0].set_xlim([0.0, 1.0])
     ax[0].set_ylim([0.0, 1.01])
     ax[0].set_xlabel('False Positive Rate')
     ax[0].set_ylabel('True Positive Rate')
     ax[0].legend(loc="lower right")
     ax[0].grid()
-    
+
     ax[1].set_title('Precision vs Recall')
     for class_label, stat in class_stats.items():
         ax[1].plot(stat['recall'], stat['precision'], label=class_label)
@@ -641,7 +643,7 @@ def plot_class_roc(results:dict, output_dir:str, show, logger: logging.Logger):
     if len(classes) > 2:
         ax[1].legend()
     ax[1].grid()
-    
+
 
     if output_dir:
         output_path = output_dir + f'/{name}-class_roc.png'
@@ -660,7 +662,7 @@ def plot_class_roc(results:dict, output_dir:str, show, logger: logging.Logger):
 
 def _retrieve_data(x):
     if isinstance(x, np.ndarray):
-        return x 
+        return x
     if isinstance(x, tf.Tensor):
         return x.numpy()
 
@@ -673,11 +675,11 @@ def _retrieve_data(x):
         max_samples = 10000
 
     for batch_x, _ in x:
-        if len(data) >= max_samples: 
+        if len(data) >= max_samples:
             break
         for sample in batch_x:
-            data.append(sample) 
-            if len(data) >= max_samples: 
+            data.append(sample)
+            if len(data) >= max_samples:
                 break
 
     try:
@@ -691,7 +693,7 @@ def _retrieve_data(x):
 def _save_decoded_image(out_path, orig, decoded, score):
     # pylint: disable=no-member
     try:
-        from cv2 import cv2 
+        from cv2 import cv2
     except:
         try:
             import cv2
@@ -714,8 +716,8 @@ def _save_decoded_image(out_path, orig, decoded, score):
     elif len(shape) == 2 or len(shape) == 3:
         img1 = sklearn.preprocessing.minmax_scale(orig.ravel(), feature_range=(0,255)).reshape(shape)
         img2 = sklearn.preprocessing.minmax_scale(decoded.ravel(), feature_range=(0,255)).reshape(shape)
-        
-        
+
+
         # stack the original and reconstructed image side-by-side
         output = np.hstack([img1, img2])
         outputs = cv2.applyColorMap(output.astype(np.uint8), cv2.COLORMAP_HOT)
@@ -723,10 +725,10 @@ def _save_decoded_image(out_path, orig, decoded, score):
         width = int(outputs.shape[1] * scale_factor)
         height = int(outputs.shape[0] * scale_factor)
         outputs = cv2.resize(outputs, (width, height), interpolation = cv2.INTER_AREA)
-        outputs = cv2.putText(outputs, 
-                            text='Score: {:1.7f}'.format(abs(score)), 
-                            org=(1, 12), 
-                            fontFace=cv2.FONT_HERSHEY_SIMPLEX, 
+        outputs = cv2.putText(outputs,
+                            text='Score: {:1.7f}'.format(abs(score)),
+                            org=(1, 12),
+                            fontFace=cv2.FONT_HERSHEY_SIMPLEX,
                             fontScale=.5,
                             color=(0,255,0))
         cv2.imwrite(out_path, outputs)

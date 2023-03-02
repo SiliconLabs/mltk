@@ -11,7 +11,7 @@ Refer to the [tutorials](../tutorials.md) for end-to-end guides on how to develo
 
 ## Quick Reference
 
-- Command-line: `mltk evaluate --help`
+- Command-line: [mltk evaluate --help](../command_line/evaluate.md)
 - Python API: [evaluate_model](mltk.core.evaluate_model)
 - Python API examples: [evaluate_model.ipynb](../../mltk/examples/evaluate_model.ipynb)
 

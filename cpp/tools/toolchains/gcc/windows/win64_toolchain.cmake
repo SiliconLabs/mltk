@@ -23,7 +23,7 @@ if(NOT TOOLCHAIN_DIR)
     mltk_load_python()
     message(NOTICE "Preparing GCC Windows toolchain (this may take awhile) ...")
     execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_LIST_DIR}/download_toolchain.py --noprogress RESULT_VARIABLE result OUTPUT_VARIABLE output)
-    if(result) 
+    if(result)
       if(output)
         list(GET output 0 _error_file_path)
         if(EXISTS "${_error_file_path}")
@@ -50,7 +50,7 @@ if(NOT CMAKE_MAKE_PROGRAM AND "${CMAKE_GENERATOR}" STREQUAL "Ninja")
     set(_ninja_dir ${CMAKE_CURRENT_LIST_DIR}/../../../utils)
     execute_process(COMMAND ${PYTHON_EXECUTABLE} ${_ninja_dir}/get_ninja_path.py RESULT_VARIABLE result OUTPUT_VARIABLE output)
     list(GET output 0 CMAKE_MAKE_PROGRAM)
-    if(result) 
+    if(result)
       message(FATAL_ERROR "Failed to get path to Ninja executable: ${CMAKE_MAKE_PROGRAM}")
     endif()
     file(WRITE ${ninja_path_file} ${CMAKE_MAKE_PROGRAM})
@@ -130,7 +130,7 @@ macro(mltk_toolchain_add_exe_targets target)
   set(_output_path ${_output_dir}/${target})
 
   target_link_options(${target}
-  PUBLIC 
+  PUBLIC
     -Wl,-Map,${_output_path}.map
   )
 
@@ -138,10 +138,18 @@ macro(mltk_toolchain_add_exe_targets target)
   mltk_get(MLTK_PLATFORM_NAME)
 
   add_custom_command(TARGET ${target}
-    POST_BUILD 
-    COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/utils/update_launch_json.py --name ${target} --path \"${_output_path}\" --platform ${MLTK_PLATFORM_NAME} --workspace \"${CMAKE_SOURCE_DIR}\"
+    POST_BUILD
+    COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/utils/update_launch_json.py --name ${target} --path \"${_output_path}\" --toolchain \"${TOOLCHAIN_DIR}/bin\" --platform windows --workspace \"${CMAKE_SOURCE_DIR}\"
     COMMAND ${CMAKE_SIZE} ${_output_path}.exe
     COMMENT "Application ${target} binary size"
+  )
+
+
+  add_custom_target(${target}_download_run
+    COMMAND ${_output_path}.exe
+    DEPENDS ${_output_path}.exe
+    COMMENT "Running ${target}.exe"
+    USES_TERMINAL
   )
 
 endmacro()

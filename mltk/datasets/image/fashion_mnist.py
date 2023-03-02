@@ -5,7 +5,7 @@ This is a dataset of 60,000 28x28 grayscale images of 10 fashion categories,
 along with a test set of 10,000 images. This dataset can be used as
 a drop-in replacement for MNIST.
 
-The classes are:  
+The classes are:
 
 - T-shirt/top
 - Trouser
@@ -51,6 +51,7 @@ License:
 """
 
 import os
+import logging
 import gzip
 from typing import Tuple
 import numpy as np
@@ -61,52 +62,78 @@ from mltk.core.keras import array_to_img
 
 
 INPUT_SHAPE = (28,28)
+"""The shape of each sample"""
 CLASSES = [
-    'tshirt', 
-    'trouser', 
-    'pullover', 
-    'dress', 
-    'coat', 
-    'sandal', 
-    'shirt', 
-    'sneaker', 
-    'bag', 
+    'tshirt',
+    'trouser',
+    'pullover',
+    'dress',
+    'coat',
+    'sandal',
+    'shirt',
+    'sneaker',
+    'bag',
     'boot'
 ]
+"""Labels for dataset samples"""
 
 
 
-
-def load_data() -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
-    """Download the dataset, extract, load into memory, 
+def load_data(
+    dest_dir:str=None,
+    dest_subdir='datasets/flash_mnist',
+    logger:logging.Logger=None,
+    clean_dest_dir=False
+) -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
+    """Download the dataset, extract, load into memory,
     and return as a tuple of numpy arrays
-    
+
     Returns:
         Tuple of NumPy arrays: ``(x_train, y_train), (x_test, y_test)``
     """
+    if dest_dir:
+        dest_subdir = dest_subdir
+
     y_train_path = download_verify_extract(
         url='https://storage.googleapis.com/tensorflow/tf-keras-datasets/train-labels-idx1-ubyte.gz',
         file_hash='09814CFEF5A041118CEACE42F8DAE995319D331A',
         show_progress=True,
-        extract=False
+        extract=False,
+        dest_dir=dest_dir,
+        dest_subdir=dest_subdir,
+        logger=logger,
+        clean_dest_dir=clean_dest_dir
     )
+
     x_train_path = download_verify_extract(
         url='https://storage.googleapis.com/tensorflow/tf-keras-datasets/train-images-idx3-ubyte.gz',
         file_hash='95978B76B6897F6CA69A25145D01716EFB615989',
         show_progress=True,
-        extract=False
+        extract=False,
+        dest_dir=dest_dir,
+        dest_subdir=dest_subdir,
+        logger=logger,
+        clean_dest_dir=False
     )
     y_test_path = download_verify_extract(
         url='https://storage.googleapis.com/tensorflow/tf-keras-datasets/t10k-labels-idx1-ubyte.gz',
         file_hash='9CAAD14E1AFF9ADAC77D3744963212D36AF15BEE',
         show_progress=True,
-        extract=False
+        extract=False,
+        dest_dir=dest_dir,
+        dest_subdir=dest_subdir,
+        logger=logger,
+        clean_dest_dir=False
     )
     x_test_path = download_verify_extract(
         url='https://storage.googleapis.com/tensorflow/tf-keras-datasets/t10k-images-idx3-ubyte.gz',
         file_hash='5EDDA96C6D8C36FF915115A0E8136D370A021576',
         show_progress=True,
-        extract=False
+        extract=False,
+        dest_dir=dest_dir,
+        dest_subdir=dest_subdir,
+        logger=logger,
+        clean_dest_dir=False
     )
 
     with gzip.open(y_train_path, 'rb') as lbpath:
@@ -125,8 +152,13 @@ def load_data() -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.nda
     return (x_train, y_train), (x_test, y_test)
 
 
-def load_data_directory() -> str:
-    """Download the dataset, extract all sample images to a directory, 
+def load_data_directory(
+    dest_dir:str=None,
+    dest_subdir='datasets/fashion_mnist',
+    logger:logging.Logger=None,
+    clean_dest_dir=False
+) -> str:
+    """Download the dataset, extract all sample images to a directory,
     and return the path to the directory.
 
     Each sample type is extract to its corresponding subdirectory, e.g.:
@@ -134,15 +166,19 @@ def load_data_directory() -> str:
     ~/.mltk/datasets/fashion_mnist/tshirt
     ~/.mltk/datasets/fashion_mnist/dress
     ...
-    
+
     Returns:
         Path to extract directory:
     """
 
-    dataset_dir = f'{create_user_dir()}/datasets/fashion_mnist'
+    if not dest_dir:
+        dataset_dir = f'{create_user_dir()}/{dest_subdir}'
 
-
-    (x_train, y_train), (x_test, y_test) = load_data()
+    (x_train, y_train), (x_test, y_test) = load_data(
+        dest_dir=dest_dir,
+        logger=logger,
+        clean_dest_dir=clean_dest_dir
+    )
     x_samples = np.concatenate((x_train, x_test))
     y_samples = np.concatenate((y_train, y_test))
 

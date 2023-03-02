@@ -7,7 +7,7 @@ from mltk import cli
 
 @cli.root_cli.command('view')
 def view_model_command(
-    model: str = typer.Argument(..., 
+    model: str = typer.Argument(...,
         help='''\b
 One of the following:
 - Path to .tflite model file
@@ -17,10 +17,10 @@ One of the following:
 - Path to MLTK model's python script''',
         metavar='<model>'
     ),
-    tflite: bool = typer.Option(False, '--tflite', 
+    tflite: bool = typer.Option(False, '--tflite',
         help='View the .tflite model file in the MLTK model\'s archive, or if the --build option is given, generate .tflite file before viewing'
     ),
-    build: bool = typer.Option(False, '--build', '-b', 
+    build: bool = typer.Option(False, '--build', '-b',
         help='Build the  model rather than loading from a pre-trained file in the MLTK model archive'
     ),
     host:str = typer.Option(None, '-h', '--host',
@@ -31,14 +31,17 @@ One of the following:
         help='Listen port of HTTP server used to view graph',
         metavar='<port>'
     ),
-    verbose: bool = typer.Option(False, '--verbose', '-v', 
+    verbose: bool = typer.Option(False, '--verbose', '-v',
         help='Enable verbose console logs'
     )
 ):
     """View an interactive graph of the given model in a webbrowser
 
+    \b
     This is based on the utility: https://netron.app
-
+    \b
+    For more details see:
+    https://siliconlabs.github.io/mltk/docs/guides/model_visualizer
     \b
     ----------
      Examples
@@ -70,13 +73,12 @@ One of the following:
 
     try:
         view_model(
-            model=model, 
+            model=model,
             tflite=tflite,
-            build=build, 
-            host=host, 
+            build=build,
+            host=host,
             port=port
         )
     except Exception as e:
         cli.handle_exception('Failed to view model', e)
 
- 

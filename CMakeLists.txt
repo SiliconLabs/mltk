@@ -4,7 +4,7 @@ project(mltk
         DESCRIPTION "Silicon Labs Machine Learning Toolkit"
         LANGUAGES C CXX ASM
 )
-export (PACKAGE mltk) 
+export (PACKAGE mltk)
 
 
 # Cache the MLTK binary build directory
@@ -26,7 +26,7 @@ if("${CMAKE_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR} CACHE INTERNAL "Build output directory")
   set(CMAKE_FIND_PACKAGE_RESOLVE_SYMLINKS ON CACHE INTERNAL "")
   set(CMAKE_INSTALL_LIBDIR ${PROJECT_BINARY_DIR})
-  
+
   if(NOT DEFINED CPM_SOURCE_CACHE)
       set(CPM_SOURCE_CACHE "${CMAKE_CURRENT_LIST_DIR}/cpp/shared" CACHE INTERNAL "CPM cache directory")
   endif()
@@ -35,7 +35,7 @@ else()  # else IF this is being built from an external CMake project
 
   if (DEFINED CACHE{CPM_SOURCE_CACHE})
     set(CPM_SOURCE_CACHE "${CMAKE_CURRENT_LIST_DIR}/cpp/shared") # Update the variable locally if it's already defined in cache
-  else() 
+  else()
     set(CPM_SOURCE_CACHE "${CMAKE_CURRENT_LIST_DIR}/cpp/shared" CACHE INTERNAL "CPM Cache directory")
   endif()
 
@@ -48,6 +48,13 @@ endif()
 if(EXISTS "${MLTK_USER_OPTIONS}" AND NOT MLTK_NO_USER_OPTIONS)
   mltk_info("MLTK_USER_OPTIONS=${MLTK_USER_OPTIONS}")
   include("${MLTK_USER_OPTIONS}")
+endif()
+
+if(MLTK_ADDITIONAL_OPTIONS)
+  mltk_info("MLTK_ADDITIONAL_OPTIONS=${MLTK_ADDITIONAL_OPTIONS}")
+  foreach(option_path IN LISTS MLTK_ADDITIONAL_OPTIONS)
+    include("${option_path}")
+  endforeach()
 endif()
 
 # Set the default MLTK Cmake log level
@@ -71,15 +78,15 @@ mltk_add_platform_package()
 # then automatically include all known packages
 #
 # HINT: To build a Python wrapper:
-# 
+#
 # Create the file <mltk root>/user_options.cmake and add:
 # mltk_set(MLTK_TARGET mltk_audio_feature_generator_wrapper)
 # mltk_set(MLTK_TARGET mltk_tflite_micro_wrapper)
 # or
-# mltk_set(MLTK_TARGET mltk_mvp_wrapper) 
+# mltk_set(MLTK_TARGET mltk_mvp_wrapper)
 #
 # OR:
-# To the CMake build string, add: 
+# To the CMake build string, add:
 # MLTK_TARGET=mltk_audio_feature_generator_wrapper
 # MLTK_TARGET=mltk_tflite_micro_wrapper
 # or

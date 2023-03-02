@@ -5,8 +5,8 @@ This is a dataset of 50,000 32x32 color training images and 10,000 test
 images, labeled over 10 categories. See more info at the
 `CIFAR homepage <https://www.cs.toronto.edu/~kriz/cifar.html>`_
 
-The classes are:   
- 
+The classes are:
+
 - airplane
 - automobile
 - bird
@@ -18,24 +18,8 @@ The classes are:
 - ship
 - truck
 
-Returns:
-  Tuple of NumPy arrays: ``(x_train, y_train), (x_test, y_test)``.
-
-**x_train**: uint8 NumPy array of grayscale image data with shapes
-  ``(50000, 32, 32, 3)``, containing the training data. Pixel values range
-  from 0 to 255.
-
-**y_train**: uint8 NumPy array of labels (integers in range 0-9)
-  with shape ``(50000, 1)`` for the training data.
-
-**x_test**: uint8 NumPy array of grayscale image data with shapes
-  (10000, 32, 32, 3), containing the test data. Pixel values range
-  from 0 to 255.
-
-**y_test**: uint8 NumPy array of labels (integers in range 0-9)
-  with shape ``(10000, 1)`` for the test data.
-
-Example:
+Example
+------------
 
 .. code-block::
 
@@ -51,6 +35,7 @@ import os
 from typing import Tuple
 import numpy as np
 import pickle
+import logging
 
 from tensorflow.keras import backend
 from mltk.utils.archive_downloader import download_verify_extract
@@ -61,35 +46,65 @@ from mltk.core.keras import array_to_img
 
 
 INPUT_SHAPE = (32,32,3)
-CLASSES = [ 
-  'airplane', 
-  'automobile', 
-  'bird', 
-  'cat', 
-  'deer', 
-  'dog', 
-  'frog', 
-  'horse', 
-  'ship', 
+CLASSES = [
+  'airplane',
+  'automobile',
+  'bird',
+  'cat',
+  'deer',
+  'dog',
+  'frog',
+  'horse',
+  'ship',
   'truck'
 ]
+DOWNLOAD_URL = 'https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz'
+"""Public download URL"""
+VERIFY_SHA1 = '6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce'
+"""SHA1 hash of archive file"""
 
 
-
-def load_data() -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
-    """Download the dataset, extract, load into memory, 
+def load_data(
+    dest_dir:str=None,
+    dest_subdir='datasets/cifar10',
+    logger:logging.Logger=None,
+    clean_dest_dir=False
+) -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]]:
+    """Download the dataset, extract, load into memory,
     and return as a tuple of numpy arrays
-    
+
     Returns:
         Tuple of NumPy arrays: ``(x_train, y_train), (x_test, y_test)``
+
+        **x_train**: uint8 NumPy array of grayscale image data with shapes
+        ``(50000, 32, 32, 3)``, containing the training data. Pixel values range
+        from 0 to 255.
+
+        **y_train**: uint8 NumPy array of labels (integers in range 0-9)
+        with shape ``(50000, 1)`` for the training data.
+
+        **x_test**: uint8 NumPy array of grayscale image data with shapes
+        (10000, 32, 32, 3), containing the test data. Pixel values range
+        from 0 to 255.
+
+        **y_test**: uint8 NumPy array of labels (integers in range 0-9)
+        with shape ``(10000, 1)`` for the test data.
+
+
     """
 
+    if dest_dir:
+        dest_subdir = None
+
     path = download_verify_extract(
-        url='https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz',
-        dest_subdir='datasets/cifar10',
-        file_hash='6d958be074577803d12ecdefd02955f39262c83c16fe9348329d7fe0b5c001ce',
+        url=DOWNLOAD_URL,
+        file_hash=VERIFY_SHA1,
         show_progress=True,
-        remove_root_dir=True
+        remove_root_dir=True,
+        dest_dir=dest_dir,
+        dest_subdir=dest_subdir,
+        clean_dest_dir=clean_dest_dir,
+        logger=logger
     )
     num_train_samples = 50000
 
@@ -118,8 +133,13 @@ def load_data() -> Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray, np.nda
 
 
 
-def load_data_directory() -> str:
-    """Download the dataset, extract all sample images to a directory, 
+def load_data_directory(
+    dest_dir:str=None,
+    dest_subdir='datasets/cifar10',
+    logger:logging.Logger=None,
+    clean_dest_dir=False
+) -> str:
+    """Download the dataset, extract all sample images to a directory,
     and return the path to the directory.
 
     Each sample type is extract to its corresponding subdirectory, e.g.:
@@ -127,15 +147,20 @@ def load_data_directory() -> str:
     ~/.mltk/datasets/cifar10/airplane
     ~/.mltk/datasets/cifar10/automobile
     ...
-    
+
     Returns:
         Path to extract directory:
     """
 
-    dataset_dir = f'{create_user_dir()}/datasets/cifar10'
+    if not dest_dir:
+        dataset_dir = f'{create_user_dir()}/{dest_subdir}'
 
 
-    (x_train, y_train), (x_test, y_test) = load_data()
+    (x_train, y_train), (x_test, y_test) = load_data(
+        dest_dir=dest_dir,
+        logger=logger,
+        clean_dest_dir=clean_dest_dir
+    )
     x_samples = np.concatenate((x_train, x_test))
     y_samples = np.concatenate((y_train, y_test))
 

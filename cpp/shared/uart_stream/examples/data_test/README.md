@@ -38,7 +38,7 @@ which will build the firmware application and program it to the development boar
 4 ) Run the Python script (from the MLTK Python virtual environment):
 
 ```
-python data_example.py
+python data_test.py
 ```
 
 This will stream and verify data transferred between the dev board and Python script

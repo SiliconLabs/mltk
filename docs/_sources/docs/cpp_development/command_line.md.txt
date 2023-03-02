@@ -12,26 +12,28 @@ Before we can build MLTK applications, we need to install a few tools first:
 ### 0) Setup OS
 
 ```{eval-rst}
-.. tabbed:: Windows
+.. tab-set::
 
-   If you're on Windows, enable `long file paths`:
-   https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=registry
+   .. tab-item:: Windows
 
-   Also install the Visual Studio C++ compiler (this is needed to build some of the 3rd party Python packages for Python 3.10):
-   https://visualstudio.microsoft.com/visual-cpp-build-tools/
+      If you're on Windows, enable `long file paths`:
+      https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation?tabs=registry
 
-   Be sure to check the **Desktop Development with C++** workload in the installer GUI.
+      Also install the Visual Studio C++ compiler (this is needed to build some of the 3rd party Python packages for Python 3.10):
+      https://visualstudio.microsoft.com/visual-cpp-build-tools/
 
-.. tabbed:: Linux
+      Be sure to check the **Desktop Development with C++** workload in the installer GUI.
 
-   If you're on Linux, run the following command to install the necessary packages: 
+   .. tab-item:: Linux
 
-   .. code-block:: shell
+      If you're on Linux, run the following command to install the necessary packages: 
 
-      sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-      sudo add-apt-repository -y ppa:deadsnakes/ppa
-      sudo apt update
-      sudo apt-get -y install build-essential g++-9 cmake ninja-build gdb p7zip-full git-lfs python3-dev python3-venv libusb-1.0-0 libgl1
+      .. code-block:: shell
+
+         sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+         sudo add-apt-repository -y ppa:deadsnakes/ppa
+         sudo apt update
+         sudo apt-get -y install build-essential g++-9 cmake ninja-build gdb p7zip-full git-lfs python3-dev python3-venv libusb-1.0-0 libgl1
 
 ```
 

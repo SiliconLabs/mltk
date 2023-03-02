@@ -113,6 +113,8 @@ def _run_with_line_processing(p:subprocess.Popen, outfile, line_processor):
     saved_terminators = None
 
     if outfile is not None:
+        # The shell command already prints line terminators
+        # So we do not need to include them in the log prints
         if hasattr(outfile, 'set_terminator'):
             saved_terminators = outfile.set_terminator('')
 

@@ -1,12 +1,13 @@
 from .commander import (
     DeviceInfo,
     issue_command,
-    program_flash, 
+    program_flash,
     reset_device,
     masserse_device,
     get_commander_settings,
     get_device_from_platform,
     query_platform,
-    retrieve_device_info
-) 
+    retrieve_device_info,
+    set_adapter_info
+)
 from .download import download_commander

@@ -113,7 +113,7 @@ Refer to the online [documentation](https://docs.silabs.com/gecko-platform/lates
 ### via CMake
 
 The model can also be updated when building this application from [Visual Studio Code](https://siliconlabs.github.io/mltk/docs/cpp_development/vscode.html)
-or the CMake [Command Line](https://siliconlabs.github.io/mltk/docs/command_line.html).
+or the CMake [Command Line](https://siliconlabs.github.io/mltk/docs/command_line/index.html).
 
 To update the model, create/modify the file: `<mltk repo root>/user_options.cmake`
 and add:

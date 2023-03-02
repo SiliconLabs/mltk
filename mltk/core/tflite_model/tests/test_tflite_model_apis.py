@@ -6,8 +6,8 @@ import numpy as np
 
 
 from mltk.core import (
-    TfliteModel, 
-    TfliteTensor, 
+    TfliteModel,
+    TfliteTensor,
     TfliteOpCode,
     TfliteConv2dLayer,
     TfliteDepthwiseConv2dLayer,
@@ -76,7 +76,7 @@ def test_n_inputs_api():
 
 def test_n_outputs_api():
     tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
-    assert tflite_model.n_outputs == 1 
+    assert tflite_model.n_outputs == 1
 
 def test_inputs_api():
     tflite_model = TfliteModel.load_flatbuffer_file(IMAGE_CLASSIFICATION_TFLITE_PATH)
@@ -146,7 +146,7 @@ def test_layer_api():
     assert layer_0.name == 'op0-conv_2d'
     assert layer_0.opcode == TfliteOpCode.CONV_2D
     assert layer_0.opcode_str == 'conv_2d'
-    options = layer_0.options 
+    options = layer_0.options
     assert isinstance(options, TfliteConv2DLayerOptions)
     assert len(layer_0.inputs) == 3
     assert layer_0.n_inputs == 3
@@ -325,7 +325,7 @@ def test_predict_single_sample():
         y = tflite_model.predict(x)
     except ModuleNotFoundError as e:
         print(f'WARN: Failed to import tensorflow, err: {e}')
-        return 
+        return
 
     assert y.dtype == np.int8
     assert len(y) == 10
@@ -338,7 +338,7 @@ def test_predict_multi_sample():
         y = tflite_model.predict(x)
     except ModuleNotFoundError as e:
         print(f'WARN: Failed to import tensorflow, err: {e}')
-        return 
+        return
 
     assert y.dtype == np.int8
     assert len(y.shape) == 2
@@ -352,10 +352,10 @@ def test_predict_generator():
     class _Iterator:
         def __init__(self):
             self.i = -1
-        
+
         def __iter__(self):
             self.i = 0
-            return self 
+            return self
 
         def __next__(self):
             if self.i >= 3:
@@ -369,12 +369,12 @@ def test_predict_generator():
         y = tflite_model.predict(_Iterator())
     except ModuleNotFoundError as e:
         print(f'WARN: Failed to import tensorflow, err: {e}')
-        return 
+        return
 
     assert y.dtype == np.int8
     assert len(y.shape) == 2
     assert y.shape[0] == 9
-    assert y.shape[1] == 10 
+    assert y.shape[1] == 10
 
 
 def test_predict_generator_float32_input():
@@ -383,10 +383,10 @@ def test_predict_generator_float32_input():
     class _Iterator:
         def __init__(self):
             self.i = -1
-        
+
         def __iter__(self):
             self.i = 0
-            return self 
+            return self
 
         def __next__(self):
             if self.i >= 3:
@@ -400,12 +400,12 @@ def test_predict_generator_float32_input():
         y = tflite_model.predict(_Iterator())
     except ModuleNotFoundError as e:
         print(f'WARN: Failed to import tensorflow, err: {e}')
-        return 
+        return
 
     assert y.dtype == np.int8
     assert len(y.shape) == 2
     assert y.shape[0] == 9
-    assert y.shape[1] == 10 
+    assert y.shape[1] == 10
 
 
 def test_predict_generator_float32_output():
@@ -414,10 +414,10 @@ def test_predict_generator_float32_output():
     class _Iterator:
         def __init__(self):
             self.i = -1
-        
+
         def __iter__(self):
             self.i = 0
-            return self 
+            return self
 
         def __next__(self):
             if self.i >= 3:
@@ -431,12 +431,12 @@ def test_predict_generator_float32_output():
         y = tflite_model.predict(_Iterator(), y_dtype=np.float32)
     except ModuleNotFoundError as e:
         print(f'WARN: Failed to import tensorflow, err: {e}')
-        return 
+        return
 
     assert y.dtype == np.float32
     assert len(y.shape) == 2
     assert y.shape[0] == 9
-    assert y.shape[1] == 10 
+    assert y.shape[1] == 10
 
 
 def test_predict_float32_input():
@@ -447,7 +447,7 @@ def test_predict_float32_input():
         y = tflite_model.predict(x)
     except ModuleNotFoundError as e:
         print(f'WARN: Failed to import tensorflow, err: {e}')
-        return 
+        return
 
     assert y.dtype == np.int8
     assert len(y) == 10
@@ -460,7 +460,7 @@ def test_predict_float32_output():
         y = tflite_model.predict(x, y_dtype=np.float32)
     except ModuleNotFoundError as e:
         print(f'WARN: Failed to import tensorflow, err: {e}')
-        return 
+        return
 
     assert y.dtype == np.float32
     assert len(y) == 10
@@ -473,7 +473,7 @@ def test_predict_float32_input_and_output():
         y = tflite_model.predict(x, y_dtype=np.float32)
     except ModuleNotFoundError as e:
         print(f'WARN: Failed to import tensorflow, err: {e}')
-        return 
+        return
 
     assert y.dtype == np.float32
     assert len(y) == 10
@@ -489,7 +489,7 @@ def test_predict_different_batch_sizes():
         y2 = tflite_model.predict(x2)
     except ModuleNotFoundError as e:
         print(f'WARN: Failed to import tensorflow, err: {e}')
-        return 
+        return
 
     assert y1.dtype == np.int8
     assert len(y1) == 10
@@ -505,7 +505,7 @@ def test_load_corrupt_tflite():
         TfliteModel(bogus_tflite)
     except Exception as e:
         assert isinstance(e, RuntimeError)
-        return 
+        return
 
     assert False, 'Failed to detect corrupt tflite file'
 
@@ -560,7 +560,7 @@ def test_conv2d_params():
         expected_params['per_channel_shift'] = np.frombuffer(expected_params['per_channel_shift'], dtype=np.int32)
 
         calc_params = tf_layer.params
-    
+
         assert calc_params.padding.value == expected_params['padding_type']
         assert calc_params.padding.width == expected_params['padding_width']
         assert calc_params.padding.height == expected_params['padding_height']
@@ -595,7 +595,7 @@ def test_depthwise_conv2d_params():
         expected_params['per_channel_shift'] = np.frombuffer(expected_params['per_channel_shift'], dtype=np.int32)
 
         calc_params = tf_layer.params
-    
+
         assert calc_params.depth_multiplier == expected_params['depth_multiplier']
         assert calc_params.padding.value == expected_params['padding_type']
         assert calc_params.padding.width == expected_params['padding_width']
@@ -628,7 +628,7 @@ def test_fully_connected_params():
 
         expected_params = recorded_data.metadata['params']
         calc_params = tf_layer.params
-    
+
         assert calc_params.input_offset == expected_params['input_offset']
         assert calc_params.weights_offset == expected_params['weights_offset']
         assert calc_params.output_offset == expected_params['output_offset']
@@ -653,7 +653,7 @@ def test_average_pool_params():
 
         expected_params = recorded_data.metadata['params']
         calc_params = tf_layer.params
-    
+
         assert calc_params.padding.value == expected_params['padding_type']
         assert calc_params.padding.width == expected_params['padding_width']
         assert calc_params.padding.height == expected_params['padding_height']
@@ -666,7 +666,7 @@ def test_max_pool_params():
     from mltk.core.tflite_micro import TfliteMicro
     from mltk.core import load_tflite_model
 
-    tflite_model = load_tflite_model('keyword_spotting_on_off')
+    tflite_model = load_tflite_model('keyword_spotting_on_off_v2')
     recorded_layers = TfliteMicro.record_model(tflite_model.path)
 
     for layer_index, recorded_data in enumerate(recorded_layers):
@@ -677,7 +677,7 @@ def test_max_pool_params():
 
         expected_params = recorded_data.metadata['params']
         calc_params = tf_layer.params
-    
+
         assert calc_params.padding.value == expected_params['padding_type']
         assert calc_params.padding.width == expected_params['padding_width']
         assert calc_params.padding.height == expected_params['padding_height']

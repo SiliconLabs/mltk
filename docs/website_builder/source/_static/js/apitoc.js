@@ -12,7 +12,7 @@ $(function (){
         return;
     }
 
-    var props, methods, funcs;
+    var props, methods, funcs, variables;
     headings.each((index) => {
         var element = headings[index];
         if(element.innerText == 'Properties') {
@@ -21,6 +21,8 @@ $(function (){
             methods = $(element.nextElementSibling).find('a');
         } else if(element.innerText == 'Functions') {
             funcs = $(element.nextElementSibling).find('a');
+        } else if(element.innerText == 'Variables') {
+            variables = $(element.nextElementSibling).find('a');
         }
     });
 
@@ -33,7 +35,8 @@ $(function (){
         return toks[toks.length-1].trim();
     }
 
-    if(props) {
+    if(props && !window._added_props) {
+        window._added_props = true;
         var s = '<li class="md-nav__item"><label class="md-nav__title" style="padding-top:30px">Properties</label>' +
         '<nav class="md-nav"><ul class="md-nav__list">';
         props.each(index => {
@@ -44,7 +47,8 @@ $(function (){
         localtoc.append($($.parseHTML(s)));
     }
 
-    if(methods) {
+    if(methods && !window._added_methods) {
+        window._added_methods = true;
         var s = '<li class="md-nav__item"><label class="md-nav__title" style="padding-top:30px">Methods</label>' +
         '<nav class="md-nav"><ul class="md-nav__list">';
         methods.each(index => {
@@ -55,7 +59,20 @@ $(function (){
         localtoc.append($($.parseHTML(s)))
     }
 
-    if(funcs) {
+    if(variables && !window._added_variables) {
+        window._added_variables = true;
+        var s = '<li class="md-nav__item"><label class="md-nav__title" style="padding-top:30px">Variables</label>' +
+        '<nav class="md-nav"><ul class="md-nav__list">';
+        variables.each(index => {
+            var element = variables[index];
+            s += `<li class="md-nav__item"><a href="${getHref(element)}" class="md-nav__link">${getTitle(element)}</a></li>`
+        })
+        s += '</ul></nav></li>';
+        localtoc.append($($.parseHTML(s)))
+    }
+
+    if(funcs && !window._added_funcs) {
+        window._added_funcs = true;
         var s = '<li class="md-nav__item"><label class="md-nav__title" style="padding-top:30px">Functions</label>' +
         '<nav class="md-nav"><ul class="md-nav__list">';
         funcs.each(index => {
@@ -66,5 +83,9 @@ $(function (){
         localtoc.append($($.parseHTML(s)))
     }
 
+    if(!window._remove_toc && (window._added_props || window._added_methods || window._added_variables || window._added_funcs)) {
+        window._remove_toc = true;
+        localtoc.children().first().remove();
+    }
 
 });

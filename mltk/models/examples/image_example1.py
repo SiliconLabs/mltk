@@ -4,7 +4,7 @@
 - Source code: `image_example1.py <https://github.com/siliconlabs/mltk/blob/master/mltk/models/examples/image_example1.py>`_
 - Pre-trained model: `image_example1.mltk.zip <https://github.com/siliconlabs/mltk/blob/master/mltk/models/examples/image_example1.mltk.zip>`_
 
-This provides an example of how to define a classification model 
+This provides an example of how to define a classification model
 that uses the Rock/Paper/Scissors dataset with the ParallelImageGenerator as its data source.
 
 The basic flow for the ML model is:
@@ -12,7 +12,7 @@ The basic flow for the ML model is:
 ``96x96x1 grayscale image of hand gesture -> ML Model -> [result vector]``
 
 
-Where `[result vector]` is a 3 element array with each element containing the % probability that the 
+Where `[result vector]` is a 3 element array with each element containing the % probability that the
 given image is a "rock", "paper", or "scissor" hand gesture.
 
 
@@ -49,9 +49,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize image_example1 --tflite
-    
+
     +-------+-----------------+-------------------+-----------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)          | Output(s)       | Config                                              |
     +-------+-----------------+-------------------+-----------------+-----------------------------------------------------+
@@ -93,7 +93,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile image_example1 --device --accelerator MVP
 
@@ -140,7 +140,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view image_example1 --tflite
 
 .. raw:: html
@@ -153,14 +153,22 @@ Model Diagram
     </div>
 
 
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/examples/image_example1.py
+    :language: python
+    :lines: 167-
+
 """
 
 # Bring in the required Keras classes
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (
-    Dense, 
-    Activation, 
-    Flatten, 
+    Dense,
+    Activation,
+    Flatten,
     BatchNormalization,
     Conv2D,
     AveragePooling2D
@@ -182,9 +190,9 @@ from mltk.datasets.image import rock_paper_scissors_v1
 # - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    mltk_core.MltkModel, 
-    mltk_core.TrainMixin, 
-    mltk_core.ImageDatasetMixin, 
+    mltk_core.MltkModel,
+    mltk_core.TrainMixin,
+    mltk_core.ImageDatasetMixin,
     mltk_core.EvaluateClassifierMixin
 ):
     pass
@@ -193,7 +201,7 @@ my_model = MyModel()
 
 #################################################
 # General Settings
-# 
+#
 my_model.version = 1
 my_model.description = 'Image classifier example for detecting Rock/Paper/Scissors hand gestures in images'
 
@@ -209,13 +217,13 @@ my_model.loss = 'categorical_crossentropy'
 #################################################
 # Training callback Settings
 
-# Generate a training weights .h5 whenever the 
+# Generate a training weights .h5 whenever the
 # val_accuracy improves
 my_model.checkpoint['monitor'] =  'val_accuracy'
 
 
 # https://keras.io/api/callbacks/reduce_lr_on_plateau/
-# If the test loss doesn't improve after 'patience' epochs 
+# If the test loss doesn't improve after 'patience' epochs
 # then decrease the learning rate by 'factor'
 my_model.reduce_lr_on_plateau = dict(
   monitor='loss',
@@ -226,7 +234,7 @@ my_model.reduce_lr_on_plateau = dict(
 
 # If the validation accuracy doesn't improve after 35 epochs then stop training
 # https://keras.io/api/callbacks/early_stopping/
-my_model.early_stopping = dict( 
+my_model.early_stopping = dict(
   monitor = 'val_accuracy',
   patience = 35
 )
@@ -270,7 +278,7 @@ my_model.class_weights = 'balanced'
 my_model.datagen = ParallelImageDataGenerator(
     cores=0.3,
     debug=False,
-    max_batches_pending=8, 
+    max_batches_pending=8,
     validation_split= 0.1,
     validation_augmentation_enabled=False,
     rotation_range=35,
@@ -293,8 +301,8 @@ my_model.datagen = ParallelImageDataGenerator(
 def my_model_builder(model: MyModel):
     keras_model = Sequential(name=my_model.name)
 
-    keras_model.add(Conv2D(24, strides=(2,2), 
-                            kernel_size=3, use_bias=True, padding='same', 
+    keras_model.add(Conv2D(24, strides=(2,2),
+                            kernel_size=3, use_bias=True, padding='same',
                             activation='relu', input_shape=model.input_shape))
     keras_model.add(AveragePooling2D(pool_size=(2,2), strides=(2,2), padding='valid'))
     keras_model.add(Conv2D(16, strides=(2,2), kernel_size=3, use_bias=True, padding='valid', activation='relu'))
@@ -307,8 +315,8 @@ def my_model_builder(model: MyModel):
     keras_model.add(Activation('softmax'))
 
     keras_model.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
 
@@ -328,7 +336,7 @@ def datagen_dump_custom_command(
     ),
 ):
     """Custom command to dump the augmented samples
-    
+
     \b
     Invoke this command with:
     mltk custom image_example1 datagen_dump --count 20
@@ -345,7 +353,7 @@ def datagen_dump_custom_command(
     for i, _ in enumerate(my_model.x):
         if i >= count:
             break
-    
+
     my_model.unload_dataset()
 
     print(f'Generated data dump to: {my_model.datagen.save_to_dir}')
@@ -355,7 +363,7 @@ def datagen_dump_custom_command(
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python image_example1.py
 #
 # Note that this has the same functionality as:

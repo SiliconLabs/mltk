@@ -16,7 +16,7 @@ The MLTK features the command: `mltk tensorboard` which internally invokes the T
 
 ## Quick Reference
 
-- Command-line: `mltk tensorboard --help`
+- Command-line: [mltk tensorboard --help](../command_line/tensorboard.md)
 - Tensorboard documentation: [Tensorboard](https://www.tensorflow.org/tensorboard)
 
 

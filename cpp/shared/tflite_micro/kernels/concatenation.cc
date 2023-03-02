@@ -1,4 +1,4 @@
-/* Copyright 2019 The TensorFlow Authors. All Rights Reserved.
+/* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ limitations under the License.
 #include "tensorflow/lite/kernels/internal/types.h"
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
+#include "tensorflow/lite/micro/micro_log.h"
 
 namespace tflite {
-namespace ops {
-namespace micro {
-namespace concatenation {
+
+namespace {
 
 //constexpr int kMaxInputNum = 10;  // Maximum number of input tensors
 constexpr int kOutputTensor = 0;
@@ -169,9 +169,9 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   // Check activation and input type
   TF_LITE_ENSURE_EQ(context, params->activation, kTfLiteActNone);
   TF_LITE_ENSURE(context,
-                 input_type == kTfLiteFloat32 || input_type == kTfLiteUInt8 ||
-                     input_type == kTfLiteInt8 || input_type == kTfLiteInt16 ||
-                     input_type == kTfLiteInt32 || input_type == kTfLiteInt64);
+                 input_type == kTfLiteFloat32 || input_type == kTfLiteInt8 ||
+                     input_type == kTfLiteInt16 || input_type == kTfLiteInt32 ||
+                     input_type == kTfLiteInt64 || input_type == kTfLiteBool);
 
   // Output type must match input type
   TF_LITE_ENSURE_EQ(context, output_type, input_type);
@@ -219,7 +219,6 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
       data->params.inputs_count = node->inputs->size;
       break;
     }
-    case kTfLiteUInt8:
     case kTfLiteInt8: {
       data->params.axis = CalculatePositiveAxis(params->axis, output);
       data->params.inputs_count = node->inputs->size;
@@ -249,9 +248,8 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
       break;
     }
     default:
-      TF_LITE_KERNEL_LOG(
-          context, "Op Concatenation does not currently support Type '%s'.",
-          TfLiteTypeGetName(output_type));
+      MicroPrintf("Op Concatenation does not currently support Type '%s'.",
+                  TfLiteTypeGetName(output_type));
       return kTfLiteError;
   }
 
@@ -273,9 +271,6 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
     case kTfLiteInt32:
       EvalUnquantized<int32_t>(context, node);
       break;
-    // case kTfLiteUInt8:
-    //   EvalQuantizedUInt8(context, node);
-    //   break;
     case kTfLiteInt8:
       EvalUnquantized<int8_t>(context, node);
       break;
@@ -285,30 +280,23 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
     case kTfLiteInt16:
       EvalUnquantized<int16_t>(context, node);
       break;
+    case kTfLiteBool:
+      EvalUnquantized<bool>(context, node);
+      break;
 
     default:
-      TF_LITE_KERNEL_LOG(
-          context, "Op Concatenation does not currently support Type '%s'.",
-          TfLiteTypeGetName(output_type));
+      MicroPrintf("Op Concatenation does not currently support Type '%s'.",
+                  TfLiteTypeGetName(output_type));
       return kTfLiteError;
   }
 
   return kTfLiteOk;
 }
 
-}  // namespace concatenation
+}  // namespace
 
 TfLiteRegistration Register_CONCATENATION() {
-  return {/*init=*/concatenation::Init,
-          /*free=*/nullptr,
-          /*prepare=*/concatenation::Prepare,
-          /*invoke=*/concatenation::Eval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(Init, Prepare, Eval);
 }
 
-}  // namespace micro
-}  // namespace ops
 }  // namespace tflite

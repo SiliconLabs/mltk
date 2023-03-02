@@ -80,6 +80,9 @@ In this case, ONLY the .tflite will be programmed and the existing fingerprint_a
     must be connected connected to the development board.
     Refer to the online documentation for how to connect it to the development:
     https://siliconlabs.github.io/mltk/docs/cpp_development/examples/fingerprint_authenticator.html#hardware-setup
+    \b
+    For more details, ee:
+    https://siliconlabs.github.io/mltk/mltk/tutorials/fingerprint_authentication
     """
     # Import all required packages here instead of at top
     # to help improve the CLI's responsiveness

@@ -18,39 +18,23 @@ PUBLIC
 )
 
 
-target_sources(${PROJECT_NAME}  
+target_sources(${PROJECT_NAME}
 PRIVATE
-    sl_system_init.c
     sl_simple_led_instances.c
     sl_led.c
     em_cmu.c
 )
 
-if(HOST_OS_IS_WINDOWS)
-    target_sources(${PROJECT_NAME}  
-    PRIVATE
-        sl_sleeptimer_windows.c
-    )
-elseif(HOST_OS_IS_LINUX)
-    target_sources(${PROJECT_NAME}  
-    PRIVATE
-        sl_sleeptimer_linux.c
-    )
-else()
-    mltk_error("Host OS is not currently supported")
-endif()
-
-
 mltk_get(MLTK_CPU_CLOCK)
 target_compile_definitions(${PROJECT_NAME}
-PRIVATE 
+PRIVATE
     MLTK_CPU_CLOCK=${MLTK_CPU_CLOCK}
 )
 
 
 target_link_libraries(${PROJECT_NAME}
-PUBLIC 
+PUBLIC
     mltk::gecko_sdk::includes
-PRIVATE 
+PRIVATE
     ${MLTK_PLATFORM}
 )

@@ -1,28 +1,38 @@
-import os 
-import gzip 
+import os
+import gzip
 import shutil
 
 from .path import create_tempdir
 
 
 def upload_file(
-    src_path: str, 
-    api_token:str, 
-    dst_path: str = None, 
+    src_path: str,
+    api_token:str,
+    dst_path: str = None,
     dst_subdir:str = None,
-    compress=False
+    compress=False,
+    app_key:str=None,
+    app_secret:str=None,
+    refresh_token:str=None,
 ) -> str:
     """Upload a file to dropbox and return a downloadable link to it
 
     This requires a Dropbox "App", for more details see:
     https://www.dropbox.com/developers/reference/getting-started#overview
-    
+
+    Also see:
+    https://www.dropboxforum.com/t5/Dropbox-API-Support-Feedback/Get-refresh-token-from-access-token/td-p/596739
+
+    For how to get a long lasting api_token.
+
     Args:
         src_path: File path of source file
         api_token: Dropbox API token
         dst_path: File path on dropbox (relative to App folder), if omitted use basename of src_path
         dst_subdir: Subdirectory of file path on dropbox (relative to App folder), only used if dst_path is None
         compress: GZIP compress the source file before uploading, dst file automatically gets a .gz extension
+        app_key: The application "key"
+        app_secret: The application "secret"
     Returns:
         Public download link to file on Dropbox
     """
@@ -31,7 +41,12 @@ def upload_file(
     except Exception:
         raise RuntimeError('Failed import dropbox Python package, try running: pip install dropbox')
 
-    d = dropbox.Dropbox(api_token)
+    d = dropbox.Dropbox(
+        app_key=app_key,
+        app_secret=app_secret,
+        oauth2_access_token=api_token,
+        oauth2_refresh_token=refresh_token,
+    )
 
     if not dst_path:
         dst_subdir = '' if dst_subdir is None else f'{dst_subdir}/'

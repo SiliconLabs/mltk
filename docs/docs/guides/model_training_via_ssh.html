@@ -58,26 +58,22 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>Model Training via SSH &#8212; MLTK 0.14.0 documentation</title>
+    <title>Model Training via SSH &#8212; MLTK 0.15.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
     <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
     <script src="../../_static/clipboard.min.js"></script>
     <script src="../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../_static/design-tabs.js"></script>
     <script src="../../_static/js/custom.js"></script>
     <script src="../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../_static/favicon.ico"/>
@@ -108,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../index.html" title="MLTK 0.14.0 documentation"
+        <a href="../../index.html" title="MLTK 0.15.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../_static/logo.png"
-                   alt="MLTK 0.14.0 documentation logo">
+                   alt="MLTK 0.15.0 documentation logo">
           
         </a>
       </div>
@@ -132,7 +128,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" action="../../search.html" method="get" name="search">
-      <input type="text" class="md-search__input" name="q" placeholder="Search"
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
              autocapitalize="off" autocomplete="off" spellcheck="false"
              data-md-component="query" data-md-state="active">
       <label class="md-icon md-search__icon" for="__search"></label>
@@ -203,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
+    <a href="../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../index.html"
-       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -259,7 +255,7 @@
     <li class="md-nav__item">
     
     
-      <a href="../command_line.html" class="md-nav__link">Command-Line</a>
+      <a href="../command_line/index.html" class="md-nav__link">Command-Line</a>
       
     
     </li>
@@ -364,6 +360,8 @@
         <li class="md-nav__item"><a href="#download-files" class="md-nav__link">Download Files</a>
         </li>
         <li class="md-nav__item"><a href="#shutdown-commands" class="md-nav__link">Shutdown Commands</a>
+        </li>
+        <li class="md-nav__item"><a href="#sync-local-mltk" class="md-nav__link">Sync Local MLTK</a>
         </li></ul>
             </nav>
         </li>
@@ -662,6 +660,8 @@
         <li class="md-nav__item"><a href="#download-files" class="md-nav__link">Download Files</a>
         </li>
         <li class="md-nav__item"><a href="#shutdown-commands" class="md-nav__link">Shutdown Commands</a>
+        </li>
+        <li class="md-nav__item"><a href="#sync-local-mltk" class="md-nav__link">Sync Local MLTK</a>
         </li></ul>
             </nav>
         </li>
@@ -737,19 +737,19 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <section id="model-training-via-ssh">
-<h1 id="docs-guides-model-training-via-ssh--page-root">Model Training via SSH<a class="headerlink" href="#docs-guides-model-training-via-ssh--page-root" title="Permalink to this headline">¶</a></h1>
+<h1 id="docs-guides-model-training-via-ssh--page-root">Model Training via SSH<a class="headerlink" href="#docs-guides-model-training-via-ssh--page-root" title="Permalink to this heading">¶</a></h1>
 <p>This describes how to train a machine learning model on a remote machine via <a class="reference external" href="https://en.wikipedia.org/wiki/Secure_Shell">SSH</a>.
 This is useful as it allows for developing a model on a local, resource-constrained machine and then seamlessly train
 the model on a much larger remote “cloud” server.</p>
 <section id="quick-reference">
-<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permalink to this headline">¶</a></h2>
+<h2 id="quick-reference">Quick Reference<a class="headerlink" href="#quick-reference" title="Permalink to this heading">¶</a></h2>
 <ul class="simple">
-<li><p>Command-line: <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">ssh</span> <span class="pre">--help</span></code></p></li>
+<li><p>Command-line: <a class="reference internal" href="../command_line/ssh.html"><span class="doc std std-doc">mltk ssh –help</span></a></p></li>
 <li><p>Tutorial: <a class="reference internal" href="../../mltk/tutorials/cloud_training_with_vast_ai.html"><span class="doc std std-doc">Cloud Training with vast.ai</span></a></p></li>
 </ul>
 </section>
 <section id="overview">
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permalink to this heading">¶</a></h2>
 <p>The MLTK features the command: <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">ssh</span></code> which internally manages all of the details necessary to execute an MLTK command on a remote machine.</p>
 <p>The basic flow for training a model in the cloud is as as follows:<br/>
 <img alt="" src="../../_images/model_training_via_ssh.png"/></p>
@@ -764,7 +764,7 @@ b. Upload all necessary files to the remote machine</p></li>
 <p>So basically, develop the model on the local machine, quickly train it on a cloud machine, and all training results appear on the local machine as if the model had been trained locally.</p>
 </section>
 <section id="ssh-connection">
-<h2 id="ssh-connection">SSH Connection<a class="headerlink" href="#ssh-connection" title="Permalink to this headline">¶</a></h2>
+<h2 id="ssh-connection">SSH Connection<a class="headerlink" href="#ssh-connection" title="Permalink to this heading">¶</a></h2>
 <p><a class="reference external" href="https://en.wikipedia.org/wiki/Secure_Shell">SSH</a> is a standard protocol for securely connecting to remote machines.
 With it, shell commands may be issued from a local machine and executed on a remote machine.</p>
 <p>While the details of creating an SSH connection is out-of-scope for this document, it is important to note the following:</p>
@@ -775,15 +775,15 @@ With it, shell commands may be issued from a local machine and executed on a rem
 <li><p>The OS of the client does <em>not</em> need to match the server, e.g. a Windows SSH client can connect to a Linux SSH server</p></li>
 </ul>
 <section id="installing-an-ssh-client">
-<h3 id="installing-an-ssh-client">Installing an SSH client<a class="headerlink" href="#installing-an-ssh-client" title="Permalink to this headline">¶</a></h3>
+<h3 id="installing-an-ssh-client">Installing an SSH client<a class="headerlink" href="#installing-an-ssh-client" title="Permalink to this heading">¶</a></h3>
 <p>While an SSH client does <em>not</em> need to be installed on the local machine,
 it is helpful to have one to ensure the login credentials are working before using the <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">ssh</span></code> command (which internally uses its own SSH client <a class="reference external" href="https://www.paramiko.org/">python library</a>).</p>
 <section id="windows">
-<h4 id="windows">Windows<a class="headerlink" href="#windows" title="Permalink to this headline">¶</a></h4>
+<h4 id="windows">Windows<a class="headerlink" href="#windows" title="Permalink to this heading">¶</a></h4>
 <p>Refer to the following documentation for how to install the SSH client on Windows: <a class="reference external" href="https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse">Get started with OpenSSH</a></p>
 </section>
 <section id="linux">
-<h4 id="linux">Linux<a class="headerlink" href="#linux" title="Permalink to this headline">¶</a></h4>
+<h4 id="linux">Linux<a class="headerlink" href="#linux" title="Permalink to this heading">¶</a></h4>
 <p>On Linux, the SSH client is likely installed by default. However, on Ubuntu-like systems, it can be installed with:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
 sudo<span class="w"> </span>apt-get<span class="w"> </span>upgrade
@@ -793,7 +793,7 @@ sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w
 </section>
 </section>
 <section id="generating-a-keypair">
-<h3 id="generating-a-keypair">Generating a Keypair<a class="headerlink" href="#generating-a-keypair" title="Permalink to this headline">¶</a></h3>
+<h3 id="generating-a-keypair">Generating a Keypair<a class="headerlink" href="#generating-a-keypair" title="Permalink to this heading">¶</a></h3>
 <p>A <a class="reference external" href="https://wiki.archlinux.org/title/SSH_keys">keypair</a> is required to securely connect to the SSH server.
 The details of creating and distributing the keypair are out-of-scope for this document, however, it is important to note the following:</p>
 <ul class="simple">
@@ -802,7 +802,7 @@ The details of creating and distributing the keypair are out-of-scope for this d
 <li><p>The <strong>public key</strong> resides on the <strong>remote machine</strong>, its contents need not be secure (i.e. it can be copied &amp; pasted anywhere)</p></li>
 </ul>
 <section id="command">
-<h4 id="command">Command<a class="headerlink" href="#command" title="Permalink to this headline">¶</a></h4>
+<h4 id="command">Command<a class="headerlink" href="#command" title="Permalink to this heading">¶</a></h4>
 <p>The MLTK features a helper command for generating an SSH keypair:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>ssh-keygen<span class="w"> </span>--help
 </pre></div>
@@ -814,7 +814,7 @@ mltk<span class="w"> </span>ssh-keygen<span class="w"> </span>my_key
 </div>
 </section>
 <section id="additional-resources">
-<h4 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permalink to this headline">¶</a></h4>
+<h4 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permalink to this heading">¶</a></h4>
 <p>Refer to the following for additional information on creating and distributing a keypair:</p>
 <ul class="simple">
 <li><p><a class="reference external" href="https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_keymanagement">Windows OpenSSH Key Management</a></p></li>
@@ -824,7 +824,7 @@ mltk<span class="w"> </span>ssh-keygen<span class="w"> </span>my_key
 </section>
 </section>
 <section id="command-sequence">
-<h2 id="command-sequence">Command sequence<a class="headerlink" href="#command-sequence" title="Permalink to this headline">¶</a></h2>
+<h2 id="command-sequence">Command sequence<a class="headerlink" href="#command-sequence" title="Permalink to this heading">¶</a></h2>
 <p>When the <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">ssh</span> <span class="pre">&lt;command&gt;</span></code> command is invoked, the following sequence is internally executed:</p>
 <ol class="arabic simple">
 <li><p>Open an SSH connection to remote server<br/>
@@ -848,12 +848,12 @@ Issuing CTRL+C will abort the remote command subprocess
 </ol>
 </section>
 <section id="settings">
-<h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h2>
+<h2 id="settings">Settings<a class="headerlink" href="#settings" title="Permalink to this heading">¶</a></h2>
 <p>The following settings are used by the <code class="docutils literal notranslate"><span class="pre">mltk</span> <span class="pre">ssh</span></code> command.
 Note that most of these settings are optional and may be configured
 in several different locations (see the next section, “Settings Locations”, for more details).</p>
 <section id="remote-working-directory">
-<h3 id="remote-working-directory">Remote Working Directory<a class="headerlink" href="#remote-working-directory" title="Permalink to this headline">¶</a></h3>
+<h3 id="remote-working-directory">Remote Working Directory<a class="headerlink" href="#remote-working-directory" title="Permalink to this heading">¶</a></h3>
 <p>This is the working directory where the MLTK command will execute.</p>
 <ul class="simple">
 <li><p>This setting is <strong>optional</strong></p></li>
@@ -874,7 +874,7 @@ in several different locations (see the next section, “Settings Locations”, 
 </ol>
 </section>
 <section id="hostname">
-<h3 id="hostname">Hostname<a class="headerlink" href="#hostname" title="Permalink to this headline">¶</a></h3>
+<h3 id="hostname">Hostname<a class="headerlink" href="#hostname" title="Permalink to this heading">¶</a></h3>
 <p>The name of the SSH server. This can be:</p>
 <ul class="simple">
 <li><p>Domain name of server, e.g.: myserver.com</p></li>
@@ -899,7 +899,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </ol>
 </section>
 <section id="port">
-<h3 id="port">Port<a class="headerlink" href="#port" title="Permalink to this headline">¶</a></h3>
+<h3 id="port">Port<a class="headerlink" href="#port" title="Permalink to this heading">¶</a></h3>
 <p>The listening port of the SSH server.</p>
 <ul class="simple">
 <li><p>This setting is <strong>optional</strong></p></li>
@@ -924,7 +924,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </ol>
 </section>
 <section id="username">
-<h3 id="username">Username<a class="headerlink" href="#username" title="Permalink to this headline">¶</a></h3>
+<h3 id="username">Username<a class="headerlink" href="#username" title="Permalink to this heading">¶</a></h3>
 <p>The SSH login username.</p>
 <ul class="simple">
 <li><p>This setting is <strong>optional</strong></p></li>
@@ -946,7 +946,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </ol>
 </section>
 <section id="key-filename">
-<h3 id="key-filename">Key Filename<a class="headerlink" href="#key-filename" title="Permalink to this headline">¶</a></h3>
+<h3 id="key-filename">Key Filename<a class="headerlink" href="#key-filename" title="Permalink to this heading">¶</a></h3>
 <p>The filepath to the SSH <a class="reference external" href="https://wiki.archlinux.org/title/SSH_keys">private key</a>.</p>
 <ul class="simple">
 <li><p>This setting is <strong>optional</strong></p></li>
@@ -968,7 +968,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </ol>
 </section>
 <section id="environment">
-<h3 id="environment">Environment<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h3>
+<h3 id="environment">Environment<a class="headerlink" href="#environment" title="Permalink to this heading">¶</a></h3>
 <p>List <em>or</em> dictionary of environment variables to export before executing MLTK command on remote server.</p>
 <ul class="simple">
 <li><p>This setting is <strong>optional</strong></p></li>
@@ -996,7 +996,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </ol>
 </section>
 <section id="upload-files">
-<h3 id="upload-files">Upload Files<a class="headerlink" href="#upload-files" title="Permalink to this headline">¶</a></h3>
+<h3 id="upload-files">Upload Files<a class="headerlink" href="#upload-files" title="Permalink to this heading">¶</a></h3>
 <p>List of file paths to upload from the local to remote before executing MLTK command.</p>
 <ul class="simple">
 <li><p>This setting is <strong>optional</strong></p></li>
@@ -1032,7 +1032,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </ol>
 </section>
 <section id="startup-commands">
-<h3 id="startup-commands">Startup Commands<a class="headerlink" href="#startup-commands" title="Permalink to this headline">¶</a></h3>
+<h3 id="startup-commands">Startup Commands<a class="headerlink" href="#startup-commands" title="Permalink to this heading">¶</a></h3>
 <p>List of shell commands to execute on remote machine before executing the MLTK command.</p>
 <ul class="simple">
 <li><p>This setting is <strong>optional</strong></p></li>
@@ -1053,7 +1053,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </ol>
 </section>
 <section id="download-files">
-<h3 id="download-files">Download Files<a class="headerlink" href="#download-files" title="Permalink to this headline">¶</a></h3>
+<h3 id="download-files">Download Files<a class="headerlink" href="#download-files" title="Permalink to this heading">¶</a></h3>
 <p>List of file paths to download from the remote to local after executing MLTK command.</p>
 <ul class="simple">
 <li><p>This setting is <strong>optional</strong></p></li>
@@ -1089,7 +1089,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </ol>
 </section>
 <section id="shutdown-commands">
-<h3 id="shutdown-commands">Shutdown Commands<a class="headerlink" href="#shutdown-commands" title="Permalink to this headline">¶</a></h3>
+<h3 id="shutdown-commands">Shutdown Commands<a class="headerlink" href="#shutdown-commands" title="Permalink to this heading">¶</a></h3>
 <p>List of shell commands to execute on remote machine after executing the MLTK command.</p>
 <ul class="simple">
 <li><p>This setting is <strong>optional</strong></p></li>
@@ -1108,15 +1108,32 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </li>
 </ol>
 </section>
+<section id="sync-local-mltk">
+<h3 id="sync-local-mltk">Sync Local MLTK<a class="headerlink" href="#sync-local-mltk" title="Permalink to this heading">¶</a></h3>
+<p>This flags allows for syncing the local MLTK into the remote MLTK.
+This is useful if changes have been made to the local MLTK that are not in the <a class="reference external" href="https://pypi.org/project/silabs-mltk/">public</a> MLTK python package.</p>
+<ul class="simple">
+<li><p>This setting is <strong>optional</strong></p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">false</span></code></p></li>
+</ul>
+<ol class="arabic">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">ssh.sync_local_mltk</span></code> setting in <code class="docutils literal notranslate"><span class="pre">~/.mltk/user_settings.yaml</span></code>, e.g.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ssh</span><span class="p">:</span><span class="w"> </span>
+<span class="w">  </span><span class="nt">sync_local_mltk</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
 </section>
 <section id="settings-locations">
-<h2 id="settings-locations">Settings Locations<a class="headerlink" href="#settings-locations" title="Permalink to this headline">¶</a></h2>
+<h2 id="settings-locations">Settings Locations<a class="headerlink" href="#settings-locations" title="Permalink to this heading">¶</a></h2>
 <p>The various settings may be specified in the following locations:</p>
 <section id="command-line-options">
-<h3 id="command-line-options">Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this headline">¶</a></h3>
+<h3 id="command-line-options">Command-line options<a class="headerlink" href="#command-line-options" title="Permalink to this heading">¶</a></h3>
 <p>There are three command-line options:</p>
 <section id="host">
-<h4 id="host">–host<a class="headerlink" href="#host" title="Permalink to this headline">¶</a></h4>
+<h4 id="host">–host<a class="headerlink" href="#host" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>ssh<span class="w"> </span>--host<span class="w"> </span><span class="o">[</span>&lt;user<span class="w"> </span>name&gt;@<span class="o">]</span>&lt;host&gt;<span class="o">[</span>:&lt;port&gt;<span class="o">][</span>/&lt;path&gt;<span class="o">]</span>
 </pre></div>
 </div>
@@ -1138,7 +1155,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </ul>
 </section>
 <section id="id1">
-<h4 id="id1">–port<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<h4 id="id1">–port<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>ssh<span class="w"> </span>--port<span class="w"> </span>&lt;port&gt;<span class="w"> </span>
 </pre></div>
 </div>
@@ -1148,7 +1165,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </ul>
 </section>
 <section id="identity-file">
-<h4 id="identity-file">–identity_file<a class="headerlink" href="#identity-file" title="Permalink to this headline">¶</a></h4>
+<h4 id="identity-file">–identity_file<a class="headerlink" href="#identity-file" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mltk</span> <span class="n">ssh</span> <span class="o">--</span><span class="n">identity_file</span> <span class="o">&lt;</span><span class="n">file</span> <span class="n">path</span><span class="o">&gt;</span> 
 </pre></div>
 </div>
@@ -1159,11 +1176,11 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </section>
 </section>
 <section id="sshmixin">
-<h3 id="sshmixin">SshMixin<a class="headerlink" href="#sshmixin" title="Permalink to this headline">¶</a></h3>
+<h3 id="sshmixin">SshMixin<a class="headerlink" href="#sshmixin" title="Permalink to this heading">¶</a></h3>
 <p>The <a class="reference external" href="../../docs/python_api/mltk_model/ssh_mixin.html">SshMixin</a> model mixin allows for defining model-specific SSH settings.</p>
 <p><strong>NOTE:</strong> This mixin is <strong>optional</strong>, it is <em>not</em> required to run the model with the <code class="docutils literal notranslate"><span class="pre">ssh</span></code> command.</p>
 <section id="example">
-<h4 id="example">Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
+<h4 id="example">Example<a class="headerlink" href="#example" title="Permalink to this heading">¶</a></h4>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="c1"># Import MLTK model object and mixins</span>
 <span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="p">(</span>
@@ -1199,7 +1216,7 @@ that maps to the <code class="docutils literal notranslate"><span class="pre">Ho
 </section>
 </section>
 <section id="mltk-user-settings-yaml">
-<h3 id="mltk-user-settings-yaml">~/.mltk/user_settings.yaml<a class="headerlink" href="#mltk-user-settings-yaml" title="Permalink to this headline">¶</a></h3>
+<h3 id="mltk-user-settings-yaml">~/.mltk/user_settings.yaml<a class="headerlink" href="#mltk-user-settings-yaml" title="Permalink to this heading">¶</a></h3>
 <p>The <a class="reference external" href="../../docs/other/settings_file.html">user_settings.yaml</a> file allows for defining user-specific MLTK settings.<br/>
 This file must be manually created at <code class="docutils literal notranslate"><span class="pre">~/.mltk/user_settings.yaml</span></code>.</p>
 <p>The following SSH settings may be added to this file (all settings are <strong>optional</strong>):</p>
@@ -1220,7 +1237,7 @@ This file must be manually created at <code class="docutils literal notranslate"
 </pre></div>
 </div>
 <section id="id2">
-<h4 id="id2">Example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<h4 id="id2">Example<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h4>
 <p>File: <code class="docutils literal notranslate"><span class="pre">~/.mltk/user_settings.yaml</span></code>:</p>
 <div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">ssh</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">config_path</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">~/ssh_config</span>
@@ -1249,7 +1266,7 @@ This file must be manually created at <code class="docutils literal notranslate"
 </section>
 </section>
 <section id="ssh-config">
-<h3 id="ssh-config">~/.ssh/config<a class="headerlink" href="#ssh-config" title="Permalink to this headline">¶</a></h3>
+<h3 id="ssh-config">~/.ssh/config<a class="headerlink" href="#ssh-config" title="Permalink to this heading">¶</a></h3>
 <p>The <a class="reference external" href="https://linuxize.com/post/using-the-ssh-config-file/">SSH Config</a> file is a standard file used by the SSH client.<br/>
 By default, this file is located at <code class="docutils literal notranslate"><span class="pre">~/.ssh/config</span></code>. This path can be overridden by defining the <code class="docutils literal notranslate"><span class="pre">ssh.config_path</span></code> setting
 in <code class="docutils literal notranslate"><span class="pre">~/.mltk/user_settings.yaml</span></code>, e.g.:</p>
@@ -1259,7 +1276,7 @@ in <code class="docutils literal notranslate"><span class="pre">~/.mltk/user_set
 </div>
 <p>Refer to the online documentation for more details about the contents of this file: <a class="reference external" href="https://linuxize.com/post/using-the-ssh-config-file/">SSH Config</a></p>
 <section id="id3">
-<h4 id="id3">Example<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<h4 id="id3">Example<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h4>
 <p>File: <code class="docutils literal notranslate"><span class="pre">~/.ssh/config</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Host</span> <span class="n">vast_ai</span>
   <span class="n">HostName</span> <span class="n">ssh6</span><span class="o">.</span><span class="n">vast</span><span class="o">.</span><span class="n">ai</span>
@@ -1277,7 +1294,7 @@ in <code class="docutils literal notranslate"><span class="pre">~/.mltk/user_set
 </section>
 </section>
 <section id="command-examples">
-<h2 id="command-examples">Command Examples<a class="headerlink" href="#command-examples" title="Permalink to this headline">¶</a></h2>
+<h2 id="command-examples">Command Examples<a class="headerlink" href="#command-examples" title="Permalink to this heading">¶</a></h2>
 <p>Executing MLTK commands on a remote machine via SSH is done using the <code class="docutils literal notranslate"><span class="pre">ssh</span></code> operation.</p>
 <p>For more details on the available command-line options, issue the command:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>ssh<span class="w"> </span>--help
@@ -1288,7 +1305,7 @@ prematurely disconnects, the command will continue to execute.</p>
 <p>Issuing <code class="docutils literal notranslate"><span class="pre">Ctrl+C</span></code> will abort the command on both the local and remote machines.</p>
 <p>The following are examples of how remote SSH training can be invoked from the command-line:</p>
 <section id="example-1-train-with-settings-configured-in-user-settings-yaml">
-<h3 id="example-1-train-with-settings-configured-in-user-settings-yaml">Example 1: Train with settings configured in user_settings.yaml<a class="headerlink" href="#example-1-train-with-settings-configured-in-user-settings-yaml" title="Permalink to this headline">¶</a></h3>
+<h3 id="example-1-train-with-settings-configured-in-user-settings-yaml">Example 1: Train with settings configured in user_settings.yaml<a class="headerlink" href="#example-1-train-with-settings-configured-in-user-settings-yaml" title="Permalink to this heading">¶</a></h3>
 <p>The following shows how to train the <code class="docutils literal notranslate"><span class="pre">keyword_spotting_on_off_v2</span></code> model on a remote server.<br/>
 In this example, all of the SSH settings are configured in the <code class="docutils literal notranslate"><span class="pre">~/.mltk/user_settings.yaml</span></code>.<br/>
 After training completes, the results are downloaded to the local machine.</p>
@@ -1297,7 +1314,7 @@ After training completes, the results are downloaded to the local machine.</p>
 </div>
 </section>
 <section id="example-2-train-with-settings-on-command-line">
-<h3 id="example-2-train-with-settings-on-command-line">Example 2: Train with settings on command-line<a class="headerlink" href="#example-2-train-with-settings-on-command-line" title="Permalink to this headline">¶</a></h3>
+<h3 id="example-2-train-with-settings-on-command-line">Example 2: Train with settings on command-line<a class="headerlink" href="#example-2-train-with-settings-on-command-line" title="Permalink to this heading">¶</a></h3>
 <p>The following shows to train the <code class="docutils literal notranslate"><span class="pre">keyword_spotting_on_off_v2</span></code> model on a remote server.<br/>
 In this example, the SSH server settings are provided on the command-line.<br/>
 After training completes, the results are downloaded to the local machine.</p>
@@ -1316,7 +1333,7 @@ where:</p>
 And the <code class="docutils literal notranslate"><span class="pre">-i</span></code> option points to the SSH <a class="reference external" href="https://wiki.archlinux.org/title/SSH_keys">private key</a> file on the local machine.</p>
 </section>
 <section id="example-3-train-without-wait-for-results">
-<h3 id="example-3-train-without-wait-for-results">Example 3: Train without wait for results<a class="headerlink" href="#example-3-train-without-wait-for-results" title="Permalink to this headline">¶</a></h3>
+<h3 id="example-3-train-without-wait-for-results">Example 3: Train without wait for results<a class="headerlink" href="#example-3-train-without-wait-for-results" title="Permalink to this heading">¶</a></h3>
 <p>The following shows to train the <code class="docutils literal notranslate"><span class="pre">keyword_spotting_on_off_v2</span></code> model on a remote server.<br/>
 In this example, the SSH server hostname is provided and the login info is retrieved from the <code class="docutils literal notranslate"><span class="pre">~/.ssh/config</span></code> file.
 Since the <code class="docutils literal notranslate"><span class="pre">--no-wait</span></code> option is provided, the command does <em>not</em> wait for the training to complete on the remote server.
@@ -1327,7 +1344,7 @@ To retrieve the training results, the <code class="docutils literal notranslate"
 </div>
 </section>
 <section id="example-4-retrieve-results-from-previous-training-session">
-<h3 id="example-4-retrieve-results-from-previous-training-session">Example 4: Retrieve results from previous training session<a class="headerlink" href="#example-4-retrieve-results-from-previous-training-session" title="Permalink to this headline">¶</a></h3>
+<h3 id="example-4-retrieve-results-from-previous-training-session">Example 4: Retrieve results from previous training session<a class="headerlink" href="#example-4-retrieve-results-from-previous-training-session" title="Permalink to this heading">¶</a></h3>
 <p>The following shows how to retrieve the results of a previously executed command.<br/>
 This is useful if SSH connection prematurely disconnects or the <code class="docutils literal notranslate"><span class="pre">--no-wait</span></code> option was previously used.</p>
 <p>This will wait until the previously invoked command has completed on the remote server then
@@ -1338,7 +1355,7 @@ download the training results.</p>
 <p><strong>HINT:</strong> You could also use the <code class="docutils literal notranslate"><span class="pre">--no-wait</span></code> option to poll the remote server to see if the command has completed without waiting for it to finish.</p>
 </section>
 <section id="example-5-train-new-model-and-forcefully-discard-previous">
-<h3 id="example-5-train-new-model-and-forcefully-discard-previous">Example 5: Train new model, and forcefully discard previous<a class="headerlink" href="#example-5-train-new-model-and-forcefully-discard-previous" title="Permalink to this headline">¶</a></h3>
+<h3 id="example-5-train-new-model-and-forcefully-discard-previous">Example 5: Train new model, and forcefully discard previous<a class="headerlink" href="#example-5-train-new-model-and-forcefully-discard-previous" title="Permalink to this heading">¶</a></h3>
 <p>Only one command may be active on the remote server. The <code class="docutils literal notranslate"><span class="pre">--force</span></code> option may be used to abort a previously invoked command.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mltk<span class="w"> </span>ssh<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--force
 </pre></div>
@@ -1391,24 +1408,19 @@ download the training results.</p>
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2022, Silicon Labs.
+              &#169; Copyright 2023, Silicon Labs.
               
           </div>
             Last updated on
-              Jan 09, 2023.
+              Mar 01, 2023.
             <br/>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>
         </div>
-        <div class="survey-link" id="dlg-survey-link"> 
-    <div>We need your feedback!</div>
-    <div>
-        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
-    </div>
-</div>
+        <button id="survey-link" class="feedback-button">Feedback</button>
       </div>
     </div>
   </footer>

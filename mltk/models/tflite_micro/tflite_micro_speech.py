@@ -59,9 +59,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize tflite_micro_speech --tflite
-    
+
     +-------+-----------------+----------------+----------------+-----------------------------------------+
     | Index | OpCode          | Input(s)       | Output(s)      | Config                                  |
     +-------+-----------------+----------------+----------------+-----------------------------------------+
@@ -119,7 +119,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile tflite_micro_speech --device --accelerator MVP
 
@@ -160,7 +160,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view tflite_micro_speech --tflite
 
 .. raw:: html
@@ -173,13 +173,21 @@ Model Diagram
     </div>
 
 
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/tflite_micro/tflite_micro_speech.py
+    :language: python
+    :lines: 186-
+
 """
 
 import numpy as np
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (
-  InputLayer, Conv2D, Flatten, 
-  Dense, Dropout, BatchNormalization, 
+  InputLayer, Conv2D, Flatten,
+  Dense, Dropout, BatchNormalization,
   Activation
 )
 
@@ -202,9 +210,9 @@ from mltk.datasets.audio.speech_commands import speech_commands_v2
 # - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    AudioDatasetMixin, 
+    MltkModel,
+    TrainMixin,
+    AudioDatasetMixin,
     EvaluateClassifierMixin
 ):
     pass
@@ -219,7 +227,7 @@ my_model.description = 'TFLite-Micro speech'
 #################################################
 # Training Basic Settings
 my_model.epochs = -1 # We use the EarlyStopping keras callback to stop the training
-my_model.batch_size = 32 
+my_model.batch_size = 32
 my_model.optimizer = 'adam'
 my_model.metrics = ['accuracy']
 my_model.loss = 'categorical_crossentropy'
@@ -231,7 +239,7 @@ my_model.loss = 'categorical_crossentropy'
 my_model.checkpoint['monitor'] =  'val_accuracy'
 
 # https://keras.io/api/callbacks/reduce_lr_on_plateau/
-# If the test accuracy doesn't improve after 'patience' epochs 
+# If the test accuracy doesn't improve after 'patience' epochs
 # then decrease the learning rate by 'factor'
 my_model.reduce_lr_on_plateau = dict(
   monitor='accuracy',
@@ -241,7 +249,7 @@ my_model.reduce_lr_on_plateau = dict(
 
 # https://keras.io/api/callbacks/early_stopping/
 # If the validation accuracy doesn't improve after 'patience' epochs then stop training
-my_model.early_stopping = dict( 
+my_model.early_stopping = dict(
   monitor = 'val_accuracy',
   patience = 20
 )
@@ -296,7 +304,7 @@ my_model.datagen = ParallelAudioDataGenerator(
     frontend_settings=frontend_settings,
     cores=0.35,
     debug=False, # Set this to true to enable debugging of the generator
-    max_batches_pending=16, 
+    max_batches_pending=16,
     validation_split= 0.15,
     validation_augmentation_enabled=False,
     samplewise_center=False,
@@ -307,7 +315,7 @@ my_model.datagen = ParallelAudioDataGenerator(
     offset_range=(0.0,1.0),
     trim_threshold_db=20,
     noise_colors=None,
-#     loudness_range=(0.6, 3.0), # In practice, these should be enabled but they will increase training times 
+#     loudness_range=(0.6, 3.0), # In practice, these should be enabled but they will increase training times
 #     speed_range=(0.6,1.9),
 #     pitch_range=(0.7,1.4),
 #     vtlp_range=(0.7,1.4),
@@ -337,8 +345,8 @@ def my_model_builder(model: MyModel):
       use_bias=True,
       activation='softmax'))
     keras_model.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
     return keras_model
@@ -355,7 +363,7 @@ my_model.build_model_function = my_model_builder
 # NOTE: Corresponding command-line options will override these values.
 
 
-# Controls the smoothing. 
+# Controls the smoothing.
 # Drop all inference results that are older than <now> minus window_duration
 # Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some commands
 my_model.model_parameters['average_window_duration_ms'] = 1000
@@ -383,7 +391,7 @@ my_model.model_parameters['verbose_model_output_logs'] = False
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python tflite_micro_speech.py
 #
 # Note that this has the same functionality as:

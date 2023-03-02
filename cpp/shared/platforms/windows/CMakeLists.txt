@@ -24,26 +24,29 @@ find_package(mltk_gecko_sdk_emulation REQUIRED)
 
 add_library(platform_windows_clib_override STATIC)
 target_compile_features(platform_windows_clib_override  PUBLIC cxx_constexpr cxx_std_17)
-target_sources(platform_windows_clib_override  
+target_sources(platform_windows_clib_override
 PRIVATE
     start.cc
     clib_override.c
+    sl_sleeptimer_windows.c
+    microsecond_timer.c
+    sl_system_init.c
 )
 target_compile_options(platform_windows_clib_override
 PUBLIC
     -I $(CMAKE_CURRENT_LIST_DIR)
 )
 target_compile_definitions(platform_windows_clib_override
-PRIVATE 
+PRIVATE
     MLTK_CPU_CLOCK=${MLTK_CPU_CLOCK}
 )
 target_link_options(platform_windows_clib_override
-PUBLIC 
-    -Wl,--wrap,main 
-    -Wl,--wrap,_assert_func 
-    -Wl,--wrap,_assert  
+PUBLIC
+    -Wl,--wrap,main
+    -Wl,--wrap,_assert_func
+    -Wl,--wrap,_assert
     -Wl,--wrap,abort
-    -Wl,--wrap,_wassert 
+    -Wl,--wrap,_wassert
     -Wl,--whole-archive ${CMAKE_CURRENT_BINARY_DIR}/libplatform_windows_clib_override.a -Wl,--no-whole-archive
 )
 target_link_libraries(platform_windows_clib_override
@@ -51,24 +54,25 @@ PUBLIC
     mltk::platform::common
     mltk::stacktrace
     mltk::cpputils
+    mltk::gecko_sdk::emulation
 )
 
 
 
 
-target_include_directories(${PROJECT_NAME} 
+target_include_directories(${PROJECT_NAME}
 INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME}
-INTERFACE 
+INTERFACE
     mltk::platform::common
     platform_windows_clib_override
     mltk::gecko_sdk::emulation
 )
 
 target_compile_definitions(${PROJECT_NAME}
-INTERFACE 
+INTERFACE
     __PROGRAM_START=_dummy # This is required to work-aroud build errors in cmsis_gcc.h
 )

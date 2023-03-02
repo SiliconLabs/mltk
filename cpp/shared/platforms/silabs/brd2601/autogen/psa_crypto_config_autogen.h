@@ -42,22 +42,9 @@
 #define MBEDTLS_PSA_ACCEL_ECC_MONTGOMERY_448
 
 #define MBEDTLS_PSA_KEY_SLOT_COUNT (2 + 1 + SL_PSA_KEY_USER_SLOT_COUNT)
+#ifndef SL_PSA_ITS_MAX_FILES
 #define SL_PSA_ITS_MAX_FILES (1 + SL_PSA_ITS_USER_MAX_FILES)
-
-#include "config-device-acceleration.h"
-#if defined(SL_SE_ASSUME_FW_AT_LEAST_1_2_10) || defined(SL_SE_ASSUME_FW_AT_LEAST_2_1_7)
-    #define MBEDTLS_PSA_ACCEL_ECC_MONTGOMERY_255
-    #undef MBEDTLS_PSA_BUILTIN_ECC_MONTGOMERY_255
-    #if !(defined(MBEDTLS_ECP_DP_SECP192R1_ENABLED) \
-          || defined(MBEDTLS_ECP_DP_SECP224R1_ENABLED) \
-          || defined(MBEDTLS_ECP_DP_SECP256R1_ENABLED) \
-          || defined(MBEDTLS_ECP_DP_SECP384R1_ENABLED) \
-          || defined(MBEDTLS_ECP_DP_SECP521R1_ENABLED))
-        #undef MBEDTLS_PSA_BUILTIN_KEY_TYPE_ECC_KEY_PAIR
-        #undef MBEDTLS_PSA_BUILTIN_KEY_TYPE_ECC_PUBLIC_KEY
-        #undef MBEDTLS_PSA_BUILTIN_ALG_ECDH
-    #endif /* !MBEDTLS_ECP_DP_SECPxR1_ENABLED */
-#endif /* SL_SE_ASSUME_FW_AT_LEAST_x */
+#endif
 
 #if defined(TFM_CONFIG_SL_SECURE_LIBRARY)
 // Asymmetric Crypt module (RSA is not supported)

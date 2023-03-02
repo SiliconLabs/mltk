@@ -15,20 +15,20 @@ find_package(mltk_fingerprint_reader REQUIRED)
 
 #####################################################
 # Define the fingerprint_authenticator executable
-add_executable(mltk_fingerprint_authenticator)  
+add_executable(mltk_fingerprint_authenticator)
 
 
 target_sources(mltk_fingerprint_authenticator
-PRIVATE 
+PRIVATE
     main.cc
-    app_controller.cc 
+    app_controller.cc
     fingerprint_authenticator.cc
-    data_preprocessor.cc 
+    data_preprocessor.cc
     fingerprint_vault.c
 )
 
 target_link_libraries(mltk_fingerprint_authenticator
-PRIVATE 
+PRIVATE
     mltk::tflite_micro_model
     mltk::fingerprint_reader
     ${MLTK_PLATFORM}
@@ -36,7 +36,7 @@ PRIVATE
 
 
 target_include_directories(mltk_fingerprint_authenticator
-PRIVATE 
+PRIVATE
     .
 )
 
@@ -49,7 +49,7 @@ mltk_get(FINGERPRINT_AUTHENTICATOR_MODEL)
 if(NOT FINGERPRINT_AUTHENTICATOR_MODEL)
     set(FINGERPRINT_AUTHENTICATOR_MODEL "fingerprint_signature_generator")
 endif()
-mltk_info("FINGERPRINT_AUTHENTICATOR_MODEL=${FINGERPRINT_AUTHENTICATOR_MODEL}")
+mltk_info("FINGERPRINT_AUTHENTICATOR_MODEL=${FINGERPRINT_AUTHENTICATOR_MODEL}" TAG mltk_fingerprint_authenticator)
 
 mltk_add_tflite_model(mltk_fingerprint_authenticator ${FINGERPRINT_AUTHENTICATOR_MODEL})
 

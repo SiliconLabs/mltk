@@ -19,6 +19,7 @@ limitations under the License.
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/pooling.h"
 #include "CMSIS/NN/Include/arm_nnfunctions.h"
+#include "tensorflow/lite/micro/micro_log.h"
 
 
 namespace tflite {
@@ -61,7 +62,7 @@ TfLiteStatus AveragePoolingPrepare(TfLiteContext* context, TfLiteNode* node) {
                   context, scratch_buffer_size, &data->buffer_idx));
     }
 
-    
+
   }
 
   micro_context->DeallocateTempTfLiteTensor(output);
@@ -89,12 +90,17 @@ TfLiteStatus AverageEval(TfLiteContext* context, TfLiteNode* node) {
       AveragePoolingEvalFloat(context, node, params, data, input, output);
       break;
     case kTfLiteInt8:
-      context->GetScratchBuffer(context, cmsis_data->buffer_idx);
-      AveragePoolingEvalQuantized(context, node, params, data, input, output);
+      if(cmsis_data->buffer_idx >= 0) context->GetScratchBuffer(context, cmsis_data->buffer_idx);
+      AveragePoolingEvalQuantized<int8_t>(context, node, params, data, input,
+                                          output);
+      break;
+    case kTfLiteInt16:
+      AveragePoolingEvalQuantized<int16_t>(context, node, params, data, input,
+                                           output);
       break;
     default:
-      TF_LITE_KERNEL_LOG(context, "Input type %s is not currently supported",
-                         TfLiteTypeGetName(input->type));
+      MicroPrintf("Input type %s is not currently supported",
+                  TfLiteTypeGetName(input->type));
       return kTfLiteError;
   }
   return kTfLiteOk;
@@ -118,11 +124,16 @@ TfLiteStatus MaxEval(TfLiteContext* context, TfLiteNode* node) {
       MaxPoolingEvalFloat(context, node, params, data, input, output);
       break;
     case kTfLiteInt8:
-      MaxPoolingEvalQuantized(context, node, params, data, input, output);
+      MaxPoolingEvalQuantized<int8_t>(context, node, params, data, input,
+                                      output);
+      break;
+    case kTfLiteInt16:
+      MaxPoolingEvalQuantized<int16_t>(context, node, params, data, input,
+                                       output);
       break;
     default:
-      TF_LITE_KERNEL_LOG(context, "Type %s not currently supported.",
-                         TfLiteTypeGetName(input->type));
+      MicroPrintf("Type %s not currently supported.",
+                  TfLiteTypeGetName(input->type));
       return kTfLiteError;
   }
   return kTfLiteOk;
@@ -136,25 +147,11 @@ void* Init(TfLiteContext* context, const char* buffer, size_t length) {
 }  // namespace
 
 TfLiteRegistration Register_AVERAGE_POOL_2D() {
-  return {/*init=*/Init,
-          /*free=*/nullptr,
-          /*prepare=*/AveragePoolingPrepare,
-          /*invoke=*/AverageEval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(Init, AveragePoolingPrepare, AverageEval);
 }
 
 TfLiteRegistration Register_MAX_POOL_2D() {
-  return {/*init=*/Init,
-          /*free=*/nullptr,
-          /*prepare=*/PoolingPrepare,
-          /*invoke=*/MaxEval,
-          /*profiling_string=*/nullptr,
-          /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0};
+  return tflite::micro::RegisterOp(Init, PoolingPrepare, MaxEval);
 }
 
 }  // namespace tflite

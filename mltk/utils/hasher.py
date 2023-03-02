@@ -2,6 +2,7 @@
 
 See the source code on Github: `mltk/utils/hasher.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/hasher.py>`_
 """
+import os
 import hashlib
 
 
@@ -9,7 +10,7 @@ def generate_hash(*args) -> str:
     """Generate an MD5 hash of the given Python objects"""
     md5 = hashlib.md5()
     hash_object(*args, hasher=md5)
-    return md5.hexdigest()
+    return md5.hexdigest().lower()
 
 
 def hash_file(
@@ -18,6 +19,9 @@ def hash_file(
     include_filename: bool = False
 ) -> str:
     """Generate a hash of the given file"""
+    if not os.path.exists(path):
+        return None
+
     algorithm = algorithm.lower()
 
     if algorithm in ('sha256', 'sha2'):
@@ -59,7 +63,7 @@ def hash_object(*objects, hasher=None):
             for e in obj:
                 hash_object(e, hasher=hasher)
             continue
-        elif isinstance(obj, bytes):
+        elif isinstance(obj, (bytes,bytearray)):
             hasher.update(obj)
             continue
         elif isinstance(obj, str):

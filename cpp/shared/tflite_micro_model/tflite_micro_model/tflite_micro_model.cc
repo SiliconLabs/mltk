@@ -12,8 +12,11 @@
 
 
 #ifdef __arm__
+#ifndef __HEAP_SIZE
 extern "C" uint32_t __heap_size;
-#endif
+#define __HEAP_SIZE ((uint32_t)(&__heap_size))
+#endif // ifndef __HEAP_SIZE
+#endif // __arm__
 
 namespace mltk
 {
@@ -41,6 +44,7 @@ bool TfliteMicroModel::load(
 )
 {
     uint32_t allocated_buffer_size = 0;
+    model_has_unsupported_layers = false;
 
     if(TFLITE_MICRO_VERSION != nullptr)
     {
@@ -119,11 +123,24 @@ bool TfliteMicroModel::load(
                 }
                 else
                 {
-                    // Otherwise, if the specified buffer size was too small
-                    // Then fallback to the buffer size optimization algorithm
-                    MLTK_WARN("Failed to load model with buffer of size %d", model_runtime_size);
+                    // We failed to load the interpreter with the given buffer
+                    // so clean the buffer up
                     free(runtime_buffer);
                     runtime_buffer = nullptr;
+
+                    // If the model has unsupported layers,
+                    // then just return as we cannot load it
+                    if(model_has_unsupported_layers)
+                    {
+                        MLTK_WARN("Model contains one or more unknown layers. You may need to update your OpResolver");
+                        unload();
+                        return false;
+                    }
+
+                    // Otherwise, if the specified buffer size was too small
+                    // Then fallback to the buffer size optimization algorithm
+
+                    MLTK_WARN("Failed to load model with buffer of size %d", model_runtime_size);
                 }
 
                 // If a size was specified by the API call and we failed to load the model with it
@@ -147,7 +164,14 @@ bool TfliteMicroModel::load(
             if(!find_optimal_buffer_size(flatbuffer, op_resolver, runtime_buffer_size))
             {
                 // On failure, just return
-                MLTK_ERROR("Failed to allocate buffer for model (likely heap memory overflow)");
+                if(model_has_unsupported_layers)
+                {
+                    MLTK_WARN("Model contains one or more unknown layers. You may need to update your OpResolver");
+                }
+                else
+                {
+                    MLTK_ERROR("Failed to allocate buffer for model (likely heap memory overflow)");
+                }
                 unload();
                 return false;
             }
@@ -201,7 +225,14 @@ bool TfliteMicroModel::load(
         else if(!load_interpreter(flatbuffer, op_resolver, runtime_buffer, runtime_buffer_size))
         {
             // Return the error on failure
-            MLTK_ERROR("Failed to load model with runtime buffer size: %d", runtime_buffer_size);
+            if(model_has_unsupported_layers)
+            {
+                MLTK_WARN("Model contains one or more unknown layers. You may need to update your OpResolver");
+            }
+            else
+            {
+                MLTK_ERROR("Failed to load model with runtime buffer size: %d", runtime_buffer_size);
+            }
             unload();
             return false;
         }
@@ -519,7 +550,7 @@ bool TfliteMicroModel::load_interpreter(
 
     if(disable_logs)
     {
-        get_logger().level(logging::Disabled);
+        get_logger().level(logging::Error);
     }
 
     bool retval = true;
@@ -547,7 +578,7 @@ bool TfliteMicroModel::find_optimal_buffer_size(
 )
 {
 #ifdef __arm__
-    int upper_limit = (uint32_t)&__heap_size - 8*1024;
+    int upper_limit = __HEAP_SIZE - 8*1024;
 #else
     int upper_limit = SRAM_SIZE;
 #endif
@@ -594,6 +625,13 @@ bool TfliteMicroModel::find_optimal_buffer_size(
         }
         else
         {
+            // Immediately break out of the loop
+            // if the model has unsupported layers
+            if(model_has_unsupported_layers)
+            {
+                break;
+            }
+
             // Otherwise, the buffer size is too small,
             // So the new lower limit is the buffer size+1
             lower_limit = buffer_size+1;

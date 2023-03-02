@@ -9,7 +9,7 @@ export(PACKAGE ${PROJECT_NAME})
 include(${CMAKE_CURRENT_LIST_DIR}/gecko_sdk_options.cmake)
 
 
-mltk_info("Processing Gecko SDK repository (this may take awhile) ...")
+mltk_info("Processing Gecko SDK repository (this may take awhile) ..." TAG mltk_gecko_sdk)
 if(DEFINED ENV{GIT_LFS_SKIP_SMUDGE})
   set(saved_GIT_LFS_SKIP_SMUDGE $ENV{GIT_LFS_SKIP_SMUDGE})
 endif()
@@ -19,8 +19,8 @@ set(ENV{GIT_LFS_SKIP_SMUDGE} 1)
 CPMAddPackage(
   NAME gecko_sdk
   GITHUB_REPOSITORY SiliconLabs/gecko_sdk
-  GIT_TAG 3abe1693dfe8f8968de38efe403cd26d138eeeed # Gecko SDK v4.1.3, be sure to update the <mltk repo root>/README.md when updating this
-  CACHE_VERSION v4.1.3
+  GIT_TAG v4.2.1 # Be sure to update the <mltk repo root>/README.md when updating this
+  CACHE_VERSION v4.2.1
   DOWNLOAD_ONLY ON
 )
 
@@ -34,48 +34,55 @@ function(gecko_sdk_add src dst)
   set(src_path ${CMAKE_CURRENT_LIST_DIR}/cmake/${src}.cmake)
   set(dst_path ${gecko_sdk_SOURCE_DIR}/${dst}/CMakeLists.txt)
   mltk_copy(${dst_path} ${src_path})
-  add_subdirectory(${gecko_sdk_SOURCE_DIR}/${dst} ${MLTK_BINARY_DIR}/shared/gecko_sdk/${dst})
+  add_subdirectory(${gecko_sdk_SOURCE_DIR}/${dst} ${CMAKE_BINARY_DIR}/gsdk/${dst})
 endfunction()
 
-mltk_get(GECKO_SDK_INCLUDE_EMLIB)
-if(NOT DEFINED GECKO_SDK_INCLUDE_EMLIB OR GECKO_SDK_INCLUDE_EMLIB)
-  gecko_sdk_add(emlib platform/emlib)
-endif()
+mltk_get(GECKO_SDK_ENABLED DEFAULT ON)
+if(GECKO_SDK_ENABLED)
+  mltk_get(GECKO_SDK_INCLUDE_EMLIB)
+  if(NOT DEFINED GECKO_SDK_INCLUDE_EMLIB OR GECKO_SDK_INCLUDE_EMLIB)
+    gecko_sdk_add(emlib platform/emlib)
+  endif()
 
-gecko_sdk_add(hardware_board hardware/board)
-gecko_sdk_add(platform_common platform/common)
-gecko_sdk_add(iostream_service platform/service/iostream)
-
-
-mltk_get(MLTK_PLATFORM_IS_EMBEDDED)
-if(MLTK_PLATFORM_IS_EMBEDDED)
-  gecko_sdk_add(efm32gg11b platform/Device/SiliconLabs/EFM32GG11B)
-  gecko_sdk_add(efr32mg24 platform/Device/SiliconLabs/EFR32MG24)
-  gecko_sdk_add(efr32mg12p platform/Device/SiliconLabs/EFR32MG12P)
-
-  gecko_sdk_add(system_service platform/service/system)
-  gecko_sdk_add(power_manager_service platform/service/power_manager)
-  gecko_sdk_add(sleeptimer_service platform/service/sleeptimer)
-  gecko_sdk_add(device_init_service platform/service/device_init)
-  gecko_sdk_add(hfxo_manager_service platform/service/hfxo_manager)
-  gecko_sdk_add(udelay_service platform/service/udelay)
-  gecko_sdk_add(leddrv platform/driver/leddrv)
-  gecko_sdk_add(button platform/driver/button)
-  gecko_sdk_add(dmadrv platform/emdrv/dmadrv)
-  gecko_sdk_add(nvm3 platform/emdrv/nvm3)
-  gecko_sdk_add(gpiointerrupt platform/emdrv/gpiointerrupt)
-  gecko_sdk_add(rail platform/radio/rail_lib)
-  gecko_sdk_add(platform_peripheral platform/peripheral)
-  gecko_sdk_add(mic hardware/driver/mic)
-  gecko_sdk_add(mx25_flash_shutdown hardware/driver/mx25_flash_shutdown)
-  gecko_sdk_add(freertos util/third_party/freertos)
-  gecko_sdk_add(psa_crypto util/third_party/crypto)
-  gecko_sdk_add(memory_manager util/silicon_labs/silabs_core/memory_manager)
-  gecko_sdk_add(bluetooth protocol/bluetooth)
-endif()
+  gecko_sdk_add(hardware_board hardware/board)
+  gecko_sdk_add(platform_common platform/common)
+  gecko_sdk_add(iostream_service platform/service/iostream)
 
 
-add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/clib_wrappers)
+  mltk_get(MLTK_PLATFORM_IS_EMBEDDED)
+
+  if(MLTK_PLATFORM_IS_EMBEDDED)
+    gecko_sdk_add(efm32gg11b platform/Device/SiliconLabs/EFM32GG11B)
+    gecko_sdk_add(efr32mg24 platform/Device/SiliconLabs/EFR32MG24)
+    gecko_sdk_add(efr32mg12p platform/Device/SiliconLabs/EFR32MG12P)
+
+    gecko_sdk_add(system_service platform/service/system)
+    gecko_sdk_add(power_manager_service platform/service/power_manager)
+    gecko_sdk_add(sleeptimer_service platform/service/sleeptimer)
+    gecko_sdk_add(device_init_service platform/service/device_init)
+    gecko_sdk_add(hfxo_manager_service platform/service/hfxo_manager)
+    gecko_sdk_add(udelay_service platform/service/udelay)
+    gecko_sdk_add(leddrv platform/driver/leddrv)
+    gecko_sdk_add(button platform/driver/button)
+    gecko_sdk_add(dmadrv platform/emdrv/dmadrv)
+    gecko_sdk_add(nvm3 platform/emdrv/nvm3)
+    gecko_sdk_add(gpiointerrupt platform/emdrv/gpiointerrupt)
+    gecko_sdk_add(rail platform/radio/rail_lib)
+    gecko_sdk_add(platform_peripheral platform/peripheral)
+    gecko_sdk_add(mic hardware/driver/mic)
+    gecko_sdk_add(mx25_flash_shutdown hardware/driver/mx25_flash_shutdown)
+    gecko_sdk_add(freertos util/third_party/freertos)
+    gecko_sdk_add(psa_crypto platform/security)
+    gecko_sdk_add(mbedtls util/third_party/mbedtls)
+    gecko_sdk_add(memory_manager util/silicon_labs/silabs_core/memory_manager)
+    gecko_sdk_add(bluetooth protocol/bluetooth)
+    gecko_sdk_add(app_bluetooth app/bluetooth)
+  endif()
+
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/clib_wrappers ${CMAKE_BINARY_DIR}/gsdk/clib_wrappers)
+endif() # GECKO_SDK_ENABLED
+
+
 
 add_library(mltk_gecko_sdk_includes INTERFACE)
 add_library(mltk::gecko_sdk::includes ALIAS mltk_gecko_sdk_includes)
@@ -84,7 +91,7 @@ INTERFACE
   ${gecko_sdk_SOURCE_DIR}/hardware/driver/mic/inc
   ${gecko_sdk_SOURCE_DIR}/hardware/driver/button/inc
   ${gecko_sdk_SOURCE_DIR}/platform/driver/leddrv/inc
-  ${gecko_sdk_SOURCE_DIR}/platform/common/inc 
+  ${gecko_sdk_SOURCE_DIR}/platform/common/inc
   ${gecko_sdk_SOURCE_DIR}/platform/emdrv/dmadrv/inc
   ${gecko_sdk_SOURCE_DIR}/platform/emdrv/spidrv/inc
   ${gecko_sdk_SOURCE_DIR}/platform/emdrv/gpiointerrupt/inc
@@ -94,3 +101,10 @@ INTERFACE
   ${gecko_sdk_SOURCE_DIR}/platform/service/udelay/inc
 )
 
+
+
+mltk_load_python()
+
+execute_process(
+  COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/libpatcher.py -i "${gecko_sdk_SOURCE_DIR}/platform/Device/SiliconLabs" -p ${CMAKE_CURRENT_LIST_DIR}/patch_gecko_sdk.py -o ${gecko_sdk_SOURCE_DIR}/gecko_sdk_patch_complete.txt
+)

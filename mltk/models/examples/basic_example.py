@@ -5,8 +5,8 @@ Basic MLTK model example
 
 - Source code: `basic_example.py <https://github.com/siliconlabs/mltk/blob/master/mltk/models/examples/basic_example.py>`_
 
-This provides a basic example of how to create a `model specification <https://siliconlabs.github.io/mltk/docs/guides/model_specification.html>`_.  
-It is based off the `Simple MNIST convnet <https://keras.io/examples/vision/mnist_convnet/>`_ Keras example.  
+This provides a basic example of how to create a `model specification <https://siliconlabs.github.io/mltk/docs/guides/model_specification.html>`_.
+It is based off the `Simple MNIST convnet <https://keras.io/examples/vision/mnist_convnet/>`_ Keras example.
 It is designed to work with the `Add an Existing Script to MLTK <https://siliconlabs.github.io/mltk/mltk/tutorials/add_existing_script_to_mltk.html>`_ tutorial.
 
 Commands
@@ -31,6 +31,14 @@ Commands
 
    # Directly invoke the model script
    python basic_example.py
+
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/examples/basic_example.py
+    :language: python
+    :lines: 44-
 
 """
 from typing import Tuple
@@ -60,14 +68,14 @@ validation_split = 0.1
 # Prepare the dataset
 def my_dataset_loader(
     subset:str,
-    test:bool, 
+    test:bool,
     **kwargs
 ) -> Tuple[np.ndarray, np.ndarray]:
     """Load the dataset subset
-    
+
     This is called automatically by the MLTK before training
     or evaluation.
-    
+
     Args:
         subset: The dataset subset to return: 'training' or 'evaluation'
         test: This is optional, it is used when invoking a training "dryrun", e.g.: mltk train basic_example-test
@@ -106,21 +114,21 @@ def my_dataset_loader(
 
     if subset == 'training':
         return x_train, y_train
-    
+
     else:
         return x_test, y_test
- 
+
 
 ##########################################################################
 # Build the model
 def my_model_builder(my_model: mltk_core.MltkModel) -> tf.keras.Model:
     """Build the Keras model
-    
+
     This is called by the MLTK just before training starts.
 
     Arguments:
         my_model: The MltkModel instance
-    
+
     Returns:
         Compiled Keras model instance
     """
@@ -137,8 +145,8 @@ def my_model_builder(my_model: mltk_core.MltkModel) -> tf.keras.Model:
     ])
 
     model.compile(
-        loss="categorical_crossentropy", 
-        optimizer="adam", 
+        loss="categorical_crossentropy",
+        optimizer="adam",
         metrics=["accuracy"]
     )
 
@@ -157,13 +165,13 @@ class MyModel(
     mltk_core.MltkModel,    # We must inherit the MltkModel class
     mltk_core.TrainMixin,   # We also inherit the TrainMixin since we want to train this model
     mltk_core.DatasetMixin, # We also need the DatasetMixin mixin to provide the relevant dataset properties
-    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation for our classification model 
+    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation for our classification model
 ):
     pass
 
 my_model = MyModel()
 
-# These properties are optional 
+# These properties are optional
 # but a useful for tracking the generated .tflite
 my_model.version = 1
 my_model.description = 'Basic model specification example'
@@ -201,7 +209,7 @@ my_model.train_callbacks = [
 
 ##########################################################################
 # Specify the .tflite conversion parameters
-# This is used to convert the float32 model to int8 model 
+# This is used to convert the float32 model to int8 model
 # that can run on the embedded device.
 
 def my_representative_dataset_generator():
@@ -229,7 +237,7 @@ my_model.tflite_converter['representative_dataset'] = my_representative_dataset_
 #
 # While not required, user-defined parameters may be embedded into the .tflite model file.
 # These parameters may then be read by the embedded device at runtime.
-# 
+#
 # This is useful for syncing data preprocessing parameters between the model training
 # script and embedded device.
 
@@ -241,15 +249,15 @@ my_model.tflite_converter['representative_dataset'] = my_representative_dataset_
 my_model.model_parameters['samplewise_norm.rescale'] = 1/255.
 
 # Most standard Python data types may be embedded
-# See: https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html 
-my_model.model_parameters['my_boolean'] = True 
-my_model.model_parameters['my_string'] = 'This string will be embedded into the .tflite' 
+# See: https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html
+my_model.model_parameters['my_boolean'] = True
+my_model.model_parameters['my_string'] = 'This string will be embedded into the .tflite'
 my_model.model_parameters['my_bytes'] = b'This byte string will be embedded also'
 my_model.model_parameters['my_float_list'] = [4.5, 2., 3.14]
 
 
 ##########################################################################################
-# (Optional) The following allows for running this model training script directly, e.g.: 
+# (Optional) The following allows for running this model training script directly, e.g.:
 # python basic_example.py
 #
 # Note that this has the similar functionality to:

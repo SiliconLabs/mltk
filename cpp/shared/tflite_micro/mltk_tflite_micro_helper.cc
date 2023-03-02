@@ -13,7 +13,7 @@ bool model_profiler_enabled = false;
 
 #ifdef TFLITE_MICRO_VERSION_STR
 const char* TFLITE_MICRO_VERSION = TFLITE_MICRO_VERSION_STR;
-#else 
+#else
 const char* TFLITE_MICRO_VERSION = nullptr;
 #endif
 
@@ -26,11 +26,11 @@ TfLiteStatus allocate_scratch_buffer(TfLiteContext *ctx, unsigned size_bytes, in
     {
         assert(!"Failed to allocate scratch buffer");
     }
-    return status; 
+    return status;
 }
 
 /*************************************************************************************************/
-#ifndef MLTK_DLL_IMPORT 
+#ifndef MLTK_DLL_IMPORT
 extern "C" void issue_unsupported_kernel_message(const char* fmt, ...)
 {
   if(_current_kernel_index == -1 || _issued_unsupported_msg || !model_error_reporter_enabled)
@@ -84,7 +84,7 @@ bool set_log_level(LogLevel level)
 }
 
 /*************************************************************************************************/
-#ifndef MLTK_DLL_IMPORT 
+#ifndef MLTK_DLL_IMPORT
 static const TfliteMicroAccelerator* _registered_accelerator = nullptr;
 extern "C" void mltk_tflite_micro_set_accelerator(const TfliteMicroAccelerator* accelerator)
 {
@@ -93,7 +93,7 @@ extern "C" void mltk_tflite_micro_set_accelerator(const TfliteMicroAccelerator* 
 #endif
 
 /*************************************************************************************************/
-#ifndef MLTK_DLL_IMPORT 
+#ifndef MLTK_DLL_IMPORT
 extern "C" const TfliteMicroAccelerator* mltk_tflite_micro_get_registered_accelerator()
 {
     return _registered_accelerator;
@@ -139,7 +139,7 @@ const void* get_metadata_from_tflite_flatbuffer(const void* tflite_flatbuffer, c
     {
         return nullptr;
     }
-   
+
     for(auto meta : *metadata_vector)
     {
         if(meta == nullptr || meta->name() == nullptr)
@@ -185,7 +185,7 @@ bool get_tflite_flatbuffer_from_end_of_flash(const uint8_t** flatbuffer, uint32_
         *length = 0;
     }
 
-#ifdef __arm__
+#if defined(FLASH_BASE) && defined(FLASH_SIZE)
     flash_end_addr = (flash_end_addr==nullptr) ? (const uint32_t*)(FLASH_BASE + FLASH_SIZE) : flash_end_addr;
 
     const uint32_t tflite_length = *(flash_end_addr-1);

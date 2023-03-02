@@ -127,6 +127,17 @@ class TfliteModel:
             return None
 
     @property
+    def name(self) -> str:
+        """The name of the model which is the :py:attr:`~filename` without the ``.tflite`` extension or "my_model" if no path is set"""
+        filename = self.filename
+        if filename:
+            if filename.endswith('.tflite'):
+                filename = filename[:-len('.tflite')]
+            return filename
+        else:
+            return 'my_model'
+
+    @property
     def description(self) -> str:
         """Get/set model description
 

@@ -19,6 +19,7 @@ void sl_iostream_eusart_init_instances(void);
 #if defined(SL_CATALOG_POWER_MANAGER_PRESENT)
 
 sl_power_manager_on_isr_exit_t sl_iostream_eusart_vcom_sleep_on_isr_exit(void);
+bool sl_iostream_eusart_vcom_is_ok_to_sleep(void);
 
 #endif
 

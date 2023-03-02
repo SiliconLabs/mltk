@@ -79,7 +79,7 @@ void sl_service_init(void)
   sl_board_configure_vcom();
   sl_sleeptimer_init();
   sl_hfxo_manager_init();
- 
+
 #ifdef SL_CATALOG_BLUETOOTH_PRESENT
   sl_mbedtls_init();
   psa_crypto_init();
@@ -112,6 +112,9 @@ void sl_service_process_action(void)
 
 void sl_stack_process_action(void)
 {
+#ifdef SL_CATALOG_BLUETOOTH_PRESENT
+  sl_bt_step();
+#endif
 }
 
 void sl_internal_app_process_action(void)

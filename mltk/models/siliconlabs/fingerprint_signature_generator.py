@@ -9,7 +9,7 @@ This model was adapted from `Image similarity estimation using a Siamese Network
 `Siamese Networks <https://en.wikipedia.org/wiki/Siamese_neural_network>`_ are neural networks which share weights between two or more sister networks,
 each producing embedding vectors of its respective inputs.
 
-In supervised similarity learning, the networks are then trained to maximize the contrast (distance) between embeddings of inputs of different classes, 
+In supervised similarity learning, the networks are then trained to maximize the contrast (distance) between embeddings of inputs of different classes,
 while minimizing the distance between embeddings of similar classes, resulting in embedding spaces that reflect the class segmentation of the training inputs.
 
 
@@ -49,7 +49,7 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize fingerprint_signature_generator --tflite
 
     +-------+-------------------+------------------+-----------------+-------------------------------------------------------+
@@ -98,7 +98,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile fingerprint_signature_generator --device --accelerator MVP
 
@@ -140,7 +140,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view  fingerprint_signature_generator --tflite
 
 .. raw:: html
@@ -152,6 +152,13 @@ Model Diagram
         </a>
     </div>
 
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/siliconlabs/fingerprint_signature_generator.py
+    :language: python
+    :lines: 165-
 
 """
 
@@ -194,8 +201,8 @@ from mltk.models.siliconlabs.fingerprint_signature_generator_dataset import (
 
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
+    MltkModel,
+    TrainMixin,
     ImageDatasetMixin,
     EvaluateMixin
 ):
@@ -232,7 +239,7 @@ my_model.reduce_lr_on_plateau = dict(
 
 # https://keras.io/api/callbacks/early_stopping/
 # If the validation accuracy doesn't improve after 'patience' epochs then stop training
-# my_model.early_stopping = dict( 
+# my_model.early_stopping = dict(
 #   monitor = 'val_accuracy',
 #   patience = 15,
 #   verbose=1,
@@ -250,7 +257,7 @@ my_model.reduce_lr_on_plateau = dict(
 
 def build_model_tower(my_model: MyModel):
     """Build the one of the "tower's" of the siamese network
-    
+
     This is the ML model that is deployed to the device.
     It takes a fingerprint grayscale image as an input
     and returns a (hopefully) unique signature of the image.
@@ -292,8 +299,8 @@ def my_model_builder(my_model: MyModel) -> KerasModel:
     keras_model = keras.Model(inputs=[input_1, input_2], outputs=output_layer)
 
     keras_model.compile(
-        loss=my_model.loss, 
-        optimizer=my_model.optimizer, 
+        loss=my_model.loss,
+        optimizer=my_model.optimizer,
         metrics=my_model.metrics
     )
     return keras_model
@@ -306,13 +313,13 @@ my_model.build_model_function = my_model_builder
 # Dataset generation
 ###################################################################################################
 
-# For every fingerprint in the datset, 
+# For every fingerprint in the datset,
 # generate this many non-matching pairs
 nomatch_multiplier = 5
 my_model.class_mode = 'binary' # we have a signal sigmoid output, so must use a binary "class mode"
 my_model.classes = ['match', 'no-match']
 my_model.input_shape = (180, 180, 1) # We manually crop the image in crop_and_convert_from_uint8_to_int8()
-my_model.target_size = (192, 192, 1) # Ths is the size of the images in the dataset, 
+my_model.target_size = (192, 192, 1) # Ths is the size of the images in the dataset,
                                      # We use the native image size to do all augmentations
                                      # Then in the preprocessing_function() callback we crop the image border
 my_model.class_weights = 'balanced'
@@ -336,7 +343,7 @@ my_model.datagen = ParallelImageDataGenerator(
     cores=0.65,
     debug=False,
     dtype=np.float32, # NOTE: The dtype is float32 but the range is int8,
-    max_batches_pending=48, 
+    max_batches_pending=48,
     validation_split= 0.1,
     validation_augmentation_enabled=True,
     preprocessing_function=crop_and_convert_from_uint8_to_int8,
@@ -414,7 +421,7 @@ my_model.model_parameters['verify_center_threshold'] = preprocess_params['verify
 
 def my_representative_dataset_generator():
     """This is called by the TfliteConverter
-    
+
     The data generator returns tuples of fingerprints
     which is what is required to train the siamese network.
     However, in my_keras_model_saver() we only save one of the "towers"
@@ -435,7 +442,7 @@ def my_representative_dataset_generator():
             break
 
 
-my_model.tflite_converter = dict( 
+my_model.tflite_converter = dict(
     optimizations=[tf.lite.Optimize.DEFAULT],
     supported_ops=[tf.lite.OpsSet.TFLITE_BUILTINS_INT8],
     inference_input_type=tf.int8,
@@ -457,7 +464,7 @@ def my_keras_model_saver(
     logger:logging.Logger
 ) -> KerasModel:
     """This is invoked after training successfully completes
-    
+
     Here want to just save one of the "towers"
     as that is what is used to generate the fingerprint signature
     on the device
@@ -490,13 +497,13 @@ my_model.on_save_keras_model = my_keras_model_saver
 ###################################################################################################
 
 def generate_predictions(
-    mltk_model:MyModel, 
+    mltk_model:MyModel,
     built_model:Union[KerasModel, TfliteModel],
     threshold:float,
     x=None
 ) -> Tuple[np.ndarray,np.ndarray]:
     """Generate predictions using the dataset and trained model
-    
+
     A "prediction" is the euclidean distance between two fingerprint images.
     If the distance is less than threshold then the fingerprints are considered
     a match, otherwise they're not matching (i.e. they're not the same finger)
@@ -557,7 +564,7 @@ def generate_predictions(
                 progbar.update(mltk_model.x.batch_size)
 
     y_pred = np.asarray(y_pred)
-    y_label = np.asarray(y_label)  
+    y_label = np.asarray(y_label)
 
     return y_pred, y_label, y_dis
 
@@ -576,7 +583,7 @@ def collect_samples(my_model:MyModel, count:int) -> Tuple[list, list]:
     nomatch_samples = []
     for batch_x, batch_y in my_model.x:
         if len(match_samples) + len(nomatch_samples) >= count:
-            break 
+            break
         for x0, x1, y in zip(batch_x[0], batch_x[1], batch_y):
             if y == 0 and len(match_samples) < count/2:
                 match_samples.append((x0, x1))
@@ -592,26 +599,26 @@ def collect_samples(my_model:MyModel, count:int) -> Tuple[list, list]:
 
 
 def my_model_evaluator(
-    mltk_model:MyModel, 
+    mltk_model:MyModel,
     built_model:Union[KerasModel, TfliteModel],
     eval_dir:str,
     logger:logging.Logger,
     show:bool
 ) -> EvaluationResults:
     """Custom callback to evaluate the trained model
-    
+
     The model is effectively a classifier, but we need to do
     a special step to compare the signatures in the dataset.
     """
     results = ClassifierEvaluationResults(
         name=mltk_model.name,
         classes=mltk_model.classes
-    ) 
+    )
 
     threshold = my_model.model_parameters['threshold']
     logger.error(f'Using model threshold: {threshold}')
 
-    y_pred, y_label, y_dis = generate_predictions( 
+    y_pred, y_label, y_dis = generate_predictions(
         mltk_model,
         built_model,
         threshold
@@ -623,8 +630,8 @@ def my_model_evaluator(
     )
 
     results.generate_plots(
-        logger=logger, 
-        output_dir=eval_dir, 
+        logger=logger,
+        output_dir=eval_dir,
         show=show
     )
 
@@ -675,7 +682,7 @@ def my_model_evaluator(
     else:
         fig.clear()
         plt.close(fig)
-    
+
 
     fig = plt.figure('Euclidean Distance')
 
@@ -727,7 +734,7 @@ def datagen_dump_custom_command(
     ),
 ):
     """Custom command to dump the dataset
-    
+
     \b
     Invoke this command with:
     mltk custom fingerprint_signature_generator dump
@@ -776,11 +783,11 @@ def datagen_dump_custom_command(
             ax = fig.add_subplot(1, 2, 1)
             ax.imshow(x[0], cmap="gray")
             ax.axis('off')
-           
+
             ax = fig.add_subplot(1, 2, 2)
             ax.imshow(x[1], cmap="gray")
             ax.axis('off')
-           
+
             fig.tight_layout()
             plt.savefig(f'{dump_dir}/{label}-{i}.png')
             plt.close(fig)
@@ -788,7 +795,7 @@ def datagen_dump_custom_command(
 
 
     print(f'Images dumped to {dump_dir}')
-   
+
 
 @my_model.cli.command('preprocess')
 def preprocess_custom_command(
@@ -797,7 +804,7 @@ def preprocess_custom_command(
     ),
 ):
     """Compare raw samples vs preprocessed samples
-    
+
     \b
     Invoke this command with:
     mltk custom fingerprint_signature_generator preprocess
@@ -819,7 +826,7 @@ def preprocess_custom_command(
             img = load_img(f'{unprocessed_dir}/{fn}', color_mode='grayscale')
             unprocessed_img = img_to_array(img, dtype='uint8')
             unprocessed_img = np.squeeze(unprocessed_img, axis=-1)
-            img.close() 
+            img.close()
 
             processed_img = dataset.preprocess_sample(unprocessed_img)
 
@@ -834,11 +841,11 @@ def preprocess_custom_command(
             ax = fig.add_subplot(1, 2, 1)
             ax.imshow(unprocessed_img, cmap="gray")
             ax.axis('off')
-           
+
             ax = fig.add_subplot(1, 2, 2)
             ax.imshow(processed_img, cmap="gray")
             ax.axis('off')
-           
+
             #fig.tight_layout()
             fig.text(.1, 0, dataset.previous_verify_msg)
             plt.savefig(f'{dump_dir}/{"" if img_valid else "droppped-"}{name}')
@@ -847,10 +854,10 @@ def preprocess_custom_command(
 
 
     print(f'Images dumped to {dump_dir}')
-   
+
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python fingerprint_signature_generator.py
 #
 # Note that this has the same functionality as:

@@ -5,7 +5,7 @@ Binary classification (ResNetv1-10 with CIFAR10)
 
 Source code: `binary_classification.py <https://github.com/siliconlabs/mltk/blob/master/mltk/models/examples/binary_classification.py>`_
 
-This demonstrates how to classify two images:  
+This demonstrates how to classify two images:
 
 - Cat
 - Dog
@@ -54,9 +54,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize binary_classification --tflite
-    
+
     +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)        | Output(s)       | Config                                              |
     +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
@@ -82,25 +82,25 @@ Model Summary
     |       |                 | 1 (int32)       |                 |                                                     |
     | 9     | logistic        | 1 (int8)        | 1 (int8)        | BuiltinOptionsType=0                                |
     +-------+-----------------+-----------------+-----------------+-----------------------------------------------------+
-    Total MACs: 2.646 M                                                                                                  
-    Total OPs: 5.363 M                                                                                                   
-    Name: binary_classification                                                                                          
-    Version: 1                                                                                                           
-    Description: Example: Binary classification - ResNetv1-10 with CIFAR10                                               
-    Classes: cat, dog                                                                                                    
-    hash: de33dd53e0afb91a365fd2fff0e4c461                                                                               
-    date: 2022-02-11T17:32:37.986Z                                                                                       
-    runtime_memory_size: 38740                                                                                           
-    samplewise_norm.rescale: 0.0                                                                                         
-    samplewise_norm.mean_and_std: False                                                                                  
-    .tflite file size: 53.8kB                                                                                            
+    Total MACs: 2.646 M
+    Total OPs: 5.363 M
+    Name: binary_classification
+    Version: 1
+    Description: Example: Binary classification - ResNetv1-10 with CIFAR10
+    Classes: cat, dog
+    hash: de33dd53e0afb91a365fd2fff0e4c461
+    date: 2022-02-11T17:32:37.986Z
+    runtime_memory_size: 38740
+    samplewise_norm.rescale: 0.0
+    samplewise_norm.mean_and_std: False
+    .tflite file size: 53.8kB
 
 
 Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view binary_classification --tflite
 
 .. raw:: html
@@ -112,6 +112,13 @@ Model Diagram
         </a>
     </div>
 
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/examples/binary_classification.py
+    :language: python
+    :lines: 125-
 
 """
 
@@ -131,9 +138,9 @@ import mltk.core as mltk_core
 # - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings
 # @mltk_model   # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    mltk_core.MltkModel, 
-    mltk_core.TrainMixin, 
-    mltk_core.ImageDatasetMixin, 
+    mltk_core.MltkModel,
+    mltk_core.TrainMixin,
+    mltk_core.ImageDatasetMixin,
     mltk_core.EvaluateClassifierMixin
 ):
     pass
@@ -150,7 +157,7 @@ my_model.description = 'Example: Binary classification - ResNetv1-10 with CIFAR1
 #################################################
 # Training parameters
 my_model.epochs = 200
-my_model.batch_size = 40 
+my_model.batch_size = 40
 my_model.optimizer = 'adam'
 my_model.metrics = ['accuracy']
 my_model.loss = 'binary_crossentropy'
@@ -287,8 +294,8 @@ def my_model_builder(model: MyModel):
     keras_model.add(layers.Activation('sigmoid')) # Binary so we want the activation to be between 0 and 1 which is what the sigmoid function produces
 
     keras_model.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
     return keras_model
@@ -307,7 +314,7 @@ def datagen_dump_custom_command(
     ),
 ):
     """Custom command to dump the augmented samples
-    
+
     \b
     Invoke this command with:
     mltk custom binary_classification datagen_dump --count 20
@@ -324,7 +331,7 @@ def datagen_dump_custom_command(
     for i, _ in enumerate(my_model.x):
         if i >= count:
             break
-    
+
     my_model.unload_dataset()
 
     print(f'Generated data dump to: {my_model.datagen.save_to_dir}')
@@ -332,7 +339,7 @@ def datagen_dump_custom_command(
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python binary_classification.py
 #
 # Note that this has the same functionality as:

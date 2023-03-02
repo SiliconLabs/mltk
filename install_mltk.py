@@ -8,11 +8,11 @@ if _version[0] != 3 or _version[1] < 7 or _version[1] >= 11 or _architecture_bit
     sys.stdout
     sys.exit(-1)
 
-import argparse 
+import argparse
 
 import os
 import re
-import shutil 
+import shutil
 import logging
 import subprocess
 import queue
@@ -29,28 +29,28 @@ def main():
     logging.basicConfig(stream=sys.stdout, format='%(message)s', level='DEBUG')
 
     parser = argparse.ArgumentParser(description='Utility to install the mltk Python package for local development')
-    parser.add_argument('--python', 
-        help='Path to python executable used to install the mltk package. If omitted, use the current python executable', 
+    parser.add_argument('--python',
+        help='Path to python executable used to install the mltk package. If omitted, use the current python executable',
         default=None
     )
-    parser.add_argument('--repo-path', 
-        help='Path to mltk git repo. This is used by the --dev option. If omitted, use same directory as this script', 
+    parser.add_argument('--repo-path',
+        help='Path to mltk git repo. This is used by the --dev option. If omitted, use same directory as this script',
         default=None
     )
-    parser.add_argument('--no-verbose', 
-        help='Disable verbose log messages', 
+    parser.add_argument('--no-verbose',
+        help='Disable verbose log messages',
         default=False,
         action='store_true'
     )
-    parser.add_argument('--extras', 
-        help='The additional MLTK dependencies to install', 
+    parser.add_argument('--extras',
+        help='The additional MLTK dependencies to install',
         default='full',
         choices=['full', 'dev', 'none']
     )
 
     args = parser.parse_args()
     install_mltk_for_local_dev(
-        python=args.python, 
+        python=args.python,
         repo_path=args.repo_path,
         verbose=not args.no_verbose,
         extras=args.extras
@@ -59,17 +59,17 @@ def main():
 
 
 def install_mltk_for_local_dev(
-    python:str=None, 
+    python:str=None,
     repo_path:str=None,
     verbose:bool=False,
     extras:str='full'
 ):
     """Install the mltk for local development
-    
+
     Args:
         python: Path to python executable used to install the mltk package. If omitted, use the current python executable
         repo_path: Path to mltk git repo. If omitted, use same directory as this script
-        verbose: Enable verbose logs 
+        verbose: Enable verbose logs
         extras: Package extra dependencies to install
     """
 
@@ -80,7 +80,7 @@ def install_mltk_for_local_dev(
     if extras == 'full':
         extras = '[full]'
     elif extras == 'dev':
-        install_dev_requirements = True 
+        install_dev_requirements = True
         extras = '[full]'
     else:
         extras = ''
@@ -89,7 +89,7 @@ def install_mltk_for_local_dev(
     python = python.replace('\\', '/')
     repo_path = repo_path.replace('\\', '/')
     python_version = get_python_version(python)
-    
+
 
     logging.info('Installing mltk for local development')
     logging.info(f'  Python: {python}')
@@ -121,9 +121,19 @@ def install_mltk_for_local_dev(
     else:
         python_venv_exe = f'{venv_dir}/bin/python3'
 
+    # Ensure pip is installed and at the latest version
+    try:
+        logging.info('Updating to latest pip')
+        issue_shell_command(python_venv_exe, '-m', 'ensurepip ', '--upgrade')
+    except:
+        try:
+            issue_shell_command(python_venv_exe, '-m', 'pip ', '--upgrade')
+        except:
+            pass
+
     # Ensure the wheel package is installed
     logging.info('Installing the "wheel" Python package into the virtual environment')
-    issue_shell_command(python_venv_exe, '-m', 'pip', 'install', 'wheel')
+    issue_shell_command(python_venv_exe, '-m', 'pip', 'install', 'wheel', '--upgrade')
 
 
     if install_dev_requirements:
@@ -169,7 +179,7 @@ def install_mltk_for_local_dev(
             logging.info(venv_dir.replace('/', '\\') + '\\Scripts\\activate.bat\n')
     else:
         logging.info(f'source {venv_dir}/bin/activate\n')
- 
+
 
 
 def get_python_version(python:str) -> str:
@@ -217,7 +227,7 @@ def issue_shell_command(*args, env=None, cwd=None):
     retcode = p.poll()
     if retcode != 0:
         raise RuntimeError(f'\nCommand failed: {cmd_str}\nSee logs above for more details.')
-    
+
     return retval
 
 

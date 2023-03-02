@@ -5,11 +5,12 @@ from typing import Union
 from mltk.utils.python import prepend_exception_msg
 from mltk.core.tflite_model import TfliteLayer
 from mltk.core.profiling_results import ProfilingLayerResult
+from mltk.core.utils import get_mltk_logger
 
 from .utils import (
     MetricBaseEstimator,
     padding_to_int,
-    activation_to_int, 
+    activation_to_int,
     use_activation, bool_to_int,
     load_model
 )
@@ -22,29 +23,31 @@ class BaseEstimator(abc.ABC):
         self.accelerator = 'none' if accelerator is None else accelerator.lower()
         self.name = name.lower()
         self._loaded = False
-        self.cpu_cycles_model:MetricBaseEstimator = None 
+        self.cpu_cycles_model:MetricBaseEstimator = None
         self.energy_model:MetricBaseEstimator = None
 
 
     def load_models(self):
         if self._loaded:
-            return 
+            return
+
+        get_mltk_logger().warn(f'Loading estimators for {self.name}')
 
         self._loaded = True
         self.cpu_cycles_model = load_model(
-            name=self.name, 
+            name=self.name,
             accelerator=self.accelerator,
             metric='cpu_cycles'
         )
         self.energy_model = load_model(
-            name=self.name, 
+            name=self.name,
             accelerator=self.accelerator,
             metric='energy'
         )
 
     def predict(
-        self, 
-        layer: ProfilingLayerResult,  
+        self,
+        layer: ProfilingLayerResult,
         cpu_clock_rate:int
     ):
         # pylint: disable=protected-access
@@ -55,23 +58,23 @@ class BaseEstimator(abc.ABC):
 
         if self.energy_model is not None:
             layer['energy'] = self.predict_energy(
-                layer, 
+                layer,
                 accelerator_cycles=layer.accelerator_cycles,
                 cpu_cycles=layer.cpu_cycles,
             )
 
         layer._time = self.predict_time(
-            accelerator_cycles=layer.accelerator_cycles, 
+            accelerator_cycles=layer.accelerator_cycles,
             cpu_cycles=layer.cpu_cycles,
             cpu_clock_rate=cpu_clock_rate
         )
 
 
     def predict_time(
-        self, 
-        accelerator_cycles:int, 
-        cpu_cycles:int, 
-        cpu_clock_rate: int, 
+        self,
+        accelerator_cycles:int,
+        cpu_cycles:int,
+        cpu_clock_rate: int,
     ) -> float:
         # We assume the time spent processing the layer is
         # the maximum of the accelerator or CPU cycles
@@ -80,26 +83,26 @@ class BaseEstimator(abc.ABC):
 
 
     def predict_cpu_cycles(
-        self, 
-        layer: ProfilingLayerResult, 
+        self,
+        layer: ProfilingLayerResult,
         accelerator_cycles:int
     ) -> int:
         return predict_layer_value(
-            self.cpu_cycles_model, 
-            layer, 
+            self.cpu_cycles_model,
+            layer,
             accelerator_cycles=accelerator_cycles
         )
 
 
     def predict_energy(
-        self, 
-        layer: ProfilingLayerResult, 
+        self,
+        layer: ProfilingLayerResult,
         accelerator_cycles:int,
         cpu_cycles:int
     ) -> int:
         return predict_layer_value(
-            self.energy_model, 
-            layer, 
+            self.energy_model,
+            layer,
             accelerator_cycles=accelerator_cycles,
             cpu_cycles=cpu_cycles
         )
@@ -109,14 +112,14 @@ class BaseEstimator(abc.ABC):
 
 
 def predict_layer_value(
-    model, 
-    layer: Union[ProfilingLayerResult,TfliteLayer], 
+    model,
+    layer: Union[ProfilingLayerResult,TfliteLayer],
     accelerator_cycles:int=None,
     cpu_cycles:int=None
 ):
     params = extract_model_parameters(
-        model, 
-        layer, 
+        model,
+        layer,
         accelerator_cycles=accelerator_cycles,
         cpu_cycles=cpu_cycles
     )
@@ -124,8 +127,8 @@ def predict_layer_value(
 
 
 def extract_model_parameters(
-    model, 
-    layer: Union[ProfilingLayerResult,TfliteLayer], 
+    model,
+    layer: Union[ProfilingLayerResult,TfliteLayer],
     accelerator_cycles:int=None,
     cpu_cycles:int=None,
 ) -> dict:
@@ -138,8 +141,8 @@ def extract_model_parameters(
     if isinstance(layer, ProfilingLayerResult):
         tflite_layer = layer.tflite_layer
     else:
-        tflite_layer = layer 
-    
+        tflite_layer = layer
+
     layer_input = tflite_layer.inputs[0]
     layer_output = tflite_layer.outputs[0]
 
@@ -164,22 +167,22 @@ def extract_model_parameters(
                 params['input_size'] = layer_input.shape.flat_size
             elif name == 'input_flat_size':
                 params['input_flat_size'] = layer_input.shape.flat_size
-            elif name == 'output_size': 
+            elif name == 'output_size':
                 params['output_size'] = layer_output.shape.flat_size
-            elif name == 'output_flat_size': 
+            elif name == 'output_flat_size':
                 params['output_flat_size'] = layer_output.shape.flat_size
             elif name == 'input_height':
                 params['input_height'] = layer_input.shape[input_shape_base+0]
             elif name == 'input_width':
                 params['input_width'] = layer_input.shape[input_shape_base+1]
             elif name == 'input_depth':
-                params['input_depth'] = 1 if len(layer_input.shape) != 4 else layer_input.shape[3] 
+                params['input_depth'] = 1 if len(layer_input.shape) != 4 else layer_input.shape[3]
             elif name == 'output_height':
                 params['output_height'] = layer_output.shape[output_shape_base+0]
             elif name == 'output_width':
                 params['output_width'] = layer_output.shape[output_shape_base+1]
             elif name == 'output_depth':
-                params['output_depth'] = 1 if len(layer_output.shape) != 4 else layer_output.shape[3] 
+                params['output_depth'] = 1 if len(layer_output.shape) != 4 else layer_output.shape[3]
             elif name == 'stride_height':
                 params['stride_height'] = tflite_layer.strides[0]
             elif name == 'stride_width':

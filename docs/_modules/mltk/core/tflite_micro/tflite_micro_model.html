@@ -57,26 +57,22 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.tflite_micro.tflite_micro_model &#8212; MLTK 0.14.0 documentation</title>
+    <title>mltk.core.tflite_micro.tflite_micro_model &#8212; MLTK 0.15.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../_static/clipboard.min.js"></script>
     <script src="../../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../../_static/design-tabs.js"></script>
     <script src="../../../../_static/js/custom.js"></script>
     <script src="../../../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
@@ -105,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.14.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.15.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.14.0 documentation logo">
+                   alt="MLTK 0.15.0 documentation logo">
           
         </a>
       </div>
@@ -129,7 +125,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" action="../../../../search.html" method="get" name="search">
-      <input type="text" class="md-search__input" name="q" placeholder="Search"
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
              autocapitalize="off" autocomplete="off" spellcheck="false"
              data-md-component="query" data-md-state="active">
       <label class="md-icon md-search__icon" for="__search"></label>
@@ -200,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -256,7 +252,7 @@
     <li class="md-nav__item">
     
     
-      <a href="../../../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      <a href="../../../../docs/command_line/index.html" class="md-nav__link">Command-Line</a>
       
     
     </li>
@@ -433,6 +429,7 @@
 <span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">msgpack</span>
 
@@ -447,36 +444,36 @@
 
 <div class="viewcode-block" id="TfliteMicroModelDetails.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/model_details.html#mltk.core.tflite_micro.TfliteMicroModelDetails.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrapper_details</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">:</span><span class="nb">dict</span> <span class="o">=</span> <span class="n">wrapper_details</span></div>
-    
-    <span class="nd">@property</span> 
+
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Name of model"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span>
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Version of model"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">[</span><span class="s1">'version'</span><span class="p">]</span>
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">date</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Date of model in ISO8601 format"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">[</span><span class="s1">'date'</span><span class="p">]</span>
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Description of model"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">[</span><span class="s1">'description'</span><span class="p">]</span>
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List of class labels"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">[</span><span class="s1">'classes'</span><span class="p">]</span>
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Unique hash of model data"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">[</span><span class="s1">'hash'</span><span class="p">]</span>
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">accelerator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Accelerater kernels loaded into TFLM interpreter"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">[</span><span class="s1">'accelerator'</span><span class="p">]</span>
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">runtime_memory_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Total amount of RAM required at runtime to run model"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_details</span><span class="p">[</span><span class="s1">'runtime_memory_size'</span><span class="p">]</span>
@@ -499,9 +496,9 @@
     <span class="n">WARNING_RE</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'.*Op(\d+)-(\S+)\ not supported: (.*)'</span><span class="p">)</span>
 
 <div class="viewcode-block" id="TfliteMicroLayerError.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/layer_error.html#mltk.core.tflite_micro.TfliteMicroLayerError.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">msg</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index</span> <span class="o">=</span> <span class="n">index</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span> <span class="o">=</span> <span class="n">msg</span> </div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_msg</span> <span class="o">=</span> <span class="n">msg</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -520,8 +517,8 @@
     <span class="k">def</span> <span class="nf">_parse_error_log</span><span class="p">(</span><span class="n">msg</span><span class="p">):</span>
         <span class="n">match</span> <span class="o">=</span> <span class="n">TfliteMicroLayerError</span><span class="o">.</span><span class="n">WARNING_RE</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span> 
-        <span class="k">return</span> <span class="n">TfliteMicroLayerError</span><span class="p">(</span> 
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">TfliteMicroLayerError</span><span class="p">(</span>
             <span class="n">index</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)),</span>
             <span class="n">name</span><span class="o">=</span><span class="n">msg</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span>
             <span class="n">msg</span><span class="o">=</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
@@ -572,10 +569,10 @@
 <span class="w">    </span><span class="sd">"""This class wrappers the TF-Lite Micro interpreter loaded with a .tflite model"""</span>
 
 <div class="viewcode-block" id="TfliteMicroModel.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/model.html#mltk.core.tflite_micro.TfliteMicroModel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">tflm_wrapper</span><span class="p">,</span> 
-        <span class="n">tflm_accelerator</span><span class="p">:</span><span class="n">TfliteMicroAccelerator</span><span class="p">,</span> 
-        <span class="n">flatbuffer_data</span><span class="p">:</span><span class="nb">bytes</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">tflm_wrapper</span><span class="p">,</span>
+        <span class="n">tflm_accelerator</span><span class="p">:</span><span class="n">TfliteMicroAccelerator</span><span class="p">,</span>
+        <span class="n">flatbuffer_data</span><span class="p">:</span><span class="nb">bytes</span><span class="p">,</span>
         <span class="n">enable_profiler</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">enable_tensor_recorder</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">force_buffer_overlap</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -584,27 +581,36 @@
         <span class="c1"># pylint: disable=protected-access</span>
         <span class="kn">from</span> <span class="nn">.tflite_micro</span> <span class="kn">import</span> <span class="n">TfliteMicro</span>
 
-        <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_clear_logged_errors</span><span class="p">()</span>
-        <span class="n">accelerator_wrapper</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">tflm_accelerator</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tflm_accelerator</span><span class="o">.</span><span class="n">accelerator_wrapper</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_model_wrapper</span> <span class="o">=</span> <span class="n">tflm_wrapper</span><span class="o">.</span><span class="n">TfliteMicroModelWrapper</span><span class="p">()</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_wrapper</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
-            <span class="n">flatbuffer_data</span><span class="p">,</span>
-            <span class="n">accelerator_wrapper</span><span class="p">,</span> 
-            <span class="n">enable_profiler</span><span class="p">,</span>
-            <span class="n">enable_tensor_recorder</span><span class="p">,</span>
-            <span class="n">force_buffer_overlap</span><span class="p">,</span>
-            <span class="n">runtime_buffer_size</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s1">'Failed to load model, additional info:</span><span class="se">\n</span><span class="si">{</span><span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_get_logged_errors_str</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
-            <span class="p">)</span>
+        <span class="c1"># Hide non-critical errors while loading the model</span>
+        <span class="c1"># Any layer errors will be parsed separately</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">get_logger</span><span class="p">()</span>
+        <span class="n">saved_log_level</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">level</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_clear_logged_errors</span><span class="p">()</span>
+            <span class="n">accelerator_wrapper</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">tflm_accelerator</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">tflm_accelerator</span><span class="o">.</span><span class="n">accelerator_wrapper</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_model_wrapper</span> <span class="o">=</span> <span class="n">tflm_wrapper</span><span class="o">.</span><span class="n">TfliteMicroModelWrapper</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_wrapper</span><span class="o">.</span><span class="n">load</span><span class="p">(</span>
+                <span class="n">flatbuffer_data</span><span class="p">,</span>
+                <span class="n">accelerator_wrapper</span><span class="p">,</span>
+                <span class="n">enable_profiler</span><span class="p">,</span>
+                <span class="n">enable_tensor_recorder</span><span class="p">,</span>
+                <span class="n">force_buffer_overlap</span><span class="p">,</span>
+                <span class="n">runtime_buffer_size</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s1">'Failed to load model, additional info:</span><span class="se">\n</span><span class="si">{</span><span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_get_logged_errors_str</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span>
+                <span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">saved_log_level</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_tflm_accelerator</span> <span class="o">=</span> <span class="n">tflm_accelerator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_layer_errors</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">TfliteMicroLayerError</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_get_logged_errors</span><span class="p">():</span>
             <span class="n">err</span> <span class="o">=</span> <span class="n">TfliteMicroLayerError</span><span class="o">.</span><span class="n">_parse_error_log</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">err</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_layer_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>  </div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_layer_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">accelerator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteMicroAccelerator</span><span class="p">:</span>
@@ -623,7 +629,7 @@
     <span class="k">def</span> <span class="nf">details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteMicroModelDetails</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return details about loaded model"""</span>
         <span class="k">return</span> <span class="n">TfliteMicroModelDetails</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_wrapper</span><span class="o">.</span><span class="n">get_details</span><span class="p">())</span>
-        
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Number of input tensors"""</span>
@@ -661,7 +667,7 @@
         <span class="c1"># pylint: disable=protected-access</span>
         <span class="kn">from</span> <span class="nn">.tflite_micro</span> <span class="kn">import</span> <span class="n">TfliteMicro</span>
 
-        <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_clear_logged_errors</span><span class="p">()</span> 
+        <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_clear_logged_errors</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_wrapper</span><span class="o">.</span><span class="n">invoke</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to invoke model, additional info:</span><span class="se">\n</span><span class="si">{</span><span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_get_logged_errors_str</span><span class="p">()</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
@@ -674,7 +680,7 @@
 
 <div class="viewcode-block" id="TfliteMicroModel.get_profiling_results"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/model.html#mltk.core.tflite_micro.TfliteMicroModel.get_profiling_results">[docs]</a>    <span class="k">def</span> <span class="nf">get_profiling_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteMicroProfiledLayerResult</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return the profiling results of each model layer</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            A list where each entry contains the profiling results</span>
 <span class="sd">            of the associated model layer</span>
@@ -694,7 +700,7 @@
 
 <div class="viewcode-block" id="TfliteMicroModel.get_recorded_data"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/model.html#mltk.core.tflite_micro.TfliteMicroModel.get_recorded_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_recorded_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">object</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Return the recorded contents of each model layers' tensors</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            A list where each entry contains the input/output tensors</span>
 <span class="sd">            of the associated model layer</span>
@@ -714,10 +720,10 @@
 <span class="w">        </span><span class="sd">"""Return the TfliteMicroLayerError at the given layer index if found else return None"""</span>
         <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layer_errors</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">err</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">index</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">err</span> 
+                <span class="k">return</span> <span class="n">err</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
-    
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">details</span><span class="si">}</span><span class="s1">'</span></div>
 </pre></div>
@@ -741,24 +747,19 @@
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2022, Silicon Labs.
+              &#169; Copyright 2023, Silicon Labs.
               
           </div>
             Last updated on
-              Jan 09, 2023.
+              Mar 01, 2023.
             <br/>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>
         </div>
-        <div class="survey-link" id="dlg-survey-link"> 
-    <div>We need your feedback!</div>
-    <div>
-        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
-    </div>
-</div>
+        <button id="survey-link" class="feedback-button">Feedback</button>
       </div>
     </div>
   </footer>

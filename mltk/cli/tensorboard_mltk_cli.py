@@ -36,6 +36,7 @@ One of the following:
     \b
     For more details, see:
     https://www.tensorflow.org/tensorboard/get_started
+    https://siliconlabs.github.io/mltk/docs/guides/model_training_monitor
     \b
     NOTE: The model must be trained (or actively being trained) before using this command.
     Additionally, the trained model must have the 'tensorboard' property configured.

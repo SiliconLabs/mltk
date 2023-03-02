@@ -1,6 +1,6 @@
 /***************************************************************************//**
  * @file
- * @brief SL_ML_FFT 
+ * @brief SL_ML_FFT
  *******************************************************************************
  * # License
  * <b>Copyright 2021 Silicon Laboratories Inc. www.silabs.com</b>
@@ -32,9 +32,9 @@
 
 #include "microfrontend/sl_ml_fft.h"
 //#include "microfrontend/config/sl_ml_frontend_config.h"
-#include "CMSIS/DSP/Include/arm_const_structs.h"
-#include "CMSIS/DSP/Include/arm_common_tables.h"
-#include "CMSIS/DSP/Include/dsp/transform_functions.h"
+#include "arm_const_structs.h"
+#include "arm_common_tables.h"
+#include "dsp/transform_functions.h"
 
 // Helper Functions
 // #define SL_CONCAT(A, B) A ## B
@@ -59,7 +59,7 @@
 //   #define SL_ML_CFFT_LEN 32
 // #elif SL_ML_FRONTEND_CONFIG_RFFT_LEN==32
 //   #define SL_ML_CFFT_LEN 16
-// #endif 
+// #endif
 
 
 // FFT Input and Output buffers
@@ -69,34 +69,34 @@
 // RFFT instance
 static arm_rfft_instance_q15 rfft_instance;
 
-// Real Coefficient Tables 
+// Real Coefficient Tables
 static q15_t* __ALIGNED(4) real_coeff_table_A = nullptr;
 static q15_t* __ALIGNED(4) real_coeff_table_B = nullptr;
 
 /*******************************************************************************
- *  The real coefficient tables are used by the CMSIS rfft implementation during 
+ *  The real coefficient tables are used by the CMSIS rfft implementation during
  *  the split operation. The number of coefficients needed for this operation is
- *  dependent on the length of the FFT. 
- * 
- *  The CMSIS DSP library provides the coefficient tables as large tables 
- *  supporting different size FFT's up to 8192. In order to minimize ROM usage 
- *  for shorter FFT lengths, this function re-generates the tables specific 
- *  to the length of the FFT.  
+ *  dependent on the length of the FFT.
+ *
+ *  The CMSIS DSP library provides the coefficient tables as large tables
+ *  supporting different size FFT's up to 8192. In order to minimize ROM usage
+ *  for shorter FFT lengths, this function re-generates the tables specific
+ *  to the length of the FFT.
  ******************************************************************************/
 static void generate_real_coeff_tables(int n){
 
-  // Generate the real coefficient tables 
+  // Generate the real coefficient tables
   for (int i = 0; i < n; i++){
      real_coeff_table_A[2 * i]     = (q15_t)roundf((0.5 * ( 1.0 - sinf(2 * PI / (float) (2 * n) * (float) i))) * powf(2,15));
      real_coeff_table_A[2 * i + 1] = (q15_t)roundf((0.5 * (-1.0 * cosf(2 * PI / (float) (2 * n) * (float) i))) * powf(2,15));
-     
+
      real_coeff_table_B[2 * i]     = (q15_t)roundf((0.5 * (1.0 + sinf(2 * PI / (float) (2 * n) * (float) i))) * powf(2,15));
      real_coeff_table_B[2 * i + 1] = (q15_t)roundf((0.5 * (1.0 * cosf(2 * PI / (float) (2 * n) * (float) i))) * powf(2,15));;
   }
 }
 
 /**************************************************************************//**
- * Compute real FFT 
+ * Compute real FFT
  *****************************************************************************/
 void sli_ml_fft_compute(struct sli_ml_fft_state* state, const int16_t* input,
                 int input_scale_shift) {
@@ -104,14 +104,14 @@ void sli_ml_fft_compute(struct sli_ml_fft_state* state, const int16_t* input,
   const size_t fft_size = state->fft_size;
 
   int16_t* fft_input = state->input;
-  
+
   // Scale input by the given shift.
   size_t i;
   for (i = 0; i < input_size; ++i) {
     fft_input[i] = static_cast<int16_t>(static_cast<uint16_t>(input[i])
                                         << input_scale_shift);
   }
-  
+
   // Zero out whatever else remains in the top part of the input.
   for (; i < fft_size; ++i) {
     fft_input[i] = 0;
@@ -138,7 +138,7 @@ sl_status_t sli_ml_fft_init(struct sli_ml_fft_state* state, size_t input_size) {
       break;
     }
   }
-  
+
   // Initialize FFT struct
   state->input_size = input_size;
   state->fft_size = rfft_size;

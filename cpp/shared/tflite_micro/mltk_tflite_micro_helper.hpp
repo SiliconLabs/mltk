@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include <cstdio>
 #include <cassert>
 #include <functional>
@@ -39,16 +39,16 @@
 
 #ifndef MLTK_DEBUG
 #define MLTK_DEBUG(...)
-#endif 
+#endif
 #ifndef MLTK_INFO
 #define MLTK_INFO(...)
-#endif 
+#endif
 #ifndef MLTK_WARN
 #define MLTK_WARN(...)
-#endif 
+#endif
 #ifndef MLTK_ERROR
 #define MLTK_ERROR(...)
-#endif 
+#endif
 
 
 #define ALLOCATE_PERSISTENT_BUFFER(type, count) ::mltk::allocate_persistent_buffer<type>(context, count)
@@ -91,6 +91,7 @@ struct TfliteMicroAccelerator
 extern bool model_profiler_enabled;
 extern bool model_tensor_recorder_enabled;
 extern bool model_error_reporter_enabled;
+extern bool model_has_unsupported_layers;
 extern const char* TFLITE_MICRO_VERSION;
 
 
@@ -119,7 +120,7 @@ T* allocate_persistent_buffer(TfLiteContext *ctx, unsigned count)
 
 /*************************************************************************************************/
 template<typename T>
-T* get_scratch_buffer(TfLiteContext *ctx, int scratch_buffer_index) 
+T* get_scratch_buffer(TfLiteContext *ctx, int scratch_buffer_index)
 {
     return reinterpret_cast<T*>(ctx->GetScratchBuffer(ctx, scratch_buffer_index));
 }

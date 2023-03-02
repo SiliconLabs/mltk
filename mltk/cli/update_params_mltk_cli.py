@@ -59,7 +59,9 @@ If this option is provided, then the device must be locally connected'''
     \b
     NOTE: The .tflite metadata is only modified. 
     The weights and model structure of the .tflite file are NOT modified. 
-    
+    \b
+    For more details see:
+    https://siliconlabs.github.io/mltk/docs/guides/model_parameters
     \b
     ----------
      Examples

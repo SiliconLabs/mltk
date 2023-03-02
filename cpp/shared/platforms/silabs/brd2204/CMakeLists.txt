@@ -33,25 +33,25 @@ mltk_set(MLTK_STACK_SIZE 5120 DEFAULT)
 
 
 target_include_directories(${PROJECT_NAME}
-PUBLIC 
+PUBLIC
     config
     autogen
 )
 
 target_sources(${PROJECT_NAME}
 PRIVATE
-    start.c 
+    start.c
 )
 
 add_library(${PROJECT_NAME}_autogen)
 target_sources(${PROJECT_NAME}_autogen
 PRIVATE
-    autogen/sl_board_default_init.c 
-    autogen/sl_device_init_clocks.c 
-    autogen/sl_event_handler.c 
-    autogen/sl_iostream_handles.c 
-    autogen/sl_iostream_init_usart_instances.c 
-    autogen/sl_power_manager_handler.c 
+    autogen/sl_board_default_init.c
+    autogen/sl_device_init_clocks.c
+    autogen/sl_event_handler.c
+    autogen/sl_iostream_handles.c
+    autogen/sl_iostream_init_usart_instances.c
+    autogen/sl_power_manager_handler.c
     autogen/sl_simple_led_instances.c
     autogen/sl_simple_button_instances.c
 )
@@ -72,28 +72,30 @@ PRIVATE
     mltk::gecko_sdk::includes
 )
 target_compile_options(${PROJECT_NAME}_autogen
-PRIVATE 
+PRIVATE
     -Wno-implicit-function-declaration
 )
 
 set(GECKO_SDK_IO_STREAM_SERVICE_SOURCES
-    sl_iostream_retarget_stdio.c 
-    sl_iostream_uart.c 
-    sl_iostream_usart.c 
+    sl_iostream_retarget_stdio.c
+    sl_iostream_uart.c
+    sl_iostream_usart.c
     sl_iostream_stdlib_config.c
 )
 mltk_set(GECKO_SDK_IO_STREAM_SERVICE_SOURCES "${GECKO_SDK_IO_STREAM_SERVICE_SOURCES}")
 
 
 target_link_libraries(${PROJECT_NAME}
-PRIVATE 
+PRIVATE
     mltk::cpputils
     mltk_platform_silabs_simple_bootloader
-  
-PUBLIC 
+
+PUBLIC
     mltk::gecko_sdk::clib_wrappers
     mltk::platform::common
-    mltk::cmsis 
+    mltk::platform::silabs_common
+    mltk::platform::fault_handler
+    mltk::cmsis
     ${PROJECT_NAME}_api
     mltk::gecko_sdk::iostream_service
     mltk::gecko_sdk::device_init_service
@@ -114,18 +116,20 @@ PUBLIC
     mltk::jlink_stream
 )
 
-target_link_options(${PROJECT_NAME} 
-PUBLIC 
-    -Wl,-T${CMAKE_CURRENT_LIST_DIR}/autogen/linkerfile.ld
+set(LINKER_SCRIPT_PATH "${CMAKE_CURRENT_LIST_DIR}/autogen/linkerfile.ld" CACHE INTERNAL "")
+target_link_options(${PROJECT_NAME}
+PUBLIC
+    -nostartfiles
+    -Wl,-T${LINKER_SCRIPT_PATH}
     -Wl,-u_printf_float # Enable %f in printf()
     -Wl,-u_start
 )
-set_target_properties(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${CMAKE_CURRENT_LIST_DIR}/autogen/linkerfile.ld)
+set_target_properties(${PROJECT_NAME} PROPERTIES LINK_DEPENDS ${LINKER_SCRIPT_PATH})
 
 target_compile_definitions(${PROJECT_NAME}
-PUBLIC 
+PUBLIC
     MLTK_CPU_CLOCK=${MLTK_CPU_CLOCK}
-PRIVATE 
+PRIVATE
     MLTK_STACK_SIZE=${MLTK_STACK_SIZE}
 )
 
@@ -133,16 +137,16 @@ PRIVATE
 # Create the MLTK platform_api library
 add_library(${PROJECT_NAME}_api STATIC)
 target_sources(${PROJECT_NAME}_api
-PRIVATE 
+PRIVATE
     hardfault_handler.c
 )
 target_link_options(${PROJECT_NAME}_api
-INTERFACE 
+INTERFACE
     -Wl,--whole-archive ${CMAKE_CURRENT_BINARY_DIR}/lib${PROJECT_NAME}_api.a -Wl,--no-whole-archive
 )
 
 target_link_libraries(${PROJECT_NAME}_api
-PRIVATE 
+PRIVATE
     ${PROJECT_NAME}
 )
 

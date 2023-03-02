@@ -2,6 +2,7 @@
 from mltk.core.tflite_model import TfliteOpCode
 from mltk.core.profiling_results import ProfilingLayerResult
 
+
 from .base_estimator import BaseEstimator
 
 _estimators = {
@@ -29,16 +30,16 @@ _estimators = {
     }
 }
 
-def get_estimates(
+
+def get_estimator(
     accelerator:str,
-    layer:ProfilingLayerResult,  
-    cpu_clock_rate:int,
+    layer:ProfilingLayerResult,
     **kwargs
-):
+) -> BaseEstimator:
     # Convert the accelerator arg to 'none' or 'mvp'
     accelerator = 'none' if accelerator is None else accelerator.lower()
     if accelerator not in _estimators:
-        return
+        return None
 
     estimators = _estimators[accelerator]
 
@@ -51,11 +52,29 @@ def get_estimates(
     # If this kernel does not have an estimator
     # then just return
     if layer.opcode not in estimators:
-        return
+        return None
 
     # Update the given layer with the estimators predictions
     estimator = estimators[layer.opcode]
-    estimator.predict(
-        layer=layer, 
-        cpu_clock_rate=cpu_clock_rate
+    estimator.load_models()
+
+    return estimator
+
+
+def get_estimates(
+    accelerator:str,
+    layer:ProfilingLayerResult,
+    cpu_clock_rate:int,
+    **kwargs
+):
+    estimator = get_estimator(
+        accelerator=accelerator,
+        layer=layer,
+        **kwargs
     )
+
+    if estimator is not None:
+        estimator.predict(
+            layer=layer,
+            cpu_clock_rate=cpu_clock_rate
+        )

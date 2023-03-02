@@ -130,7 +130,7 @@ class AzureBackend(BackendBase):
 
     def count_characters(self, config:AzureGenerationConfig) -> int:
         assert config.voice.backend == self.name
-        text = self._generate_msg(config)
+        text = self._generate_msg(config, for_counting_chars=True)
         return len(text)
 
     def generate_filename(self, config:AzureGenerationConfig) -> str:
@@ -177,7 +177,7 @@ class AzureBackend(BackendBase):
         return out_path
 
 
-    def _generate_msg(self, config:AzureGenerationConfig) -> str:
+    def _generate_msg(self, config:AzureGenerationConfig, for_counting_chars=False) -> str:
         rate = config.rate
         pitch = config.pitch
         style = config.style
@@ -188,8 +188,9 @@ class AzureBackend(BackendBase):
         if pitch in ('default', 'medium'):
             pitch = None
 
-        ssml_msg  = f'<speak version="1.0" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="{config.voice.language_code}">'
-        ssml_msg += f'<voice name="{config.voice.name}">'
+        ssml_msg  = '' if for_counting_chars else f'<speak version="1.0" xmlns:mstts="https://www.w3.org/2001/mstts" xml:lang="{config.voice.language_code}">'
+        ssml_msg += '' if for_counting_chars else f'<voice name="{config.voice.name}">'
+
         if style:
             ssml_msg += f'<mstts:express-as style="{style}">'
 
@@ -210,8 +211,8 @@ class AzureBackend(BackendBase):
         if style:
             ssml_msg += '</mstts:express-as>'
 
-        ssml_msg += '</voice>'
-        ssml_msg += '</speak>'
+        ssml_msg += '' if for_counting_chars else '</voice>'
+        ssml_msg += '' if for_counting_chars else '</speak>'
 
         return ssml_msg
 

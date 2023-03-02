@@ -9,8 +9,10 @@ if(NOT GECKO_SDK_BOARD_TARGET)
 endif()
 
 
-target_link_libraries(${NAME} 
-PUBLIC 
+target_link_libraries(${NAME}
+INTERFACE
+    mltk::gecko_sdk::app_bluetooth
+PUBLIC
     mltk::gecko_sdk::freertos
     mltk::gecko_sdk::rail
     mltk::gecko_sdk::psa_crypto
@@ -44,7 +46,7 @@ add_library(mltk::gecko_sdk::bluetooth_efr32mg24 ALIAS ${NAME}_efr32mg24)
 
 
 target_link_libraries(${NAME}_efr32mg24
-INTERFACE 
+INTERFACE
     ${NAME}
     mltk::gecko_sdk::rail_efr32mg24
     ${GECKO_SDK_BOARD_TARGET}

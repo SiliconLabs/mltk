@@ -121,7 +121,7 @@ The currently supported commands are: train
     The various SSH settings may be configured in the model mixin: SshMixin and/or in the file ~/.mltk/user_settings.yaml and/or ~/.ssh/config.
     \b
     For more details, see:
-    https://siliconlabs.github.io/mltk/docs/guides/model_training_via_ssh.html
+    https://siliconlabs.github.io/mltk/docs/guides/model_training_via_ssh
     \b
     NOTE: Issuing Ctrl+C will cancel the command on the remote server
 

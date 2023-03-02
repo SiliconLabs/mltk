@@ -7,7 +7,7 @@ Audio classification example using the Tensorflow dataset API
 
 This provides an example of how to use the `Tensorflow Dataset API <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_
 with the third-party Python library `audiomentations <https://github.com/iver56/audiomentations>`_
-to augment audio during model training. 
+to augment audio during model training.
 
 
 Commands
@@ -34,6 +34,14 @@ Commands
    python audio_tf_dataset.py
 
 
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/examples/audio_tf_dataset.py
+    :language: python
+    :lines: 47-
+
+
 """
 # pylint: disable=redefined-outer-name
 from typing import Tuple
@@ -44,13 +52,13 @@ import tensorflow as tf
 import mltk.core as mltk_core
 from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings
 from mltk.core.preprocess.utils import tf_dataset as tf_dataset_utils
-from mltk.core.preprocess.utils import audio as audio_utils 
+from mltk.core.preprocess.utils import audio as audio_utils
 from mltk.core.preprocess.utils import image as image_utils
 from mltk.datasets.audio.speech_commands import speech_commands_v2
 from mltk.utils.python import install_pip_package
 
 
-# Install the audiomentations Python package (if necessary) 
+# Install the audiomentations Python package (if necessary)
 # then import it
 install_pip_package('audiomentations')
 import audiomentations
@@ -66,7 +74,7 @@ class MyModel(
     mltk_core.MltkModel,    # We must inherit the MltkModel class
     mltk_core.TrainMixin,   # We also inherit the TrainMixin since we want to train this model
     mltk_core.DatasetMixin, # We also need the DatasetMixin mixin to provide the relevant dataset properties
-    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation stats for our classification model 
+    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation stats for our classification model
 ):
     pass
 my_model = MyModel()
@@ -82,7 +90,7 @@ my_model.description = 'Audio classifier example using the Tensorflow dataset AP
 # Training Basic Settings
 #
 my_model.epochs = 100
-my_model.batch_size = 32 
+my_model.batch_size = 32
 
 
 
@@ -91,18 +99,18 @@ my_model.batch_size = 32
 #
 def my_model_builder(model: MyModel) -> tf.keras.Model:
     """Build the Keras model
-    
+
     This is called by the MLTK just before training starts.
 
     Arguments:
         my_model: The MltkModel instance
-    
+
     Returns:
         Compiled Keras model instance
     """
 
     input_shape = model.input_shape
-    filters = 8 
+    filters = 8
 
     keras_model = tf.keras.models.Sequential(name=model.name, layers = [
         tf.keras.layers.Conv2D(filters, (3,3), padding='same', input_shape=input_shape),
@@ -110,7 +118,7 @@ def my_model_builder(model: MyModel) -> tf.keras.Model:
         tf.keras.layers.Activation('relu'),
         tf.keras.layers.MaxPooling2D(2,2),
 
-        tf.keras.layers.Conv2D(2*filters,(3,3), padding='same'), 
+        tf.keras.layers.Conv2D(2*filters,(3,3), padding='same'),
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.Activation('relu'),
         tf.keras.layers.MaxPooling2D(2,2),
@@ -119,7 +127,7 @@ def my_model_builder(model: MyModel) -> tf.keras.Model:
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.Activation('relu'),
         tf.keras.layers. MaxPooling2D(2,2),
-    
+
         tf.keras.layers.Conv2D(4*filters, (3,3), padding='same'),
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.Activation('relu'),
@@ -137,8 +145,8 @@ def my_model_builder(model: MyModel) -> tf.keras.Model:
     ])
 
     keras_model.compile(
-        loss='categorical_crossentropy', 
-        optimizer='adam', 
+        loss='categorical_crossentropy',
+        optimizer='adam',
         metrics= ['accuracy']
     )
 
@@ -157,7 +165,7 @@ my_model.build_model_function = my_model_builder
 my_model.checkpoint['monitor'] =  'val_accuracy'
 
 # https://keras.io/api/callbacks/reduce_lr_on_plateau/
-# If the test accuracy doesn't improve after 'patience' epochs 
+# If the test accuracy doesn't improve after 'patience' epochs
 # then decrease the learning rate by 'factor'
 my_model.reduce_lr_on_plateau = dict(
   monitor='accuracy',
@@ -168,32 +176,32 @@ my_model.reduce_lr_on_plateau = dict(
 
 # https://keras.io/api/callbacks/early_stopping/
 # If the validation accuracy doesn't improve after 'patience' epochs then stop training
-my_model.early_stopping = dict( 
+my_model.early_stopping = dict(
   monitor = 'val_accuracy',
-  patience = 15 
+  patience = 15
 )
 
 # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard
 my_model.tensorboard = dict(
-    histogram_freq=0,       # frequency (in epochs) at which to compute activation and weight histograms 
-                            # for the layers of the model. If set to 0, histograms won't be computed. 
+    histogram_freq=0,       # frequency (in epochs) at which to compute activation and weight histograms
+                            # for the layers of the model. If set to 0, histograms won't be computed.
                             # Validation data (or split) must be specified for histogram visualizations.
     write_graph=False,       # whether to visualize the graph in TensorBoard. The log file can become quite large when write_graph is set to True.
     write_images=False,     # whether to write model weights to visualize as image in TensorBoard.
-    update_freq="batch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics 
-                            # to TensorBoard after each batch. The same applies for 'epoch'. 
-                            # If using an integer, let's say 1000, the callback will write the metrics and losses 
-                            # to TensorBoard every 1000 batches. Note that writing too frequently to 
+    update_freq="batch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics
+                            # to TensorBoard after each batch. The same applies for 'epoch'.
+                            # If using an integer, let's say 1000, the callback will write the metrics and losses
+                            # to TensorBoard every 1000 batches. Note that writing too frequently to
                             # TensorBoard can slow down your training.
-    profile_batch=(51,51),        # Profile the batch(es) to sample compute characteristics. 
-                            # profile_batch must be a non-negative integer or a tuple of integers. 
-                            # A pair of positive integers signify a range of batches to profile. 
+    profile_batch=(51,51),        # Profile the batch(es) to sample compute characteristics.
+                            # profile_batch must be a non-negative integer or a tuple of integers.
+                            # A pair of positive integers signify a range of batches to profile.
                             # By default, it will profile the second batch. Set profile_batch=0 to disable profiling.
-) 
+)
 
 # NOTE: You can also add manually add other KerasCallbacks
 # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/
-# Any callbacks specified here will override the built-in callbacks 
+# Any callbacks specified here will override the built-in callbacks
 # (e.g. my_model.reduce_lr_on_plateau, my_model.early_stopping)
 my_model.train_callbacks = [
     tf.keras.callbacks.TerminateOnNaN()
@@ -300,7 +308,7 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
     height, width = frontend_settings.spectrogram_shape
     y_shape = (batch_length, height, width, 1)
     y_batch = np.empty(y_shape, dtype=np.int8)
-    
+
     # For each audio sample path in the current batch
     for i, audio_path in enumerate(batch):
         new_seed = tf.random.experimental.stateless_split((seed[i], seed[i]), num=1)[0][0]
@@ -309,7 +317,7 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
 
         # Read the audio file
         sample, original_sample_rate = audio_utils.read_audio_file(
-            audio_path, 
+            audio_path,
             return_sample_rate=True,
             return_numpy=True
         )
@@ -330,7 +338,7 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
             dataset_dir = speech_commands_v2.load_data()
             audio_augmentations = audiomentations.Compose(
                 p=0.90,
-                transforms=[ 
+                transforms=[
                 audiomentations.PitchShift(min_semitones=-1, max_semitones=1, p=0.5),
                 audiomentations.TimeStretch(min_rate=0.9, max_rate=1.1, p=0.5),
                 audiomentations.Gain(min_gain_in_db=0.95, max_gain_in_db=2, p=0.75),
@@ -344,7 +352,7 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
                     p=0.5,
                 ),
                 audiomentations.AddBackgroundNoise(
-                    f'{dataset_dir}/_background_noise_', 
+                    f'{dataset_dir}/_background_noise_',
                     min_snr_in_db=20,
                     max_snr_in_db=40,
                     noise_rms="relative",
@@ -360,15 +368,15 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
         # Convert the sample rate (if necessary)
         if original_sample_rate != frontend_settings.sample_rate_hz:
             augmented_sample = audio_utils.resample(
-                augmented_sample, 
-                orig_sr=original_sample_rate, 
+                augmented_sample,
+                orig_sr=original_sample_rate,
                 target_sr=frontend_settings.sample_rate_hz
             )
 
         # Generate a spectrogram from the augmented audio sample
         spectrogram = audio_utils.apply_frontend(
-            sample=augmented_sample, 
-            settings=frontend_settings, 
+            sample=augmented_sample,
+            settings=frontend_settings,
             dtype=np.int8
         )
         # The output spectrogram is 2D, add a channel dimension to make it 3D:
@@ -379,13 +387,13 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
         data_dump_dir = globals().get('data_dump_dir', None)
         if data_dump_dir:
             audio_dump_path = audio_utils.write_audio_file(
-                data_dump_dir, 
-                augmented_sample, 
+                data_dump_dir,
+                augmented_sample,
                 sample_rate=frontend_settings.sample_rate_hz
             )
             image_dump_path = audio_dump_path.replace('.wav', '.jpg')
             image_utils.write_image_file(image_dump_path, spectrogram)
-            
+
         y_batch[i] = spectrogram
 
     return y_batch
@@ -402,16 +410,16 @@ class MyDataset(mltk_core.MltkDataset):
         self.pools = []
 
     def load_dataset(
-        self, 
-        subset: str,  
+        self,
+        subset: str,
         test:bool = False,
         **kwargs
     ) -> Tuple[tf.data.Dataset, None, tf.data.Dataset]:
         """Load the dataset subset
-        
+
         This is called automatically by the MLTK before training
         or evaluation.
-        
+
         Args:
             subset: The dataset subset to return: 'training' or 'evaluation'
             test: This is optional, it is used when invoking a training "dryrun", e.g.: mltk train audio_tf_dataset-test
@@ -467,7 +475,7 @@ class MyDataset(mltk_core.MltkDataset):
             split=split,
             unknown_class_percentage=2.0, # We want 2x the number of "unknown" samples
             return_audio_data=False, # We only want to return the file paths
-            class_counts=my_model.class_counts[subset], 
+            class_counts=my_model.class_counts[subset],
         )
 
         # We use an incrementing counter as the seed for the random augmentations
@@ -504,7 +512,7 @@ class MyDataset(mltk_core.MltkDataset):
         # A perfect shuffle would use n_samples but this can slow down training,
         # so we just shuffle batches of the data
         ds = ds.shuffle(per_job_batch_size, reshuffle_each_iteration=True)
-        
+
         # At this point we have a flat dataset of x,y tuples
         # Batch the data as necessary for training
         ds = ds.batch(my_model.batch_size)
@@ -532,7 +540,7 @@ my_model.dataset = MyDataset()
 # or audio_classifier example application.
 # NOTE: Corresponding command-line options will override these values.
 
-# Controls the smoothing. 
+# Controls the smoothing.
 # Drop all inference results that are older than <now> minus window_duration
 # Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some commands
 my_model.model_parameters['average_window_duration_ms'] = 1000
@@ -553,7 +561,7 @@ my_model.model_parameters['verbose_model_output_logs'] = False
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python audio_tf_dataset.py
 #
 # Note that this has the same functionality as:

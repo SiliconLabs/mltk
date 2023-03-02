@@ -9,7 +9,7 @@
 /docs/overview
 /docs/why_mltk
 /docs/installation
-/docs/command_line
+/docs/command_line/index
 /docs/guides/index
 
 ```

@@ -9,6 +9,7 @@ if(MLTK_PLATFORM_IS_EMBEDDED)
 
 find_package(mltk_cmsis REQUIRED)
 add_library(mltk_tflite_micro_cmsis_kernels)
+add_library(mltk_tflite_micro_helium_kernels ALIAS mltk_tflite_micro_cmsis_kernels)
 add_library(mltk::tflite_micro_cmsis_kernels ALIAS mltk_tflite_micro_cmsis_kernels)
 
 set(tflm_cmsis_kernel_sources
@@ -26,7 +27,7 @@ set(tflm_cmsis_kernel_sources
 # then exclude the CMSIS kernels that are accelerated
 mltk_get(TFLITE_MICRO_EXCLUDED_REF_KERNELS)
 if(TFLITE_MICRO_EXCLUDED_REF_KERNELS)
-  mltk_info("Excluded CMSIS kernels: ${TFLITE_MICRO_EXCLUDED_REF_KERNELS}")
+  mltk_info("Excluded CMSIS kernels: ${TFLITE_MICRO_EXCLUDED_REF_KERNELS}" TAG mltk_tflite_micro_cmsis_kernels)
   foreach(pat ${TFLITE_MICRO_EXCLUDED_REF_KERNELS})
     list(FILTER tflm_cmsis_kernel_sources EXCLUDE REGEX ".*/${pat}\.cc")
   endforeach()
@@ -34,7 +35,7 @@ endif()
 
 mltk_append(TFLITE_MICRO_EXCLUDED_REF_KERNELS
     add
-    conv 
+    conv
     depthwise_conv
     fully_connected
     mul
@@ -44,12 +45,13 @@ mltk_append(TFLITE_MICRO_EXCLUDED_REF_KERNELS
 )
 list(TRANSFORM tflm_cmsis_kernel_sources PREPEND ${Tensorflow_SOURCE_BASE_DIR}/)
 target_sources(mltk_tflite_micro_cmsis_kernels
-PRIVATE 
+PRIVATE
   ${tflm_cmsis_kernel_sources}
+  kernels/cmsis_kernels_helper.cc
 )
 
 target_link_libraries(mltk_tflite_micro_cmsis_kernels
-PRIVATE 
+PRIVATE
   mltk::cmsis_nn
   mltk::tflite_micro
 )

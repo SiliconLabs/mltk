@@ -14,8 +14,9 @@ from mltk.utils.path import clean_directory
 from mltk.utils import gpu
 
 from .model import (
-    MltkModel, 
-    KerasModel, 
+    MltkModel,
+    MltkModelEvent,
+    KerasModel,
     DatasetMixin,
     TrainMixin,
     load_mltk_model,
@@ -40,9 +41,10 @@ def train_model(
     create_archive:bool=True,
     show:bool=False,
     test:bool=False,
+    post_process:bool=False
 ) -> TrainingResults:
     """Train a model using Keras and Tensorflow
-    
+
     .. seealso::
        * `Model Training Guide <https://siliconlabs.github.io/mltk/docs/guides/model_training.html>`_
        * `Model Training API Examples <https://siliconlabs.github.io/mltk/mltk/examples/train_model.html>`_
@@ -54,12 +56,13 @@ def train_model(
         weights: Optional file path of model weights to load before training
         epochs: Optional, number of epochs to train model. This overrides the mltk_model.epochs attribute
         resume_epoch: Optional, resuming training at the given epoch
-        verbose: Optional, Verbosely print to logger while training 
+        verbose: Optional, Verbosely print to logger while training
         clean: Optional, Clean the log directory before training
         quantize: Optional, quantize the model after training successfully completes
         create_archive: Optional, create an archive (.mltk.zip) of the training results and generated model files
         show: Optional, show the training results diagram
         test: Optional, load the model in "test mode" if true.
+        post_process: This allows for post-processing the training results (e.g. uploading to a cloud) if supported by the given MltkModel
 
     Returns:
         The model TrainingResults
@@ -88,6 +91,7 @@ def train_model(
         raise ValueError('model argument must be an MltkModel instance that inherits DatasetMixin')
 
     logger = get_mltk_logger()
+    mltk_model.trigger_event(MltkModelEvent.TRAIN_STARTUP, post_process=post_process, logger=logger)
 
     # Ensure the MltkModel archive is writable before we start training
     if create_archive:
@@ -101,18 +105,27 @@ def train_model(
     logger = mltk_model.create_logger('train', parent=logger)
     gpu.initialize(logger=logger)
 
+
     try:
         mltk_model.load_dataset(subset='training', logger=logger, test=mltk_model.test_mode_enabled)
     except Exception as e:
         prepend_exception_msg(e, 'Failed to load model training dataset')
         raise
 
+    mltk_model.trigger_event(MltkModelEvent.BEFORE_BUILD_TRAIN_MODEL, logger=logger)
+
     # Build the MLTK model's corresponding Keras model
     try:
         keras_model = mltk_model.build_model_function(mltk_model)
     except Exception as e:
         prepend_exception_msg(e, 'Failed to build Keras model')
-        raise 
+        raise
+
+    mltk_model.trigger_event(
+        MltkModelEvent.AFTER_BUILD_TRAIN_MODEL,
+        keras_model=keras_model,
+        logger=logger
+    )
 
     # Load the weights into the model if necessary
     try:
@@ -122,11 +135,11 @@ def train_model(
             keras_model.load_weights(weights_path)
     except Exception as e:
         prepend_exception_msg(e, 'Failed to load weights into Keras model')
-        raise 
+        raise
 
     # Generate a summary of the model
     try:
-        summary = summarize_model( 
+        summary = summarize_model(
             mltk_model,
             built_model=keras_model
         )
@@ -149,8 +162,8 @@ def train_model(
         class_weights = None
         logger.warning("Failed to compute class weights\nSet my_model.class_weights = 'none' to disable", exc_info=e)
 
-   
-    kwargs = dict(
+
+    fit_kwargs = dict(
         x=mltk_model.x,
         y=mltk_model.y,
         batch_size=mltk_model.batch_size,
@@ -166,15 +179,20 @@ def train_model(
         epochs=epochs,
         initial_epoch=initial_epoch,
         callbacks=callbacks,
-        verbose=0 if verbose == False else 1,
+        verbose=0 if verbose is False else 1,
     )
-    kwargs.update(mltk_model.train_kwargs)
-    logger.debug(f'Train kwargs:\n{pprint.pformat(kwargs)}')
-    
+    fit_kwargs.update(mltk_model.train_kwargs)
+
+    mltk_model.trigger_event(MltkModelEvent.BEFORE_TRAIN, fit_kwargs=fit_kwargs, logger=logger)
+
+    logger.debug(f'Train kwargs:\n{pprint.pformat(fit_kwargs)}')
+
     logger.info('Starting model training ...')
     training_history = keras_model.fit(
-        **kwargs
+        **fit_kwargs
     )
+
+    mltk_model.trigger_event(MltkModelEvent.AFTER_TRAIN, training_history=training_history, logger=logger)
 
     try:
         mltk_model.unload_dataset()
@@ -184,9 +202,9 @@ def train_model(
 
     keras_model = _save_keras_model_file(mltk_model, keras_model, logger=logger)
     results = _save_training_results(
-        mltk_model, 
-        keras_model, 
-        training_history, 
+        mltk_model,
+        keras_model,
+        training_history,
         logger=logger,
         show=show,
     )
@@ -198,7 +216,7 @@ def train_model(
     if quantize and mltk_model.tflite_converter:
         try:
             quantize_model(
-                mltk_model, 
+                mltk_model,
                 keras_model=results.keras_model,
                 update_archive=create_archive
             )
@@ -222,12 +240,15 @@ def train_model(
     if show:
         plt.show(block=True)
 
+
+    mltk_model.trigger_event(MltkModelEvent.TRAIN_SHUTDOWN, results=results, logger=logger)
+
     return results
 
 
 def _get_epochs(
-    mltk_model: MltkModel, 
-    epochs:int, 
+    mltk_model: MltkModel,
+    epochs:int,
     callbacks:list,
     logger: logging.Logger
 ) -> int:
@@ -249,8 +270,8 @@ def _get_epochs(
 
 
 def _get_keras_callbacks(
-    mltk_model: MltkModel, 
-    epochs: int, 
+    mltk_model: MltkModel,
+    epochs: int,
     logger: logging.Logger
 ) -> list:
     """Populate the Keras training callbacks"""
@@ -266,7 +287,7 @@ def _get_keras_callbacks(
         cb = keras.callbacks.TensorBoard(**kwargs)
         keras_callbacks.append(cb)
         logger.info(f'Tensorboard logdir: {tb_log_dir}')
-    
+
 
     if mltk_model.checkpoint and not contains_class_type(keras_callbacks, keras.callbacks.ModelCheckpoint):
         weights_dir = mltk_model.weights_dir
@@ -316,17 +337,24 @@ def _get_keras_callbacks(
             save_freq='epoch',
         ))
 
+    mltk_model.trigger_event(
+        MltkModelEvent.POPULATE_TRAIN_CALLBACKS,
+        keras_callbacks=keras_callbacks,
+        logger=logger
+    )
+
     callback_str = ', '.join([str(x.__class__.__name__) for x in keras_callbacks])
     logger.debug(f'Using Keras callbacks: {callback_str}')
+
 
     return keras_callbacks
 
 
 def _try_resume_training(
-    mltk_model: MltkModel, 
-    keras_model: KerasModel, 
+    mltk_model: MltkModel,
+    keras_model: KerasModel,
     epochs:int,
-    resume_epoch: int, 
+    resume_epoch: int,
     logger: logging.Logger
 ) -> int:
     """Attempt to resume training at either the last available epoch or at the specified epoch
@@ -346,7 +374,7 @@ def _try_resume_training(
         if resume_epoch == -1:
             logger.warning('No training checkpoints found, cannot --resume. Starting from beginning')
             return 0
-        
+
         raise Exception(f'Checkpoint not found, cannot resume training at epoch {resume_epoch}')
 
     fn = os.path.basename(checkpoint_path[:-len('.h5')])
@@ -365,7 +393,7 @@ def _try_resume_training(
 
 
 def compute_class_weights(
-    mltk_model: MltkModel, 
+    mltk_model: MltkModel,
     logger: logging.Logger
 ) -> dict:
     try:
@@ -378,7 +406,7 @@ def compute_class_weights(
 
 
 def _compute_class_weights_unsafe(
-    mltk_model: MltkModel, 
+    mltk_model: MltkModel,
     logger: logging.Logger
 ) -> dict:
     """Compute the given data's class weights"""
@@ -393,14 +421,14 @@ def _compute_class_weights_unsafe(
                 return class_weights
 
         # Otherwise, we need to convert the class weights from:
-        # {"label1": 1.0, "label2": .5, "lable3": .4} 
+        # {"label1": 1.0, "label2": .5, "lable3": .4}
         # to
         # {0: 1.0, 1: .5, 2: .4}
 
         try:
             class_ids = [x for x in range(len(mltk_model.classes))]
         except Exception as e:
-            prepend_exception_msg(e, 
+            prepend_exception_msg(e,
                 'Class weights should be a dict with each key be an integer corresponding to a class'
             )
             raise
@@ -408,11 +436,11 @@ def _compute_class_weights_unsafe(
 
         if isinstance(class_weights, list):
             return dict(zip(class_ids, class_weights))
-        
+
         if isinstance(class_weights, str):
             class_weights = class_weights.lower()
             if class_weights == 'none':
-                return None 
+                return None
 
             if class_weights not in ('balance', 'balanced'):
                 raise RuntimeError(f'Invalid my_model.class_weights argument given: {class_weights}')
@@ -441,7 +469,7 @@ def _compute_class_weights_unsafe(
                 'my_model.class_weights=balanced not supported if my_model.y or mltk_model.class_counts not provided. \n'
                 'Must manually set class weights in my_model.class_weights'
             )
-            
+
 
         if isinstance(class_weights, dict):
             weights = {}
@@ -462,26 +490,35 @@ def _compute_class_weights_unsafe(
             for class_id, class_name in enumerate(mltk_model.classes):
                 s += f'{class_name.rjust(max_len)} = {class_weights[class_id]:.2f}\n'
             logger.info(s[:-1])
-        except: 
+        except:
             logger.info(f'Class weights: {pprint.pformat(class_weights)}')
 
     return class_weights
-    
+
 
 def _save_keras_model_file(
-    mltk_model:MltkModel, 
-    keras_model:KerasModel, 
+    mltk_model:MltkModel,
+    keras_model:KerasModel,
     logger: logging.Logger
 ) -> KerasModel:
     """Save the Keras .h5 model file"""
+
+    keras_model_dict = dict(value=keras_model)
+    mltk_model.trigger_event(
+        MltkModelEvent.BEFORE_SAVE_TRAIN_MODEL,
+        keras_model=keras_model,
+        keras_model_dict=keras_model_dict,
+        logger=logger
+    )
+    keras_model = keras_model_dict['value']
 
     # If a custom model saving callback was given then invoke that now
     # So that we obtain the correct keras model
     if mltk_model.on_save_keras_model is not None:
         try:
             keras_model = mltk_model.on_save_keras_model(
-                mltk_model=mltk_model, 
-                keras_model=keras_model, 
+                mltk_model=mltk_model,
+                keras_model=keras_model,
                 logger=logger
             )
             if keras_model is None:
@@ -490,7 +527,7 @@ def _save_keras_model_file(
         except Exception as e:
             prepend_exception_msg(e, 'Error while saving model using my_model.on_save_keras_model')
             raise
-        
+
     # Save the keras model as a .h5 file
     try:
         h5_path = mltk_model.h5_log_dir_path
@@ -500,18 +537,37 @@ def _save_keras_model_file(
         prepend_exception_msg(e, f'Error while saving model to {h5_path}')
         raise
 
+    keras_model_dict = dict(value=keras_model)
+    mltk_model.trigger_event(
+        MltkModelEvent.AFTER_SAVE_TRAIN_MODEL,
+        keras_model=keras_model,
+        keras_model_dict=keras_model_dict,
+        logger=logger
+    )
+    keras_model = keras_model_dict['value']
+
     return keras_model
 
 
 def _save_training_results(
-    mltk_model:MltkModel, 
-    keras_model:KerasModel, 
-    training_history, 
+    mltk_model:MltkModel,
+    keras_model:KerasModel,
+    training_history,
     logger: logging.Logger,
     show:bool = False
 ) -> TrainingResults:
     """Save the training history as .json and .png"""
-    results = TrainingResults(mltk_model, keras_model, training_history) 
+    output_dir =  f'{mltk_model.log_dir}/train'
+    results = TrainingResults(mltk_model, keras_model, training_history)
+
+    mltk_model.trigger_event(
+        MltkModelEvent.BEFORE_SAVE_TRAIN_RESULTS,
+        keras_model=keras_model,
+        results=results,
+        output_dir=output_dir,
+        logger=logger
+    )
+
     metric, best_val = results.get_best_metric()
     logger.info(f'\n\n*** Best training {metric} = {best_val:.3f}\n\n')
 
@@ -538,22 +594,22 @@ def _save_training_results(
 
     found_metrics = []
     history = results.history
-    
-    for metric in history:
+
+    for metric, value in history.items():
         if not metric in supported_metrics:
             continue
         if not f'val_{metric}' in history:
-            continue 
+            continue
         found_metrics.append(dict(
             name=metric,
-            train=history[metric],
+            train=value,
             validation=history[f'val_{metric}'],
         ))
 
     fig, _ = plt.subplots(figsize=(6, 6), clear=True)
     fig.suptitle(f'{mltk_model.name} Training History')
-        
-    # %% Plot training and validation metrics
+
+    # Plot training and validation metrics
     for i, metric in enumerate(found_metrics):
         plt.subplot(len(found_metrics), 1, i + 1)
         plt.plot(metric['train'])
@@ -562,7 +618,7 @@ def _save_training_results(
         plt.ylabel(supported_metrics[metric['name']])
         plt.xlabel('Epoch')
         plt.legend(['Train', 'Test'], loc='upper left')
-    
+
     plt.subplots_adjust(hspace=.5)
 
     training_results_path = f'{mltk_model.log_dir}/train/training-history.png'
@@ -574,14 +630,29 @@ def _save_training_results(
         fig.clear()
         plt.close(fig)
 
+    mltk_model.trigger_event(
+        MltkModelEvent.AFTER_SAVE_TRAIN_RESULTS,
+        keras_model=keras_model,
+        results=results,
+        output_dir=output_dir,
+        logger=logger
+    )
+
     return results
 
 
 def _create_model_archive(
-    mltk_model: MltkModel, 
+    mltk_model: MltkModel,
     logger: logging.Logger
 ):
     logger.info(f'Creating {mltk_model.archive_path}')
+
+    mltk_model.trigger_event(
+        MltkModelEvent.BEFORE_SAVE_TRAIN_ARCHIVE,
+        archive_path=mltk_model.archive_path,
+        logger=logger
+    )
+
     try:
         mltk_model.add_archive_dir('.', create_new=True)
         mltk_model.add_archive_file('__mltk_model_spec__')
@@ -591,9 +662,16 @@ def _create_model_archive(
         logger.warning(f'Failed to generate model archive, err: {e}', exc_info=e)
 
 
+    mltk_model.trigger_event(
+        MltkModelEvent.AFTER_SAVE_TRAIN_ARCHIVE,
+        archive_path=mltk_model.archive_path,
+        logger=logger
+    )
+
+
 def _clear_log_directory(
-    mltk_model: MltkModel, 
-    logger: logging.Logger, 
+    mltk_model: MltkModel,
+    logger: logging.Logger,
     recursive=False
 ):
     """Clear any previous training logs"""
@@ -623,7 +701,7 @@ def _clear_log_directory(
                 except Exception as e:
                     logger.debug(f'Failed to remove {path}, err: {e}')
 
-                
+
     if os.path.exists(mltk_model.archive_path):
         logger.debug(f'Removing {mltk_model.archive_path}')
         try:

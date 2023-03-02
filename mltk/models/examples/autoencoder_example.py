@@ -6,11 +6,11 @@
 
 
 This demonstrates how to build an autoencoder model.
-This is based on `Tensorflow: Anomaly detection <https://www.tensorflow.org/tutorials/generative/autoencoder#third_example_anomaly_detection>`_ 
+This is based on `Tensorflow: Anomaly detection <https://www.tensorflow.org/tutorials/generative/autoencoder#third_example_anomaly_detection>`_
 
-In this example, you will train an autoencoder to detect anomalies on the `ECG5000 <http://www.timeseriesclassification.com/description.php?Dataset=ECG5000>`_ dataset. 
-This dataset contains 5,000 `Electrocardiograms <https://en.wikipedia.org/wiki/Electrocardiography>`_, each with 140 data points. You will use a simplified version of the dataset, 
-where each example has been labeled either 0 (corresponding to an abnormal rhythm), or 1 (corresponding to a normal rhythm). 
+In this example, you will train an autoencoder to detect anomalies on the `ECG5000 <http://www.timeseriesclassification.com/description.php?Dataset=ECG5000>`_ dataset.
+This dataset contains 5,000 `Electrocardiograms <https://en.wikipedia.org/wiki/Electrocardiography>`_, each with 140 data points. You will use a simplified version of the dataset,
+where each example has been labeled either 0 (corresponding to an abnormal rhythm), or 1 (corresponding to a normal rhythm).
 You are interested in identifying the abnormal rhythms.
 
 
@@ -42,51 +42,51 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize autoencoder_example --tflite
-    
-    +-------+-----------------+---------------+---------------+----------------------+ 
-    | Index | OpCode          | Input(s)      | Output(s)     | Config               | 
-    +-------+-----------------+---------------+---------------+----------------------+ 
-    | 0     | quantize        | 140 (float32) | 140 (int8)    | BuiltinOptionsType=0 | 
-    | 1     | fully_connected | 140 (int8)    | 32 (int8)     | Activation:relu      | 
-    |       |                 | 140 (int8)    |               |                      | 
-    |       |                 | 32 (int32)    |               |                      | 
-    | 2     | fully_connected | 32 (int8)     | 16 (int8)     | Activation:relu      | 
-    |       |                 | 32 (int8)     |               |                      | 
-    |       |                 | 16 (int32)    |               |                      | 
-    | 3     | fully_connected | 16 (int8)     | 8 (int8)      | Activation:relu      | 
-    |       |                 | 16 (int8)     |               |                      | 
-    |       |                 | 8 (int32)     |               |                      | 
-    | 4     | fully_connected | 8 (int8)      | 16 (int8)     | Activation:relu      | 
-    |       |                 | 8 (int8)      |               |                      | 
-    |       |                 | 16 (int32)    |               |                      | 
-    | 5     | fully_connected | 16 (int8)     | 32 (int8)     | Activation:relu      | 
-    |       |                 | 16 (int8)     |               |                      | 
-    |       |                 | 32 (int32)    |               |                      | 
-    | 6     | fully_connected | 32 (int8)     | 140 (int8)    | Activation:none      | 
-    |       |                 | 32 (int8)     |               |                      | 
-    |       |                 | 140 (int32)   |               |                      | 
-    | 7     | logistic        | 140 (int8)    | 140 (int8)    | BuiltinOptionsType=0 | 
-    | 8     | dequantize      | 140 (int8)    | 140 (float32) | BuiltinOptionsType=0 | 
-    +-------+-----------------+---------------+---------------+----------------------+ 
-    Total MACs: 10.240 k                                                               
-    Total OPs: 21.564 k                                                                
-    Name: autoencoder_example                                                          
-    Version: 1                                                                         
-    Description: Autoencoder example to detect anomalies in ECG dataset                
-    classes: []                                                                        
-    hash: 66c8e81181a47dfcc2f0ff53a55aef49                                             
-    date: 2022-04-28T19:08:38.662Z                                                     
-    runtime_memory_size: 2028                                                          
-    .tflite file size: 15.8kB                                                          
+
+    +-------+-----------------+---------------+---------------+----------------------+
+    | Index | OpCode          | Input(s)      | Output(s)     | Config               |
+    +-------+-----------------+---------------+---------------+----------------------+
+    | 0     | quantize        | 140 (float32) | 140 (int8)    | BuiltinOptionsType=0 |
+    | 1     | fully_connected | 140 (int8)    | 32 (int8)     | Activation:relu      |
+    |       |                 | 140 (int8)    |               |                      |
+    |       |                 | 32 (int32)    |               |                      |
+    | 2     | fully_connected | 32 (int8)     | 16 (int8)     | Activation:relu      |
+    |       |                 | 32 (int8)     |               |                      |
+    |       |                 | 16 (int32)    |               |                      |
+    | 3     | fully_connected | 16 (int8)     | 8 (int8)      | Activation:relu      |
+    |       |                 | 16 (int8)     |               |                      |
+    |       |                 | 8 (int32)     |               |                      |
+    | 4     | fully_connected | 8 (int8)      | 16 (int8)     | Activation:relu      |
+    |       |                 | 8 (int8)      |               |                      |
+    |       |                 | 16 (int32)    |               |                      |
+    | 5     | fully_connected | 16 (int8)     | 32 (int8)     | Activation:relu      |
+    |       |                 | 16 (int8)     |               |                      |
+    |       |                 | 32 (int32)    |               |                      |
+    | 6     | fully_connected | 32 (int8)     | 140 (int8)    | Activation:none      |
+    |       |                 | 32 (int8)     |               |                      |
+    |       |                 | 140 (int32)   |               |                      |
+    | 7     | logistic        | 140 (int8)    | 140 (int8)    | BuiltinOptionsType=0 |
+    | 8     | dequantize      | 140 (int8)    | 140 (float32) | BuiltinOptionsType=0 |
+    +-------+-----------------+---------------+---------------+----------------------+
+    Total MACs: 10.240 k
+    Total OPs: 21.564 k
+    Name: autoencoder_example
+    Version: 1
+    Description: Autoencoder example to detect anomalies in ECG dataset
+    classes: []
+    hash: 66c8e81181a47dfcc2f0ff53a55aef49
+    date: 2022-04-28T19:08:38.662Z
+    runtime_memory_size: 2028
+    .tflite file size: 15.8kB
 
 
 Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile autoencoder_example --device --accelerator MVP
 
@@ -132,7 +132,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view autoencoder_example --tflite
 
 .. raw:: html
@@ -144,6 +144,12 @@ Model Diagram
         </a>
     </div>
 
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/examples/autoencoder_example.py
+    :language: python
+    :lines: 155-
 
 """
 from typing import List
@@ -164,20 +170,20 @@ from mltk.utils.archive_downloader import download_url
 # - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    mltk_core.MltkModel, 
-    mltk_core.TrainMixin, 
-    mltk_core.DatasetMixin, 
+    mltk_core.MltkModel,
+    mltk_core.TrainMixin,
+    mltk_core.DatasetMixin,
     mltk_core.EvaluateAutoEncoderMixin
 ):
     def load_dataset(
-        self, 
-        subset: str,  
+        self,
+        subset: str,
         classes:List[str]=None,
         max_samples_per_class=None,
         test:bool=False,
         **kwargs
     ):
-        super().load_dataset(subset) 
+        super().load_dataset(subset)
 
         if test:
             max_samples_per_class = 3
@@ -226,7 +232,7 @@ class MyModel(
         # then just return the "normal" or "abnormal" samples
         # NOTE: The y value is not required in this case
         if subset == 'evaluation':
-            
+
             if classes[0] =='normal':
                 x = normal_test_data
             else:
@@ -238,14 +244,14 @@ class MyModel(
             self.x = x
         else:
             # For training, we just use the "normal" data
-            # Note that x and y use the same data as the whole point 
+            # Note that x and y use the same data as the whole point
             #  of an autoencoder is to reconstruct the input data
             self.x = normal_train_data
             self.y = normal_train_data
             self.validation_data = (test_data, test_data)
 
 
-    def summarize_dataset(self) -> str: 
+    def summarize_dataset(self) -> str:
         s = f'Train dataset: Found {self._normal_train_count} "normal", {self._abnormal_train_count} "abnormal" samples\n'
         s += f'Validation dataset: Found {self._normal_test_count} "normal", {self._abnormal_test_count} "abnormal" samples'
         return s
@@ -258,7 +264,7 @@ my_model = MyModel()
 
 #################################################
 # General Settings
-# 
+#
 my_model.version = 1
 my_model.description = 'Autoencoder example to detect anomalies in ECG dataset'
 
@@ -275,7 +281,7 @@ my_model.loss = 'mae'
 #################################################
 # Training callback Settings
 
-# Generate a training weights .h5 whenever the 
+# Generate a training weights .h5 whenever the
 # val_accuracy improves
 my_model.checkpoint['monitor'] =  'val_loss'
 my_model.checkpoint['mode'] =  'auto'
@@ -312,8 +318,8 @@ def my_model_builder(model: MyModel):
 
     autoencoder = tf.keras.models.Model(model_input, decoder(encoder(model_input)))
     autoencoder.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
 
@@ -325,7 +331,7 @@ my_model.build_model_function = my_model_builder
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python autoencoder_example.py
 #
 # Note that this has the same functionality as:

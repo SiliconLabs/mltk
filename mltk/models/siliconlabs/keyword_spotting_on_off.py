@@ -60,9 +60,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize keyword_spotting_on_off --tflite
-    
+
     +-------+-----------------+----------------+----------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)       | Output(s)      | Config                                              |
     +-------+-----------------+----------------+----------------+-----------------------------------------------------+
@@ -127,7 +127,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile keyword_spotting_on_off --device --accelerator MVP
 
@@ -171,7 +171,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view keyword_spotting_on_off --tflite
 
 .. raw:: html
@@ -184,11 +184,19 @@ Model Diagram
     </div>
 
 
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/siliconlabs/keyword_spotting_on_off.py
+    :language: python
+    :lines: 204-
+
 
 License
 ---------
-This model was developed by Silicon Labs and is covered by a standard 
+This model was developed by Silicon Labs and is covered by a standard
 `Silicon Labs MSLA <https://www.silabs.com/about-us/legal/master-software-license-agreement>`_.
+
 
 """
 # pylint: disable=redefined-outer-name
@@ -200,9 +208,9 @@ import tensorflow as tf
 from tensorflow.keras import regularizers
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (
-    Dense, 
-    Activation, 
-    Flatten, 
+    Dense,
+    Activation,
+    Flatten,
     BatchNormalization,
     Conv2D,
     MaxPooling2D,
@@ -210,7 +218,7 @@ from tensorflow.keras.layers import (
 )
 
 
-# Import the MLTK model object 
+# Import the MLTK model object
 # and necessary mixins
 # Later in this script we configure the various properties
 from mltk.core import (
@@ -227,10 +235,10 @@ from mltk.datasets.audio.speech_commands import speech_commands_v2
 # Import the ParallelAudioDataGenerator
 # This has two main jobs:
 # 1. Process the Google speech_commands dataset and apply random augmentations during training
-# 2. Generate a spectrogram using the AudioFeatureGenerator from each augmented audio sample 
+# 2. Generate a spectrogram using the AudioFeatureGenerator from each augmented audio sample
 #    and give the spectrogram to Tensorflow for model training
 from mltk.core.preprocess.audio.parallel_generator import ParallelAudioDataGenerator
-# Import the AudioFeatureGeneratorSettings which we'll configure 
+# Import the AudioFeatureGeneratorSettings which we'll configure
 # and give to the ParallelAudioDataGenerator
 from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGeneratorSettings
 
@@ -242,9 +250,9 @@ from mltk.core.preprocess.audio.audio_feature_generator import AudioFeatureGener
 # - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    AudioDatasetMixin, 
+    MltkModel,
+    TrainMixin,
+    AudioDatasetMixin,
     EvaluateClassifierMixin
 ):
     pass
@@ -260,7 +268,7 @@ my_model = MyModel()
 
 # For better tracking, the version should be incremented any time a non-trivial change is made
 # NOTE: The version is optional and not used directly used by the MLTK
-my_model.version = 1 
+my_model.version = 1
 # Provide a brief description about what this model models
 # This description goes in the "description" field of the .tflite model file
 my_model.description = 'Keyword spotting classifier to detect: "on" and "off"'
@@ -279,11 +287,11 @@ my_model.epochs = 80
 # before updating the training gradients.
 # Typical values are 10-64
 # NOTE: Larger values require more memory and may not fit on your GPU
-my_model.batch_size = 10 
+my_model.batch_size = 10
 # This specifies the algorithm used to update the model gradients
 # during training. Adam is very common
 # See https://www.tensorflow.org/api_docs/python/tf/keras/optimizers
-my_model.optimizer = 'adam' 
+my_model.optimizer = 'adam'
 # List of metrics to be evaluated by the model during training and testing
 my_model.metrics = ['accuracy']
 # The "loss" function used to update the weights
@@ -299,7 +307,7 @@ my_model.loss = 'categorical_crossentropy'
 # See https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ModelCheckpoint
 my_model.checkpoint['monitor'] =  'val_accuracy'
 
-# If the training accuracy doesn't improve after 'patience' epochs 
+# If the training accuracy doesn't improve after 'patience' epochs
 # then decrease the learning rate by 'factor'
 # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ReduceLROnPlateau
 # NOTE: Alternatively, we could define our own learn rate schedule
@@ -324,7 +332,7 @@ my_model.lr_schedule = dict(
 )
 
 
-# If the validation accuracy doesn't improve after 'patience' epochs 
+# If the validation accuracy doesn't improve after 'patience' epochs
 # then stop training, the epochs must be -1 to use this callback
 # See https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/EarlyStopping
 # my_model.early_stopping['monitor'] = 'val_accuracy'
@@ -340,7 +348,7 @@ my_model.lr_schedule = dict(
 my_model.tflite_converter['optimizations'] = [tf.lite.Optimize.DEFAULT]
 my_model.tflite_converter['supported_ops'] = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]
 # NOTE: A float32 model input/output is also possible
-my_model.tflite_converter['inference_input_type'] = np.int8 
+my_model.tflite_converter['inference_input_type'] = np.int8
 my_model.tflite_converter['inference_output_type'] = np.int8
 # Automatically generate a representative dataset from the validation data
 my_model.tflite_converter['representative_dataset'] = 'generate'
@@ -350,7 +358,7 @@ my_model.tflite_converter['representative_dataset'] = 'generate'
 #################################################
 # Audio Data Provider Settings
 
-# Specify the dataset 
+# Specify the dataset
 # NOTE: This can also be an absolute path to a directory
 #       or a Python function
 # See: https://siliconlabs.github.io/mltk/docs/python_api/mltk_model/audio_dataset_mixin.html#mltk.core.AudioDatasetMixin.dataset
@@ -375,8 +383,8 @@ my_model.class_weights = 'balanced'
 
 #################################################
 # AudioFeatureGenerator Settings
-# 
-# These are the settings used by the AudioFeatureGenerator 
+#
+# These are the settings used by the AudioFeatureGenerator
 # to generate spectrograms from the audio samples
 # These settings must be used during modeling training
 # AND by embedded device at runtime
@@ -442,12 +450,12 @@ my_model.datagen = ParallelAudioDataGenerator(
 #################################################
 # Model Layout
 #
-# This defines the actual model layout 
+# This defines the actual model layout
 # using the Keras API.
 # This particular model is a relatively standard
 # sequential Convolution Neural Network (CNN).
 #
-# It is important to the note the usage of the 
+# It is important to the note the usage of the
 # "model" argument.
 # Rather than hardcode values, the model is
 # used to build the model, e.g.:
@@ -461,44 +469,44 @@ def my_model_builder(model: MyModel):
     regularizer = regularizers.l2(weight_decay)
     input_shape = model.input_shape
     filters = 8
- 
+
     keras_model = Sequential(name=model.name, layers = [
-        Conv2D(filters, (3,3), 
-            padding='same', 
-            kernel_regularizer=regularizer, 
-            input_shape=input_shape, 
+        Conv2D(filters, (3,3),
+            padding='same',
+            kernel_regularizer=regularizer,
+            input_shape=input_shape,
             strides=(2,2)
         ),
         BatchNormalization(),
         Activation('relu'),
 
-        Conv2D(2*filters, (3,3), 
-            padding='same', 
-            kernel_regularizer=regularizer, 
+        Conv2D(2*filters, (3,3),
+            padding='same',
+            kernel_regularizer=regularizer,
             strides=(2,2)
         ),
         BatchNormalization(),
         Activation('relu'),
         Dropout(rate=0.1),
 
-        Conv2D(4*filters, (3,3), 
-            padding='same', 
-            kernel_regularizer=regularizer, 
+        Conv2D(4*filters, (3,3),
+            padding='same',
+            kernel_regularizer=regularizer,
             strides=(2,2)
         ),
         BatchNormalization(),
         Activation('relu'),
         Dropout(rate=0.3),
-        
+
         MaxPooling2D(pool_size=[7,1]),
-        
+
         Flatten(),
         Dense(model.n_classes, activation='softmax')
     ])
- 
+
     keras_model.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
     return keras_model
@@ -518,7 +526,7 @@ my_model.build_model_function = my_model_builder
 # NOTE: Corresponding command-line options will override these values.
 
 
-# Controls the smoothing. 
+# Controls the smoothing.
 # Drop all inference results that are older than <now> minus window_duration
 # Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some commands
 my_model.model_parameters['average_window_duration_ms'] = 1000
@@ -544,7 +552,7 @@ my_model.model_parameters['verbose_model_output_logs'] = False
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python keyword_spotting_on_off.py
 #
 # Note that this has the same functionality as:

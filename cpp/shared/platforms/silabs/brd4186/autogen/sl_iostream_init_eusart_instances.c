@@ -10,13 +10,17 @@
 #if defined(EUART_COUNT) && (EUART_COUNT > 0)
 #define SL_IOSTREAM_EUSART_TX_IRQ_NUMBER(periph_nbr)     SL_IOSTREAM_EUSART_CONCAT_PASTER(EUART, periph_nbr, _TX_IRQn)   
 #define SL_IOSTREAM_EUSART_RX_IRQ_NUMBER(periph_nbr)     SL_IOSTREAM_EUSART_CONCAT_PASTER(EUART, periph_nbr, _RX_IRQn)   
-#define SL_IOSTREAM_EUSART_TX_IRQ_HANDLER(periph_nbr)    SL_IOSTREAM_EUSART_CONCAT_PASTER(EUART, periph_nbr, _TX_IRQHandler)  
-#define SL_IOSTREAM_EUSART_RX_IRQ_HANDLER(periph_nbr)    SL_IOSTREAM_EUSART_CONCAT_PASTER(EUART, periph_nbr, _RX_IRQHandler)  
+#define SL_IOSTREAM_EUSART_TX_IRQ_HANDLER(periph_nbr)    SL_IOSTREAM_EUSART_CONCAT_PASTER(EUART, periph_nbr, _TX_IRQHandler)   
+#define SL_IOSTREAM_EUSART_RX_IRQ_HANDLER(periph_nbr)    SL_IOSTREAM_EUSART_CONCAT_PASTER(EUART, periph_nbr, _RX_IRQHandler)   
 #else
 #define SL_IOSTREAM_EUSART_TX_IRQ_NUMBER(periph_nbr)     SL_IOSTREAM_EUSART_CONCAT_PASTER(EUSART, periph_nbr, _TX_IRQn)   
 #define SL_IOSTREAM_EUSART_RX_IRQ_NUMBER(periph_nbr)     SL_IOSTREAM_EUSART_CONCAT_PASTER(EUSART, periph_nbr, _RX_IRQn)   
-#define SL_IOSTREAM_EUSART_TX_IRQ_HANDLER(periph_nbr)    SL_IOSTREAM_EUSART_CONCAT_PASTER(EUSART, periph_nbr, _TX_IRQHandler)  
-#define SL_IOSTREAM_EUSART_RX_IRQ_HANDLER(periph_nbr)    SL_IOSTREAM_EUSART_CONCAT_PASTER(EUSART, periph_nbr, _RX_IRQHandler)  
+#define SL_IOSTREAM_EUSART_TX_IRQ_HANDLER(periph_nbr)    SL_IOSTREAM_EUSART_CONCAT_PASTER(EUSART, periph_nbr, _TX_IRQHandler)   
+#define SL_IOSTREAM_EUSART_RX_IRQ_HANDLER(periph_nbr)    SL_IOSTREAM_EUSART_CONCAT_PASTER(EUSART, periph_nbr, _RX_IRQHandler)   
+#endif
+#define SL_IOSTREAM_EUSART_RX_DMA_SIGNAL(periph_nbr)     SL_IOSTREAM_EUSART_CONCAT_PASTER(dmadrvPeripheralSignal_EUSART, periph_nbr, _RXDATAV)
+#if defined(LDMAXBAR_CH_REQSEL_SIGSEL_EUART0RXFL)
+#define SL_IOSTREAM_EUART_RX_DMA_SIGNAL                  SL_IOSTREAM_EUSART_CONCAT_PASTER(dmadrvPeripheralSignal_EUART, 0, _RXDATAV)
 #endif
 
 #if defined(EUART_COUNT) && (EUART_COUNT > 0)
@@ -24,6 +28,19 @@
 #else
 #define SL_IOSTREAM_EUSART_CLOCK_REF(periph_nbr)         SL_IOSTREAM_EUSART_CONCAT_PASTER(cmuClock_, EUSART, periph_nbr)  
 #endif
+
+#if defined(SL_CATALOG_POWER_MANAGER_PRESENT)
+// EM Events
+#define SLEEP_EM_EVENT_MASK      (SL_POWER_MANAGER_EVENT_TRANSITION_LEAVING_EM0)
+static void events_handler(sl_power_manager_em_t from,
+                           sl_power_manager_em_t to);
+static sl_power_manager_em_transition_event_info_t events_info =
+{
+  .event_mask = SLEEP_EM_EVENT_MASK,
+  .on_event = events_handler,
+};
+static sl_power_manager_em_transition_event_handle_t events_handle;
+#endif // SL_CATALOG_POWER_MANAGER_PRESENT
 
 
 sl_status_t sl_iostream_eusart_init_vcom(void);
@@ -59,11 +76,6 @@ sl_status_t sl_iostream_eusart_init_vcom(void)
 
   sl_iostream_eusart_config_t config_vcom = { 
     .eusart = SL_IOSTREAM_EUSART_VCOM_PERIPHERAL,
-#if (SL_IOSTREAM_EUSART_VCOM_FLOW_CONTROL_TYPE != uartFlowControlSoftware)
-    .flow_control = SL_IOSTREAM_EUSART_VCOM_FLOW_CONTROL_TYPE,
-#else
-    .flow_control = usartHwFlowControlNone,
-#endif
     .enable_high_frequency = SL_IOSTREAM_EUSART_VCOM_ENABLE_HIGH_FREQUENCY,
     .clock = SL_IOSTREAM_EUSART_CLOCK_REF(SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO),
 #if defined(EUSART_COUNT) && (EUSART_COUNT > 1)
@@ -82,20 +94,24 @@ sl_status_t sl_iostream_eusart_init_vcom(void)
     .rts_pin = SL_IOSTREAM_EUSART_VCOM_RTS_PIN,
 #endif
   };
+  config_vcom.flow_control = SL_IOSTREAM_EUSART_VCOM_FLOW_CONTROL_TYPE != uartFlowControlSoftware ? SL_IOSTREAM_EUSART_VCOM_FLOW_CONTROL_TYPE : eusartHwFlowControlNone;
+#if defined(LDMAXBAR_CH_REQSEL_SIGSEL_EUART0RXFL) && (SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO == 0)
+  sl_iostream_dma_config_t dma_config_vcom = {.src = (uint8_t *)&SL_IOSTREAM_EUSART_VCOM_PERIPHERAL->RXDATA,
+                                                        .peripheral_signal = SL_IOSTREAM_EUART_RX_DMA_SIGNAL};
+#else
+  sl_iostream_dma_config_t dma_config_vcom = {.src = (uint8_t *)&SL_IOSTREAM_EUSART_VCOM_PERIPHERAL->RXDATA,
+                                                        .peripheral_signal = SL_IOSTREAM_EUSART_RX_DMA_SIGNAL(SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO)};
+#endif 
   sl_iostream_uart_config_t uart_config_vcom = {
-    .tx_irq_number = SL_IOSTREAM_EUSART_TX_IRQ_NUMBER(SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO),
-    .rx_irq_number = SL_IOSTREAM_EUSART_RX_IRQ_NUMBER(SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO),
+    .dma_cfg = dma_config_vcom,
     .rx_buffer = rx_buffer_vcom,
     .rx_buffer_length = SL_IOSTREAM_EUSART_VCOM_RX_BUFFER_SIZE,
+    .tx_irq_number = SL_IOSTREAM_EUSART_TX_IRQ_NUMBER(SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO),
+    .rx_irq_number = SL_IOSTREAM_EUSART_RX_IRQ_NUMBER(SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO),
     .lf_to_crlf = SL_IOSTREAM_EUSART_VCOM_CONVERT_BY_DEFAULT_LF_TO_CRLF,
     .rx_when_sleeping = SL_IOSTREAM_EUSART_VCOM_RESTRICT_ENERGY_MODE_TO_ALLOW_RECEPTION,
-#if (SL_IOSTREAM_EUSART_VCOM_FLOW_CONTROL_TYPE == uartFlowControlSoftware)
-    .sw_flow_control = true,
-#else
-    .sw_flow_control = false,
-#endif
   };
-
+  uart_config_vcom.sw_flow_control = SL_IOSTREAM_EUSART_VCOM_FLOW_CONTROL_TYPE == uartFlowControlSoftware;
   // Instantiate eusart instance 
   status = sl_iostream_eusart_init(&sl_iostream_vcom,
                                   &uart_config_vcom,
@@ -111,6 +127,10 @@ sl_status_t sl_iostream_eusart_init_vcom(void)
 
 void sl_iostream_eusart_init_instances(void)
 {
+  #if defined(SL_CATALOG_POWER_MANAGER_PRESENT)
+  // Enable power manager notifications
+  sl_power_manager_subscribe_em_transition_event(&events_handle, &events_info);
+  #endif
   // Instantiate eusart instance(s) 
   
   sl_iostream_eusart_init_vcom();
@@ -120,19 +140,32 @@ void sl_iostream_eusart_init_instances(void)
 
 void SL_IOSTREAM_EUSART_TX_IRQ_HANDLER(SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO)(void)
 {
-  sl_iostream_eusart_irq_handler(sl_iostream_vcom.stream.context);
+  sl_iostream_eusart_irq_handler(&sl_iostream_vcom);
 }
 
 void SL_IOSTREAM_EUSART_RX_IRQ_HANDLER(SL_IOSTREAM_EUSART_VCOM_PERIPHERAL_NO)(void)
 {
-  sl_iostream_eusart_irq_handler(sl_iostream_vcom.stream.context);
+  sl_iostream_eusart_irq_handler(&sl_iostream_vcom);
 }
 
-#if defined(SL_CATALOG_POWER_MANAGER_PRESENT) && !defined(SL_CATALOG_KERNEL_PRESENT)
+#if defined(SL_CATALOG_POWER_MANAGER_PRESENT)
+#if !defined(SL_CATALOG_KERNEL_PRESENT)
  
 sl_power_manager_on_isr_exit_t sl_iostream_eusart_vcom_sleep_on_isr_exit(void)
 {
   return sl_iostream_uart_sleep_on_isr_exit(&sl_iostream_vcom);
 }
 
-#endif
+#endif // SL_CATALOG_KERNEL_PRESENT
+static void events_handler(sl_power_manager_em_t from,
+                           sl_power_manager_em_t to)
+{
+  (void) from;
+  // Enable next byte detect to wake from sleep
+  if (to < SL_POWER_MANAGER_EM3){
+      
+    context_vcom.context.set_next_byte_detect(sl_iostream_vcom_handle->context, true);
+    
+  }
+}
+#endif // SL_CATALOG_POWER_MANAGER_PRESENT

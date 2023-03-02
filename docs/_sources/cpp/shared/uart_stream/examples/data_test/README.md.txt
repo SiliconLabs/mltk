@@ -78,7 +78,7 @@ which will build the firmware application and program it to the development boar
 
 ```
 
-python data_example.py
+python data_test.py
 
 ```
 

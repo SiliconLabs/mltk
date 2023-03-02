@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Union, Callable, Tuple
+from typing import Union, Callable
 import types
 
 
@@ -9,97 +9,98 @@ from .base_mixin import BaseMixin
 
 
 from ..model_attributes import MltkModelAttributesDecorator, CallableType
+from ..model_event import MltkModelEvent
 
 
 @MltkModelAttributesDecorator()
 class DatasetMixin(BaseMixin):
     """Provides generic dataset properties to the base :py:class:`~MltkModel`
-    
+
     Refer to te `Model Specification <https://siliconlabs.github.io/mltk/docs/guides/model_specification.html>`_ guide for more details."""
-    
+
     @property
     def x(self):
         """Input data
-        
+
         It could be:
 
         - A Numpy array (or array-like), or a list of arrays (in case the model has multiple inputs).
         - A TensorFlow tensor, or a list of tensors (in case the model has multiple inputs).
         - A dict mapping input names to the corresponding array/tensors, if the model has named inputs.
         - A tf.data dataset. Should return a tuple of either (inputs, targets) or (inputs, targets, sample_weights).
-        - A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample_weights). 
+        - A generator or keras.utils.Sequence returning (inputs, targets) or (inputs, targets, sample_weights).
           A more detailed description of unpacking behavior for iterator types (Dataset, generator, Sequence) is given below.
         """
         return self._attributes.get_value('dataset.x', default=None)
-    @x.setter 
+    @x.setter
     def x(self, v):
-        self._attributes['dataset.x'] = v 
+        self._attributes['dataset.x'] = v
 
 
     @property
     def y(self):
         """Target data
-        
-        Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s). 
-        It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely). 
+
+        Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s).
+        It should be consistent with x (you cannot have Numpy inputs and tensor targets, or inversely).
         If x is a dataset, generator, or keras.utils.Sequence instance, y should not be specified (since targets will be obtained from x).
         """
         return self._attributes.get_value('dataset.y', default=None)
-    @y.setter 
+    @y.setter
     def y(self, v):
-        self._attributes['dataset.y'] = v 
+        self._attributes['dataset.y'] = v
 
 
     @property
     def validation_split(self) -> float:
         """Float between 0 and 1
-        Fraction of the training data to be used as validation data. 
-        The model will set apart this fraction of the training data, will not train on it, 
-        and will evaluate the loss and any model metrics on this data at the end of each epoch. 
-        The validation data is selected from the last samples in the x and y data provided, before shuffling. 
+        Fraction of the training data to be used as validation data.
+        The model will set apart this fraction of the training data, will not train on it,
+        and will evaluate the loss and any model metrics on this data at the end of each epoch.
+        The validation data is selected from the last samples in the x and y data provided, before shuffling.
         This argument is not supported when x is a dataset, generator or keras.utils.Sequence instance.
         """
         return self._attributes.get_value('dataset.validation_split', default=0.0)
     @validation_split.setter
     def validation_split(self, v: float):
-        self._attributes['dataset.validation_split'] = v 
+        self._attributes['dataset.validation_split'] = v
 
 
-    @property 
+    @property
     def validation_data(self):
-        """Data on which to evaluate the loss and any model metrics at the end of each epoch. 
-        The model will not be trained on this data. Thus, note the fact that the validation loss of 
-        data provided using validation_split or validation_data is not affected by regularization 
-        layers like noise and dropout. validation_data will override validation_split. 
+        """Data on which to evaluate the loss and any model metrics at the end of each epoch.
+        The model will not be trained on this data. Thus, note the fact that the validation loss of
+        data provided using validation_split or validation_data is not affected by regularization
+        layers like noise and dropout. validation_data will override validation_split.
         validation_data could be:
 
         - tuple (x_val, y_val) of Numpy arrays or tensors
         - tuple (x_val, y_val, val_sample_weights) of Numpy arrays
-        - dataset For the first two cases, batch_size must be provided. For the last case, validation_steps 
-          could be provided. Note that validation_data does not support all the data types that are supported 
+        - dataset For the first two cases, batch_size must be provided. For the last case, validation_steps
+          could be provided. Note that validation_data does not support all the data types that are supported
           in x, eg, dict, generator or keras.utils.Sequence.
         """
         return self._attributes.get_value('dataset.validation_data', default=None)
     @validation_data.setter
     def validation_data(self, v):
-        self._attributes['dataset.validation_data'] = v 
+        self._attributes['dataset.validation_data'] = v
 
 
     @property
     def shuffle(self) -> bool:
-        """	Boolean (whether to shuffle the training data before each epoch) or str (for 'batch'). 
-        This argument is ignored when x is a generator. 'batch' is a special option for dealing with the limitations of HDF5 data; 
+        """	Boolean (whether to shuffle the training data before each epoch) or str (for 'batch').
+        This argument is ignored when x is a generator. 'batch' is a special option for dealing with the limitations of HDF5 data;
         it shuffles in batch-sized chunks. Has no effect when steps_per_epoch is not None.
         """
         return self._attributes.get_value('dataset.shuffle', default=True)
     @shuffle.setter
     def shuffle(self, v: bool):
-        self._attributes['dataset.shuffle'] = v 
+        self._attributes['dataset.shuffle'] = v
 
 
     @property
     def class_weights(self) -> Union[str,dict]:
-        """Specifies how class weights should be calculated.  
+        """Specifies how class weights should be calculated.
         Default: `None`
 
         This can be useful to tell the model to "pay more attention" to samples from an under-represented class.
@@ -122,7 +123,7 @@ class DatasetMixin(BaseMixin):
 
         This is used for generating a summary of the dataset or when calculating class weights
         when ``my_model.class_weights=balanced``.
-        
+
         The dictionary may contain sub-dictionaries for each subset of the dataset, e.g.:
 
         .. highlight:: python
@@ -147,7 +148,7 @@ class DatasetMixin(BaseMixin):
             )
 
         Or it may contain just class/counts, e.g.:
-    
+
         .. highlight:: python
         .. code-block:: python
 
@@ -156,7 +157,7 @@ class DatasetMixin(BaseMixin):
                 dog = 200,
                 goat = 500
             )
-        
+
         """
         return self._attributes.get_value('dataset.class_counts', default=dict(
             training={},
@@ -170,10 +171,10 @@ class DatasetMixin(BaseMixin):
 
     @property
     def sample_weight(self) -> np.ndarray:
-        """Optional Numpy array of weights for the training samples, 
-        used for weighting the loss function (during training only). 
-        You can either pass a flat (1D) Numpy array with the same length as the input samples 
-        (1:1 mapping between weights and samples), or in the case of temporal data, you can pass 
+        """Optional Numpy array of weights for the training samples,
+        used for weighting the loss function (during training only).
+        You can either pass a flat (1D) Numpy array with the same length as the input samples
+        (1:1 mapping between weights and samples), or in the case of temporal data, you can pass
         a 2D array with shape (samples, sequence_length), to apply a different weight to every
         timestep of every sample. This argument is not supported when x is a dataset, generator,
         or keras.utils.Sequence instance, instead provide the sample_weights as the third element of x.
@@ -186,61 +187,61 @@ class DatasetMixin(BaseMixin):
 
     @property
     def steps_per_epoch(self) -> int:
-        """Integer or None. Total number of steps (batches of samples) before 
-        declaring one epoch finished and starting the next epoch. 
-        When training with input tensors such as TensorFlow data tensors, the default None 
-        is equal to the number of samples in your dataset divided by the batch size, 
-        or 1 if that cannot be determined. If x is a tf.data dataset, and 'steps_per_epoch' 
-        is None, the epoch will run until the input dataset is exhausted. 
-        When passing an infinitely repeating dataset, you must specify the steps_per_epoch argument. 
+        """Integer or None. Total number of steps (batches of samples) before
+        declaring one epoch finished and starting the next epoch.
+        When training with input tensors such as TensorFlow data tensors, the default None
+        is equal to the number of samples in your dataset divided by the batch size,
+        or 1 if that cannot be determined. If x is a tf.data dataset, and 'steps_per_epoch'
+        is None, the epoch will run until the input dataset is exhausted.
+        When passing an infinitely repeating dataset, you must specify the steps_per_epoch argument.
         This argument is not supported with array inputs.
         """
         return self._attributes.get_value('dataset.steps_per_epoch', default=None)
-    @steps_per_epoch.setter 
+    @steps_per_epoch.setter
     def steps_per_epoch(self, v: int):
         self._attributes['dataset.steps_per_epoch'] = v
 
 
     @property
     def validation_steps(self) -> int:
-        """Only relevant if validation_data is provided and is a tf.data dataset. 
-        Total number of steps (batches of samples) to draw before stopping when 
-        performing validation at the end of every epoch. If 'validation_steps' is None, 
-        validation will run until the validation_data dataset is exhausted. 
-        In the case of an infinitely repeated dataset, it will run into an infinite loop. 
-        If 'validation_steps' is specified and only part of the dataset will be consumed, 
-        the evaluation will start from the beginning of the dataset at each epoch. 
+        """Only relevant if validation_data is provided and is a tf.data dataset.
+        Total number of steps (batches of samples) to draw before stopping when
+        performing validation at the end of every epoch. If 'validation_steps' is None,
+        validation will run until the validation_data dataset is exhausted.
+        In the case of an infinitely repeated dataset, it will run into an infinite loop.
+        If 'validation_steps' is specified and only part of the dataset will be consumed,
+        the evaluation will start from the beginning of the dataset at each epoch.
         This ensures that the same validation samples are used every time.
         """
         return self._attributes.get_value('dataset.validation_steps', default=None)
-    @validation_steps.setter 
+    @validation_steps.setter
     def validation_steps(self, v: int):
         self._attributes['dataset.validation_steps'] = v
 
 
     @property
     def validation_batch_size(self) -> int:
-        """Integer or None. Number of samples per validation batch. 
-        If unspecified, will default to batch_size. Do not specify 
-        the validation_batch_size if your data is in the form of datasets, generators, 
+        """Integer or None. Number of samples per validation batch.
+        If unspecified, will default to batch_size. Do not specify
+        the validation_batch_size if your data is in the form of datasets, generators,
         or keras.utils.Sequence instances (since they generate batches).
         """
         return self._attributes.get_value('dataset.validation_batch_size', default=None)
-    @validation_batch_size.setter 
+    @validation_batch_size.setter
     def validation_batch_size(self, v: int):
         self._attributes['dataset.validation_batch_size'] = v
 
 
     @property
     def validation_freq(self) -> int:
-        """Only relevant if validation data is provided. 
-        Integer or collections_abc.Container instance (e.g. list, tuple, etc.). 
-        If an integer, specifies how many training epochs to run before a new validation run is performed, 
-        e.g. validation_freq=2 runs validation every 2 epochs. If a Container, specifies the epochs on which to run validation, 
+        """Only relevant if validation data is provided.
+        Integer or collections_abc.Container instance (e.g. list, tuple, etc.).
+        If an integer, specifies how many training epochs to run before a new validation run is performed,
+        e.g. validation_freq=2 runs validation every 2 epochs. If a Container, specifies the epochs on which to run validation,
         e.g. validation_freq=[1, 2, 10] runs validation at the end of the 1st, 2nd, and 10th epochs.
         """
         return self._attributes.get_value('dataset.validation_freq', default=1)
-    @validation_freq.setter 
+    @validation_freq.setter
     def validation_freq(self, v: int):
         self._attributes['dataset.validation_freq'] = v
 
@@ -277,19 +278,19 @@ class DatasetMixin(BaseMixin):
             def my_dataset_loader(subset: str, test:bool, **kwargs):
                 # Arguments:
                 #    subset: The dataset subset: training, validation or evaluation
-                #    test: If true then only load a few samples for testing 
+                #    test: If true then only load a few samples for testing
                 # Returns, one of the following:
                 #    - None, in this case the function is expected to set the my_model.x, my_model.y, and/or my_model.validation_data properties
                 #    - x - The x samples, in this case the my_model.x properties will be automatically set
                 #    - (x, y) - The x samples and y labels. In this case the my_model.x and my_model.y properties will be automatically set
                 #    - (x, None, validation_data) - The x samples and validation_data. In this case the my_model.x and my_model.validation_data properties will be automatically set
                 ...
-        
+
         - A reference to a Python class instance, the class should have a method named "load_dataset" that has a similar signature as the function above
         - A reference to a Python module, the module should have a function named "load_dataset" that has a similar signature as the function above
 
         If this model's :py:meth:`~load_dataset` API is overridden then it may have a different value.
-        For instance, the :py:class:`mltk.core.AudioDatasetMixin` and :py:class:`mltk.core.ImageDatasetMixin` override this property. 
+        For instance, the :py:class:`mltk.core.AudioDatasetMixin` and :py:class:`mltk.core.ImageDatasetMixin` override this property.
         Refer to their documentation for more details.
         """
         return self._attributes.get_value('dataset.dataset', default=None)
@@ -299,8 +300,8 @@ class DatasetMixin(BaseMixin):
 
 
     def load_dataset(
-        self, 
-        subset: str,  
+        self,
+        subset: str,
         test:bool = False,
         **kwargs
     ):
@@ -320,7 +321,7 @@ class DatasetMixin(BaseMixin):
         2. Clears the :py:attr:`~x`, :py:attr:`~y`, :py:attr:`~validation_data` properties
         3. Calls :py:attr:`~dataset`
         4. Sets the :py:attr:`~x`, :py:attr:`~y` and/or :py:attr:`~validation_data` properties based on the return value of :py:attr:`~dataset`
-    
+
         The API may be overridden by:
 
         - Your MltkModel class definition
@@ -328,8 +329,8 @@ class DatasetMixin(BaseMixin):
 
         Arguments:
             subset: The dataset subset: training, validation or evaluation
-            test: If true then only load a few samples for testing 
-        
+            test: If true then only load a few samples for testing
+
         Returns:
             One of the following:
 
@@ -338,16 +339,17 @@ class DatasetMixin(BaseMixin):
             - (x, y) - The x samples and y labels. In this case this API will automatically set the my_model.x and my_model.y properties
             - (x, None, validation_data) - The x samples and validation_data. In this case this API will automatically set the my_model.x and my_model.validation_data properties
         """
-        self.loaded_subset = subset 
+        self.loaded_subset = subset
         dataset = self.dataset
 
-        self.x = None 
-        self.validation_data = None 
+        self.x = None
+        self.validation_data = None
         self.y = None
 
         if dataset is None:
-            return 
+            return
 
+        self.trigger_event(MltkModelEvent.BEFORE_LOAD_DATASET, subset=subset, test=test, **kwargs)
         retval = None
 
         if isinstance(dataset, MltkDataset):
@@ -359,13 +361,13 @@ class DatasetMixin(BaseMixin):
         elif isinstance(dataset, (types.ModuleType, object)):
             if not hasattr(dataset, 'load_dataset'):
                 raise Exception('If a module or class is set in mltk_model.dataset, the the module/class must specify the function: load_dataset(subset:str, test:bool, **kwargs)')
-        
+
             try:
                 retval = dataset.load_dataset(subset=subset, test=test, mltk_model=self, **kwargs)
             except Exception as e:
                 prepend_exception_msg(e, f'Exception while invoking mltk_model.dataset.load_dataset(): {dataset}')
                 raise
-    
+
         else:
             raise RuntimeError(
                 'mltk_model.dataset must either be one of:\n'
@@ -397,7 +399,7 @@ class DatasetMixin(BaseMixin):
                         '- (x, None, validation_data) - The x samples and validation_data. In this case this API will automatically set the my_model.x and my_model.validation_data properties\n'
                         'Alternatively, ensure you model inherits the correct mixin, e.g. AudioDatasetMixin, ImageDatasetMixin'
                     )
-                
+
                 self.x = retval[0]
                 if len(retval) > 1:
                     self.y = retval[1]
@@ -407,30 +409,34 @@ class DatasetMixin(BaseMixin):
                 self.x = retval
 
 
+        self.trigger_event(MltkModelEvent.AFTER_LOAD_DATASET, subset=subset, test=test, **kwargs)
+
+
     def unload_dataset(self):
         """Unload the dataset"""
         self.loaded_subset = None
         dataset = self.dataset
+        self.trigger_event(MltkModelEvent.BEFORE_UNLOAD_DATASET)
 
         if dataset is None or callable(dataset):
-            return 
+            pass
 
-        if isinstance(dataset, MltkDataset):
+        elif isinstance(dataset, MltkDataset):
             dataset.unload_dataset()
-            return 
-  
 
-        if isinstance(dataset, (types.ModuleType, object)) and hasattr(dataset, 'unload_dataset'):
+        elif isinstance(dataset, (types.ModuleType, object)) and hasattr(dataset, 'unload_dataset'):
             try:
-                return dataset.unload_dataset()
+                dataset.unload_dataset()
             except Exception as e:
                 prepend_exception_msg(e, f'Exception while invoking mltk_model.dataset.unload_dataset(): {dataset}')
                 raise
-        
 
-    def summarize_dataset(self) -> str: 
+        self.trigger_event(MltkModelEvent.AFTER_UNLOAD_DATASET)
+
+
+    def summarize_dataset(self) -> str:
         """Summarize the dataset
-        
+
         If my_model.dataset is provided then this attempts to call my_model.dataset.summarize_dataset().
         If my_model.dataset is not provided or does not have the summarize_dataset() method,
         then this attempts to generate a summary from my_model.class_counts.
@@ -439,7 +445,7 @@ class DatasetMixin(BaseMixin):
         dataset = self.dataset
 
         if dataset is None or callable(dataset):
-            pass 
+            pass
 
         elif isinstance(dataset, MltkDataset):
             summary = dataset.summarize_dataset()
@@ -454,7 +460,16 @@ class DatasetMixin(BaseMixin):
         class_counts = self.class_counts
         if not summary and class_counts:
             summary += MltkDataset.summarize_class_counts(class_counts)
-        
+
+
+        summary_dict = dict(value=summary)
+        self.trigger_event(
+            MltkModelEvent.SUMMARIZE_DATASET,
+            summary=summary,
+            summary_dict=summary_dict
+        )
+        summary = summary_dict['value']
+
         return summary
 
 
@@ -476,23 +491,23 @@ class DatasetMixin(BaseMixin):
         self._attributes.register('dataset.validation_freq', dtype=int)
 
 
-        
+
 class MltkDataset:
     """Helper class for configuring a training dataset
-    
+
     Refer to :py:class:`mltk.core.DatasetMixin` for more details.
     """
     def load_dataset(
-        self, 
-        subset: str,  
+        self,
+        subset: str,
         test:bool = False,
         **kwargs
     ):
         """Load the dataset subset
-        
+
         This is called automatically by the MLTK before training
         or evaluation.
-        
+
         Args:
             subset: The dataset subset to return: 'training' or 'evaluation'
             test: This is optional, it is used when invoking a training "dryrun", e.g.: mltk train basic_example-test
@@ -513,7 +528,7 @@ class MltkDataset:
         self.loaded_subset = None
 
 
-    def summarize_dataset(self) -> str: 
+    def summarize_dataset(self) -> str:
         """Return a string summary of the dataset"""
         return ''
 

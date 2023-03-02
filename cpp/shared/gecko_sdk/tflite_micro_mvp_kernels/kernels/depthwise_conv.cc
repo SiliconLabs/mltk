@@ -192,48 +192,44 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
         data->per_channel_output_multiplier,
         reinterpret_cast<int32_t*>(data->per_channel_output_shift), num_channels));
 
-      if (data->op_params.dilation_height == 1 && data->op_params.dilation_width == 1) {
-        data->supported = kCmsisNN;
-        cmsis_nn_dw_conv_params       dw_conv_params;
-        dw_conv_params.input_offset   = data->op_params.input_offset;
-        dw_conv_params.output_offset  = data->op_params.output_offset;
-        dw_conv_params.stride.h       = data->op_params.stride_height;
-        dw_conv_params.stride.w       = data->op_params.stride_width;
-        dw_conv_params.dilation.h     = 1;
-        dw_conv_params.dilation.w     = 1;
-        dw_conv_params.padding.h      = data->op_params.pad_height;
-        dw_conv_params.padding.w      = data->op_params.pad_width;
-        dw_conv_params.activation.min = data->op_params.output_activation_min;
-        dw_conv_params.activation.max = data->op_params.output_activation_max;
-        dw_conv_params.ch_mult        = data->op_params.out_channels / data->op_params.in_channels;
+      data->supported = kCmsisNN;
+      cmsis_nn_dw_conv_params       dw_conv_params;
+      dw_conv_params.input_offset   = data->op_params.input_offset;
+      dw_conv_params.output_offset  = data->op_params.output_offset;
+      dw_conv_params.stride.h       = data->op_params.stride_height;
+      dw_conv_params.stride.w       = data->op_params.stride_width;
+      dw_conv_params.dilation.h     = data->op_params.dilation_height;
+      dw_conv_params.dilation.w     = data->op_params.dilation_width;
+      dw_conv_params.padding.h      = data->op_params.pad_height;
+      dw_conv_params.padding.w      = data->op_params.pad_width;
+      dw_conv_params.activation.min = data->op_params.output_activation_min;
+      dw_conv_params.activation.max = data->op_params.output_activation_max;
+      dw_conv_params.ch_mult        = data->op_params.out_channels / data->op_params.in_channels;
 
-        cmsis_nn_dims input_dims;
-        input_dims.n = data->op_params.batches;
-        input_dims.h = data->op_params.input_height;
-        input_dims.w = data->op_params.input_width;
-        input_dims.c = data->op_params.in_channels;
+      cmsis_nn_dims input_dims;
+      input_dims.n = data->op_params.batches;
+      input_dims.h = data->op_params.input_height;
+      input_dims.w = data->op_params.input_width;
+      input_dims.c = data->op_params.in_channels;
 
-        cmsis_nn_dims filter_dims;
-        filter_dims.h = data->op_params.filter_height;
-        filter_dims.w = data->op_params.filter_width;
+      cmsis_nn_dims filter_dims;
+      filter_dims.h = data->op_params.filter_height;
+      filter_dims.w = data->op_params.filter_width;
 
-        cmsis_nn_dims output_dims;
-        output_dims.h = data->op_params.output_height;
-        output_dims.w = data->op_params.output_width;
-        output_dims.c = data->op_params.out_channels;
+      cmsis_nn_dims output_dims;
+      output_dims.h = data->op_params.output_height;
+      output_dims.w = data->op_params.output_width;
+      output_dims.c = data->op_params.out_channels;
 
-        scratch_buffer_size = arm_depthwise_conv_wrapper_s8_get_buffer_size(
-                              &dw_conv_params, &input_dims, &filter_dims, &output_dims);
+      scratch_buffer_size = arm_depthwise_conv_wrapper_s8_get_buffer_size(
+                            &dw_conv_params, &input_dims, &filter_dims, &output_dims);
  #ifndef __arm__
          // If we're building for the wrapper
         // then just use the reference kernels
-        // We still need the calculations above so we can 
+        // We still need the calculations above so we can
         // determine the required tensor arena size
         data->supported = kTFLMrefI8;
 #endif // __arm__
-      } else {
-        data->supported = kTFLMrefI8;
-      }
     }
 
   } else if (input->type == kTfLiteFloat32) {
@@ -262,7 +258,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
   if (bias != nullptr) {
     micro_context->DeallocateTempTfLiteTensor(bias);
   }
-  
+
   return kTfLiteOk;
 }
 
@@ -322,8 +318,8 @@ TfLiteStatus eval_cmsis_int8(TfLiteContext* context,
   dw_conv_params.output_offset  = data->op_params.output_offset;
   dw_conv_params.stride.h       = data->op_params.stride_height;
   dw_conv_params.stride.w       = data->op_params.stride_width;
-  dw_conv_params.dilation.h     = 1;
-  dw_conv_params.dilation.w     = 1;
+  dw_conv_params.dilation.h     = data->op_params.dilation_height;
+  dw_conv_params.dilation.w     = data->op_params.dilation_width;
   dw_conv_params.padding.h      = data->op_params.pad_height;
   dw_conv_params.padding.w      = data->op_params.pad_width;
   dw_conv_params.activation.min = data->op_params.output_activation_min;
@@ -437,12 +433,12 @@ TfLiteStatus Invoke(TfLiteContext* context, TfLiteNode* node)
   if (data->supported == kMvp) {
     status = eval_mvp_int8(context, data, input, filter, output);
 
-  } 
+  }
 #ifdef __arm__
   else if (data->supported == kCmsisNN) {
     status = eval_cmsis_int8(context, data, input, filter, bias, output);
 
-  } 
+  }
 #endif
   else if (data->supported == kTFLMrefI8) {
     status = eval_tflm_int8(data, input, filter, bias, output);

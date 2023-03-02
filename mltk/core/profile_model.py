@@ -1,16 +1,19 @@
 
-from typing import Union, List, Tuple
+from typing import Union, List
 import re
-import os
 import copy
 
 
 
 from mltk.utils.logger import get_logger, make_filelike
-from mltk.utils.path import fullpath
 from mltk.utils.python import append_exception_msg
 
-from .model import (MltkModel, load_tflite_model)
+from .model import (
+    MltkModel,
+    MltkModelEvent,
+    load_tflite_model,
+    load_mltk_model
+)
 from .tflite_model import TfliteModel
 from .profiling_results import ProfilingModelResults, ProfilingLayerResult
 from .utils import (get_mltk_logger, ArchiveFileNotFoundError)
@@ -25,14 +28,16 @@ def profile_model(
     baud:int=115200,
     port:str=None,
     use_device:bool=False,
-    build:bool=False, 
+    build:bool=False,
     platform:str=None,
     runtime_buffer_size=-1,
     test:bool=False,
+    post_process:bool=True,
+    return_estimates=False,
     **kwargs
 ) -> ProfilingModelResults:
     """Profile a model for the given accelerator
-    
+
     This will profile the given model in either a
     hardware simulator or on a physical device.
 
@@ -50,9 +55,11 @@ def profile_model(
         runtime_buffer_size: The size of the tensor arena. This is only used by the simulator (i.e. when use_device=False).
             If greater than 0, use the size given. If the given size is too small then loading the model will fail.
             If equal to 0, try to use the size built into the model's parameters, if the model size is not available or too small, find the optimal size
-            If less than 0, automatically find the optimal tensor arena size, ignore the size built into the model parameters  
+            If less than 0, automatically find the optimal tensor arena size, ignore the size built into the model parameters
         test: If a "test" model is provided
-    
+        post_process: This allows for post-processing the profiling results (e.g. uploading to a cloud) if supported by the given MltkModel
+        return_estimates: If profiling in the simulator, this will estimate additional metrics such as CPU cycles and energy. 
+            Disabling this option can reduce profiling time
     Returns:
         The results of model profiling
     """
@@ -72,11 +79,15 @@ def profile_model(
             image_path,
             platform=platform,
             baud=baud,
-            accelerator=accelerator, 
+            accelerator=accelerator,
             port=port
         )
     elif image_path:
-        profiling_model_results = profile_model_in_executable(image_path, tflite_model, accelerator)
+        profiling_model_results = profile_model_in_executable(
+            image_path=image_path,
+            tflite_model=tflite_model,
+            accelerator=accelerator
+        )
 
     else:
         # Profile in hardware simulator
@@ -84,16 +95,24 @@ def profile_model(
             tflite_model,
             accelerator=accelerator,
             runtime_buffer_size=runtime_buffer_size,
+            return_estimates=return_estimates,
             **kwargs
         )
 
     profiling_model_results._model_name = (tflite_model.filename or 'my_model.tflite')[:-len('.tflite')] # pylint: disable=protected-access
 
+    if post_process:
+        post_process_profiling_results(
+            model=model,
+            results=profiling_model_results,
+            test=test,
+        )
+
     return profiling_model_results
 
 def profile_model_in_executable(
-    image_path:str, 
-    tflite_model:str, 
+    image_path:str,
+    tflite_model:str,
     accelerator:str
 ) -> ProfilingModelResults :
     """Profile the given model using the given profiler executable
@@ -102,27 +121,34 @@ def profile_model_in_executable(
         image_path: path to the profiler executable
         tflite_model: path to the model to profile
         accelerator: name of the accelerator to use when profiling
-    
+
     Returns:
         ProfilingModelResults: results of the model profiling
     """
-    from mltk.utils.shell_cmd import run_shell_cmd 
+    from mltk.utils.shell_cmd import run_shell_cmd
     model_path = tflite_model.path
-    retcode, retval = run_shell_cmd([image_path, '--model', model_path])
-    return parse_device_model_profiler_log(log_data=retval, tflite_model=tflite_model, accelerator=accelerator)
+    _, retval = run_shell_cmd([image_path, '--model', model_path])
+    return parse_device_model_profiler_log(
+        log_data=retval,
+        tflite_model=tflite_model,
+        accelerator=accelerator
+    )
 
 def profile_model_in_simulator(
     tflite_model:TfliteModel,
     accelerator:str=None,
     runtime_buffer_size:int=-1,
+    return_estimates=False,
     **kwargs
 ) -> ProfilingModelResults:
     """Profile the given TfliteModel in simulator
-    
+
     Args:
         tflite_model: .tflite model to profile
         accelerator: Optional, name of accelerator to profile for
-
+        return_estimates: This will estimate additional metrics such as CPU cycles and energy. 
+            Disabling this option can reduce profiling time
+    
     Returns:
         ProfilingModelResults: Results of the model profiling
     """
@@ -135,7 +161,7 @@ def profile_model_in_simulator(
     profiling_results = TfliteMicro.profile_model(
         tflite_model,
         accelerator=accelerator,
-        return_estimates=True,
+        return_estimates=return_estimates,
         runtime_buffer_size=runtime_buffer_size,
         **kwargs
     )
@@ -152,7 +178,7 @@ def profile_model_on_device(
     platform:str=None
 ) -> ProfilingModelResults:
     """Profile the given TfliteModel on a physical embedded target
-    
+
     Args:
         tflite_model: TfliteModel instance
         accelerator: Name of hardware accelerator
@@ -190,25 +216,25 @@ def profile_model_on_device(
         logger=logger,
         halt=True
     )
-    
+
     # We want the serial logger to always write to the file
     # but only to the console if verbose logging is enabled
     serial_logger = get_logger('serial_logger', 'DEBUG', parent=logger)
     make_filelike(serial_logger, level='INFO' if logger.verbose else 'DEBUG')
-       
+
     # Start the serial COM port reader
     logger.error('Profiling ML model on device ...')
-    with SerialReader( 
+    with SerialReader(
         port=port,
-        baud=baud, 
+        baud=baud,
         outfile=serial_logger,
         start_regex=[
-            re.compile('.*Starting Model Profiler', re.IGNORECASE), 
+            re.compile('.*Starting Model Profiler', re.IGNORECASE),
             re.compile('Loading model', re.IGNORECASE)
         ],
         stop_regex=[re.compile(r'.*done.*', re.IGNORECASE)],
         fail_regex=[
-            re.compile(r'.*hardfault.*', re.IGNORECASE), 
+            re.compile(r'.*hardfault.*', re.IGNORECASE),
             re.compile(r'.*error.*', re.IGNORECASE),
             re.compile(r'.*failed to alloc memory.*', re.IGNORECASE)
         ]
@@ -247,7 +273,7 @@ def parse_device_model_profiler_log(
     runtime_memory_size = 0
     cpu_clock_rate = 0
     layer_results:List[ProfilingLayerResult] = []
-    
+
     cpu_clock_re = re.compile(r'CPU clock:\s([\d\.Mk]+)Hz')
     runtime_memory_re = re.compile(r'Tensor runtime memory:\s([\d\.Mk]+)')
     layer_name_re = re.compile(r'Op(\d+)-\S+')
@@ -332,6 +358,28 @@ def parse_device_model_profiler_log(
         is_simulated=False
     )
 
+
+def post_process_profiling_results(
+    model:Union[MltkModel, TfliteModel, str],
+    results: ProfilingModelResults,
+    test:bool,
+):
+    if isinstance(model, TfliteModel):
+        return
+    elif isinstance(model, MltkModel):
+        mltk_model = model
+    elif isinstance(model, str) and model.endswith(('.tflite', '.h5')):
+        return
+    else:
+        mltk_model = load_mltk_model(
+            model=model,
+            test=test
+        )
+
+    mltk_model.trigger_event(
+        MltkModelEvent.AFTER_PROFILE,
+        results=results
+    )
 
 def _line_to_int(line:str) -> int:
     multiplier = 1

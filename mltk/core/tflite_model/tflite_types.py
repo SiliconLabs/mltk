@@ -301,6 +301,89 @@ class TfliteDepthwiseConvParams:
 
         return params
 
+@dataclass
+class TfliteTransposeConvParams:
+    """Calculated Transpose Convolution Parameters
+    
+    .. seealso::
+    
+       - `CalculateOpData <https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/kernels/transpose_conv.cc#L72>`_
+       - `Quantization Specification <https://www.tensorflow.org/lite/performance/quantization_spec>`_
+    """
+    padding:TflitePadding = field(default_factory=lambda: TflitePadding.SAME)
+    """Kernel padding"""
+    stride_width:int = 0
+    """Kernel width"""
+    stride_height:int = 0
+    """Kernel height"""
+    input_offset:int = 0
+    """Input quantization offset (i.e. zero point)"""
+    weights_offset:int = 0
+    """Weight (aka filters) quantization offset (i.e. zero point)"""
+    output_offset:int = 0
+    """Output quantization offset (i.e. zero point)"""
+    per_channel_output_multiplier:List[int] = field(default_factory=list)
+    """Per layer multipliers for output scalers"""
+    per_channel_output_shift:List[int] = field(default_factory=list)
+    """Per layer shifts for output scalers"""
+    quantized_activation_min:int = 0
+    """Fused activation min value"""
+    quantized_activation_max:int = 0
+    """Fused activation max value"""
+
+
+    @staticmethod
+    def calculate(layer) -> TfliteTransposeConvParams:
+        """Calculate the parameters for the given layer"""
+        from .tflite_layer import TfliteTransposeConvLayer
+        layer:TfliteTransposeConvLayer = layer
+        options = layer.options
+
+        input = layer.input_tensor
+        filters = layer.filters_tensor
+        output = layer.output_tensor
+
+        input_height = input.shape[1]
+        input_width = input.shape[2]
+        filter_height = filters.shape[1]
+        filter_width = filters.shape[2]
+
+        params = TfliteTransposeConvParams()
+        params.padding = options.padding
+        params.stride_width = options.stride_width
+        params.stride_height = options.stride_height
+        params.input_offset = int(-input.quantization.zeropoint[0])
+        params.weights_offset = int(-filters.quantization.zeropoint[0])
+        params.output_offset = int(output.quantization.zeropoint[0])
+        
+
+        _compute_padding_height_width(
+            padding = params.padding,
+            stride_height = options.stride_height,
+            stride_width = options.stride_width,
+            dilation_height_factor = 1,
+            dilation_width_factor = 1,
+            height = input_height,
+            width = input_width,
+            filter_height = filter_height,
+            filter_width = filter_width
+        )
+        _populate_convolution_quantization_params(
+            input=input,
+            filters=filters,
+            output=output,
+            per_channel_multiplier=params.per_channel_output_multiplier,
+            per_channel_shift=params.per_channel_output_shift,
+        )
+
+        params.quantized_activation_min, params.quantized_activation_max = \
+            _calculate_activation_range_quantized(
+                activation=TfliteActivation.NONE,
+                output=output,
+            )
+
+        return params
+
 
 @dataclass
 class TfliteFullyConnectedParams:

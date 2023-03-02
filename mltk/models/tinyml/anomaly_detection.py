@@ -7,10 +7,10 @@ MLPerf Tiny anomaly detection reference model
 - Pre-trained model: `anomaly_detection.mltk.zip <https://github.com/siliconlabs/mltk/blob/master/mltk/models/tinyml/anomaly_detection.mltk.zip>`_
 
 
-Taken from:  
+Taken from:
 https://github.com/mlcommons/tiny/tree/master/benchmark/training/anomaly_detection
 
-Additional information:  
+Additional information:
 https://github.com/SiliconLabs/platform_ml_models/tree/master/eembc/ToyADMOS_FC_AE
 
 
@@ -28,16 +28,16 @@ Model Topology
 
 Spectrogram Characteristics
 -----------------------------
-* Front-end: `LIBROSA spectrogram <https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html>`_ is what is used in the code, 
+* Front-end: `LIBROSA spectrogram <https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html>`_ is what is used in the code,
   but we have also tested with https://github.com/tensorflow/tensorflow/tree/master/tensorflow/lite/experimental/microfrontend
 * Configuration: window=64ms, stride=32ms, bins=128, Upper frequency limit=24KHz, use only 5 center time windows
 
-Performance (floating point model) 
+Performance (floating point model)
 ----------------------------------
 * Accuracy - 92.0%
 * AUC - .923
 
-Performance (quantized tflite model) 
+Performance (quantized tflite model)
 --------------------------------------
 * Accuracy - 91.5%
 * AUC - .923
@@ -69,9 +69,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize anomaly_detection --tflite
-    
+
     +-------+-----------------+-------------------+-------------------+-----------------------+
     | Index | OpCode          | Input(s)          | Output(s)         | Config                |
     +-------+-----------------+-------------------+-------------------+-----------------------+
@@ -139,7 +139,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile anomaly_detection --device --accelerator MVP
 
@@ -193,7 +193,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view anomaly_detection --tflite
 
 .. raw:: html
@@ -204,6 +204,14 @@ Model Diagram
             <p>Click to enlarge</p>
         </a>
     </div>
+
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/tinyml/anomaly_detection.py
+    :language: python
+    :lines: 218-
 
 """
 
@@ -226,9 +234,9 @@ from mltk.utils.archive_downloader import download_verify_extract
 # - EvaluateAutoEncoderMixin  - Provides auto-encoder evaluation operations and settings
 # @mltk_model   # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    ImageDatasetMixin, 
+    MltkModel,
+    TrainMixin,
+    ImageDatasetMixin,
     EvaluateAutoEncoderMixin
 ):
     pass
@@ -242,7 +250,7 @@ my_model.description = 'TinyML: Anonomly Detection - Fully Connect AutoEncoder w
 #################################################
 # Training parameters
 my_model.epochs = 100
-my_model.batch_size = 40 
+my_model.batch_size = 40
 my_model.optimizer = 'adam'
 my_model.loss = 'mean_squared_error'
 my_model.metrics = ['mean_squared_error']
@@ -310,7 +318,7 @@ def reshape_input_callback(params: ParallelProcessParams, x: np.ndarray):
     subsection_data = np.array(x[start: start+input_height, :])
     # and reshape to the expected shape of the model
     y = subsection_data.reshape(input_shape)
-    
+
     return y
 
 
@@ -330,7 +338,7 @@ def my_model_builder(model: MyModel):
         input_shape=model.input_shape
     )
     autoencoder.compile(
-        loss=model.loss, 
+        loss=model.loss,
         optimizer=model.optimizer,
         metrics=model.metrics
     )
@@ -342,7 +350,7 @@ my_model.build_model_function = my_model_builder
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python anomaly_detection.py
 #
 # Note that this has the same functionality as:

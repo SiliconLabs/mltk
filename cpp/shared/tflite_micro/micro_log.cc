@@ -1,5 +1,4 @@
 #include "tensorflow/lite/micro/micro_log.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
 
 #include <cstdarg>
 #include <cstdint>
@@ -14,7 +13,7 @@
 #include "mltk_tflite_micro_helper.hpp"
 
 
-namespace mltk 
+namespace mltk
 {
     bool model_error_reporter_enabled = true;
 }
@@ -29,8 +28,8 @@ void Log(const char* format, va_list args) {
     auto& logger = mltk::get_logger();
     const auto orig_flags = logger.flags();
     logger.flags().clear(logging::Newline);
-    logger.vwrite(logging::Error, format, args);
-    logger.write(logging::Error, "\n");
+    logger.vwrite(logging::Warn, format, args);
+    logger.write(logging::Warn, "\n");
     logger.flags(orig_flags);
   }
 #endif

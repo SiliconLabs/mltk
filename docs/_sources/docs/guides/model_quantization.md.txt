@@ -4,7 +4,7 @@ This describes how to quantize an ML model using the MLTK's quantization command
 
 ## Quick Reference
 
-- Command-line: `mltk quantize --help`
+- Command-line: [mltk quantize --help](../command_line/quantize.md)
 - Python API: [quantize_model](mltk.core.quantize_model)
 - Python API examples: [quantize_model.ipynb](../../mltk/examples/quantize_model.ipynb)
 

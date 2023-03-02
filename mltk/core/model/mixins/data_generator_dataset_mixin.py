@@ -1,20 +1,18 @@
 from __future__ import annotations
 import copy
-from typing import List, Dict
-
-import numpy as np
+from typing import Dict
 
 from .dataset_mixin import DatasetMixin
 
 from ..model_attributes import MltkModelAttributesDecorator
-
+from ..model_event import MltkModelEvent
 
 
 
 @MltkModelAttributesDecorator()
 class DataGeneratorDatasetMixin(DatasetMixin):
     """Provides generic data generator properties to the base :py:class:`~MltkModel`
-    
+
     .. seealso::
        - :py:class:`~ImageDatasetMixin`
        - :py:class:`~AudioDatasetMixin`
@@ -30,14 +28,14 @@ class DataGeneratorDatasetMixin(DatasetMixin):
 
     def get_datagen_creator(self, subset: str):
         """Return an object that creates a data generator for the given subset"""
-        retval = None 
+        retval = None
         # if we want the training datagen or the model doesn't specify a validation_datagen
         if subset == 'training' or not getattr(self, 'validation_datagen'):
             if not hasattr(self, 'datagen') or self.datagen is None:
                 raise Exception('Must specify the models datagen field')
 
             # Then return the datagen
-            retval = self.datagen 
+            retval = self.datagen
         else:
             # Otherwise return the validation_datagen
             retval = self.validation_datagen
@@ -54,7 +52,7 @@ class DataGeneratorDatasetMixin(DatasetMixin):
         try:
             self.datagen_context.shutdown()
         except:
-            pass 
+            pass
         self.datagen_context = None
 
 
@@ -62,26 +60,36 @@ class DataGeneratorDatasetMixin(DatasetMixin):
         datagen_context = self.datagen_context
         if datagen_context is None:
             return 'No dataset loaded'
-        return f'{datagen_context}'
-    
-    
+
+        summary = f'{datagen_context}'
+        summary_dict = dict(value=summary)
+        self.trigger_event(
+            MltkModelEvent.SUMMARIZE_DATASET,
+            summary=summary,
+            summary_dict=summary_dict
+        )
+        summary = summary_dict['value']
+
+        return summary
+
+
     def get_shuffle_index_dir(self) -> str:
         """The ParallelImageGenerator and ParallelImageGenerator have the option to shuffle the dataset
         entries once before they're used. The shuffled indices are then saved
         to a file. The saved indices file is added to the generated model archive.
         This function loads the indices file from the archive during evaluation
         and validation.
-        
-        .. note:: 
+
+        .. note::
            We do NOT want to shuffle during eval/validation so that results are reproducible
            (hence we use the one-time-generated indices file)
         """
         #pylint: disable=no-member
         if self.loaded_subset in ('evaluation', 'validation'):
             try:
-                return self.get_archive_dir('dataset') 
+                return self.get_archive_dir('dataset')
             except:
-                pass 
+                pass
         return self.create_log_dir('dataset')
 
 
@@ -97,10 +105,10 @@ class DataGeneratorContext:
     """Loaded data generator context"""
 
     def __init__(
-        self, 
+        self,
         subset:str,
-        train_datagen, 
-        validation_datagen, 
+        train_datagen,
+        validation_datagen,
         train_class_counts:Dict[str,int],
         validation_class_counts:Dict[str,int]
     ):

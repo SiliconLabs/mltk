@@ -1,8 +1,10 @@
-from typing import List, Tuple
+from __future__ import annotations
+from typing import List, Tuple, Callable, Any, Dict
 import inspect
 import os
 import logging
 import typer
+
 
 from mltk.utils.path import clean_directory, create_user_dir
 from mltk.core.utils import get_mltk_logger
@@ -13,17 +15,17 @@ from .mixins.archive_mixin import ArchiveMixin
 from .mixins.tflite_model_metadata_mixin import TfliteModelMetadataMixin
 from .mixins.tflite_model_parameters_mixin import TfliteModelParametersMixin
 from .model_attributes import MltkModelAttributes, MltkModelAttributesDecorator
-
+from .model_event import MltkModelEvent
 
 
 @MltkModelAttributesDecorator()
 class MltkModel(
-    ArchiveMixin, 
+    ArchiveMixin,
     TfliteModelMetadataMixin,
     TfliteModelParametersMixin
 ):
     """The root MLTK Model object
-    
+
     This must be defined in a model specification file.
 
     Refer to the `Model Specification <https://siliconlabs.github.io/mltk/docs/guides/model_specification.html>`_ guide fore more details.
@@ -40,18 +42,22 @@ class MltkModel(
                 call_stack = inspect.stack()
                 self._model_script_path = call_stack[1].filename.replace('\\', '/')
             except:
-                pass 
-        
+                pass
+
         self._cli = typer.Typer(
             context_settings=dict(
                 max_content_width=100
             ),
             add_completion=False
         )
-        self._attributes = MltkModelAttributes() 
+        self._attributes = MltkModelAttributes()
+        self._event_handlers:Dict[MltkModelEvent, Tuple[Callable[[MltkModel,Any],None],dict]] = {}
+        # At this point, no model properties have been registered
+        # See load_mltk_model_with_path() for the AFTER_MODEL_LOAD event
+        self.trigger_event(MltkModelEvent.BEFORE_MODEL_LOAD)
 
 
-    @property 
+    @property
     def attributes(self) -> MltkModelAttributes:
         """Return all model attributes"""
         return self._attributes
@@ -64,7 +70,7 @@ class MltkModel(
     @property
     def cli(self) -> typer.Typer:
         """Custom command CLI
-        
+
         This is used to register custom commands
         The commands may be invoked with:
         mltk custom <model name> [command args]
@@ -144,7 +150,7 @@ class MltkModel(
         log_file = f'{train_log_dir}/log.txt'
         train_logger = get_logger(name, log_file=log_file, log_file_mode='w')
         if parent is not None:
-            train_logger.parent = parent 
+            train_logger.parent = parent
             train_logger.propagate = True
         return train_logger
 
@@ -193,7 +199,7 @@ class MltkModel(
             return self._attributes.get_value('*classes')
         except AttributeError:
             # pylint: disable=raise-missing-from
-            raise Exception(
+            raise ValueError(
                 'Model does not specify the dataset\'s classes.\n'
                 'It must either be manually specified, e.g. my_model.classes = ["dog", "cat"] or inherit a mixin that supports an classes, e.g.: ImageDatasetMixin')
     @classes.setter
@@ -211,18 +217,18 @@ class MltkModel(
         return len(self.classes)
 
 
-    @property 
+    @property
     def input_shape(self) -> Tuple[int]:
         """Return the image input shape as a tuple of integers"""
         try:
             return self._attributes.get_value('*input_shape')
         except AttributeError:
             # pylint: disable=raise-missing-from
-            raise Exception(
+            raise ValueError(
                 'Model does not specify the dataset\'s input_shape.\n'
                 'It must either be manually specified, e.g. my_model.input_shape = (96,96,3) or inherit a mixin that supports an input_shape, e.g.: ImageDatasetMixin'
             )
-    @input_shape.setter 
+    @input_shape.setter
     def input_shape(self, v: Tuple[int]):
         try:
             self._attributes.set_value('*input_shape', v)
@@ -234,11 +240,11 @@ class MltkModel(
     @property
     def keras_custom_objects(self) -> dict:
         """Get/set custom objects that should be loaded with the Keras model
-        
+
         See https://keras.io/guides/serialization_and_saving/#custom-objects for more details.
         """
         return self._attributes.get_value('keras_custom_objects', default={})
-    @keras_custom_objects.setter 
+    @keras_custom_objects.setter
     def keras_custom_objects(self, v: dict):
         self._attributes['keras_custom_objects'] = v
 
@@ -272,7 +278,7 @@ class MltkModel(
                 classes = params['classes']
             else:
                 classes = None
-        
+
         if classes:
             classes = ', '.join(classes)
             s += f'Classes: {classes}\n'
@@ -282,7 +288,7 @@ class MltkModel(
             s += f'Input shape: {input_shape}\n'
         except:
             pass
-    
+
         try:
             dataset = self.dataset # pylint: disable=no-member
             if isinstance(dataset, str):
@@ -295,10 +301,87 @@ class MltkModel(
 
         for key, value in params.items():
             if (key in ('hash', 'date') and not value) or key in exclude_params:
-                continue 
+                continue
             s += f'{key}: {value}\n'
 
         return s.strip()
+
+
+    def add_event_handler(
+        self,
+        event:MltkModelEvent,
+        handler:Callable[[MltkModel, logging.Logger, Any],None],
+        **kwargs
+    ):
+        """Register an event handler
+
+        Register a handler that will be invoked on the corresponding :py:class:`~MltkModelEvent`
+
+        The given handler should have the signature:
+
+        .. highlight:: python
+        .. code-block:: python
+
+            def my_event_handler(mltk_model:MltkModel, logger:logging.Logger, **kwargs):
+                ...
+
+        Where ``kwargs`` will contain keyword arguments specific to the :py:class:`~MltkModelEvent`
+        as well as any keyword arguments passed to this API.
+
+        .. note::
+
+            - Exceptions raised by the handler will be logged, but not stop further execution
+            - Event handlers are invoked in the order in which they are registered
+
+        Args:
+            event: The :py:class:`~MltkModelEvent` on which the handler will be invoked
+            handler: Function to be invoked for the given event
+            kwargs: Additional keyword arguments to provided to the ``handler``
+                NOTE: These keyword arguments must not collide with the event-specific keyword arguments
+        """
+        if event not in self._event_handlers:
+            self._event_handlers[event] = []
+
+        self._event_handlers[event].append((handler, kwargs))
+
+
+    def trigger_event(
+        self,
+        event:MltkModelEvent,
+        **kwargs
+    ):
+        """Trigger all handlers for the given event
+
+        This is used internally by the MLTK.
+        """
+        from .model_utils import push_active_model, pop_active_model
+
+        get_mltk_logger().debug(f'Model event: {event}')
+
+        if event in (
+            MltkModelEvent.TRAIN_STARTUP,
+            MltkModelEvent.EVALUATE_STARTUP,
+            MltkModelEvent.QUANTIZE_STARTUP,
+        ):
+            push_active_model(self)
+        elif event in (
+            MltkModelEvent.TRAIN_SHUTDOWN,
+            MltkModelEvent.EVALUATE_SHUTDOWN,
+            MltkModelEvent.QUANTIZE_SHUTDOWN
+        ):
+            pop_active_model()
+
+        if event not in self._event_handlers:
+            return
+
+        logger = kwargs.pop('logger', get_mltk_logger())
+
+        for handler, kws in self._event_handlers[event]:
+            try:
+                handler(mltk_model=self, logger=logger, **kwargs, **kws)
+            except Exception as e:
+                get_mltk_logger().warning(f'Model event: {event}, handler: {handler}, failed, err: {e}', exc_info=e)
+
 
 
     def __setattr__(self, name, value):
@@ -309,12 +392,12 @@ class MltkModel(
 
     def has_attribute(self, name):
         if name in self._attributes:
-            return True 
+            return True
 
         for key, _ in inspect.getmembers(self.__class__, lambda x: isinstance(x, property)):
             if key == name:
                 return True
-                
+
         return False
 
 
@@ -335,13 +418,12 @@ class MltkModel(
         else:
             model_name = 'my_model'
 
-        self._attributes.register('model_specification_path', self._model_script_path, dtype=str)  
-        self._attributes.register('description', 'Generated by Silicon Lab\'s MLTK Python package', dtype=str) 
+        self._attributes.register('model_specification_path', self._model_script_path, dtype=str)
+        self._attributes.register('description', 'Generated by Silicon Lab\'s MLTK Python package', dtype=str)
         self._attributes.register('log_dir', '', dtype=str)
-        self._attributes.register('name', model_name, dtype=str) 
-        self._attributes.register('version', 1, dtype=int)  
+        self._attributes.register('name', model_name, dtype=str)
+        self._attributes.register('version', 1, dtype=int)
         self._attributes.register('test_mode_enabled', False, dtype=bool)
         self._attributes.register('keras_custom_objects', dtype=dict)
-
 
 

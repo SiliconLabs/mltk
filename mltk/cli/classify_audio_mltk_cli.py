@@ -18,10 +18,10 @@ from mltk import cli
 
 @cli.root_cli.command('classify_audio')
 def classify_audio_command(
-    model: str = typer.Argument(..., 
+    model: str = typer.Argument(...,
         help='''\b
 On of the following:
-- MLTK model name 
+- MLTK model name
 - Path to .tflite file
 - Path to model archive file (.mltk.zip)
 NOTE: The model must have been previously trained for keyword spotting''',
@@ -46,105 +46,108 @@ This is only used with the --device option.
 'If omitted, then attempt to automatically determine the serial COM port''',
         metavar='<port>'
     ),
-    verbose: bool = typer.Option(False, '--verbose', '-v', 
+    verbose: bool = typer.Option(False, '--verbose', '-v',
         help='Enable verbose console logs'
     ),
-    average_window_duration_ms: int = typer.Option(None, '--window_duration', '-w', 
+    average_window_duration_ms: int = typer.Option(None, '--window_duration', '-w',
         help='''\b
 Controls the smoothing. Drop all inference results that are older than <now> minus window_duration.
 Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some commands''',
         metavar='<duration ms>'
     ),
-    minimum_count: int = typer.Option(None, '--count', '-c', 
+    minimum_count: int = typer.Option(None, '--count', '-c',
         help='The *minimum* number of inference results to average when calculating the detection value. Set to 0 to disable averaging',
         metavar='<count>'
     ),
-    detection_threshold: int = typer.Option(None, '--threshold', '-t', 
+    detection_threshold: int = typer.Option(None, '--threshold', '-t',
         help='Minimum averaged model output threshold for a class to be considered detected, 0-255. Higher values increase precision at the cost of recall',
         metavar='<threshold>'
     ),
-    suppression_ms: int = typer.Option(None, '--suppression', '-s', 
+    suppression_ms: int = typer.Option(None, '--suppression', '-s',
         help='Amount of milliseconds to wait after a keyword is detected before detecting new keywords',
         metavar='<suppression ms>'
     ),
-    latency_ms: int = typer.Option(None, '--latency', '-l', 
+    latency_ms: int = typer.Option(None, '--latency', '-l',
         help='This the amount of time in milliseconds between processing loops',
         metavar='<latency ms>'
     ),
-    microphone: str = typer.Option(None, '--microphone', '-m', 
+    microphone: str = typer.Option(None, '--microphone', '-m',
         help='For non-embedded, this specifies the name of the PC microphone to use',
         metavar='<name>'
     ),
-    volume_gain: int = typer.Option(None, '--volume', '-u', 
+    volume_gain: int = typer.Option(None, '--volume', '-u',
         help='Set the volume gain scaler (i.e. amplitude) to apply to the microphone data. If 0 or omitted, no scaler is applied',
         metavar='<volume gain>'
     ),
-    dump_audio: bool = typer.Option(False, '--dump-audio', '-x', 
+    dump_audio: bool = typer.Option(False, '--dump-audio', '-x',
         help='Dump the raw microphone and generate a corresponding .wav file',
     ),
-    dump_raw_spectrograms: bool = typer.Option(False, '--dump-raw-spectrograms', '-w', 
+    dump_raw_spectrograms: bool = typer.Option(False, '--dump-raw-spectrograms', '-w',
         help='Dump the raw (i.e. unquantized) generated spectrograms to .jpg images and .mp4 video',
     ),
-    dump_quantized_spectrograms: bool = typer.Option(False, '--dump-spectrograms', '-z', 
+    dump_quantized_spectrograms: bool = typer.Option(False, '--dump-spectrograms', '-z',
         help='Dump the quantized generated spectrograms to .jpg images and .mp4 video',
     ),
-    sensitivity: float = typer.Option(None, '--sensitivity', '-i', 
+    sensitivity: float = typer.Option(None, '--sensitivity', '-i',
         help='Sensitivity of the activity indicator LED. Much less than 1.0 has higher sensitivity',
     ),
     app_path: str = typer.Option(None, '--app',
         help='''\b
-By default, the audio_classifier app is automatically downloaded. 
+By default, the audio_classifier app is automatically downloaded.
 This option allows for overriding with a custom built app.
 Alternatively, if using the --device option, set this option to "none" to NOT program the audio_classifier app to the device.
 In this case, ONLY the .tflite will be programmed and the existing audio_classifier app will be re-used.
 ''',
         metavar='<path>'
     ),
-    is_unit_test: bool = typer.Option(False, '--test', 
+    is_unit_test: bool = typer.Option(False, '--test',
         help='Run as a unit test',
     ),
 ):
     """Classify keywords/events detected in a microphone's streaming audio
 
     NOTE: This command is experimental. Use at your own risk!
-    
+
     \b
     This command runs an audio classification application on either the local PC OR
-    on an embedded target. The audio classification application loads the given 
+    on an embedded target. The audio classification application loads the given
     audio classification ML model (e.g. Keyword Spotting) and streams real-time audio
     from the local PC's/embedded target's microphone into the ML model.
 
     \b
     System Dataflow:
-    Microphone -> AudioFeatureGenerator -> ML Model -> Command Recognizer -> Local Terminal  
+    Microphone -> AudioFeatureGenerator -> ML Model -> Command Recognizer -> Local Terminal
     \b
     Refer to the mltk.models.tflite_micro.tflite_micro_speech model for a reference on how to train
     an ML model that works the audio classification application.
+    \b
+    For more details see:
+    https://siliconlabs.github.io/mltk/docs/audio/audio_utilities
     \b
     ----------
      Examples
     ----------
     \b
-    # Classify audio on local PC using tflite_micro_speech model   
-    # Simulate the audio loop latency to be 200ms  
-    # i.e. If the app was running on an embedded target, it would take 200ms per audio loop  
-    # Also enable verbose logs  
-    mltk classify_audio tflite_micro_speech --latency 200 --verbose 
+    # Classify audio on local PC using tflite_micro_speech model
+    # Simulate the audio loop latency to be 200ms
+    # i.e. If the app was running on an embedded target, it would take 200ms per audio loop
+    # Also enable verbose logs
+    mltk classify_audio tflite_micro_speech --latency 200 --verbose
 
     \b
-    # Classify audio on an embedded target using model: ~/workspace/my_model.tflite   
-    # and the following classifier settings:  
-    # - Set the averaging window to 1200ms (i.e. drop samples older than <now> minus window)  
-    # - Set the minimum sample count to 3 (i.e. must have at last 3 samples before classifying)  
-    # - Set the threshold to 175 (i.e. the average of the inference results within the averaging window must be at least 175 of 255)  
-    # - Set the suppression to 750ms (i.e. Once a keyword is detected, wait 750ms before detecting more keywords)  
-    # i.e. If the app was running on an embedded target, it would take 200ms per audio loop  
-    mltk classify_audio /home/john/my_model.tflite --device --window 1200ms --count 3 --threshold 175 --suppression 750  
+    # Classify audio on an embedded target using model: ~/workspace/my_model.tflite
+    # and the following classifier settings:
+    # - Set the averaging window to 1200ms (i.e. drop samples older than <now> minus window)
+    # - Set the minimum sample count to 3 (i.e. must have at last 3 samples before classifying)
+    # - Set the threshold to 175 (i.e. the average of the inference results within the averaging window must be at least 175 of 255)
+    # - Set the suppression to 750ms (i.e. Once a keyword is detected, wait 750ms before detecting more keywords)
+    # i.e. If the app was running on an embedded target, it would take 200ms per audio loop
+    mltk classify_audio /home/john/my_model.tflite --device --window 1200ms --count 3 --threshold 175 --suppression 750
 
     \b
-    # Classify audio and also dump the captured raw audio and spectrograms  
+    # Classify audio and also dump the captured raw audio and spectrograms
     mltk classify_audio tflite_micro_speech --dump-audio --dump-spectrograms
-    
+
     """
 
     # Import all required packages here instead of at top
@@ -179,7 +182,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
     try:
         tflite_model = load_tflite_model(
-            model, 
+            model,
             print_not_found_err=True,
             logger=logger
         )
@@ -188,12 +191,12 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
     input_dtype = tflite_model.inputs[0].dtype
     platform = get_current_os() if not use_device else commander.query_platform()
-  
+
 
     ###############################################################
-    def _run_audio_classifier_on_device( 
+    def _run_audio_classifier_on_device(
         tflite_model_params:TfliteModelParameters,
-        dump_audio_dir:str, 
+        dump_audio_dir:str,
         dump_raw_spectrograms_dir:str,
         dump_quantized_spectrograms_dir:str,
     ):
@@ -212,7 +215,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
             firmware_image_path=app_path
         )
 
-        # If no serial COM port is provided, 
+        # If no serial COM port is provided,
         # then attemp to resolve it based on common Silab's board COM port description
         port = port or 'regex:JLink CDC UART Port'
 
@@ -220,21 +223,21 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         logger.info('Running audio classifier on device ...')
         logger.info('Press CTRL+C to exit\n')
 
-        with SerialReader( 
+        with SerialReader(
             port=port,
-            baud=115200, 
+            baud=115200,
             outfile=logger,
             start_regex=re.compile(r'.*Audio Classifier.*', re.IGNORECASE),
             fail_regex=[
-                re.compile(r'.*hardfault.*', re.IGNORECASE), 
-                re.compile(r'.*assert.*', re.IGNORECASE), 
+                re.compile(r'.*hardfault.*', re.IGNORECASE),
+                re.compile(r'.*assert.*', re.IGNORECASE),
                 re.compile(r'.*error.*', re.IGNORECASE)
             ]
         ) as reader:
             commander.reset_device()
             if is_unit_test:
                 _start_ctrl_c_timer()
-            
+
             stop_event = None
             if dump_audio_dir or dump_raw_spectrograms_dir or dump_quantized_spectrograms_dir:
                 # Wait for the device to be ready
@@ -244,6 +247,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
                     if reader.error_message:
                         raise RuntimeError(f'Device error: {reader.error_message}')
                     if reader.started:
+                        logger.info('Audio classifier app started on device')
                         break
 
                 stop_event = _start_jlink_processor(
@@ -267,8 +271,8 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
 
     ###############################################################
-    def _run_audio_classifier_on_pc( 
-        dump_audio_dir:str, 
+    def _run_audio_classifier_on_pc(
+        dump_audio_dir:str,
         dump_raw_spectrograms_dir:str,
         dump_quantized_spectrograms_dir:str,
     ):
@@ -276,7 +280,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         nonlocal app_path
 
         if app_path is None:
-            app_path = firmware_apps.get_image( 
+            app_path = firmware_apps.get_image(
                 name='mltk_audio_classifier',
                 accelerator=None,
                 platform=platform,
@@ -315,7 +319,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
     ###############################################################
     def _generate_wav_from_dumped_audio(
-        dump_dir:str, 
+        dump_dir:str,
         sample_rate:int
     ):
         """Generate a .wav file from the dumped audio chunks generated by the audio_classifier app"""
@@ -370,15 +374,15 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
             return
         spectrogram_fps = globals()[fps_name]
 
-        
+
         if not os.path.exists(spec_1_path):
-            return 
+            return
         spectrogram = cv2.imread(spec_1_path)
         height, width = spectrogram.shape[:2]
 
         logger.info(f'Spectrogram rate: {spectrogram_fps:.1f} frame/s')
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        video = cv2.VideoWriter(video_path, fourcc, spectrogram_fps, (width, height)) 
+        video = cv2.VideoWriter(video_path, fourcc, spectrogram_fps, (width, height))
         for i in range(1, int(1e9)):
             jpg_path = f'{dump_dir}/jpg/{i}.jpg'
             if not os.path.exists(jpg_path):
@@ -394,12 +398,12 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         dtype:np.dtype
     ):
         """Start a thread to periodically sample the spectrogram dump directory and generate a .jpg when one if found
-        
+
         This converts from a numpy .txt array to a .jpg of the spectrogram
         """
         stop_event = threading.Event()
 
-        dtype_str = _dtype_to_str(dtype) 
+        dtype_str = _dtype_to_str(dtype)
         src_dir = f'{dump_dir}/bin'
         dst_dir = f'{dump_dir}/jpg'
         os.makedirs(dst_dir, exist_ok=True)
@@ -415,11 +419,11 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
                 dst_path = f'{dst_dir}/{counter}.jpg'
 
                 # We wait until the NEXT spectrogram file is found
-                # this way, we avoid race-conditions and ensure the current 
+                # this way, we avoid race-conditions and ensure the current
                 # spectrogram is fully written
                 if not os.path.exists(next_path):
                     time.sleep(0.050)
-                    continue 
+                    continue
 
                 if prev_time is None:
                     prev_time = time.time()
@@ -440,7 +444,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
                 # Transpose to put the time on the x-axis
                 spectrogram = np.transpose(spectrogram)
-                # Convert from int8 to uint8 
+                # Convert from int8 to uint8
                 if dtype_str == 'int8':
                     spectrogram = np.clip(spectrogram +128, 0, 255)
                     spectrogram = spectrogram.astype(np.uint8)
@@ -457,7 +461,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
         atexit.register(stop_event.set)
         t = threading.Thread(
-            target=_convert_npy_to_jpg_loop, 
+            target=_convert_npy_to_jpg_loop,
             name='Spectrogram to JPG converter',
             daemon=True,
         )
@@ -466,13 +470,13 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
     ###############################################################
     def _start_jlink_processor(
-        dump_audio_dir:str, 
-        dump_raw_spectrograms_dir:str, 
+        dump_audio_dir:str,
+        dump_raw_spectrograms_dir:str,
         dump_quantized_spectrograms_dir:str,
         tflite_model_params:TfliteModelParameters
     ) -> threading.Event:
         """Start the JLink stream inferface
-       
+
         This allows for reading binary data from the embedded device via debug interface
         """
 
@@ -489,12 +493,12 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         stop_event = threading.Event()
         atexit.register(stop_event.set)
         t = threading.Thread(
-            name='JLink Processing loop', 
+            name='JLink Processing loop',
             target=_jlink_processing_loop,
             daemon=True,
-            kwargs=dict( 
+            kwargs=dict(
                 jlink_stream=jlink_stream,
-                stop_event=stop_event, 
+                stop_event=stop_event,
                 dump_audio_dir=dump_audio_dir,
                 dump_raw_spectrograms_dir=dump_raw_spectrograms_dir,
                 dump_quantized_spectrograms_dir=dump_quantized_spectrograms_dir,
@@ -508,19 +512,19 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
     ###############################################################
     def _jlink_processing_loop(
-        jlink_stream:JlinkStream, 
+        jlink_stream:JlinkStream,
         stop_event:threading.Event,
-        dump_audio_dir:str, 
-        dump_raw_spectrograms_dir:str, 
-        dump_quantized_spectrograms_dir:str, 
+        dump_audio_dir:str,
+        dump_raw_spectrograms_dir:str,
+        dump_quantized_spectrograms_dir:str,
         tflite_model_params:TfliteModelParameters,
         logger:logging.Logger
     ):
         """Read binary data from embedded device via JLink interface
-        
+
         This runs in a separate thread
         """
-        audio_stream:JLinkDataStream = None 
+        audio_stream:JLinkDataStream = None
         raw_spectrogram_stream:JLinkDataStream = None
         quantized_spectrogram_stream:JLinkDataStream = None
         audio_chunk_counter = 0
@@ -533,21 +537,23 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         spectrogram_cols = (sample_length_ms - window_size_ms) // window_step_ms + 1
         spectrogram_size = spectrogram_rows*spectrogram_cols
         raw_spectrogram_min_read_size = spectrogram_size*2
+        raw_spectrogram_buffer = bytearray()
         quantized_spectrogram_min_read_size = spectrogram_size
+        quantized_spectrogram_buffer = bytearray()
         audio_min_read_size = 1024
         audio_start_timeout = None
 
         while True:
             if stop_event.wait(0.010):
                 jlink_stream.disconnect()
-                break 
+                break
 
             if dump_audio_dir and audio_stream is None:
                 try:
                     audio_stream = jlink_stream.open('audio', mode='r')
                     logger.debug('Device audio stream ready')
                     # Wait a moment for any noise to be flushed from the audio stream
-                    audio_start_timeout = time.time() + 4.0 
+                    audio_start_timeout = time.time() + 4.0
                 except Exception as e:
                     logger.debug(f'Failed to open device audio stream, err: {e}')
 
@@ -578,27 +584,32 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
                     with open(chunk_path, 'wb') as f:
                         f.write(chunk_data)
 
-            if raw_spectrogram_stream is not None and raw_spectrogram_stream.read_data_available >= raw_spectrogram_min_read_size:
-                spectrogram_read_size = (raw_spectrogram_stream.read_data_available // raw_spectrogram_min_read_size) * raw_spectrogram_min_read_size
-                spectrogram_data = raw_spectrogram_stream.read_all(spectrogram_read_size)
-                if spec_counter == 0:
-                    logger.info('Raw spectrogram recording started')
-                while len(spectrogram_data) > 0:
-                    spectrogram_buf = np.frombuffer(spectrogram_data[:raw_spectrogram_min_read_size], dtype=np.uint16)
+            if raw_spectrogram_stream is not None and raw_spectrogram_stream.read_data_available >= 256:
+                raw_spectrogram_buffer.extend(raw_spectrogram_stream.read())
+
+                while len(raw_spectrogram_buffer) >= raw_spectrogram_min_read_size:
+                    if spec_counter == 0:
+                        logger.info('Raw spectrogram recording started')
+
+                    spectrogram_data = raw_spectrogram_buffer[:raw_spectrogram_min_read_size]
+                    raw_spectrogram_buffer = raw_spectrogram_buffer[raw_spectrogram_min_read_size:]
+                    spectrogram_buf = np.frombuffer(spectrogram_data, dtype=np.uint16)
                     spectrogram_data = spectrogram_data[raw_spectrogram_min_read_size:]
                     spectrogram = np.reshape(spectrogram_buf, (spectrogram_cols, spectrogram_rows))
                     bin_path = f'{dump_raw_spectrograms_dir}/{spec_counter}.uint16.npy.txt'
                     np.savetxt(bin_path, spectrogram, fmt='%d', delimiter=',')
                     spec_counter += 1
 
-            if quantized_spectrogram_stream is not None and quantized_spectrogram_stream.read_data_available >= quantized_spectrogram_min_read_size:
-                spectrogram_read_size = (quantized_spectrogram_stream.read_data_available // quantized_spectrogram_min_read_size) * quantized_spectrogram_min_read_size
-                spectrogram_data = quantized_spectrogram_stream.read_all(spectrogram_read_size)
-                if spec_counter == 0:
-                    logger.info('Quantized spectrogram recording started')
-                while len(spectrogram_data) > 0:
-                    spectrogram_buf = np.frombuffer(spectrogram_data[:quantized_spectrogram_min_read_size], dtype=input_dtype)
-                    spectrogram_data = spectrogram_data[quantized_spectrogram_min_read_size:]
+            if quantized_spectrogram_stream is not None and quantized_spectrogram_stream.read_data_available >= 256:
+                quantized_spectrogram_buffer.extend(quantized_spectrogram_stream.read())
+
+                while len(quantized_spectrogram_buffer) >= quantized_spectrogram_min_read_size:
+                    if spec_counter == 0:
+                        logger.info('Quantized spectrogram recording started')
+
+                    spectrogram_data = quantized_spectrogram_buffer[:quantized_spectrogram_min_read_size]
+                    quantized_spectrogram_buffer = quantized_spectrogram_buffer[quantized_spectrogram_min_read_size:]
+                    spectrogram_buf = np.frombuffer(spectrogram_data, dtype=input_dtype)
                     spectrogram = np.reshape(spectrogram_buf, (spectrogram_cols, spectrogram_rows))
                     bin_path = f'{dump_quantized_spectrograms_dir}/{spec_counter}.{_dtype_to_str(input_dtype)}.npy.txt'
                     np.savetxt(bin_path, spectrogram, fmt='%d', delimiter=',')
@@ -606,7 +617,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
 
     ###############################################################
-    def _update_model_parameters() -> TfliteModelParameters: 
+    def _update_model_parameters() -> TfliteModelParameters:
         """Update the .tflite embedded model parameters based on the command-line options"""
         params = TfliteModelParameters.load_from_tflite_model(tflite_model)
 
@@ -698,11 +709,11 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
 
     tflite_model_params = _update_model_parameters()
-    dump_audio_dir = None 
+    dump_audio_dir = None
     dump_audio_bin_dir = None
-    dump_raw_spectrograms_dir = None 
+    dump_raw_spectrograms_dir = None
     dump_raw_spectrograms_bin_dir = None
-    dump_quantized_spectrograms_dir = None 
+    dump_quantized_spectrograms_dir = None
     dump_quantized_spectrograms_bin_dir = None
 
     if dump_audio:
@@ -712,18 +723,18 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         logger.info(f'Dumping audio to {dump_audio_dir}')
         clean_directory(dump_audio_dir)
         atexit.register(functools.partial(
-            _generate_wav_from_dumped_audio, 
+            _generate_wav_from_dumped_audio,
             dump_dir=dump_audio_dir,
             sample_rate=sample_rate
         ))
-    
+
     if dump_raw_spectrograms:
         dump_raw_spectrograms_dir = create_user_dir(f'audio_classifier_recordings/{platform}/raw_spectrograms')
         dump_raw_spectrograms_bin_dir = create_user_dir(f'audio_classifier_recordings/{platform}/raw_spectrograms/bin')
         logger.info(f'Dumping spectrograms to {dump_raw_spectrograms_dir}')
         clean_directory(dump_raw_spectrograms_dir)
         atexit.register(functools.partial(
-            _generate_video_from_dumped_spectrograms, 
+            _generate_video_from_dumped_spectrograms,
             dump_dir=dump_raw_spectrograms_dir,
             dtype='uint16'
         ))
@@ -735,7 +746,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         logger.info(f'Dumping spectrograms to {dump_quantized_spectrograms_dir}')
         clean_directory(dump_quantized_spectrograms_dir)
         atexit.register(functools.partial(
-            _generate_video_from_dumped_spectrograms, 
+            _generate_video_from_dumped_spectrograms,
             dump_dir=dump_quantized_spectrograms_dir,
             dtype=input_dtype
         ))
@@ -743,7 +754,7 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
 
 
     if use_device:
-        _run_audio_classifier_on_device( 
+        _run_audio_classifier_on_device(
             tflite_model_params=tflite_model_params,
             dump_audio_dir=dump_audio_bin_dir,
             dump_raw_spectrograms_dir=dump_raw_spectrograms_bin_dir,
@@ -757,4 +768,3 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         )
 
 
-    

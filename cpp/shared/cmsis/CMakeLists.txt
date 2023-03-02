@@ -2,259 +2,92 @@ project(mltk_cmsis
         VERSION 1.0.0
         DESCRIPTION "ARM CMSIS Project")
 export (PACKAGE ${PROJECT_NAME})
-add_library(${PROJECT_NAME} INTERFACE)	 
+add_library(${PROJECT_NAME} INTERFACE)
 add_library(mltk::cmsis ALIAS ${PROJECT_NAME})
 
-add_library(mltk_cmsis_nn)	 
-add_library(mltk::cmsis_nn ALIAS mltk_cmsis_nn)
+
+
+mltk_get(CMSIS_CORE)
+mltk_get(CMSIS_FPU)
+mltk_get(CMSIS_MARCH) # https://gcc.gnu.org/onlinedocs/gcc/ARM-Options.html
+mltk_get(CMSIS_DISABLE_FLOAT16)
+mltk_get(MLTK_PLATFORM_IS_EMBEDDED)
 
 
 
-include(${CMAKE_CURRENT_LIST_DIR}/cmsis_options.cmake)
-
-
-# URL comes from:
-# https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/tools/make/ext_libs/cmsis_download.sh
-#
-# NOTE: When updating the CMSIS version, be sure to also update the Simplicity Studio files:
-# <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_cmsis_nn.slcc
-# <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_cmsis_dsp_q15.slcc
 CPMAddPackage(
     NAME cmsis
-    URL  http://github.com/ARM-software/CMSIS_5/archive/6a18a74b46ac1501a7a750dd83b8bfb06fb24504.zip
-    URL_HASH MD5=3337263c78c592876f269de6b9f0ec2c
+    URL  https://github.com/ARM-software/CMSIS_5/archive/ed78d6b78766d71cfe0431149f2f261d1c7277a1.zip
+    URL_HASH SHA1=7f3cebce5149c191e2144af5d78498777a0f9545
     DOWNLOAD_ONLY ON
-    CACHE_VERSION v5.9.1 # This version comes from: the ARM.CMSIS.pdsc file in the root of the archive
+    CACHE_VERSION aug15_2022
 )
+set(cmsis_SOURCE_DIR ${cmsis_SOURCE_DIR} CACHE INTERNAL "")
 
-mltk_get(MLTK_PLATFORM_IS_EMBEDDED)
+
+
 if(NOT MLTK_PLATFORM_IS_EMBEDDED)
     include("${CMAKE_CURRENT_LIST_DIR}/wrapper/wrapper_build.cmake")
     return()
 endif()
 
 
-
-set(compile_options "-mthumb -mno-thumb-interwork -mcpu=${CMSIS_CORE} -mfp16-format=ieee -I${cmsis_SOURCE_DIR}/CMSIS/Core/Include")
-
 if(NOT CMSIS_CORE)
-    mltk_error("Must define global variable CMSIS_CORE")
+    mltk_error("Must define global variable CMSIS_CORE" TAG mltk_cmsis)
 endif()
+
+set(CMSIS_SUPPORTED_CORES cortex-m3 cortex-m4 cortex-m33 cortex-m55)
+if(NOT ${CMSIS_CORE} IN_LIST CMSIS_SUPPORTED_CORES)
+    mltk_error("CMSIS_CORE unsupported: ${CMSIS_CORE}\nCMSIS_SUPPORTED_CORES: ${CMSIS_SUPPORTED_CORES}" TAG mltk_cmsis)
+endif()
+
+
+mltk_append_global_cxx_flags("-mthumb -mno-thumb-interwork -flax-vector-conversions -I${cmsis_SOURCE_DIR}/CMSIS/Core/Include" ASM)
+
 
 if(NOT CMSIS_FPU)
-    set(compile_options "${compile_options} -mfloat-abi=softfp")
+    mltk_info("Using soft FPU" TAG mltk_cmsis)
+    mltk_append_global_cxx_flags("-mfloat-abi=softfp" ASM)
+    mltk_remove_global_cxx_flags("-mfloat-abi=hard -mfpu=${CMSIS_FPU}" ASM)
 else()
-    set(compile_options "${compile_options} -mfloat-abi=hard -mfpu=${CMSIS_FPU}")
+    mltk_info("Using hw FPU=${CMSIS_FPU}" TAG mltk_cmsis)
+    mltk_remove_global_cxx_flags("-mfloat-abi=softfp" ASM)
+    mltk_append_global_cxx_flags("-mfloat-abi=hard -mfpu=${CMSIS_FPU}" ASM)
 endif()
 
-if("${CMSIS_CORE}" STREQUAL "cortex-m4")
-    set(compile_options "${compile_options}")
-elseif("${CMSIS_CORE}" STREQUAL "cortex-m33")
-    set(compile_options "${compile_options}")
-elseif("${CMSIS_CORE}" STREQUAL "cortex-m3")
-    set(compile_options "${compile_options}")
+if(CMSIS_DISABLE_FLOAT16)
+    mltk_remove_global_cxx_flags("-mfp16-format=ieee" ASM)
+    mltk_append_global_cxx_flags("-DDISABLEFLOAT16")
 else()
-    mltk_warn("CMSIS_CORE unsupported: ${CMSIS_CORE}")
-endif()
-
-# Append the CMSIS global compile options if they haven't already been added
-if(NOT CMAKE_C_FLAGS MATCHES ".*${compile_options}.*")
-    set(CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS} ${compile_options}" CACHE INTERNAL "" FORCE)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${compile_options}" CACHE INTERNAL "" FORCE)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${compile_options}" CACHE INTERNAL "" FORCE)
+    mltk_info("Enabling float16" TAG mltk_cmsis)
+    mltk_append_global_cxx_flags("-mfp16-format=ieee" ASM)
+    mltk_remove_global_cxx_flags("-DDISABLEFLOAT16" ASM)
 endif()
 
 
-target_include_directories(${PROJECT_NAME} 
-INTERFACE 
+if(CMSIS_MARCH)
+    mltk_info("Using -march=${CMSIS_MARCH}" TAG mltk_cmsis)
+    mltk_remove_global_cxx_flags("-mcpu=${CMSIS_CORE} -mtune=${CMSIS_CORE}" ASM)
+    mltk_append_global_cxx_flags("-march=${CMSIS_MARCH}" ASM)
+else()
+    mltk_info("Using -mcpu=${CMSIS_CORE}" TAG mltk_cmsis)
+    mltk_append_global_cxx_flags("-mcpu=${CMSIS_CORE} -mtune=${CMSIS_CORE}" ASM)
+    mltk_remove_global_cxx_flags("-march=.*" WILDCARD ASM)
+endif()
+
+
+
+target_include_directories(${PROJECT_NAME}
+INTERFACE
     ${cmsis_SOURCE_DIR}
 )
 
-target_include_directories(mltk_cmsis_nn
-PUBLIC 
-    ${cmsis_SOURCE_DIR}
-    ${cmsis_SOURCE_DIR}/CMSIS/NN
-    ${cmsis_SOURCE_DIR}/CMSIS/NN/Include
-    ${cmsis_SOURCE_DIR}/CMSIS/DSP/Include
-)
-target_compile_options(mltk_cmsis_nn
-PRIVATE 
-    -Wno-strict-aliasing
-)
-
-set(sources
-NN/Source/ActivationFunctions/arm_nn_activations_q15.c
-NN/Source/ActivationFunctions/arm_nn_activations_q7.c 
-NN/Source/ActivationFunctions/arm_relu6_s8.c
-NN/Source/ActivationFunctions/arm_relu_q15.c
-NN/Source/ActivationFunctions/arm_relu_q7.c
-NN/Source/BasicMathFunctions/arm_elementwise_add_s16.c
-NN/Source/BasicMathFunctions/arm_elementwise_add_s8.c 
-NN/Source/BasicMathFunctions/arm_elementwise_mul_s16.c
-NN/Source/BasicMathFunctions/arm_elementwise_mul_s8.c
-NN/Source/ConcatenationFunctions/arm_concatenation_s8_w.c
-NN/Source/ConcatenationFunctions/arm_concatenation_s8_x.c
-NN/Source/ConcatenationFunctions/arm_concatenation_s8_y.c
-NN/Source/ConcatenationFunctions/arm_concatenation_s8_z.c
-NN/Source/ConvolutionFunctions/arm_convolve_1_x_n_s8.c
-NN/Source/ConvolutionFunctions/arm_convolve_1x1_HWC_q7_fast_nonsquare.c
-NN/Source/ConvolutionFunctions/arm_convolve_1x1_s8_fast.c
-NN/Source/ConvolutionFunctions/arm_convolve_HWC_q15_basic.c
-NN/Source/ConvolutionFunctions/arm_convolve_HWC_q15_fast.c
-NN/Source/ConvolutionFunctions/arm_convolve_HWC_q15_fast_nonsquare.c
-NN/Source/ConvolutionFunctions/arm_convolve_HWC_q7_RGB.c
-NN/Source/ConvolutionFunctions/arm_convolve_HWC_q7_basic.c
-NN/Source/ConvolutionFunctions/arm_convolve_HWC_q7_basic_nonsquare.c
-NN/Source/ConvolutionFunctions/arm_convolve_HWC_q7_fast.c
-NN/Source/ConvolutionFunctions/arm_convolve_HWC_q7_fast_nonsquare.c
-NN/Source/ConvolutionFunctions/arm_convolve_fast_s16.c
-NN/Source/ConvolutionFunctions/arm_convolve_s16.c
-NN/Source/ConvolutionFunctions/arm_convolve_s8.c
-NN/Source/ConvolutionFunctions/arm_convolve_wrapper_s16.c
-NN/Source/ConvolutionFunctions/arm_convolve_wrapper_s8.c
-NN/Source/ConvolutionFunctions/arm_depthwise_conv_3x3_s8.c
-NN/Source/ConvolutionFunctions/arm_depthwise_conv_s16.c
-NN/Source/ConvolutionFunctions/arm_depthwise_conv_s8.c
-NN/Source/ConvolutionFunctions/arm_depthwise_conv_s8_opt.c
-NN/Source/ConvolutionFunctions/arm_depthwise_conv_u8_basic_ver1.c
-NN/Source/ConvolutionFunctions/arm_depthwise_conv_wrapper_s8.c
-NN/Source/ConvolutionFunctions/arm_depthwise_separable_conv_HWC_q7.c
-NN/Source/ConvolutionFunctions/arm_depthwise_separable_conv_HWC_q7_nonsquare.c
-NN/Source/ConvolutionFunctions/arm_nn_depthwise_conv_s8_core.c
-NN/Source/ConvolutionFunctions/arm_nn_mat_mult_kernel_q7_q15.c
-NN/Source/ConvolutionFunctions/arm_nn_mat_mult_kernel_q7_q15_reordered.c
-NN/Source/ConvolutionFunctions/arm_nn_mat_mult_kernel_s8_s16.c
-NN/Source/ConvolutionFunctions/arm_nn_mat_mult_s8.c
-NN/Source/FullyConnectedFunctions/arm_fully_connected_mat_q7_vec_q15.c
-NN/Source/FullyConnectedFunctions/arm_fully_connected_mat_q7_vec_q15_opt.c
-NN/Source/FullyConnectedFunctions/arm_fully_connected_q15.c
-NN/Source/FullyConnectedFunctions/arm_fully_connected_q15_opt.c
-NN/Source/FullyConnectedFunctions/arm_fully_connected_q7.c
-NN/Source/FullyConnectedFunctions/arm_fully_connected_q7_opt.c
-NN/Source/FullyConnectedFunctions/arm_fully_connected_s16.c
-NN/Source/FullyConnectedFunctions/arm_fully_connected_s8.c
-NN/Source/NNSupportFunctions/arm_nn_accumulate_q7_to_q15.c
-NN/Source/NNSupportFunctions/arm_nn_add_q7.c
-NN/Source/NNSupportFunctions/arm_nn_depthwise_conv_nt_t_padded_s8.c
-NN/Source/NNSupportFunctions/arm_nn_depthwise_conv_nt_t_s8.c
-NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_1x_s8.c
-NN/Source/NNSupportFunctions/arm_nn_mat_mul_core_4x_s8.c
-NN/Source/NNSupportFunctions/arm_nn_mat_mul_kernel_s16.c
-NN/Source/NNSupportFunctions/arm_nn_mat_mult_nt_t_s8.c
-NN/Source/NNSupportFunctions/arm_nn_mult_q15.c
-NN/Source/NNSupportFunctions/arm_nn_mult_q7.c
-NN/Source/NNSupportFunctions/arm_nn_vec_mat_mult_t_s16.c
-NN/Source/NNSupportFunctions/arm_nn_vec_mat_mult_t_s8.c
-NN/Source/NNSupportFunctions/arm_nn_vec_mat_mult_t_svdf_s8.c
-NN/Source/NNSupportFunctions/arm_nntables.c
-NN/Source/NNSupportFunctions/arm_q7_to_q15_no_shift.c
-NN/Source/NNSupportFunctions/arm_q7_to_q15_reordered_no_shift.c
-NN/Source/NNSupportFunctions/arm_q7_to_q15_reordered_with_offset.c
-NN/Source/NNSupportFunctions/arm_q7_to_q15_with_offset.c
-NN/Source/PoolingFunctions/arm_avgpool_s16.c
-NN/Source/PoolingFunctions/arm_avgpool_s8.c
-NN/Source/PoolingFunctions/arm_max_pool_s16.c
-NN/Source/PoolingFunctions/arm_max_pool_s8.c
-NN/Source/PoolingFunctions/arm_pool_q7_HWC.c
-NN/Source/ReshapeFunctions/arm_reshape_s8.c
-NN/Source/SVDFunctions/arm_svdf_s8.c
-NN/Source/SVDFunctions/arm_svdf_state_s16_s8.c
-NN/Source/SoftmaxFunctions/arm_nn_softmax_common_s8.c
-NN/Source/SoftmaxFunctions/arm_softmax_q15.c
-NN/Source/SoftmaxFunctions/arm_softmax_q7.c
-NN/Source/SoftmaxFunctions/arm_softmax_s16.c
-NN/Source/SoftmaxFunctions/arm_softmax_s8.c
-NN/Source/SoftmaxFunctions/arm_softmax_s8_s16.c
-NN/Source/SoftmaxFunctions/arm_softmax_u8.c
-NN/Source/SoftmaxFunctions/arm_softmax_with_batch_q7.c
-)
-
-list(TRANSFORM sources PREPEND ${cmsis_SOURCE_DIR}/CMSIS/)
-target_sources(mltk_cmsis_nn
-PRIVATE 
-    ${sources}
-)
-target_compile_options(mltk_cmsis_nn
-PRIVATE 
-    -include stdint.h 
-)
-target_compile_definitions(mltk_cmsis_nn
-PUBLIC
-    CMSIS_NN
-)
-
-target_link_libraries(mltk_cmsis_nn
-PUBLIC 
-    mltk_cmsis
-)
-target_compile_definitions(mltk_cmsis_nn
-PRIVATE 
-    CMSIS_FORCE_BUILTIN_FUNCTIONS
-)
-
-
-
-add_library(mltk_cmsis_dsp_fft_q15)	 
-add_library(mltk::cmsis_dsp_fft_q15 ALIAS mltk_cmsis_dsp_fft_q15)
-
-target_include_directories(mltk_cmsis_dsp_fft_q15
-PUBLIC 
-    ${cmsis_SOURCE_DIR}
-    ${cmsis_SOURCE_DIR}/CMSIS/DSP/Include
-)
-
-set(sources
-DSP/Source/BasicMathFunctions/arm_shift_q15.c
-DSP/Source/CommonTables/arm_common_tables.c
-DSP/Source/CommonTables/arm_const_structs.c 
-DSP/Source/TransformFunctions/arm_bitreversal.c
-DSP/Source/TransformFunctions/arm_bitreversal2.c
-DSP/Source/TransformFunctions/arm_cfft_init_q15.c
-DSP/Source/TransformFunctions/arm_cfft_q15.c
-DSP/Source/TransformFunctions/arm_cfft_radix2_init_q15.c 
-DSP/Source/TransformFunctions/arm_cfft_radix2_q15.c 
-DSP/Source/TransformFunctions/arm_cfft_radix4_init_q15.c 
-DSP/Source/TransformFunctions/arm_cfft_radix4_q15.c 
-DSP/Source/TransformFunctions/arm_rfft_init_q15.c 
-DSP/Source/TransformFunctions/arm_rfft_q15.c 
-)
-
-list(TRANSFORM sources PREPEND ${cmsis_SOURCE_DIR}/CMSIS/)
-target_sources(mltk_cmsis_dsp_fft_q15
-PRIVATE 
-    ${sources}
-)
-target_compile_options(mltk_cmsis_dsp_fft_q15
-PRIVATE 
-    -include stdint.h 
-)
-
+include(${CMAKE_CURRENT_LIST_DIR}/cmsis_dsp.cmake)
 
 if(MLTK_PLATFORM_IS_EMBEDDED)
-    add_library(mltk_cmsis_rtos2)	 
-    add_library(mltk::cmsis_rtos2 ALIAS mltk_cmsis_rtos2)
-
-    target_sources(mltk_cmsis_rtos2
-    PRIVATE 
-        ${cmsis_SOURCE_DIR}/CMSIS/RTOS2/Source/os_systick.c
-    )
-    target_include_directories(mltk_cmsis_rtos2
-    PUBLIC 
-        ${cmsis_SOURCE_DIR}/CMSIS/RTOS2/Include
-    )
-    target_link_libraries(mltk_cmsis_rtos2
-    PRIVATE 
-        ${MLTK_PLATFORM}
-    )
+    include(${CMAKE_CURRENT_LIST_DIR}/cmsis_device.cmake)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmsis_nn.cmake)
+    include(${CMAKE_CURRENT_LIST_DIR}/cmsis_rtos2.cmake)
 endif()
 
 
-mltk_load_python()
-
-# Ensure the downloaded library is patched 
-add_custom_command(OUTPUT ${cmsis_SOURCE_DIR}/${PROJECT_NAME}_patch_complete.txt
-  DEPENDS ${cmsis_SOURCE_DIR}/CMSIS/DSP/Include ${CMAKE_CURRENT_LIST_DIR}/patch_cmsis.py
-  COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/libpatcher.py -i ${cmsis_SOURCE_DIR}/CMSIS/DSP/Include -p ${CMAKE_CURRENT_LIST_DIR}/patch_cmsis.py -o ${cmsis_SOURCE_DIR}/${PROJECT_NAME}_patch_complete.txt
-)
-add_custom_target(${PROJECT_NAME}_apply_patch DEPENDS ${cmsis_SOURCE_DIR}/${PROJECT_NAME}_patch_complete.txt)
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_apply_patch)

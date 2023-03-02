@@ -6,17 +6,20 @@ import tqdm
 import tensorflow as tf
 from sklearn.metrics import (precision_recall_curve, confusion_matrix)
 from sklearn.preprocessing import label_binarize
-import numpy as np 
+import numpy as np
 import matplotlib.pyplot as plt
 from mltk.utils import gpu
 from mltk.utils.python import prepend_exception_msg
 from .model import (
+    model_utils,
     MltkModel,
+    MltkModelEvent,
     KerasModel,
-    TrainMixin, 
+    TrainMixin,
     DatasetMixin,
     EvaluateClassifierMixin,
-    load_tflite_or_keras_model
+    load_tflite_or_keras_model,
+
 )
 from .utils import get_mltk_logger
 from .summarize_model import summarize_model
@@ -26,12 +29,12 @@ from .evaluation_results import EvaluationResults
 
 class ClassifierEvaluationResults(EvaluationResults):
     """Classifier evaluation results
-    
+
     .. seealso::
 
        - :py:func:`~evaluate_classifier`
        - :py:func:`mltk.core.evaluate_model`
-    
+
     """
 
     def __init__(self, *args, **kwargs):
@@ -90,24 +93,24 @@ class ClassifierEvaluationResults(EvaluationResults):
     @property
     def recall(self) -> List[List[float]]:
         """List of each classes' recall at various thresholds"""
-        return self['recall'] 
+        return self['recall']
 
     @property
     def confusion_matrix(self) -> List[List[float]]:
         """Calculated confusion matrix"""
-        return self['confusion_matrix'] 
+        return self['confusion_matrix']
 
 
     def calculate(self, y: Union[np.ndarray,list], y_pred: Union[np.ndarray,list]):
         """Calculate the evaluation results
-        
+
         Given the expected y values and corresponding predictions,
         calculate the various evaluation results
 
         Args:
             y: 1D array with shape [n_samples] where each entry is the expected class label (aka id) for the corresponding sample
                 e.g. 0 = cat, 1 = dog, 2 = goat, 3 = other
-            y_pred: 2D array as shape [n_samples, n_classes] for categorical or 1D array as [n_samples] for binary, 
+            y_pred: 2D array as shape [n_samples, n_classes] for categorical or 1D array as [n_samples] for binary,
                 where each entry contains the model output for the given sample.
                 For binary, the values must be between 0 and 1 where < 0.5 maps to class 0 and >= 0.5 maps to class 1
         """
@@ -155,22 +158,22 @@ class ClassifierEvaluationResults(EvaluationResults):
         return s + '\n' + summarize_results(self)
 
     def generate_plots(
-        self, 
-        show=True, 
-        output_dir:str=None, 
+        self,
+        show=True,
+        output_dir:str=None,
         logger: logging.Logger=None
     ):
         """Generate plots of the evaluation results
-        
+
         Args:
             show: Display the generated plots
             output_dir: Generate the plots at the specified directory. If omitted, generated in the model's logging directory
             logger: Optional logger
         """
         plot_results(
-            self, 
-            logger=logger, 
-            output_dir=output_dir, 
+            self,
+            logger=logger,
+            output_dir=output_dir,
             show=show
         )
 
@@ -188,7 +191,7 @@ def evaluate_classifier(
     **kwargs
 ) -> ClassifierEvaluationResults:
     """Evaluate a trained classification model
-    
+
     Args:
         mltk_model: MltkModel instance
         tflite: If true then evalute the .tflite (i.e. quantized) model, otherwise evaluate the keras model
@@ -221,7 +224,7 @@ def evaluate_classifier(
 
     try:
         mltk_model.load_dataset(
-            subset='evaluation', 
+            subset='evaluation',
             max_samples_per_class=max_samples_per_class,
             classes=classes,
             test=mltk_model.test_mode_enabled
@@ -229,12 +232,12 @@ def evaluate_classifier(
     except Exception as e:
         prepend_exception_msg(e, 'Failed to load model evaluation dataset')
         raise
-    
+
 
     # Build the MLTK model's corresponding as a Keras model or .tflite
     try:
         built_model = load_tflite_or_keras_model(
-            mltk_model, 
+            mltk_model,
             model_type='tflite' if tflite else 'h5',
             weights=weights
         )
@@ -266,7 +269,7 @@ def evaluate_classifier(
 
         if progbar is not None:
             progbar.update(len(pred))
-        
+
         y_pred.extend(pred)
         if batch_y.shape[-1] == 1 or len(batch_y.shape) == 1:
             y_label.extend(batch_y)
@@ -302,8 +305,8 @@ def evaluate_classifier(
     logger.debug(f'Generated {summary_path}')
 
     results.generate_plots(
-        logger=logger, 
-        output_dir=eval_dir, 
+        logger=logger,
+        output_dir=eval_dir,
         show=show
     )
 
@@ -320,12 +323,12 @@ def evaluate_classifier(
     logger.close() # Close the eval logger
 
     return results
-    
+
 
 def plot_results(
-    results:ClassifierEvaluationResults, 
-    show=True, 
-    output_dir:str=None, 
+    results:ClassifierEvaluationResults,
+    show=True,
+    output_dir:str=None,
     logger:logging.Logger=None
 ):
     """Use Matlibplot to generate plots of the evaluation results"""
@@ -414,10 +417,10 @@ def calculate_auc(y_pred:np.ndarray, y_label:np.ndarray, threshold=.01) -> Tuple
     thresholds Optional list of thresholds to consider
 
     Return tuple:
-    false positive rate, true positive rate, list ROC AUC for each class, list of thresholds 
+    false positive rate, true positive rate, list ROC AUC for each class, list of thresholds
     """
     n_samples, n_classes = y_pred.shape
-  
+
     # thresholds, linear range
     thresholds = np.arange(0.0, 1.01, threshold)
 
@@ -505,7 +508,7 @@ def plot_roc(results:dict, output_dir:str, show:bool, logger: logging.Logger):
     n_classes = len(classes)
 
     title = f'ROC: {name}'
-    fig = plt.figure(title)
+    fig = plt.figure(title, figsize=(10,8))
 
     for i in range(n_classes):
         plt.plot(fpr[i], tpr[i], label=f'AUC: {roc_auc[i]:0.5f} ({classes[i]})')
@@ -516,9 +519,12 @@ def plot_roc(results:dict, output_dir:str, show:bool, logger: logging.Logger):
     plt.legend(loc="lower right")
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title(title)
+    plt.title(title, y=0)
     plt.grid(which='major')
-    
+    plt.tight_layout()
+
+    _trigger_event(fig=fig, name='roc', output_dir=output_dir, logger=logger)
+
     if output_dir:
         output_path = output_dir + f'/{name}-roc.png'
         plt.savefig(output_path)
@@ -532,7 +538,7 @@ def plot_roc(results:dict, output_dir:str, show:bool, logger: logging.Logger):
 
 def plot_precision_vs_recall(results:dict, output_dir:str, show, logger: logging.Logger):
     """Generate a plot of the precision vs recall"""
-    
+
     name = results['name']
     classes = results['classes']
     precision = results['precision']
@@ -540,11 +546,11 @@ def plot_precision_vs_recall(results:dict, output_dir:str, show, logger: logging
     n_classes = len(classes)
 
     title = f'Precision vs Recall: {name}'
-    fig = plt.figure(title)
+    fig = plt.figure(title, figsize=(10,8))
 
     for i in range(n_classes):
         plt.plot(recall[i], precision[i], label=_normalize_class_name(classes[i]))
-    
+
     plt.xlim([0.5, 1.0])
     plt.ylim([0.5, 1.01])
     plt.legend(loc="lower left")
@@ -552,6 +558,10 @@ def plot_precision_vs_recall(results:dict, output_dir:str, show, logger: logging
     plt.ylabel('Precision')
     plt.title(title)
     plt.grid()
+    plt.tight_layout()
+
+    _trigger_event(fig=fig, name='precision_vs_recall', output_dir=output_dir, logger=logger)
+
 
     if output_dir:
         output_path = output_dir + f'/{name}-precision_vs_recall.png'
@@ -566,7 +576,7 @@ def plot_precision_vs_recall(results:dict, output_dir:str, show, logger: logging
 
 def plot_tpr(results:dict, output_dir:str, show, logger: logging.Logger):
     """Generate a plot of the threshold vs TPR"""
-    
+
     name = results['name']
     classes = results['classes']
     tpr = results['tpr']
@@ -574,11 +584,12 @@ def plot_tpr(results:dict, output_dir:str, show, logger: logging.Logger):
     n_classes = len(classes)
 
     title = f'Thres vs True Positive: {name}'
-    fig = plt.figure(title)
+    fig = plt.figure(title, figsize=(10,8))
 
     for i in range(n_classes):
         plt.plot(thresholds, tpr[i], label=_normalize_class_name(classes[i]))
-    
+
+
     plt.xlim([0.0, 1.0])
     plt.ylim([0.8, 1.01])
     plt.legend(loc="lower left")
@@ -586,6 +597,9 @@ def plot_tpr(results:dict, output_dir:str, show, logger: logging.Logger):
     plt.ylabel('True Positive Rate')
     plt.title(title)
     plt.grid()
+    plt.tight_layout()
+
+    _trigger_event(fig=fig, name='tpr', output_dir=output_dir, logger=logger)
 
     if output_dir:
         output_path = output_dir + f'/{name}-tpr.png'
@@ -600,7 +614,7 @@ def plot_tpr(results:dict, output_dir:str, show, logger: logging.Logger):
 
 def plot_fpr(results:dict, output_dir:str, show, logger: logging.Logger):
     """Generate a plot of the threshold vs FPR"""
-    
+
     name = results['name']
     classes = results['classes']
     fpr = results['fpr']
@@ -608,11 +622,11 @@ def plot_fpr(results:dict, output_dir:str, show, logger: logging.Logger):
     n_classes = len(classes)
 
     title = f'Thres vs False Positive: {name}'
-    fig = plt.figure(title)
+    fig = plt.figure(title, figsize=(10,8))
 
     for i in range(n_classes):
         plt.plot(thresholds, fpr[i], label=_normalize_class_name(classes[i]))
-    
+
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 0.1])
     plt.legend(loc="upper right")
@@ -620,6 +634,9 @@ def plot_fpr(results:dict, output_dir:str, show, logger: logging.Logger):
     plt.ylabel('False Positive Rate')
     plt.title(title)
     plt.grid()
+    plt.tight_layout()
+
+    _trigger_event(fig=fig, name='fpr', output_dir=output_dir, logger=logger)
 
     if output_dir:
         output_path = output_dir + f'/{name}-fpr.png'
@@ -634,7 +651,7 @@ def plot_fpr(results:dict, output_dir:str, show, logger: logging.Logger):
 
 def plot_tpr_and_fpr(results:dict, output_dir:str, show, logger: logging.Logger):
     """Generate a plot of the threshold vs FPR"""
-    
+
     name = results['name']
     classes = results['classes']
     tpr = results['tpr']
@@ -643,12 +660,13 @@ def plot_tpr_and_fpr(results:dict, output_dir:str, show, logger: logging.Logger)
     n_classes = len(classes)
 
     title = f'Thres vs True/False Positive: {name}'
-    fig = plt.figure(title)
+    fig = plt.figure(title, figsize=(10,8))
 
     for i in range(n_classes):
         plt.plot(thresholds, fpr[i], label=f'FPR: {_normalize_class_name(classes[i])}')
         plt.plot(thresholds, tpr[i], label=f'TPR: {_normalize_class_name(classes[i])}')
-    
+
+
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.0])
     plt.legend(loc="center left", bbox_to_anchor=(1, 0))
@@ -656,6 +674,10 @@ def plot_tpr_and_fpr(results:dict, output_dir:str, show, logger: logging.Logger)
     plt.ylabel('True/False Positive Rate')
     plt.title(title)
     plt.grid()
+    plt.tight_layout()
+
+
+    _trigger_event(fig=fig, name='tpr_and_fpr', output_dir=output_dir, logger=logger)
 
     if output_dir:
         output_path = output_dir + f'/{name}-tfp_fpr.png'
@@ -681,30 +703,33 @@ def plot_confusion_matrix(results:dict, output_dir:str, show, logger: logging.Lo
     ax = fig.subplots()
 
     ax.imshow(cm)
-    
+
     # We want to show all ticks
     ax.set_xticks(np.arange(n_classes))
     ax.set_yticks(np.arange(n_classes))
     # ... and label them with the respective list entries
     ax.set_xticklabels(classes)
     ax.set_yticklabels(classes)
-    
+
     # Rotate the tick labels and set their alignment.
-    plt.setp(ax.get_xticklabels(), 
+    plt.setp(ax.get_xticklabels(),
             rotation=45, ha="right",
              rotation_mode="anchor")
-    
+
     # Loop over data dimensions and create text annotations.
     for i in range(n_classes):
         for j in range(n_classes):
             ax.text(j, i, cm[i][j],
-                    ha="center", va="center", color="w", 
+                    ha="center", va="center", color="w",
                     backgroundcolor=(0.41, 0.41, 0.41, 0.25))
-    
+
     ax.set_ylabel('Actual class')
     ax.set_xlabel('Predicted class')
     plt.title(title)
-    
+    plt.tight_layout()
+
+    _trigger_event(fig=fig, name='confusion_matrix', output_dir=output_dir, logger=logger)
+
     if output_dir:
         output_path = output_dir + f'/{name}-confusion_matrix.png'
         plt.savefig(output_path)
@@ -714,7 +739,17 @@ def plot_confusion_matrix(results:dict, output_dir:str, show, logger: logging.Lo
     else:
         fig.clear()
         plt.close(fig)
-    
+
+
+def _trigger_event(fig, name:str, output_dir:str, logger:logging.Logger):
+    model_utils.trigger_model_event(
+        MltkModelEvent.GENERATE_EVALUATE_PLOT,
+        name=name,
+        tflite=output_dir and output_dir.endswith('tflite'),
+        fig=fig,
+        logger=logger
+    )
+
 
 def _safe_divide(num, dem):
     """Standard division but it denominator is 0 then return 0"""
@@ -725,7 +760,7 @@ def _safe_divide(num, dem):
 
 
 def _label_binarize(y_label):
-    """This calls label_binarize() but ensures the return value 
+    """This calls label_binarize() but ensures the return value
     always has the shape: [n_samples, n_classes]"""
 
     # If n_classes == 2:
@@ -771,15 +806,15 @@ def _iterate_evaluation_data(mltk_model:MltkModel):
             for batch_x, batch_y in zip(x, y):
                 batch_x = _convert_tf_tensor_to_numpy_array(batch_x, expand_dim=0)
                 batch_y = _convert_tf_tensor_to_numpy_array(batch_y, expand_dim=0)
-                yield batch_x, batch_y 
-    
+                yield batch_x, batch_y
+
     else:
         for batch in x:
             batch_x, batch_y, _ = tf.keras.utils.unpack_x_y_sample_weight(batch)
             batch_x = _convert_tf_tensor_to_numpy_array(batch_x)
             batch_y = _convert_tf_tensor_to_numpy_array(batch_y)
             yield batch_x, batch_y
-            
+
 
 def _list_to_numpy_array(python_list:List[np.ndarray], dtype=None) -> np.ndarray:
     n_samples = len(python_list)
@@ -787,7 +822,7 @@ def _list_to_numpy_array(python_list:List[np.ndarray], dtype=None) -> np.ndarray
         numpy_array_shape = (n_samples,) + python_list[0].shape
     else:
         numpy_array_shape = (n_samples,)
-    
+
     numpy_array = np.empty(numpy_array_shape, dtype=dtype or python_list[0].dtype)
     for i, pred in enumerate(python_list):
         numpy_array[i] = pred
@@ -798,11 +833,11 @@ def _list_to_numpy_array(python_list:List[np.ndarray], dtype=None) -> np.ndarray
 def _convert_tf_tensor_to_numpy_array(x, expand_dim=None):
     if isinstance(x, tf.Tensor):
         x = x.numpy()
-        
+
     elif isinstance(x, (list,tuple)):
         if isinstance(x[0], np.ndarray) and expand_dim is not None:
             return x
-        
+
         retval = []
         for i in x:
             retval.append(_convert_tf_tensor_to_numpy_array(i, expand_dim=expand_dim))
@@ -811,13 +846,13 @@ def _convert_tf_tensor_to_numpy_array(x, expand_dim=None):
 
     if expand_dim is not None:
         x = np.expand_dims(x, axis=expand_dim)
-    
+
     return x
 
 
 def _get_progbar(mltk_model:MltkModel, verbose:bool) -> tqdm.tqdm:
     if not verbose:
-        return None 
+        return None
 
     try:
         class_counts = getattr(mltk_model, 'class_counts', {})

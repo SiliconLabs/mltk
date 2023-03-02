@@ -1,0 +1,87 @@
+```text
+                                                                               
+ Usage: mltk tensorboard [OPTIONS] <model>                                     
+                                                                               
+ Start Tensorboard for the given model                                         
+ In machine learning, to improve something you often need to be able to        
+ measure it.                                                                   
+ TensorBoard is a tool for providing the measurements and visualizations       
+ needed during the machine learning workflow.                                  
+ It enables tracking experiment metrics like loss and accuracy, visualizing    
+ the model graph,                                                              
+ projecting embeddings to a lower dimensional space, and much more.            
+                                                                               
+ For more details, see:                                                        
+ https://www.tensorflow.org/tensorboard/get_started                            
+ https://siliconlabs.github.io/mltk/docs/guides/model_training_monitor         
+                                                                               
+ NOTE: The model must be trained (or actively being trained) before using this 
+ command.                                                                      
+ Additionally, the trained model must have the 'tensorboard' property          
+ configured.                                                                   
+ e.g.:                                                                         
+ my_model.tensorboard = dict(                                                  
+     histogram_freq=1,       # frequency (in epochs) at which to compute       
+ activation and weight histograms                                              
+                             # for the layers of the model. If set to 0,       
+ histograms won't be computed.                                                 
+                             # Validation data (or split) must be specified    
+ for histogram visualizations.                                                 
+     write_graph=True,       # whether to visualize the graph in TensorBoard.  
+ The log file can become quite large when write_graph is set to True.          
+     write_images=False,     # whether to write model weights to visualize as  
+ image in TensorBoard.                                                         
+     update_freq="epoch",    # 'batch' or 'epoch' or integer. When using       
+ 'batch', writes the losses and metrics                                        
+                             # to TensorBoard after each batch. The same       
+ applies for 'epoch'.                                                          
+                             # If using an integer, let's say 1000, the        
+ callback will write the metrics and losses                                    
+                             # to TensorBoard every 1000 batches. Note that    
+ writing too frequently to                                                     
+                             # TensorBoard can slow down your training.        
+     profile_batch=2,        # Profile the batch(es) to sample compute         
+ characteristics.                                                              
+                             # profile_batch must be a non-negative integer or 
+ a tuple of integers.                                                          
+                             # A pair of positive integers signify a range of  
+ batches to profile.                                                           
+                             # By default, it will profile the second batch.   
+ Set profile_batch=0 to disable profiling.                                     
+ )                                                                             
+                                                                               
+ ----------                                                                    
+  Examples                                                                     
+ ----------                                                                    
+                                                                               
+ # Start tensorboard for the previously trained keyword_spotting_on_ff_v2      
+ model                                                                         
+ # This will open a webpage to the local Tensorboard GUI                       
+ mltk tensorboard keyword_spotting_on_ff_v2                                    
+                                                                               
+ # Start training the audio_example1 model                                     
+ mltk train audio_example1                                                     
+ # In a separate terminal, start the tensorboard GUI                           
+ mltk tensorboard audio_example1                                               
+                                                                               
+ Arguments 
+ *    model      <model>  One of the following:                              
+                          - Name of MLTK model                               
+                          - Path to MLTK model's python script               
+                          [default: None]                                    
+                          [required]                                         
+
+ Options 
+ --host     -h                 <host>  Local interface to start HTTP server  
+                                       [default: localhost]                  
+ --port     -p                 <port>  Listen port of HTTP server used to    
+                                       view graph                            
+                                       [default: 6002]                       
+ --launch       --no-launch            Automatically open a webbrowser to    
+                                       the Tensorboard GUI                   
+                                       [default: launch]                     
+ --verbose  -v                         Enable verbose console logs           
+ --help                                Show this message and exit.           
+
+
+```

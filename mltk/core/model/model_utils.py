@@ -16,7 +16,7 @@ from mltk.utils.path import (fullpath, walk_with_depth, create_tempdir, get_user
 from mltk.utils.python import as_list, import_module_at_path, prepend_exception_msg
 from mltk.utils import gpu
 
-from .model import MltkModel
+from .model import MltkModel, MltkModelEvent
 from .mixins.archive_mixin import (
     ARCHIVE_EXTENSION,
     TEST_ARCHIVE_EXTENSION,
@@ -47,8 +47,6 @@ def load_mltk_model(
     Returns:
         Load model object
     """
-    from mltk.cli import print_did_you_mean_error # pylint: disable=import-outside-toplevel
-
     logger = logger or get_mltk_logger()
 
     if not isinstance(model, str):
@@ -157,6 +155,10 @@ def load_mltk_model_with_path(
 
             if test:
                 mltk_model.enable_test_mode()
+
+            # At this point, all of the model properties have been registered and populated
+            mltk_model.trigger_event(MltkModelEvent.AFTER_MODEL_LOAD)
+
             return mltk_model
 
     raise Exception(f'Model specification file: {model_spec_path} does not define a MltkModel object')
@@ -338,6 +340,8 @@ def load_tflite_model(
         if model.endswith('.tflite'):
             model = fullpath(model)
             if return_tflite_path:
+                if not os.path.exists(model):
+                    raise FileNotFoundError(f'tflite model path not found: {model}')
                 return model
 
             tflite_model = TfliteModel.load_flatbuffer_file(model)
@@ -362,6 +366,9 @@ def load_tflite_model(
                 if model_spec_path is None:
                     raise ValueError(f'Failed to find model specification file with name: {model}.py')
 
+                if model.endswith('-test'):
+                    test = True
+
                 model = model_spec_path[:-len('.py')]
                 if test:
                     model += '-test'
@@ -369,8 +376,6 @@ def load_tflite_model(
 
 
         if model.endswith('.mltk.zip'):
-            from .mixins.archive_mixin import extract_file
-
             model_name = os.path.basename(model[:-len('.mltk.zip')])
             if model_name.endswith('-test'):
                 model_name = model_name[:-len('-test')]
@@ -532,6 +537,31 @@ def find_model_specification_file(
 
     return py_path
 
+
+
+def push_active_model(mltk_model:MltkModel):
+    if '_active_model_stack' not in globals():
+        globals()['_active_model_stack'] = []
+    globals()['_active_model_stack'].append(mltk_model)
+
+
+def pop_active_model() -> MltkModel:
+    _active_model_stack = globals().get('_active_model_stack', [])
+    assert len(_active_model_stack) > 0, 'No active model'
+    return _active_model_stack.pop()
+
+
+def get_active_model() -> MltkModel:
+    _active_model_stack = globals().get('_active_model_stack', [])
+    if len(_active_model_stack) == 0:
+        return None
+    return _active_model_stack[-1]
+
+
+def trigger_model_event(event:MltkModelEvent, **kwargs):
+    active_model = get_active_model()
+    assert active_model is not None, 'No active model'
+    active_model.trigger_event(event, **kwargs)
 
 
 def _get_model_search_dirs() -> List[str]:

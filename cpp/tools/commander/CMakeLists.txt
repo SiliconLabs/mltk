@@ -28,13 +28,26 @@ macro(mltk_commander_add_reset_target target)
   mltk_load_python()
   mltk_get(MLTK_PLATFORM_NAME)
   mltk_get(MLTK_JLINK_DEVICE)
+  mltk_get(MLTK_JLINK_SERIAL_NUMBER)
+  mltk_get(MLTK_DOWNLOAD_RUN_SERIAL_NUMBER)
+  mltk_get(MLTK_DOWNLOAD_RUN_IP_ADDRESS)
 
   if(MLTK_JLINK_DEVICE)
     set(device_arg --device ${MLTK_JLINK_DEVICE})
   endif()
 
+  if(MLTK_DOWNLOAD_RUN_SERIAL_NUMBER)
+    set(serial_number_arg --serial-number ${MLTK_DOWNLOAD_RUN_SERIAL_NUMBER})
+  elseif(MLTK_JLINK_SERIAL_NUMBER)
+    set(serial_number_arg --serial-number ${MLTK_JLINK_SERIAL_NUMBER})
+  endif()
+
+  if(MLTK_DOWNLOAD_RUN_IP_ADDRESS)
+    set(ip_address_arg --ip-address ${MLTK_DOWNLOAD_RUN_IP_ADDRESS})
+  endif()
+
   add_custom_target(${target}_reset
-    COMMAND ${PYTHON_EXECUTABLE} "${MLTK_DIR}/utils/commander/commander.py" --platform ${MLTK_PLATFORM_NAME} --reset ${device_arg}
+    COMMAND ${PYTHON_EXECUTABLE} "${MLTK_DIR}/utils/commander/commander.py" --platform ${MLTK_PLATFORM_NAME} --reset ${device_arg} ${serial_number_arg} ${ip_address_arg}
     COMMENT "Resetting ${MLTK_PLATFORM_NAME} ..."
     USES_TERMINAL
   )
@@ -57,14 +70,18 @@ macro(mltk_commander_add_download_run_target target)
   mltk_load_python()
   mltk_get(MLTK_PLATFORM_NAME)
   mltk_get(MLTK_JLINK_DEVICE)
+  mltk_get(MLTK_JLINK_SERIAL_NUMBER)
   mltk_get(MLTK_DOWNLOAD_RUN_SETUP_SCRIPT)
   mltk_get(MLTK_DOWNLOAD_RUN_SETUP_SCRIPT_ARGS)
   mltk_get(MLTK_DOWNLOAD_RUN_PORT)
   mltk_get(MLTK_DOWNLOAD_RUN_BAUD)
+  mltk_get(MLTK_DOWNLOAD_RUN_SERIAL_NUMBER)
+  mltk_get(MLTK_DOWNLOAD_RUN_IP_ADDRESS)
   mltk_get(MLTK_DOWNLOAD_RUN_TIMEOUT)
   mltk_get(MLTK_DOWNLOAD_RUN_RETRIES)
   mltk_get(MLTK_DOWNLOAD_RUN_SSH_HOSTNAME)
   mltk_get(MLTK_DOWNLOAD_RUN_NO_MASSERASE)
+  mltk_get(MLTK_DOWNLOAD_RUN_START_MSG)
   mltk_get(MLTK_DOWNLOAD_RUN_COMPLETED_MSG)
 
   if(MLTK_JLINK_DEVICE)
@@ -87,6 +104,16 @@ macro(mltk_commander_add_download_run_target target)
     set(baud_arg --baud ${MLTK_DOWNLOAD_RUN_BAUD})
   endif()
 
+  if(MLTK_DOWNLOAD_RUN_SERIAL_NUMBER)
+    set(serial_number_arg --serial-number ${MLTK_DOWNLOAD_RUN_SERIAL_NUMBER})
+  elseif(MLTK_JLINK_SERIAL_NUMBER)
+    set(serial_number_arg --serial-number ${MLTK_JLINK_SERIAL_NUMBER})
+  endif()
+
+  if(MLTK_DOWNLOAD_RUN_IP_ADDRESS)
+    set(ip_address_arg --ip-address ${MLTK_DOWNLOAD_RUN_IP_ADDRESS})
+  endif()
+
   if(DOWNLOAD_RUN_ARG_TIMEOUT)
     set(timeout_arg --timeout ${DOWNLOAD_RUN_ARG_TIMEOUT})
   elseif(MLTK_DOWNLOAD_RUN_TIMEOUT)
@@ -101,18 +128,24 @@ macro(mltk_commander_add_download_run_target target)
     set(host_arg --host "${MLTK_DOWNLOAD_RUN_SSH_HOSTNAME}")
   endif()
 
+   if(MLTK_DOWNLOAD_RUN_START_MSG)
+    set(start_msg_arg --start-msg "${MLTK_DOWNLOAD_RUN_START_MSG}")
+  endif()
+
   if(DOWNLOAD_RUN_ARG_COMPLETED_MSG)
     set(completed_msg_arg --completed-msg "${DOWNLOAD_RUN_ARG_COMPLETED_MSG}")
   elseif(MLTK_DOWNLOAD_RUN_COMPLETED_MSG)
     set(completed_msg_arg --completed-msg "${MLTK_DOWNLOAD_RUN_COMPLETED_MSG}")
   endif()
 
+
+
   if(NOT MLTK_DOWNLOAD_RUN_NO_MASSERASE)
     set(masserase_arg --masserase)
   endif()
 
   add_custom_target(${target}_download_run
-    COMMAND ${PYTHON_EXECUTABLE} -m mltk build download_run "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.s37" --platform ${MLTK_PLATFORM_NAME} ${masserase_arg} ${device_arg} ${setup_script_arg} ${setup_script_args_arg} ${port_arg} ${baud_arg} ${timeout_arg} ${retries_arg} ${host_arg} ${completed_msg_arg}
+    COMMAND ${PYTHON_EXECUTABLE} -m mltk build download_run "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.s37" --platform ${MLTK_PLATFORM_NAME} ${masserase_arg} ${device_arg} ${setup_script_arg} ${setup_script_args_arg} ${port_arg} ${baud_arg} ${serial_number_arg} ${ip_address_arg} ${timeout_arg} ${retries_arg} ${host_arg} ${start_msg_arg} ${completed_msg_arg}
     DEPENDS ${target}
     COMMENT "Downloading and running ${target}.s37 on ${MLTK_PLATFORM_NAME}'s ..."
     USES_TERMINAL

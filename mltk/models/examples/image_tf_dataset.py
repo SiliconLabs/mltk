@@ -7,7 +7,7 @@ Image classification example using the Tensorflow dataset API
 
 This provides an example of how to use the `Tensorflow Dataset API <https://www.tensorflow.org/api_docs/python/tf/data/Dataset>`_
 with the various Tensorflow `image augmentations <https://www.tensorflow.org/api_docs/python/tf/image>`_
-to augment images during model training. 
+to augment images during model training.
 
 
 
@@ -35,6 +35,13 @@ Commands
    python image_tf_dataset.py
 
 
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/examples/image_tf_dataset.py
+    :language: python
+    :lines: 46-
+
 """
 import tensorflow as tf
 import numpy as np
@@ -55,7 +62,7 @@ class MyModel(
     mltk_core.MltkModel,    # We must inherit the MltkModel class
     mltk_core.TrainMixin,   # We also inherit the TrainMixin since we want to train this model
     mltk_core.DatasetMixin, # We also need the DatasetMixin mixin to provide the relevant dataset properties
-    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation stats for our classification model 
+    mltk_core.EvaluateClassifierMixin,  # While not required, also inherit EvaluateClassifierMixin to help will generating evaluation stats for our classification model
 ):
     pass
 my_model = MyModel()
@@ -79,25 +86,25 @@ my_model.batch_size = 50
 #
 def my_model_builder(model: MyModel) -> tf.keras.Model:
     """Build the Keras model
-    
+
     This is called by the MLTK just before training starts.
 
     Arguments:
         my_model: The MltkModel instance
-    
+
     Returns:
         Compiled Keras model instance
     """
     keras_model = tf.keras.applications.MobileNetV2(
         input_shape=model.input_shape,
-        alpha=0.15, 
+        alpha=0.15,
         include_top=True,
         weights=None,
         classes=model.n_classes,
     )
     keras_model.compile(
-        loss='categorical_crossentropy', 
-        optimizer='adam', 
+        loss='categorical_crossentropy',
+        optimizer='adam',
         metrics= ['accuracy']
     )
     return keras_model
@@ -116,7 +123,7 @@ my_model.build_model_function = my_model_builder
 my_model.checkpoint['monitor'] =  'val_accuracy'
 
 # https://keras.io/api/callbacks/reduce_lr_on_plateau/
-# If the test loss doesn't improve after 'patience' epochs 
+# If the test loss doesn't improve after 'patience' epochs
 # then decrease the learning rate by 'factor'
 my_model.reduce_lr_on_plateau = dict(
   monitor='val_loss',
@@ -128,7 +135,7 @@ my_model.reduce_lr_on_plateau = dict(
 
 # If the  accuracy doesn't improve after 15 epochs then stop training
 # https://keras.io/api/callbacks/early_stopping/
-my_model.early_stopping = dict( 
+my_model.early_stopping = dict(
   monitor = 'val_accuracy',
   patience = 15,
   verbose=1
@@ -136,25 +143,25 @@ my_model.early_stopping = dict(
 
 # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/TensorBoard
 my_model.tensorboard = dict(
-    histogram_freq=0,       # frequency (in epochs) at which to compute activation and weight histograms 
-                            # for the layers of the model. If set to 0, histograms won't be computed. 
+    histogram_freq=0,       # frequency (in epochs) at which to compute activation and weight histograms
+                            # for the layers of the model. If set to 0, histograms won't be computed.
                             # Validation data (or split) must be specified for histogram visualizations.
     write_graph=False,       # whether to visualize the graph in TensorBoard. The log file can become quite large when write_graph is set to True.
     write_images=False,     # whether to write model weights to visualize as image in TensorBoard.
-    update_freq="batch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics 
-                            # to TensorBoard after each batch. The same applies for 'epoch'. 
-                            # If using an integer, let's say 1000, the callback will write the metrics and losses 
-                            # to TensorBoard every 1000 batches. Note that writing too frequently to 
+    update_freq="batch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics
+                            # to TensorBoard after each batch. The same applies for 'epoch'.
+                            # If using an integer, let's say 1000, the callback will write the metrics and losses
+                            # to TensorBoard every 1000 batches. Note that writing too frequently to
                             # TensorBoard can slow down your training.
-    profile_batch=(51,51),        # Profile the batch(es) to sample compute characteristics. 
-                            # profile_batch must be a non-negative integer or a tuple of integers. 
-                            # A pair of positive integers signify a range of batches to profile. 
+    profile_batch=(51,51),        # Profile the batch(es) to sample compute characteristics.
+                            # profile_batch must be a non-negative integer or a tuple of integers.
+                            # A pair of positive integers signify a range of batches to profile.
                             # By default, it will profile the second batch. Set profile_batch=0 to disable profiling.
-) 
+)
 
 # NOTE: You can also add manually add other KerasCallbacks
 # https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/
-# Any callbacks specified here will override the built-in callbacks 
+# Any callbacks specified here will override the built-in callbacks
 # (e.g. my_model.reduce_lr_on_plateau, my_model.early_stopping)
 my_model.train_callbacks = [
     tf.keras.callbacks.TerminateOnNaN()
@@ -199,7 +206,7 @@ def image_augmentation(batch: np.ndarray, seed: np.ndarray) -> np.ndarray:
     This does the following, for each image file path in the input batch:
     1. Read image file
     2. Resize the image to match the model input shape
-    3. Apply random augmentations to the image sample 
+    3. Apply random augmentations to the image sample
     4. Standardize the image sample with: image_std = (img - mean(img)) / std(img)
     5. Dump the augmented image (if necessary)
 
@@ -243,7 +250,7 @@ def image_augmentation(batch: np.ndarray, seed: np.ndarray) -> np.ndarray:
             x = tf.keras.preprocessing.image.random_zoom(x, (0.90, 1.10), row_axis=0, col_axis=1, channel_axis=2)
             x = tf.keras.preprocessing.image.random_shift(x, .1, .1, row_axis=0, col_axis=1, channel_axis=2)
             x = tf.keras.preprocessing.image.random_rotation(x, 10, row_axis=0, col_axis=1, channel_axis=2)
-        
+
         data_dump_dir = globals().get('data_dump_dir', None)
         if data_dump_dir:
             image_utils.write_image_file(data_dump_dir, x)
@@ -257,8 +264,8 @@ def image_augmentation(batch: np.ndarray, seed: np.ndarray) -> np.ndarray:
 
 # At the end of the augmentation pipeline we're using: x = tf.image.per_image_standardization(x)
 # As such, we add a "model parameter" indicating that the image samples are normalized.
-# This will be embedded into the generated .tflite. 
-# At runtime, the embedded device should retrieve this parameter and normalize the images 
+# This will be embedded into the generated .tflite.
+# At runtime, the embedded device should retrieve this parameter and normalize the images
 # before sending to the Tensorflow-Lite Micro interpreter for classification.
 # See https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html
 my_model.model_parameters['samplewise_norm.mean_and_std'] = True
@@ -274,18 +281,18 @@ class MyDataset(mltk_core.MltkDataset):
         super().__init__()
         self.dataset_dir = ''
         self.pools = []
-            
+
     def load_dataset(
-        self, 
-        subset: str,  
+        self,
+        subset: str,
         test:bool = False,
         **kwargs
     ):
         """Load the dataset subset
-        
+
         This is called automatically by the MLTK before training
         or evaluation.
-        
+
         Args:
             subset: The dataset subset to return: 'training' or 'evaluation'
             test: This is optional, it is used when invoking a training "dryrun", e.g.: mltk train image_tf_dataset-test
@@ -340,7 +347,7 @@ class MyDataset(mltk_core.MltkDataset):
             max_samples_per_class=max_samples_per_class,
             split=split,
             return_image_data=False,  # We only want to return the file paths
-            class_counts=my_model.class_counts[subset], 
+            class_counts=my_model.class_counts[subset],
         )
 
 
@@ -371,7 +378,7 @@ class MyDataset(mltk_core.MltkDataset):
 
         # Pre-fetching batches can help with throughput
         features_ds = features_ds.prefetch(per_job_batch_size)
-        
+
         # Combine the augmented audio samples with their corresponding labels
         ds = tf.data.Dataset.zip((features_ds, labels_ds))
 
@@ -393,13 +400,13 @@ class MyDataset(mltk_core.MltkDataset):
         """Unload the dataset by shutting down the processing pools"""
         for pool in self.pools:
             pool.shutdown()
- 
+
 my_model.dataset = MyDataset()
 
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python image_tf_dataset.py
 #
 # Note that this has the same functionality as:

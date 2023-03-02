@@ -7,7 +7,7 @@ the model on a much larger remote "cloud" server.
 
 ## Quick Reference
 
-- Command-line: `mltk ssh --help`
+- Command-line: [mltk ssh --help](../command_line/ssh.md)
 - Tutorial: [Cloud Training with vast.ai](../../mltk/tutorials/cloud_training_with_vast_ai.ipynb)
 
 
@@ -346,6 +346,19 @@ This setting can be specified in two locations (in order, higher is __appended__
    ssh: 
      shutdown_cmds:
      - curl -F `data=log.txt` my_server.com
+   ```
+
+### Sync Local MLTK
+
+This flags allows for syncing the local MLTK into the remote MLTK.
+This is useful if changes have been made to the local MLTK that are not in the [public](https://pypi.org/project/silabs-mltk/) MLTK python package.  
+- This setting is __optional__
+- Default: `false`
+
+1. The `ssh.sync_local_mltk` setting in `~/.mltk/user_settings.yaml`, e.g.  
+   ```yaml
+   ssh: 
+     sync_local_mltk: true
    ```
 
 

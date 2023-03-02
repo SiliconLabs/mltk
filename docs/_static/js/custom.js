@@ -152,11 +152,13 @@ function initializeSurvey() {
 function showSurvey() {
     if(localStorage.acceptedCookies && !window.tookSurvey && !window.loadingSurvey) {
         window.loadingSurvey = true;
+        $('#survey-link').text('Loading ...');
 
         $('#iframe-survey').on('load', function() {
             // This is invoked when the survey is completed
             if(window.showingSurvey) {
                 localStorage.removeItem('ignoredSurveyTimestamp');
+                $('#survey-link').css('display', 'none');
                 closeSurvey();
             } else {
                 window.showingSurvey = true;
@@ -180,6 +182,7 @@ function closeSurvey() {
     $('#dlg-survey').css('display', 'none');
     $('#iframe-survey').off('load');
     $('#iframe-survey').attr('src', '');
+    $('#survey-link').text('Feedback');
 }
 
 function updateSurveyActivity() {
@@ -207,12 +210,12 @@ function addScrollToTopButton() {
     $(window).scroll(function() {
         var footertotop = ($('footer').position().top);
         var scrolltop = $(document).scrollTop() + window.innerHeight;
-        var difference = scrolltop-footertotop - 30;
+        var difference = scrolltop-footertotop - 40;
 
         if (scrolltop > footertotop) {
             $('.go-top').css({'bottom' : difference});
         }else{
-            $('.go-top').css({'bottom' : 10});
+            $('.go-top').css({'bottom' : 0});
         };   
 
         if ($(this).scrollTop() > 200) {

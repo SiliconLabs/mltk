@@ -29,12 +29,12 @@ Model Topology
 * Chosen configuration is a MobileNet_v1_0.25_96
 
 
-Performance (floating point model) 
+Performance (floating point model)
 -----------------------------------
 * Accuracy - 85.4%
 * AUC - .931
 
-Performance (quantized tflite model) 
+Performance (quantized tflite model)
 ------------------------------------
 * Accuracy - 85.0%
 * AUC - .928
@@ -66,9 +66,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize visual_wake_words --tflite
-    
+
     +-------+-------------------+-------------------+-----------------+-----------------------------------------------------+
     | Index | OpCode            | Input(s)          | Output(s)       | Config                                              |
     +-------+-------------------+-------------------+-----------------+-----------------------------------------------------+
@@ -181,7 +181,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile visual_wake_words --device --accelerator MVP
 
@@ -251,7 +251,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view visual_wake_words --tflite
 
 .. raw:: html
@@ -262,6 +262,15 @@ Model Diagram
             <p>Click to enlarge</p>
         </a>
     </div>
+
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/tinyml/visual_wake_words.py
+    :language: python
+    :lines: 277-
+
 
 """
 
@@ -282,9 +291,9 @@ from mltk.utils.archive_downloader import download_verify_extract
 # - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings
 # @mltk_model   # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    ImageDatasetMixin, 
+    MltkModel,
+    TrainMixin,
+    ImageDatasetMixin,
     EvaluateClassifierMixin
 ):
     pass
@@ -298,7 +307,7 @@ my_model.description = 'TinyML: Visual Wake Words - MobileNetv1 with COCO14'
 #################################################
 # Training parameters
 my_model.epochs = 50
-my_model.batch_size = 50 
+my_model.batch_size = 50
 my_model.optimizer = 'adam'
 my_model.metrics = ['accuracy']
 my_model.loss = 'categorical_crossentropy'
@@ -368,8 +377,8 @@ def my_model_builder(model: MyModel):
         input_shape=model.input_shape
     )
     keras_model.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
     return keras_model
@@ -380,7 +389,7 @@ my_model.build_model_function = my_model_builder
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python visual_wake_words.py
 #
 # Note that this has the same functionality as:

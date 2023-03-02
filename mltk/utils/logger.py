@@ -11,7 +11,7 @@ import types
 import time
 import atexit
 import threading
-from typing import Callable, Union, TextIO
+from typing import Callable, Union, TextIO, List
 
 
 def get_logger(
@@ -79,34 +79,61 @@ def make_filelike(logger: logging.Logger, level=logging.INFO):
     level = logging._nameToLevel[get_level(level)]
     logger._buffer = ''
 
-    def _isatty(cls):
+    def _isatty(cls:logging.Logger):
         return False
 
-    def _write(cls, data):
+    def _write(cls:logging.Logger, data):
         cls._buffer +=  data
 
-    def _flush(cls):
+    def _flush(cls:logging.Logger):
         if cls._buffer:
             cls.log(level, cls._buffer)
             cls._buffer = ''
-            for h in logger.handlers:
+            for h in cls.handlers:
                 h.flush()
 
-    def _get_terminator(cls):
-        retval = []
-        for h in logger.handlers:
-            retval.append(h.terminator)
-        return retval
+    def _get_terminator(cls:logging.Logger):
+        terminator_list = []
+        for h in cls.handlers:
+            terminator_list.append(h.terminator)
 
-    def _set_terminator(cls, terminator):
-        previous_terminators = _get_terminator(cls)
-        if not isinstance(terminator, (list,tuple)):
-            terminator = [terminator] * len(previous_terminators)
+        if getattr(cls, 'parent', None) and getattr(cls, 'propagate', None):
+            return [terminator_list, _get_terminator(cls.parent)]
+        else:
+            return [terminator_list, []]
 
-        for i, h in enumerate(logger.handlers):
-            h.terminator = terminator[i]
 
-        return previous_terminators
+    def _set_terminator(cls:logging.Logger, terminator:Union[str,List[str]]):
+        if isinstance(terminator, list):
+            if not terminator:
+                return None
+            if len(terminator) < 2:
+                raise ValueError('Invalid terminator arg, must contain at least 2 lists')
+
+            current_terminators = terminator[0]
+            if not isinstance(current_terminators, list) or not isinstance(terminator[1], list):
+                raise ValueError('Invalid terminator arg, must be list of lists')
+
+            if len(current_terminators) != len(cls.handlers):
+                raise ValueError('Invalid terminator arg, list lenght must be same as logger handlers')
+
+            for i, h in enumerate(cls.handlers):
+                h.terminator = current_terminators[i]
+
+            if getattr(cls, 'parent', None) and getattr(cls, 'propagate', None):
+                _set_terminator(cls.parent, terminator[1])
+
+            return None
+        else:
+            previous_terminators = _get_terminator(cls)
+
+            for i, h in enumerate(cls.handlers):
+                h.terminator = terminator
+
+            if getattr(cls, 'parent', None) and getattr(cls, 'propagate', None):
+                _set_terminator(cls.parent, terminator)
+
+            return previous_terminators
 
 
     if not hasattr(logger, 'write'):
@@ -308,7 +335,7 @@ class _ConsoleStreamLogger(logging.StreamHandler):
     pass
 
 
-def _get_verbose(self):
+def _get_verbose(self) -> bool:
     for h in self.handlers:
         if isinstance(h, _ConsoleStreamLogger):
             return h.level == logging.DEBUG
@@ -325,20 +352,26 @@ def _set_console_log_level(self, level:str):
         if isinstance(h, _ConsoleStreamLogger):
             h.setLevel(get_level(level))
 
-def _get_console_log_level(self):
+def _get_console_log_level(self) -> int:
     for h in self.handlers:
         if isinstance(h, _ConsoleStreamLogger):
             return h.level
     return None
 
 
-def _get_file_handler(self):
+def _get_file_handler(self) -> logging.FileHandler:
     for h in self.handlers:
         if isinstance(h, logging.FileHandler):
             return h
     return None
 
+def _get_file_handler_path(self) -> str:
+    for h in self.handlers:
+        if isinstance(h, logging.FileHandler):
+            return getattr(h, 'baseFilename', None)
+    return None
+
 logging.Logger.verbose = property(_get_verbose, _set_verbose, doc='Enable/disable verbose logging to the console')
 logging.Logger.console_level = property(_get_console_log_level, _set_console_log_level, doc='Get/set the logger console logging level')
 logging.Logger.file_handler = property(_get_file_handler, doc='Get the logger\'s file handler')
-
+logging.Logger.file_handler_path = property(_get_file_handler_path, doc='Get the log file path to the logger\'s file handler')

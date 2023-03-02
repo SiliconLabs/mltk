@@ -104,7 +104,9 @@ In this case, ONLY the .tflite will be programmed and the existing image_classif
     must be connected to the development board.
     Refer to the online documentation for how to connect it to the development board:
     https://siliconlabs.github.io/mltk/docs/cpp_development/examples/image_classifier.html#hardware-setup
-
+    \b
+    For more details see:
+    https://siliconlabs.github.io/mltk/mltk/tutorials/image_classification
 
     \b
     ----------

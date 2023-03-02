@@ -386,6 +386,12 @@ Model Diagram
     </div>
 
 
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/siliconlabs/keyword_spotting_alexa.py
+    :language: python
+    :lines: 399-
 
 """
 # pylint: disable=redefined-outer-name

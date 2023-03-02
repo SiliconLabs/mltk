@@ -4,7 +4,7 @@
 - Source code: `rock_paper_scissors.py <https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/rock_paper_scissors.py>`_.
 - Pre-trained model: `rock_paper_scissors.mltk.zip <https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/rock_paper_scissors.mltk.zip>`_.
 
-This provides an example of how to define a classification model 
+This provides an example of how to define a classification model
 that uses the Rock/Paper/Scissors dataset with the ParallelImageGenerator as its data source.
 
 The basic flow for the ML model is:
@@ -12,7 +12,7 @@ The basic flow for the ML model is:
 ``96x96x1 grayscale image of hand gesture -> ML Model -> [result vector]``
 
 
-Where `[result vector]` is a 3 element array with each element containing the % probability that the 
+Where `[result vector]` is a 3 element array with each element containing the % probability that the
 given image is a "rock", "paper", "scissor", or _unknown_ hand gesture.
 
 
@@ -47,9 +47,9 @@ Model Summary
 --------------
 
 .. code-block:: shell
-    
+
     mltk summarize rock_paper_scissors --tflite
-    
+
     +-------+-----------------+-------------------+-----------------+-----------------------------------------------------+
     | Index | OpCode          | Input(s)          | Output(s)       | Config                                              |
     +-------+-----------------+-------------------+-----------------+-----------------------------------------------------+
@@ -99,7 +99,7 @@ Model Profiling Report
 -----------------------
 
 .. code-block:: shell
-   
+
    # Profile on physical EFR32xG24 using MVP accelerator
    mltk profile rock_paper_scissors --device --accelerator MVP
 
@@ -148,7 +148,7 @@ Model Diagram
 ------------------
 
 .. code-block:: shell
-   
+
    mltk view  rock_paper_scissors --tflite
 
 .. raw:: html
@@ -159,6 +159,14 @@ Model Diagram
             <p>Click to enlarge</p>
         </a>
     </div>
+
+
+Model Specification
+---------------------
+
+..  literalinclude:: ../../../../../../../mltk/models/siliconlabs/rock_paper_scissors.py
+    :language: python
+    :lines: 173-
 
 """
 
@@ -188,9 +196,9 @@ from mltk.datasets.image import rock_paper_scissors_v2
 # - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    ImageDatasetMixin, 
+    MltkModel,
+    TrainMixin,
+    ImageDatasetMixin,
     EvaluateClassifierMixin
 ):
     pass
@@ -199,7 +207,7 @@ my_model = MyModel()
 
 #################################################
 # General Settings
-# 
+#
 
 # For better tracking, the version should be incremented any time a non-trivial change is made
 # NOTE: The version is optional and not used directly used by the MLTK
@@ -243,7 +251,7 @@ my_model.loss = 'categorical_crossentropy'
 my_model.checkpoint['monitor'] =  'val_accuracy'
 
 # https://keras.io/api/callbacks/reduce_lr_on_plateau/
-# If the test loss doesn't improve after 'patience' epochs 
+# If the test loss doesn't improve after 'patience' epochs
 # then decrease the learning rate by 'factor'
 my_model.reduce_lr_on_plateau = dict(
   monitor='loss',
@@ -254,7 +262,7 @@ my_model.reduce_lr_on_plateau = dict(
 
 # If the  accuracy doesn't improve after 35 epochs then stop training
 # https://keras.io/api/callbacks/early_stopping/
-my_model.early_stopping = dict( 
+my_model.early_stopping = dict(
   monitor = 'accuracy',
   patience = 25,
   verbose=1
@@ -303,18 +311,18 @@ my_model.class_weights = 'balanced'
 
 # These are parameters used by the image_classifier application
 # They may be overridden by specifying similar options to the command:
-# mltk classify_image rock_paper_scissors 
+# mltk classify_image rock_paper_scissors
 
-# Minimum averaged model output threshold for a class to be considered detected, 0-255. 
+# Minimum averaged model output threshold for a class to be considered detected, 0-255.
 # Higher values increase precision at the cost of recall
-my_model.model_parameters['detection_threshold'] = 175 
+my_model.model_parameters['detection_threshold'] = 175
 # Controls the smoothing. Drop all inference results that are older than <now> minus window_duration.
 # Longer durations (in milliseconds) will give a higher confidence that the results are correct, but may miss some images
-my_model.model_parameters['average_window_duration_ms'] = 500 
+my_model.model_parameters['average_window_duration_ms'] = 500
 # The *minimum* number of inference results to average when calculating the detection value
-my_model.model_parameters['minimum_count'] = 2 
+my_model.model_parameters['minimum_count'] = 2
 # Number of samples that should be different than the last detected sample before detecting again
-my_model.model_parameters['suppression_count'] = 1 
+my_model.model_parameters['suppression_count'] = 1
 
 
 #################################################
@@ -323,7 +331,7 @@ my_model.model_parameters['suppression_count'] = 1
 my_model.datagen = ParallelImageDataGenerator(
     cores=0.65,
     debug=False,
-    max_batches_pending=32, 
+    max_batches_pending=32,
     validation_split= 0.15,
     validation_augmentation_enabled=False,
     rotation_range=15,
@@ -351,7 +359,7 @@ my_model.datagen = ParallelImageDataGenerator(
 # This particular model is a relatively standard
 # sequential Convolution Neural Network (CNN).
 #
-# It is important to the note the usage of the 
+# It is important to the note the usage of the
 # "model" argument.
 # Rather than hardcode values, the model is
 # used to build the model, e.g.:
@@ -362,11 +370,11 @@ my_model.datagen = ParallelImageDataGenerator(
 def my_model_builder(model: MyModel):
     keras_model = Sequential()
 
-    # Increasing this value can increase model accuracy 
+    # Increasing this value can increase model accuracy
     # at the expense of more RAM and execution latency
-    filter_count = 16 
+    filter_count = 16
 
-    # "Feature Learning" layers 
+    # "Feature Learning" layers
     keras_model.add(Conv2D(filter_count, (3, 3), input_shape=model.input_shape))
     keras_model.add(Activation('relu'))
     keras_model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -387,8 +395,8 @@ def my_model_builder(model: MyModel):
     keras_model.add(Dense(model.n_classes, activation='softmax'))
 
     keras_model.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
 
@@ -408,7 +416,7 @@ def dump_custom_command(
     ),
 ):
     """Custom command to dump the augmented samples
-    
+
     \b
     Invoke this command with:
     mltk custom rock_paper_scissors dump --count 20
@@ -425,7 +433,7 @@ def dump_custom_command(
     for i, _ in enumerate(my_model.x):
         if i >= count:
             break
-    
+
     my_model.unload_dataset()
 
     print(f'Generated data dump to: {my_model.datagen.save_to_dir}')
@@ -434,7 +442,7 @@ def dump_custom_command(
 
 
 ##########################################################################################
-# The following allows for running this model training script directly, e.g.: 
+# The following allows for running this model training script directly, e.g.:
 # python rock_paper_scissors.py
 #
 # Note that this has the same functionality as:

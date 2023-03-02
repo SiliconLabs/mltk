@@ -57,26 +57,22 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.model.model &#8212; MLTK 0.14.0 documentation</title>
+    <title>mltk.core.model.model &#8212; MLTK 0.15.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/css/custom.css" />
     <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
     <script src="../../../../_static/jquery.js"></script>
     <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../_static/clipboard.min.js"></script>
     <script src="../../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../../_static/design-tabs.js"></script>
     <script src="../../../../_static/js/custom.js"></script>
     <script src="../../../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../../../_static/favicon.ico"/>
@@ -105,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.14.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.15.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.14.0 documentation logo">
+                   alt="MLTK 0.15.0 documentation logo">
           
         </a>
       </div>
@@ -129,7 +125,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" action="../../../../search.html" method="get" name="search">
-      <input type="text" class="md-search__input" name="q" placeholder="Search"
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
              autocapitalize="off" autocomplete="off" spellcheck="false"
              data-md-component="query" data-md-state="active">
       <label class="md-icon md-search__icon" for="__search"></label>
@@ -200,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -256,7 +252,7 @@
     <li class="md-nav__item">
     
     
-      <a href="../../../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      <a href="../../../../docs/command_line/index.html" class="md-nav__link">Command-Line</a>
       
     
     </li>
@@ -430,11 +426,13 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-model-model--page-root">Source code for mltk.core.model.model</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">typer</span>
+
 
 <span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="n">clean_directory</span><span class="p">,</span> <span class="n">create_user_dir</span>
 <span class="kn">from</span> <span class="nn">mltk.core.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
@@ -445,17 +443,17 @@
 <span class="kn">from</span> <span class="nn">.mixins.tflite_model_metadata_mixin</span> <span class="kn">import</span> <span class="n">TfliteModelMetadataMixin</span>
 <span class="kn">from</span> <span class="nn">.mixins.tflite_model_parameters_mixin</span> <span class="kn">import</span> <span class="n">TfliteModelParametersMixin</span>
 <span class="kn">from</span> <span class="nn">.model_attributes</span> <span class="kn">import</span> <span class="n">MltkModelAttributes</span><span class="p">,</span> <span class="n">MltkModelAttributesDecorator</span>
-
+<span class="kn">from</span> <span class="nn">.model_event</span> <span class="kn">import</span> <span class="n">MltkModelEvent</span>
 
 
 <div class="viewcode-block" id="MltkModel"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">MltkModel</span><span class="p">(</span>
-    <span class="n">ArchiveMixin</span><span class="p">,</span> 
+    <span class="n">ArchiveMixin</span><span class="p">,</span>
     <span class="n">TfliteModelMetadataMixin</span><span class="p">,</span>
     <span class="n">TfliteModelParametersMixin</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">"""The root MLTK Model object</span>
-<span class="sd">    </span>
+
 <span class="sd">    This must be defined in a model specification file.</span>
 
 <span class="sd">    Refer to the `Model Specification &lt;https://siliconlabs.github.io/mltk/docs/guides/model_specification.html&gt;`_ guide fore more details.</span>
@@ -472,18 +470,22 @@
                 <span class="n">call_stack</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_model_script_path</span> <span class="o">=</span> <span class="n">call_stack</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">filename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\\</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
-                <span class="k">pass</span> 
-        
+                <span class="k">pass</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_cli</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Typer</span><span class="p">(</span>
             <span class="n">context_settings</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span>
                 <span class="n">max_content_width</span><span class="o">=</span><span class="mi">100</span>
             <span class="p">),</span>
             <span class="n">add_completion</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">MltkModelAttributes</span><span class="p">()</span> </div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">MltkModelAttributes</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="n">MltkModelEvent</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">MltkModel</span><span class="p">,</span><span class="n">Any</span><span class="p">],</span><span class="kc">None</span><span class="p">],</span><span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># At this point, no model properties have been registered</span>
+        <span class="c1"># See load_mltk_model_with_path() for the AFTER_MODEL_LOAD event</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span><span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">BEFORE_MODEL_LOAD</span><span class="p">)</span></div>
 
 
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MltkModelAttributes</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return all model attributes"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span>
@@ -496,7 +498,7 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cli</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">typer</span><span class="o">.</span><span class="n">Typer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Custom command CLI</span>
-<span class="sd">        </span>
+
 <span class="sd">        This is used to register custom commands</span>
 <span class="sd">        The commands may be invoked with:</span>
 <span class="sd">        mltk custom &lt;model name&gt; [command args]</span>
@@ -576,7 +578,7 @@
         <span class="n">log_file</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">train_log_dir</span><span class="si">}</span><span class="s1">/log.txt'</span>
         <span class="n">train_logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">log_file</span><span class="o">=</span><span class="n">log_file</span><span class="p">,</span> <span class="n">log_file_mode</span><span class="o">=</span><span class="s1">'w'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">train_logger</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span> 
+            <span class="n">train_logger</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
             <span class="n">train_logger</span><span class="o">.</span><span class="n">propagate</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">train_logger</span></div>
 
@@ -625,7 +627,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'*classes'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="c1"># pylint: disable=raise-missing-from</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s1">'Model does not specify the dataset</span><span class="se">\'</span><span class="s1">s classes.</span><span class="se">\n</span><span class="s1">'</span>
                 <span class="s1">'It must either be manually specified, e.g. my_model.classes = ["dog", "cat"] or inherit a mixin that supports an classes, e.g.: ImageDatasetMixin'</span><span class="p">)</span>
     <span class="nd">@classes</span><span class="o">.</span><span class="n">setter</span>
@@ -643,18 +645,18 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">classes</span><span class="p">)</span>
 
 
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return the image input shape as a tuple of integers"""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'*input_shape'</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="c1"># pylint: disable=raise-missing-from</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s1">'Model does not specify the dataset</span><span class="se">\'</span><span class="s1">s input_shape.</span><span class="se">\n</span><span class="s1">'</span>
                 <span class="s1">'It must either be manually specified, e.g. my_model.input_shape = (96,96,3) or inherit a mixin that supports an input_shape, e.g.: ImageDatasetMixin'</span>
             <span class="p">)</span>
-    <span class="nd">@input_shape</span><span class="o">.</span><span class="n">setter</span> 
+    <span class="nd">@input_shape</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="s1">'*input_shape'</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
@@ -666,11 +668,11 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">keras_custom_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get/set custom objects that should be loaded with the Keras model</span>
-<span class="sd">        </span>
+
 <span class="sd">        See https://keras.io/guides/serialization_and_saving/#custom-objects for more details.</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'keras_custom_objects'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
-    <span class="nd">@keras_custom_objects</span><span class="o">.</span><span class="n">setter</span> 
+    <span class="nd">@keras_custom_objects</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">keras_custom_objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'keras_custom_objects'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
@@ -704,7 +706,7 @@
                 <span class="n">classes</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">'classes'</span><span class="p">]</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">classes</span> <span class="o">=</span> <span class="kc">None</span>
-        
+
         <span class="k">if</span> <span class="n">classes</span><span class="p">:</span>
             <span class="n">classes</span> <span class="o">=</span> <span class="s1">', '</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">classes</span><span class="p">)</span>
             <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'Classes: </span><span class="si">{</span><span class="n">classes</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
@@ -714,7 +716,7 @@
             <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'Input shape: </span><span class="si">{</span><span class="n">input_shape</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">pass</span>
-    
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="c1"># pylint: disable=no-member</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -727,10 +729,87 @@
 
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'hash'</span><span class="p">,</span> <span class="s1">'date'</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">value</span><span class="p">)</span> <span class="ow">or</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">exclude_params</span><span class="p">:</span>
-                <span class="k">continue</span> 
+                <span class="k">continue</span>
             <span class="n">s</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span>
 
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="MltkModel.add_event_handler"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel.add_event_handler">[docs]</a>    <span class="k">def</span> <span class="nf">add_event_handler</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">event</span><span class="p">:</span><span class="n">MltkModelEvent</span><span class="p">,</span>
+        <span class="n">handler</span><span class="p">:</span><span class="n">Callable</span><span class="p">[[</span><span class="n">MltkModel</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span><span class="kc">None</span><span class="p">],</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Register an event handler</span>
+
+<span class="sd">        Register a handler that will be invoked on the corresponding :py:class:`~MltkModelEvent`</span>
+
+<span class="sd">        The given handler should have the signature:</span>
+
+<span class="sd">        .. highlight:: python</span>
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            def my_event_handler(mltk_model:MltkModel, logger:logging.Logger, **kwargs):</span>
+<span class="sd">                ...</span>
+
+<span class="sd">        Where ``kwargs`` will contain keyword arguments specific to the :py:class:`~MltkModelEvent`</span>
+<span class="sd">        as well as any keyword arguments passed to this API.</span>
+
+<span class="sd">        .. note::</span>
+
+<span class="sd">            - Exceptions raised by the handler will be logged, but not stop further execution</span>
+<span class="sd">            - Event handlers are invoked in the order in which they are registered</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            event: The :py:class:`~MltkModelEvent` on which the handler will be invoked</span>
+<span class="sd">            handler: Function to be invoked for the given event</span>
+<span class="sd">            kwargs: Additional keyword arguments to provided to the ``handler``</span>
+<span class="sd">                NOTE: These keyword arguments must not collide with the event-specific keyword arguments</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">[</span><span class="n">event</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">[</span><span class="n">event</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">handler</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="MltkModel.trigger_event"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel.trigger_event">[docs]</a>    <span class="k">def</span> <span class="nf">trigger_event</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">event</span><span class="p">:</span><span class="n">MltkModelEvent</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""Trigger all handlers for the given event</span>
+
+<span class="sd">        This is used internally by the MLTK.</span>
+<span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">.model_utils</span> <span class="kn">import</span> <span class="n">push_active_model</span><span class="p">,</span> <span class="n">pop_active_model</span>
+
+        <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Model event: </span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">TRAIN_STARTUP</span><span class="p">,</span>
+            <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">EVALUATE_STARTUP</span><span class="p">,</span>
+            <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">QUANTIZE_STARTUP</span><span class="p">,</span>
+        <span class="p">):</span>
+            <span class="n">push_active_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">TRAIN_SHUTDOWN</span><span class="p">,</span>
+            <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">EVALUATE_SHUTDOWN</span><span class="p">,</span>
+            <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">QUANTIZE_SHUTDOWN</span>
+        <span class="p">):</span>
+            <span class="n">pop_active_model</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'logger'</span><span class="p">,</span> <span class="n">get_mltk_logger</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">handler</span><span class="p">,</span> <span class="n">kws</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">[</span><span class="n">event</span><span class="p">]:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">handler</span><span class="p">(</span><span class="n">mltk_model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kws</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Model event: </span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s1">, handler: </span><span class="si">{</span><span class="n">handler</span><span class="si">}</span><span class="s1">, failed, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span></div>
+
 
 
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -741,12 +820,12 @@
 
     <span class="k">def</span> <span class="nf">has_attribute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">True</span> 
+            <span class="k">return</span> <span class="kc">True</span>
 
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">property</span><span class="p">)):</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span>
-                
+
         <span class="k">return</span> <span class="kc">False</span>
 
 
@@ -767,14 +846,13 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">model_name</span> <span class="o">=</span> <span class="s1">'my_model'</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'model_specification_path'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_script_path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>  
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'description'</span><span class="p">,</span> <span class="s1">'Generated by Silicon Lab</span><span class="se">\'</span><span class="s1">s MLTK Python package'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'model_specification_path'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_script_path</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'description'</span><span class="p">,</span> <span class="s1">'Generated by Silicon Lab</span><span class="se">\'</span><span class="s1">s MLTK Python package'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'log_dir'</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span> 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'version'</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>  
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'name'</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'version'</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'test_mode_enabled'</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'keras_custom_objects'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
-
 
 
 </pre></div>
@@ -798,24 +876,19 @@
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2022, Silicon Labs.
+              &#169; Copyright 2023, Silicon Labs.
               
           </div>
             Last updated on
-              Jan 09, 2023.
+              Mar 01, 2023.
             <br/>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>
         </div>
-        <div class="survey-link" id="dlg-survey-link"> 
-    <div>We need your feedback!</div>
-    <div>
-        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
-    </div>
-</div>
+        <button id="survey-link" class="feedback-button">Feedback</button>
       </div>
     </div>
   </footer>

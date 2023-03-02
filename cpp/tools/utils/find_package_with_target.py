@@ -2,7 +2,7 @@ import re
 import os
 import argparse
 import sys
-from typing import Callable, List, Union, Iterator, Tuple
+from typing import List, Iterator, Tuple
 
 CURDIR = os.path.abspath(os.path.dirname(__file__))
 MLTK_CPP_DIR = os.path.normpath(f'{CURDIR}/../..').replace('\\', '/')
@@ -19,7 +19,7 @@ def main():
 
     search_dirs = []
     if args.paths:
-        search_dirs.extend(args.paths.split(';'))
+        search_dirs.extend(x.strip() for x in args.paths.split(';') if x.strip())
     search_dirs.append(MLTK_CPP_DIR)
     search_dirs.append(MLTK_PYTHON_DIR)
 
@@ -31,7 +31,7 @@ def main():
 
     for search_dir in search_dirs:
         if not os.path.isdir(search_dir):
-            raise Exception(f'Bunk dir: {search_dir}')
+            raise Exception(f'Search directory does not exist: {search_dir}')
 
         if search_dir in (MLTK_PYTHON_DIR, MLTK_CPP_DIR):
             search_depth=5
@@ -46,7 +46,7 @@ def main():
                 continue
 
             for fn in files:
-                if fn.lower() == 'cmakelists.txt': 
+                if fn.lower() == 'cmakelists.txt':
                     cmake_path = f'{root}/{fn}'
 
                     with open(cmake_path, 'r') as f:
@@ -72,7 +72,7 @@ def main():
 def _find_target(regex: re.Pattern, target_dir: str, contents: str, target: re.Pattern):
     matches = regex.findall(contents)
     if not matches:
-        return 
+        return
     for match in matches:
         if target.match(match):
             _print_result(match, target_dir)
@@ -85,9 +85,9 @@ def _print_result(target, targe_dir):
 
 
 def walk_with_depth(
-    base_dir:str, 
-    depth=1, 
-    followlinks=True, 
+    base_dir:str,
+    depth=1,
+    followlinks=True,
 ) -> Iterator[Tuple[str, List[str], List[str]]]:
     """Walk a directory with a max depth.
 

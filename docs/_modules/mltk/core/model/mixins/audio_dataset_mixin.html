@@ -57,26 +57,22 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.model.mixins.audio_dataset_mixin &#8212; MLTK 0.14.0 documentation</title>
+    <title>mltk.core.model.mixins.audio_dataset_mixin &#8212; MLTK 0.15.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/material.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/css/custom.css" />
     <script data-url_root="../../../../../" id="documentation_options" src="../../../../../_static/documentation_options.js"></script>
     <script src="../../../../../_static/jquery.js"></script>
     <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/sphinx_highlight.js"></script>
     <script src="../../../../../_static/clipboard.min.js"></script>
     <script src="../../../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../../../_static/design-tabs.js"></script>
     <script src="../../../../../_static/js/custom.js"></script>
     <script src="../../../../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../../../../_static/favicon.ico"/>
@@ -105,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../index.html" title="MLTK 0.14.0 documentation"
+        <a href="../../../../../index.html" title="MLTK 0.15.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../_static/logo.png"
-                   alt="MLTK 0.14.0 documentation logo">
+                   alt="MLTK 0.15.0 documentation logo">
           
         </a>
       </div>
@@ -129,7 +125,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" action="../../../../../search.html" method="get" name="search">
-      <input type="text" class="md-search__input" name="q" placeholder="Search"
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
              autocapitalize="off" autocomplete="off" spellcheck="false"
              data-md-component="query" data-md-state="active">
       <label class="md-icon md-search__icon" for="__search"></label>
@@ -200,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../index.html"
-       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -256,7 +252,7 @@
     <li class="md-nav__item">
     
     
-      <a href="../../../../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      <a href="../../../../../docs/command_line/index.html" class="md-nav__link">Command-Line</a>
       
     
     </li>
@@ -440,21 +436,21 @@
 
 <span class="kn">from</span> <span class="nn">.data_generator_dataset_mixin</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DataGeneratorDatasetMixin</span><span class="p">,</span> <span class="n">DataGeneratorContext</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..model_attributes</span> <span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span>
-
+<span class="kn">from</span> <span class="nn">..model_event</span> <span class="kn">import</span> <span class="n">MltkModelEvent</span>
 
 <div class="viewcode-block" id="AudioDatasetMixin"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/audio_dataset_mixin.html#mltk.core.AudioDatasetMixin">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">AudioDatasetMixin</span><span class="p">(</span><span class="n">DataGeneratorDatasetMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Provides audio dataset properties to the base :py:class:`~MltkModel`</span>
-<span class="sd">    </span>
+
 <span class="sd">    .. seealso::</span>
-<span class="sd">       - `AudioFeatureGenerator documentation &lt;https://siliconlabs.github.io/mltk/docs/audio/audio_feature_generator.html&gt;`_ </span>
+<span class="sd">       - `AudioFeatureGenerator documentation &lt;https://siliconlabs.github.io/mltk/docs/audio/audio_feature_generator.html&gt;`_</span>
 <span class="sd">       - `AudioFeatureGenerator API docs &lt;https://siliconlabs.github.io/mltk/docs/python_api/data_preprocessing/audio_feature_generator.html&gt;`_</span>
 <span class="sd">       - `ParallelAudioDataGenerator API docs &lt;https://siliconlabs.github.io/mltk/docs/python_api/data_preprocessing/audio_data_generator.html&gt;`_</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="n">Callable</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""Path to the audio dataset's python module, a function </span>
+<span class="w">        </span><span class="sd">"""Path to the audio dataset's python module, a function</span>
 <span class="sd">        that manually loads the datset, or the file path to a directory of samples.</span>
 
 <span class="sd">        If a Python module is provided, it must implement the function:</span>
@@ -464,7 +460,7 @@
 
 <span class="sd">           def load_data():</span>
 <span class="sd">              ...</span>
-<span class="sd">        </span>
+
 <span class="sd">        which should return the file path to the dataset's directory</span>
 
 <span class="sd">        If a function is provided, the function  should return</span>
@@ -478,7 +474,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">follow_links</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Whether to follow symlinks inside class subdirectories  </span>
+<span class="w">        </span><span class="sd">"""Whether to follow symlinks inside class subdirectories</span>
 
 <span class="sd">        Default: ``True``</span>
 <span class="sd">        """</span>
@@ -493,13 +489,13 @@
 <span class="w">        </span><span class="sd">"""Shuffle the dataset directory once</span>
 
 <span class="sd">        Default: ``false``</span>
-<span class="sd">        </span>
+
 <span class="sd">        - If true, the dataset directory will be shuffled the first time it is processed and</span>
-<span class="sd">            and an index containing the shuffled file names is generated in the training log directory. </span>
+<span class="sd">            and an index containing the shuffled file names is generated in the training log directory.</span>
 <span class="sd">            The index is reused to maintain the shuffled order for subsequent processing.</span>
-<span class="sd">        - If false, then the dataset samples are sorted alphabetically and saved to an index in the dataset directory. </span>
+<span class="sd">        - If false, then the dataset samples are sorted alphabetically and saved to an index in the dataset directory.</span>
 <span class="sd">            The alphabetical index file is used for subsequent processing.</span>
-<span class="sd">        </span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.shuffle_dataset_enabled'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="nd">@shuffle_dataset_enabled</span><span class="o">.</span><span class="n">setter</span>
@@ -509,7 +505,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">class_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Determines the type of label arrays that are returned.  </span>
+<span class="w">        </span><span class="sd">"""Determines the type of label arrays that are returned.</span>
 
 <span class="sd">        Default: ``categorical``</span>
 
@@ -520,16 +516,16 @@
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.class_mode'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">'categorical'</span><span class="p">)</span>
-    <span class="nd">@class_mode</span><span class="o">.</span><span class="n">setter</span> 
+    <span class="nd">@class_mode</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">class_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.class_mode'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">audio_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return a list of class labels the model should classify"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.classes'</span><span class="p">]</span>
-    <span class="nd">@audio_classes</span><span class="o">.</span><span class="n">setter</span> 
+    <span class="nd">@audio_classes</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">audio_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.classes'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
@@ -537,16 +533,16 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">audio_input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Get the shape of the spectrogram generated by the :py:class:`mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator` as (height, width, 1)</span>
-<span class="sd">        </span>
+
 <span class="sd">        .. note::</span>
-<span class="sd">           If frontend_enabled = True then the input size is automatically calculated based the on the </span>
+<span class="sd">           If frontend_enabled = True then the input size is automatically calculated based the on the</span>
 <span class="sd">           :py:class:`mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGeneratorSettings`</span>
 <span class="sd">           If frontend_enabled = False then the input size must be manually specified.</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">frontend_enabled</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">value_is_set</span><span class="p">(</span><span class="s1">'audio.manual_in_shape'</span><span class="p">):</span>
                 <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'When ParallelAudioDataGenerator.frontend_enabled=True, the model.input shape is automatically calculated, however, the input_shape has been manually set'</span><span class="p">)</span>
-            
+
             <span class="n">spectrogram_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">spectrogram_shape</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">add_channel_dimension</span><span class="p">:</span>
                 <span class="n">spectrogram_shape</span> <span class="o">=</span> <span class="n">spectrogram_shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
@@ -565,11 +561,11 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'You must specify mltk_model.datagen'</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">sample_length_ms</span>
-    <span class="nd">@sample_length_ms</span><span class="o">.</span><span class="n">setter</span> 
+    <span class="nd">@sample_length_ms</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">sample_length_ms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'You must specify mltk_model.datagen'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="n">v</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
@@ -578,11 +574,11 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'You must specify mltk_model.datagen'</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">sample_rate_hz</span>
-    <span class="nd">@sample_rate_hz</span><span class="o">.</span><span class="n">setter</span> 
+    <span class="nd">@sample_rate_hz</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">sample_rate_hz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'You must specify mltk_model.datagen'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="n">v</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
@@ -595,11 +591,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Training data generator. </span>
-<span class="sd">        </span>
+<span class="w">        </span><span class="sd">"""Training data generator.</span>
+
 <span class="sd">        Should be a reference to a :py:attr:`mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator` instance</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.datagen'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.datagen'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@datagen</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.datagen'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
@@ -607,13 +603,13 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">validation_datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Validation/evaluation data generator. </span>
+<span class="w">        </span><span class="sd">"""Validation/evaluation data generator.</span>
 
 <span class="sd">        If omitted, then :py:attr:`~datagen` is used for validation and evaluation.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Should be a reference to a :py:attr:`mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator` instance</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.validation_datagen'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> 
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.validation_datagen'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@validation_datagen</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">validation_datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.validation_datagen'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
@@ -621,15 +617,15 @@
 
 
 <div class="viewcode-block" id="AudioDatasetMixin.load_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/audio_dataset_mixin.html#mltk.core.AudioDatasetMixin.load_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">max_samples_per_class</span><span class="p">:</span> <span class="nb">int</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">test</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span> <span class="c1"># pylint: disable=arguments-differ</span>
 <span class="w">        </span><span class="sd">"""Pre-process the dataset and prepare the model dataset attributes</span>
-<span class="sd">        </span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            subset: Data subset name</span>
 <span class="sd">        """</span>
@@ -648,6 +644,14 @@
         <span class="c1"># First download the dataset if necessary</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Must specify mltk_model.dataset'</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span>
+            <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">BEFORE_LOAD_DATASET</span><span class="p">,</span>
+            <span class="n">subset</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span>
+            <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+
         <span class="n">dataset_dir</span> <span class="o">=</span> <span class="n">_load_dataset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset_dir</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -665,8 +669,8 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'shuffle_index_dir=</span><span class="si">{</span><span class="n">shuffle_index_dir</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
         <span class="n">eval_shuffle</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">eval_augmentation_enabled</span> <span class="o">=</span> <span class="kc">False</span> 
-       
+        <span class="n">eval_augmentation_enabled</span> <span class="o">=</span> <span class="kc">False</span>
+
         <span class="k">if</span> <span class="n">test</span><span class="p">:</span>
             <span class="n">batch_size</span> <span class="o">=</span> <span class="mi">3</span>
             <span class="n">max_samples_per_class</span> <span class="o">=</span> <span class="n">batch_size</span>
@@ -674,7 +678,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_size</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">max_batches_pending</span> <span class="o">=</span> <span class="mi">1</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Test mode enabled, forcing max_samples_per_class=</span><span class="si">{</span><span class="n">max_samples_per_class</span><span class="si">}</span><span class="s1">, batch_size=</span><span class="si">{</span><span class="n">batch_size</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-            
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">==</span> <span class="s1">'evaluation'</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'eval_shuffle'</span><span class="p">):</span>
                 <span class="n">eval_shuffle</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_shuffle</span>
@@ -682,8 +686,8 @@
                 <span class="n">eval_augmentation_enabled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_augment</span>
             <span class="k">if</span> <span class="n">max_samples_per_class</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'eval_max_samples_per_class'</span><span class="p">):</span>
                 <span class="n">max_samples_per_class</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">eval_max_samples_per_class</span>
-        
-        <span class="n">train_datagen</span> <span class="o">=</span> <span class="kc">None</span> 
+
+        <span class="n">train_datagen</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">validation_datagen</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">==</span> <span class="s1">'training'</span><span class="p">:</span>
@@ -740,7 +744,7 @@
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'training'</span><span class="p">,</span> <span class="s1">'validation'</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validation_data</span> <span class="o">=</span> <span class="n">validation_datagen</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">==</span> <span class="s1">'evaluation'</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">train_datagen</span> <span class="k">if</span> <span class="n">validation_datagen</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">validation_datagen</span>
 
@@ -750,8 +754,14 @@
             <span class="n">validation_datagen</span> <span class="o">=</span> <span class="n">validation_datagen</span><span class="p">,</span>
             <span class="n">train_class_counts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'training'</span><span class="p">],</span>
             <span class="n">validation_class_counts</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">class_counts</span><span class="p">[</span><span class="s1">'validation'</span><span class="p">]</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span>
+            <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">AFTER_LOAD_DATASET</span><span class="p">,</span>
+            <span class="n">subset</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span>
+            <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
 
 
     <span class="k">def</span> <span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -776,7 +786,7 @@
         <span class="c1"># all the attributes are registered</span>
         <span class="k">def</span> <span class="nf">register_parameters_populator</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_model_parameter_populate_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_populate_audio_dataset_model_parameters</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="n">register_parameters_populator</span>
 
 
@@ -784,7 +794,7 @@
 <span class="w">        </span><span class="sd">"""Populate the AudioPipeline parameters required by the device at runtime</span>
 
 <span class="sd">        These parameters will be added to the compiled .tflite ModelParameters metadata.</span>
-<span class="sd">        The device retrieves these paramaters from the generated .tflite at run-time and </span>
+<span class="sd">        The device retrieves these paramaters from the generated .tflite at run-time and</span>
 <span class="sd">        uses them to process the microphone audio in the AudioPipeline.</span>
 
 <span class="sd">        NOTE: This is invoked during the compile_model() API execution.</span>
@@ -798,7 +808,7 @@
 
 <span class="k">def</span> <span class="nf">_load_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">tuple</span><span class="p">]:</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">dataset</span> 
+        <span class="k">return</span> <span class="n">dataset</span>
 
     <span class="k">if</span> <span class="n">callable</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -806,17 +816,17 @@
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'Exception while invoking mltk_model.dataset function: </span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">raise</span>
-    
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span> <span class="nb">object</span><span class="p">)):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">'load_data'</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'If a module or class is set in mltk_model.dataset, the the module/class must specify the function: load_data()'</span><span class="p">)</span>
-       
+
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">dataset</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'Exception while invoking mltk_model.dataset.load_data(): </span><span class="si">{</span><span class="n">dataset</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
             <span class="k">raise</span>
-    
+
     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'mltk_model.dataset must either be file path to a dictionary or callback function'</span><span class="p">)</span>
 
 
@@ -847,24 +857,19 @@
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2022, Silicon Labs.
+              &#169; Copyright 2023, Silicon Labs.
               
           </div>
             Last updated on
-              Jan 09, 2023.
+              Mar 01, 2023.
             <br/>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>
         </div>
-        <div class="survey-link" id="dlg-survey-link"> 
-    <div>We need your feedback!</div>
-    <div>
-        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
-    </div>
-</div>
+        <button id="survey-link" class="feedback-button">Feedback</button>
       </div>
     </div>
   </footer>

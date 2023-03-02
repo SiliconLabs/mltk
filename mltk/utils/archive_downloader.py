@@ -4,7 +4,7 @@ See the source code on Github: `mltk/utils/archive_downloader.py <https://github
 """
 
 
-
+from typing import Union, Tuple
 import sys
 import os
 import hashlib
@@ -45,8 +45,9 @@ def download_verify_extract(
     clean_dest_dir:bool=True,
     update_onchange_only:bool=True,
     download_details_fname:str=None,
-    extract:bool=True
-) -> str:
+    extract:bool=True,
+    return_uptodate=False,
+) -> Union[str, Tuple[str,bool]]:
     """Download an archive, verify its hash, and extract
 
     Args:
@@ -70,9 +71,10 @@ def download_verify_extract(
         download_details_fname: If update_onchange_only=True then a download details .json file is generated.
                                 This argument specifies the name of that file. If omitted, then the filename is <archive filename>-mltk.json
         extract: If false, then do NOT extract the downloaded file. In this case, return the path to the downloaded file
-
+        return_uptodate: If true, then return a tuple, (path, <is up-to-date bool>)
     Returns:
-        Path to extracted directory OR path to downloaded archive is extract=False
+        If return_uptodate=False, Path to extracted directory OR path to downloaded archive is extract=False
+        if return_uptodate=True, (<path>, <is up-to-date bool>)
     """
     logger = logger or get_logger()
 
@@ -117,7 +119,10 @@ def download_verify_extract(
             details=download_details
         ):
             logger.debug(f'Up-to-date: {url} -> {retval}')
-            return retval
+            if return_uptodate:
+                return retval, True
+            else:
+                return retval
 
     for i in range(2):
         # Download the archive or use the cached version in the download_dir
@@ -134,7 +139,7 @@ def download_verify_extract(
                     file_hash=file_hash,
                     file_hash_algorithm=file_hash_algorithm
                 ):
-                raise Exception('File hash invalid')
+                raise ValueError('File hash invalid')
 
             # The downloaded version was valid, so continue to extraction
             break
@@ -169,7 +174,10 @@ def download_verify_extract(
         with open(downloads_details_path, 'w') as f:
             json.dump(download_details, f, indent=3)
 
-    return retval
+    if return_uptodate:
+        return retval, False 
+    else:
+        return retval
 
 
 

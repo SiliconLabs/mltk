@@ -64,7 +64,7 @@ class AudioDatasetGenerator:
         return self._out_dir
 
     def is_backend_loaded(self, backend:str, raise_exception=False) -> bool:
-        """Return if the given backend has been loadedd"""
+        """Return if the given backend has been loaded"""
         if backend not in BACKENDS:
             if raise_exception:
                 raise ValueError(
@@ -455,6 +455,24 @@ class _ProcessingPool():
         self.pool.close()
 
     def __call__(self, func, *, _on_finished, _on_error, **kwargs):
-        self.pool.apply_async(func, kwds=kwargs, callback=_on_finished, error_callback=_on_error)
+        self.pool.apply_async(
+            _process_with_retries,
+            args=(func,),
+            kwds=kwargs,
+            callback=_on_finished,
+            error_callback=_on_error
+        )
 
+
+def _process_with_retries(_func, **kwargs):
+    for i in range(3):
+        try:
+            _func(**kwargs)
+            return
+        except KeyboardInterrupt:
+            return
+        except Exception as e:
+            if i == 2:
+                raise e
+            time.sleep(0.100)
 

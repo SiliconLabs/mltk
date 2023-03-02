@@ -12,7 +12,7 @@ Refer to the [tutorials](../tutorials.md) for end-to-end guides on how to develo
 
 ## Quick Reference
 
-- Command-line: `mltk train --help`
+- Command-line: [mltk train --help](../command_line/train.md)
 - Python API: [train_model](mltk.core.train_model)
 - Python API examples: [train_model.ipynb](../../mltk/examples/train_model.ipynb)
 

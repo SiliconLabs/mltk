@@ -13,8 +13,8 @@ from typing import Tuple, List
 import tensorflow as tf
 from mltk.utils.archive_downloader import download_verify_extract
 
-if not __package__:     
-    CURDIR = os.path.dirname(os.path.abspath(__file__))             
+if not __package__:
+    CURDIR = os.path.dirname(os.path.abspath(__file__))
     sys.path.insert(0, os.path.dirname(CURDIR))
     __package__ = os.path.basename(CURDIR)# pylint: disable=redefined-builtin
 
@@ -65,8 +65,8 @@ def load_data(seq_length=128, person=True) -> DataLoader:
     (train, validation, test)
     """
     dataset_dir = prepare_data()
-    
-    subdir = 'person_split' if person else 'data' 
+
+    subdir = 'person_split' if person else 'data'
     data_loader = DataLoader(
         f'{dataset_dir}/{subdir}/train',
         f'{dataset_dir}/{subdir}/valid',

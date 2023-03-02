@@ -41,7 +41,9 @@ One of the following:
     then print a summary of the .tflite model.
     \b
     Use the --build option if the model has not been previously trained.
-
+    \b
+    For more details see:
+    https://siliconlabs.github.io/mltk/docs/guides/model_summary
     \b
     ----------
      Examples

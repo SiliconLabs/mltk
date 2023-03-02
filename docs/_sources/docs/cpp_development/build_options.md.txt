@@ -60,6 +60,27 @@ mltk_set(MLTK_TARGET mltk_tflite_micro_wrapper)
 ```
 
 
+## MLTK_ENABLE_DEBUG_INFO_IN_RELEASE_BUILDS
+
+This will add debug symbols to release builds.
+This is useful for building fully optimized binaries but still allow for single-step debugging
+
+```shell
+mltk_set(MLTK_ENABLE_DEBUG_INFO_IN_RELEASE_BUILDS ON)
+```
+
+## MLTK_ENABLE_OUTPUT_DISASSEMBLY
+
+This will disassemble the output binary and generate a log file in the build directory.
+This is useful for debugging the assembly instructions with the corresponding source code.
+
+__NOTE:__ It is recommended to also enable `MLTK_ENABLE_DEBUG_INFO_IN_RELEASE_BUILDS` for release builds.
+
+```shell
+mltk_set(MLTK_ENABLE_OUTPUT_DISASSEMBLY ON)
+```
+
+
 ## MODEL_PROFILER_MODEL
 
 ```shell

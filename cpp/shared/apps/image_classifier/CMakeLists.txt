@@ -15,11 +15,11 @@ find_package(mltk_arducam REQUIRED)
 
 #####################################################
 # Define the image_classifier executable
-add_executable(mltk_image_classifier)  
+add_executable(mltk_image_classifier)
 
 
 target_sources(mltk_image_classifier
-PRIVATE 
+PRIVATE
     main.cc
     app.cc
     image_classifier.cc
@@ -27,7 +27,7 @@ PRIVATE
 )
 
 target_link_libraries(mltk_image_classifier
-PRIVATE 
+PRIVATE
     mltk::tflite_micro_model
     mltk::arducam
     ${MLTK_PLATFORM}
@@ -35,7 +35,7 @@ PRIVATE
 
 
 target_include_directories(mltk_image_classifier
-PRIVATE 
+PRIVATE
     .
 )
 
@@ -48,7 +48,7 @@ mltk_get(IMAGE_CLASSIFIER_MODEL)
 if(NOT IMAGE_CLASSIFIER_MODEL)
     set(IMAGE_CLASSIFIER_MODEL "rock_paper_scissors")
 endif()
-mltk_info("IMAGE_CLASSIFIER_MODEL=${IMAGE_CLASSIFIER_MODEL}")
+mltk_info("IMAGE_CLASSIFIER_MODEL=${IMAGE_CLASSIFIER_MODEL}" TAG mltk_image_classifier)
 
 mltk_add_tflite_model(mltk_image_classifier ${IMAGE_CLASSIFIER_MODEL})
 

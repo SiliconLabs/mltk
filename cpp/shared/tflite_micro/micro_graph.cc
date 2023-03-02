@@ -91,6 +91,8 @@ TfLiteStatus MicroGraph::InitSubgraphs() {
 }
 
 TfLiteStatus MicroGraph::PrepareSubgraphs() {
+  TfLiteStatus retval = kTfLiteOk;
+  auto& logger = mltk::get_logger();
   int previous_subgraph_idx = current_subgraph_index_;
 
   for (size_t subgraph_idx = 0; subgraph_idx < subgraphs_->size();
@@ -109,9 +111,10 @@ TfLiteStatus MicroGraph::PrepareSubgraphs() {
       if (registration->prepare != nullptr) {
         TfLiteStatus prepare_status = registration->prepare(context_, node);
         if (prepare_status != kTfLiteOk) {
-          MicroPrintf("Node %s (number %df) failed to prepare with status %d",
-                      OpNameFromRegistration(registration), i, prepare_status);
-          return kTfLiteError;
+          logger.error("Op%d-%s not supported: Failed to prepare with status %d",
+                      i, OpNameFromRegistration(registration), prepare_status);
+          retval = kTfLiteError;
+          continue;
         }
       }
       allocator_->FinishPrepareNodeAllocations(/*node_id=*/i);
@@ -121,7 +124,7 @@ TfLiteStatus MicroGraph::PrepareSubgraphs() {
   }
   current_subgraph_index_ = previous_subgraph_idx;
 
-  return kTfLiteOk;
+  return retval;
 }
 
 TfLiteStatus MicroGraph::FreeSubgraphs() {
@@ -151,6 +154,7 @@ TfLiteStatus MicroGraph::FreeSubgraphs() {
 }
 
 TfLiteStatus MicroGraph::InvokeSubgraph(int subgraph_idx) {
+  auto& logger = mltk::get_logger();
   int previous_subgraph_idx = current_subgraph_index_;
   current_subgraph_index_ = subgraph_idx;
 
@@ -175,7 +179,7 @@ TfLiteStatus MicroGraph::InvokeSubgraph(int subgraph_idx) {
 #if !defined(TF_LITE_STRIP_ERROR_STRINGS)
     ScopedMicroProfiler scoped_profiler(
         OpNameFromRegistration(registration),
-        reinterpret_cast<MicroProfiler*>(context_->profiler));
+        reinterpret_cast<MicroProfilerInterface*>(context_->profiler));
 #endif
 
     TFLITE_DCHECK(registration->invoke);
@@ -192,8 +196,8 @@ TfLiteStatus MicroGraph::InvokeSubgraph(int subgraph_idx) {
     allocator_->ResetTempAllocations();
 
     if (invoke_status == kTfLiteError) {
-      MicroPrintf("Node %s (number %d) failed to invoke with status %d",
-                  OpNameFromRegistration(registration), i, invoke_status);
+      logger.error("Op%d-%s not supported: Failed to invoke with status %d",
+                  i, OpNameFromRegistration(registration), invoke_status);
       return kTfLiteError;
     } else if (invoke_status != kTfLiteOk) {
       return invoke_status;

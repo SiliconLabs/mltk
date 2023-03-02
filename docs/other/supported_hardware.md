@@ -27,7 +27,7 @@ To build a C++ application with MVP hardware acceleration using [VSCode](../cpp_
 mltk_set(TFLITE_MICRO_ACCELERATOR mvp)
 ```
 
-The platform also supports the following [commands](../command_line.md) when using `--device` command line option:
+The platform also supports the following [commands](../command_line/index.md) when using `--device` command line option:
 
 - [profile](../guides/model_profiler.md)
 - [classify_audio](../audio/audio_utilities.md)
@@ -47,7 +47,7 @@ To build a C++ application for this platform using [VSCode](../cpp_development/v
 mltk_set(MLTK_PLATFORM_NAME brd2204)
 ```
 
-The platform also supports the following [commands](../command_line.md) when using `--device` command line option:
+The platform also supports the following [commands](../command_line/index.md) when using `--device` command line option:
 
 - [profile](../guides/model_profiler.md)
 - [classify_audio](../audio/audio_utilities.md)
@@ -66,7 +66,7 @@ To build a C++ application for this platform using [VSCode](../cpp_development/v
 mltk_set(MLTK_PLATFORM_NAME brd4166)
 ```
 
-The platform also supports the following [commands](../command_line.md) when using `--device` command line option:
+The platform also supports the following [commands](../command_line/index.md) when using `--device` command line option:
 
 - [profile](../guides/model_profiler.md)
 - [classify_audio](../audio/audio_utilities.md)
@@ -92,6 +92,6 @@ To build a C++ application with MVP hardware acceleration using [VSCode](../cpp_
 mltk_set(TFLITE_MICRO_ACCELERATOR mvp)
 ```
 
-The platform also supports the following [commands](../command_line.md) when using `--device` command line option:
+The platform also supports the following [commands](../command_line/index.md) when using `--device` command line option:
 
 - [profile](../guides/model_profiler.md)

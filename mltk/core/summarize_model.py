@@ -11,24 +11,26 @@ from mltk.utils.path import fullpath
 from mltk.utils.python import append_exception_msg
 
 from .model import (
-    MltkModel, 
-    KerasModel,  
-    load_mltk_model, 
+    MltkModel,
+    MltkModelEvent,
+    KerasModel,
+    load_mltk_model,
     load_tflite_or_keras_model
 )
+
 
 from .utils import ArchiveFileNotFoundError, get_mltk_logger
 from .model.metrics import calculate_model_metrics
 from .tflite_model import TfliteModel
 
 def summarize_model(
-    model: Union[str, MltkModel, KerasModel, TfliteModel], 
+    model: Union[str, MltkModel, KerasModel, TfliteModel],
     tflite:bool=False,
     build:bool=False,
     test:bool=False,
     built_model:Union[KerasModel, TfliteModel]=None
 ) -> str:
-    """Generate a summary of the given model 
+    """Generate a summary of the given model
     and return the summary as a string
 
     .. seealso::
@@ -37,8 +39,8 @@ def summarize_model(
 
 
     Args:
-        model: Either 
-        
+        model: Either
+
             * a path to a `.tflite`, `.h5`, `.mltk.zip`, `.py` file,
             * or a :py:class:`mltk.core.MltkModel`, :py:class:`mltk.core.KerasModel`,
             * or :py:class:`mltk.core.TfliteModel` instance
@@ -55,7 +57,7 @@ def summarize_model(
 
     """
     mltk_model = None
-    mltk_model_summary = None 
+    mltk_model_summary = None
     tflite_size = None
 
     logger = get_mltk_logger()
@@ -70,7 +72,7 @@ def summarize_model(
             logger=logger
         )
     except ArchiveFileNotFoundError as e:
-        append_exception_msg(e, 
+        append_exception_msg(e,
             '\nAlternatively, add the --build option to summarize the model without training it first'
         )
         raise
@@ -84,7 +86,7 @@ def summarize_model(
             mltk_model = MltkModel()
 
         mltk_model.deserialize_tflite_metadata(built_model)
-    
+
 
     if mltk_model is not None:
         mltk_model_summary = mltk_model.summary()
@@ -104,20 +106,32 @@ def summarize_model(
     summary += '\n'
     summary += f'Total MACs: {format_units(model_metrics["total_macs"])}\n'
     summary += f'Total OPs: {format_units(model_metrics["total_ops"])}\n'
-    
+
     if mltk_model_summary is not None:
         summary += f'{mltk_model_summary}\n'
 
     if tflite_size:
         summary += f'.tflite file size: {format_units(tflite_size, precision=1, add_space=False)}B\n'
 
-    return summary.strip()
+    summary = summary.strip()
+
+    summary_dict = dict(value=summary)
+    if mltk_model is not None:
+        mltk_model.trigger_event(
+            MltkModelEvent.SUMMARIZE_MODEL,
+            summary=summary,
+            summary_dict=summary_dict,
+            logger=logger
+        )
+    summary = summary_dict['value']
+
+    return summary
 
 
 
 
 def _load_or_build_model(
-    model:Union[str, MltkModel, KerasModel, TfliteModel], 
+    model:Union[str, MltkModel, KerasModel, TfliteModel],
     built_model:Union[KerasModel, TfliteModel],
     test:bool,
     tflite:bool,
@@ -125,23 +139,23 @@ def _load_or_build_model(
     logger:logging.Logger
 ):
     """Load a previously trained .tflite/.h5 OR build the model now"""
-    mltk_model = None 
+    mltk_model = None
 
 
     # If a MltkModel instance was given
     if isinstance(model, MltkModel):
-        mltk_model = model 
+        mltk_model = model
 
     # Elif if a KerasModel instance was given
     elif isinstance(model, KerasModel):
-        built_model = model 
+        built_model = model
 
      # Elif if a KerasModel instance was given
     elif isinstance(model, TfliteModel):
-        built_model = model   
+        built_model = model
 
     elif not isinstance(model, str):
-        raise Exception('model argument must be a string or MltkModel,KerasModel,TfliteModel instance')  
+        raise Exception('model argument must be a string or MltkModel,KerasModel,TfliteModel instance')
 
     # Else if the path to a .h5 or .tflite was given
     elif model.endswith(('.tflite', '.h5')):
@@ -154,7 +168,7 @@ def _load_or_build_model(
     # Else a MLTK model name was given
     else:
         mltk_model = load_mltk_model(
-            model,  
+            model,
             test=test,
             print_not_found_err=True
         )
@@ -194,19 +208,19 @@ def _load_or_build_model(
             # If a .tflite path was given
             if isinstance(tflite, str):
                 built_model = load_tflite_or_keras_model(
-                    tflite, 
+                    tflite,
                 )
             # Else load the .tflite from the model archive
             else:
                 built_model = load_tflite_or_keras_model(
-                    mltk_model, 
+                    mltk_model,
                     model_type='tflite',
                 )
 
         # Else load the .h5 from the MltkModel archive
         else:
             built_model = load_tflite_or_keras_model(
-                mltk_model, 
+                mltk_model,
                 model_type='h5',
             )
 

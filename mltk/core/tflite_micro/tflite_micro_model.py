@@ -1,6 +1,7 @@
 from typing import List, Dict
 import re
 import collections
+import logging
 import numpy as np
 import msgpack
 
@@ -15,36 +16,36 @@ class TfliteMicroModelDetails:
 
     def __init__(self, wrapper_details:dict):
         self._details:dict = wrapper_details
-    
-    @property 
+
+    @property
     def name(self) -> str:
         """Name of model"""
         return self._details['name']
-    @property 
+    @property
     def version(self)-> int:
         """Version of model"""
         return self._details['version']
-    @property 
+    @property
     def date(self)-> str:
         """Date of model in ISO8601 format"""
         return self._details['date']
-    @property 
+    @property
     def description(self)-> str:
         """Description of model"""
         return self._details['description']
-    @property 
+    @property
     def classes(self) -> List[str]:
         """List of class labels"""
         return self._details['classes']
-    @property 
+    @property
     def hash(self)-> str:
         """Unique hash of model data"""
         return self._details['hash']
-    @property 
+    @property
     def accelerator(self)-> str:
         """Accelerater kernels loaded into TFLM interpreter"""
         return self._details['accelerator']
-    @property 
+    @property
     def runtime_memory_size(self)-> int:
         """Total amount of RAM required at runtime to run model"""
         return self._details['runtime_memory_size']
@@ -67,9 +68,9 @@ class TfliteMicroLayerError:
     WARNING_RE = re.compile(r'.*Op(\d+)-(\S+)\ not supported: (.*)')
 
     def __init__(self, index:int, name:str, msg:str):
-        self._index = index 
+        self._index = index
         self._name = name
-        self._msg = msg 
+        self._msg = msg
 
     @property
     def index(self) -> int:
@@ -88,8 +89,8 @@ class TfliteMicroLayerError:
     def _parse_error_log(msg):
         match = TfliteMicroLayerError.WARNING_RE.match(msg)
         if not match:
-            return None 
-        return TfliteMicroLayerError( 
+            return None
+        return TfliteMicroLayerError(
             index=int(match.group(1)),
             name=msg.split()[0],
             msg=match.group(3)
@@ -140,10 +141,10 @@ class TfliteMicroModel:
     """This class wrappers the TF-Lite Micro interpreter loaded with a .tflite model"""
 
     def __init__(
-        self, 
-        tflm_wrapper, 
-        tflm_accelerator:TfliteMicroAccelerator, 
-        flatbuffer_data:bytes, 
+        self,
+        tflm_wrapper,
+        tflm_accelerator:TfliteMicroAccelerator,
+        flatbuffer_data:bytes,
         enable_profiler:bool=False,
         enable_tensor_recorder:bool=False,
         force_buffer_overlap:bool=False,
@@ -152,27 +153,36 @@ class TfliteMicroModel:
         # pylint: disable=protected-access
         from .tflite_micro import TfliteMicro
 
-        TfliteMicro._clear_logged_errors()
-        accelerator_wrapper = None if tflm_accelerator is None else tflm_accelerator.accelerator_wrapper
-        self._model_wrapper = tflm_wrapper.TfliteMicroModelWrapper()
-        if not self._model_wrapper.load(
-            flatbuffer_data,
-            accelerator_wrapper, 
-            enable_profiler,
-            enable_tensor_recorder,
-            force_buffer_overlap,
-            runtime_buffer_size
-        ):
-            raise Exception(
-                f'Failed to load model, additional info:\n{TfliteMicro._get_logged_errors_str()}'
-            )
+        # Hide non-critical errors while loading the model
+        # Any layer errors will be parsed separately
+        logger = TfliteMicro.get_logger()
+        saved_log_level = logger.level
+        logger.setLevel(logging.CRITICAL)
+
+        try:
+            TfliteMicro._clear_logged_errors()
+            accelerator_wrapper = None if tflm_accelerator is None else tflm_accelerator.accelerator_wrapper
+            self._model_wrapper = tflm_wrapper.TfliteMicroModelWrapper()
+            if not self._model_wrapper.load(
+                flatbuffer_data,
+                accelerator_wrapper,
+                enable_profiler,
+                enable_tensor_recorder,
+                force_buffer_overlap,
+                runtime_buffer_size
+            ):
+                raise Exception(
+                    f'Failed to load model, additional info:\n{TfliteMicro._get_logged_errors_str()}'
+                )
+        finally:
+            logger.setLevel(saved_log_level)
 
         self._tflm_accelerator = tflm_accelerator
         self._layer_errors:List[TfliteMicroLayerError] = []
         for msg in TfliteMicro._get_logged_errors():
             err = TfliteMicroLayerError._parse_error_log(msg)
             if err:
-                self._layer_errors.append(err)  
+                self._layer_errors.append(err)
 
     @property
     def accelerator(self) -> TfliteMicroAccelerator:
@@ -191,7 +201,7 @@ class TfliteMicroModel:
     def details(self) -> TfliteMicroModelDetails:
         """Return details about loaded model"""
         return TfliteMicroModelDetails(self._model_wrapper.get_details())
-        
+
     @property
     def input_size(self) -> int:
         """Number of input tensors"""
@@ -229,7 +239,7 @@ class TfliteMicroModel:
         # pylint: disable=protected-access
         from .tflite_micro import TfliteMicro
 
-        TfliteMicro._clear_logged_errors() 
+        TfliteMicro._clear_logged_errors()
         if not self._model_wrapper.invoke():
             raise Exception(f'Failed to invoke model, additional info:\n{TfliteMicro._get_logged_errors_str()}')
 
@@ -242,7 +252,7 @@ class TfliteMicroModel:
 
     def get_profiling_results(self) -> List[TfliteMicroProfiledLayerResult]:
         """Return the profiling results of each model layer
-        
+
         Returns:
             A list where each entry contains the profiling results
             of the associated model layer
@@ -262,7 +272,7 @@ class TfliteMicroModel:
 
     def get_recorded_data(self) -> List[Dict[str,object]]:
         """Return the recorded contents of each model layers' tensors
-        
+
         Returns:
             A list where each entry contains the input/output tensors
             of the associated model layer
@@ -282,9 +292,9 @@ class TfliteMicroModel:
         """Return the TfliteMicroLayerError at the given layer index if found else return None"""
         for err in self._layer_errors:
             if err.index == index:
-                return err 
+                return err
         return None
 
-    
+
     def __str__(self) -> str:
         return f'{self.details}'

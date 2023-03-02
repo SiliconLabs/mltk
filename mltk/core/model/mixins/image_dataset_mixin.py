@@ -10,8 +10,8 @@ from mltk.utils.process_pool_manager import ProcessPoolManager
 from mltk.core.utils import (convert_y_to_labels, get_mltk_logger)
 
 from .data_generator_dataset_mixin import (DataGeneratorDatasetMixin, DataGeneratorContext)
-from ..model_attributes import MltkModelAttributesDecorator, CallableType
-
+from ..model_attributes import MltkModelAttributesDecorator
+from ..model_event import MltkModelEvent
 
 
 @MltkModelAttributesDecorator()
@@ -20,7 +20,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
     @property
     def dataset(self) -> Union[types.ModuleType,Callable,str]:
-        """Path to the image dataset's python module, a function 
+        """Path to the image dataset's python module, a function
         that manually loads the dataset, or the file path to a directory of samples.
 
         If a Python module is provided, it must implement the function:
@@ -30,7 +30,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
            def load_data():
               ...
-        
+
         The load_data() function should either return a tuple as:
         (x_train, y_train), (x_test, y_test)
         OR it should return the path to a directory containing the dataset's samples.
@@ -47,7 +47,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
     @property
     def follow_links(self) -> bool:
-        """Whether to follow symlinks inside class sub-directories 
+        """Whether to follow symlinks inside class sub-directories
 
         Default: ``True``
         """
@@ -62,54 +62,54 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         """Shuffle the dataset directory once
 
         Default: ``false``
-        
+
         - If true, the dataset directory will be shuffled the first time it is processed and
-            and an index containing the shuffled file names is generated in the training log directory. 
+            and an index containing the shuffled file names is generated in the training log directory.
             The index is reused to maintain the shuffled order for subsequent processing.
-        - If false, then the dataset samples are sorted alphabetically and saved to an index in the dataset directory. 
+        - If false, then the dataset samples are sorted alphabetically and saved to an index in the dataset directory.
             The alphabetical index file is used for subsequent processing.
-        
+
         """
         return self._attributes.get_value('image.shuffle_dataset_enabled', default=False)
     @shuffle_dataset_enabled.setter
     def shuffle_dataset_enabled(self, v: bool):
         self._attributes['image.shuffle_dataset_enabled'] = v
 
-    @property 
+    @property
     def image_classes(self) -> List[str]:
         """Return a list of class labels the model should classify"""
         return self._attributes['image.classes']
-    @image_classes.setter 
+    @image_classes.setter
     def image_classes(self, v: List[str]):
         self._attributes['image.classes'] = v
 
 
-    @property 
+    @property
     def image_input_shape(self) -> Tuple[int]:
         """Return the image input shape as a tuple of integers"""
         return self._attributes['image.input_shape']
-    @image_input_shape.setter 
+    @image_input_shape.setter
     def image_input_shape(self, v: Tuple[int]):
         self._attributes['image.input_shape'] = v
 
 
-    @property 
+    @property
     def target_size(self) -> Tuple[int]:
-        """Return the target size of the generated images. 
+        """Return the target size of the generated images.
         The image data generator will automatically resize all images to this size.
         If omitted, ``my_model.input_shape`` is used.
 
         .. note:: This is only used if providing a directory image dataset
         """
         return self._attributes.get_value('image.target_size', default=None)
-    @target_size.setter 
+    @target_size.setter
     def target_size(self, v: Tuple[int]):
         self._attributes['image.target_size'] = v
 
 
     @property
     def class_mode(self) -> str:
-        """Determines the type of label arrays that are returned.  
+        """Determines the type of label arrays that are returned.
         Default: `categorical`
 
         - **categorical** -  2D one-hot encoded labels
@@ -119,7 +119,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
         """
         return self._attributes.get_value('image.class_mode', default='categorical')
-    @class_mode.setter 
+    @class_mode.setter
     def class_mode(self, v: str):
         self._attributes['image.class_mode'] = v
 
@@ -147,11 +147,11 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
     @property
     def interpolation(self) -> str:
         """Interpolation method used to resample the image if the target size is different from that of the loaded image
-         
+
         Default: ``bilinear``
 
         Supported methods are ``none``, ``nearest``, ``bilinear``, ``bicubic``, ``lanczos``, ``box`` and ``hamming`` .
-        If ``none`` is used then the generated images are **not automatically resized**. 
+        If ``none`` is used then the generated images are **not automatically resized**.
         In this case, the :py:class:`mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator` ``preprocessing_function`` argument should be used to reshape the
         image to the expected model input shape.
         """
@@ -163,12 +163,12 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
     @property
     def datagen(self):
-        """Training data generator. 
-        
+        """Training data generator.
+
         Should be a reference to a :py:class:`mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator` instance
         OR `tensorflow.keras.preprocessing.image.ImageDataGenerator <https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/ImageDataGenerator>`_
         """
-        return self._attributes.get_value('image.datagen', default=None) 
+        return self._attributes.get_value('image.datagen', default=None)
     @datagen.setter
     def datagen(self, v):
         self._attributes['image.datagen'] = v
@@ -176,14 +176,14 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
     @property
     def validation_datagen(self):
-        """Validation/evaluation data generator. 
+        """Validation/evaluation data generator.
 
         If omitted, then ``datagen`` is used for validation and evaluation.
-        
+
         Should be a reference to a :py:class:`mltk.core.preprocess.image.parallel_generator.ParallelImageDataGenerator` instance
         OR `tensorflow.keras.preprocessing.image.ImageDataGenerator <https://www.tensorflow.org/api_docs/python/tf/keras/preprocessing/image/ImageDataGenerator>`_
         """
-        return self._attributes.get_value('image.validation_datagen', default=None) 
+        return self._attributes.get_value('image.validation_datagen', default=None)
     @validation_datagen.setter
     def validation_datagen(self, v):
         self._attributes['image.validation_datagen'] = v
@@ -191,8 +191,8 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
 
     def load_dataset(
-        self, 
-        subset: str, 
+        self,
+        subset: str,
         classes: List[str]=None,
         max_samples_per_class: int=-1,
         test:bool = False,
@@ -207,6 +207,14 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         # First download the dataset if necessary
         if self.dataset is None:
             raise Exception('Must specify dataset, e.g.: mltk_model.dataset = tf.keras.datasets.cifar10')
+
+        self.trigger_event(
+            MltkModelEvent.BEFORE_LOAD_DATASET,
+            subset=subset,
+            test=test,
+            **kwargs
+        )
+
         dataset_data = load_dataset(self.dataset)
 
         if not classes:
@@ -234,7 +242,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
                 color_mode = 'rgb'
             else:
                 raise Exception('mltk_model.input_shape[2] must be 1 or 3 (i.e. grayscale or rgb)')
-            
+
         if input_depth == 1 and color_mode != 'grayscale':
             logger.warning('mltk_model.input_shape[2]=1 but mltk_model.color_mode != grayscale')
         if input_depth == 3 and color_mode != 'rgb':
@@ -244,8 +252,8 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         logger.debug(f'Target image size={target_size}')
 
         eval_shuffle = False
-        eval_augmentation_enabled = False 
-       
+        eval_augmentation_enabled = False
+
         if test:
             batch_size = 3
             max_samples_per_class = batch_size
@@ -253,7 +261,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
                 self.batch_size = batch_size
             self.datagen.max_batches_pending = 1
             logger.debug(f'Test mode enabled, forcing max_samples_per_class={max_samples_per_class}, batch_size={batch_size}')
-            
+
         if self.loaded_subset == 'evaluation':
             if hasattr(self, 'eval_shuffle'):
                 eval_shuffle = self.eval_shuffle
@@ -263,7 +271,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
                 max_samples_per_class = self.eval_max_samples_per_class
 
 
-        train_datagen = None 
+        train_datagen = None
         validation_datagen = None
 
         if self.loaded_subset == 'training':
@@ -278,7 +286,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         if isinstance(dataset_data, (tuple,list)):
             if not(len(dataset_data) == 2 or len(dataset_data) == 4):
                 raise Exception('mltk_model.dataset should return a tuple of the form: (x_train, y_train), (x_test, y_test)')
-            
+
             if len(dataset_data) == 2:
                 train, test = dataset_data
                 if not isinstance(train, (list, tuple)) or len(train) != 2:
@@ -305,7 +313,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
                     x_train, y_train = _clamp_max_samples_per_class(x_train, y_train, max_samples_per_class)
 
                 train_datagen = training_datagen_creator.flow(
-                    x_train, 
+                    x_train,
                     y_train,
                     batch_size=batch_size,
                     shuffle=True
@@ -316,7 +324,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
                 x_test, y_test = _clamp_max_samples_per_class(x_test, y_test, max_samples_per_class)
 
             validation_datagen = validation_datagen_creator.flow(
-                x_test, 
+                x_test,
                 y_test,
                 batch_size=batch_size,
                 shuffle=eval_shuffle if self.loaded_subset == 'evaluation' else True
@@ -331,7 +339,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
             if self.shuffle_dataset_enabled:
                 shuffle_index_dir = self.get_shuffle_index_dir()
                 logger.debug(f'shuffle_index_dir={shuffle_index_dir}')
-            
+
             logger.debug(f'Dataset directory: {dataset_data}')
             batch_shape = (batch_size,) + tuple(self.input_shape)
             logger.debug(f'Batch shape: {batch_shape}')
@@ -364,7 +372,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
                 validation_datagen_creator.max_samples_per_class = max_samples_per_class
                 if isinstance(validation_datagen_creator, ParallelImageDataGenerator):
                     kwargs['class_counts'] = self.class_counts['validation']
-                
+
                 validation_datagen = validation_datagen_creator.flow_from_directory(
                     subset='validation',
                     shuffle=True,
@@ -384,7 +392,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
                     **kwargs
                 )
                 kwargs.pop('class_counts', None)
-         
+
         else:
             raise Exception(
                 'mltk_model.dataset must return return a tuple as: (x_train, y_train), (x_test, y_test)'
@@ -393,7 +401,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
 
         # Fix issue with:
-        # tensorflow.keras.preprocessing.image.ImageDataGenerator 
+        # tensorflow.keras.preprocessing.image.ImageDataGenerator
         _patch_image_iterator(validation_datagen)
         if self.class_counts['validation']:
             validation_datagen.max_samples = sum(self.class_counts['validation'].values())
@@ -406,7 +414,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
         if self.loaded_subset in ('training', 'validation'):
             self.validation_data = validation_datagen
-        
+
         if self.loaded_subset == 'evaluation':
             self.x = train_datagen if validation_datagen is None else validation_datagen
 
@@ -419,13 +427,18 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
             validation_class_counts = self.class_counts['validation']
         )
 
-
+        self.trigger_event(
+            MltkModelEvent.AFTER_LOAD_DATASET,
+            subset=subset,
+            test=test,
+            **kwargs
+        )
 
 
     def _register_attributes(self):
         from mltk.core.preprocess.image.parallel_generator import ParallelImageDataGenerator
         from tensorflow.keras.preprocessing.image import ImageDataGenerator
-        
+
         self._attributes.register('image.follow_links', dtype=bool)
         self._attributes.register('image.shuffle_dataset_enabled', dtype=bool)
         self._attributes.register('image.input_shape', dtype=(list,tuple))
@@ -442,7 +455,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         # all the attributes are registered
         def register_parameters_populator():
             self.add_model_parameter_populate_callback(self._populate_image_dataset_model_parameters)
-        
+
         return register_parameters_populator
 
 
@@ -450,7 +463,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         """Populate the image processing parameters required at inference time
 
         These parameters will be added to the compiled .tflite TfliteModelParameters metadata.
-        At inference time, these paramaters are retrieved from the generated .tflite and 
+        At inference time, these paramaters are retrieved from the generated .tflite and
         used them to process the input images.
 
         NOTE: This is invoked during the compile_model() API execution.
@@ -458,11 +471,11 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
         if self.datagen is not None:
             self.set_model_parameter('samplewise_norm.rescale', float(self.datagen.rescale or 0.))
             self.set_model_parameter('samplewise_norm.mean_and_std', self.datagen.samplewise_center and self.datagen.samplewise_std_normalization)
-    
+
 
 def load_dataset(dataset) -> Union[str,tuple]:
     if isinstance(dataset,str):
-        return dataset 
+        return dataset
 
     if callable(dataset):
         try:
@@ -470,17 +483,17 @@ def load_dataset(dataset) -> Union[str,tuple]:
         except Exception as e:
             prepend_exception_msg(e, f'Exception while invoking mltk_model.dataset function: {dataset}')
             raise
-    
+
     if isinstance(dataset, (types.ModuleType, object)):
         if not hasattr(dataset, 'load_data'):
             raise Exception('If a module or class is set in mltk_model.dataset, the the module/class must specify the function: load_data()')
-       
+
         try:
             return dataset.load_data()
         except Exception as e:
             prepend_exception_msg(e, f'Exception while invoking mltk_model.dataset.load_data(): {dataset}')
             raise
-    
+
     raise Exception('mltk_model.dataset must either be file path to a dictionary or callback function')
 
 
@@ -493,8 +506,8 @@ def _get_list_valid_filenames_function(dataset):
 
 
 def _patch_image_iterator(datagen):
-    """Patch the KerasImageIterator so that 
-    tensorflow.keras.preprocessing.image.ImageDataGenerator 
+    """Patch the KerasImageIterator so that
+    tensorflow.keras.preprocessing.image.ImageDataGenerator
     properly iterates while predicting
     """
     from mltk.core.keras import ImageIterator
@@ -545,9 +558,9 @@ def _clamp_max_samples_per_class(x, y, max_samples_per_class):
         if index == n_samples:
             break
         if class_counts[class_id] == max_samples_per_class:
-            continue 
+            continue
         class_counts[class_id] += 1
-       
+
         x_truncated[index, :] = x[i]
         y_truncated[index, :] = y[i]
         index += 1
@@ -560,7 +573,7 @@ def _get_class_counts(y, classes:List[str], class_mode:str) -> Dict[str,int]:
 
     if class_mode == 'categorical':
        y = convert_y_to_labels(y)
-   
+
     if class_mode != 'input':
         for i, class_name in enumerate(classes):
             class_counts[class_name] = 0

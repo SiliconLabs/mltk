@@ -85,17 +85,18 @@ def has_filename(path: str) -> bool:
     return ext_index > 0
 
 
-def create_dir(path:str):
+def create_dir(path:str) -> str:
     """Create the given path's directories"""
     path = fullpath(path)
     if has_filename(path):
         path = os.path.dirname(path)
 
     if not path:
-        return
+        return None
 
     os.makedirs(path, exist_ok=True)
 
+    return path
 
 def create_tempdir(subdir='') -> str:
     """Create a temporary directory as <temp dir>/<username>/mltk"""

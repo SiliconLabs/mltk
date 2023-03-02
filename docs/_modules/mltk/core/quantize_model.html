@@ -57,26 +57,22 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.quantize_model &#8212; MLTK 0.14.0 documentation</title>
+    <title>mltk.core.quantize_model &#8212; MLTK 0.15.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/design-tabs.js"></script>
     <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
@@ -105,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.14.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.15.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.14.0 documentation logo">
+                   alt="MLTK 0.15.0 documentation logo">
           
         </a>
       </div>
@@ -129,7 +125,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" action="../../../search.html" method="get" name="search">
-      <input type="text" class="md-search__input" name="q" placeholder="Search"
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
              autocapitalize="off" autocomplete="off" spellcheck="false"
              data-md-component="query" data-md-state="active">
       <label class="md-icon md-search__icon" for="__search"></label>
@@ -200,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -256,7 +252,7 @@
     <li class="md-nav__item">
     
     
-      <a href="../../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      <a href="../../../docs/command_line/index.html" class="md-nav__link">Command-Line</a>
       
     
     </li>
@@ -435,15 +431,16 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span> 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 
 <span class="kn">from</span> <span class="nn">mltk.utils</span> <span class="kn">import</span> <span class="n">gpu</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">prepend_exception_msg</span><span class="p">,</span> <span class="n">append_exception_msg</span>
 <span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">MltkModel</span><span class="p">,</span> 
+    <span class="n">MltkModel</span><span class="p">,</span>
+    <span class="n">MltkModelEvent</span><span class="p">,</span>
     <span class="n">KerasModel</span><span class="p">,</span>
-    <span class="n">load_mltk_model</span><span class="p">,</span> 
+    <span class="n">load_mltk_model</span><span class="p">,</span>
     <span class="n">load_tflite_or_keras_model</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
@@ -459,7 +456,8 @@
     <span class="n">weights</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">build</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">update_archive</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">tflite_converter_override</span><span class="p">:</span><span class="nb">dict</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">tflite_converter_override</span><span class="p">:</span><span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">post_process</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">TfliteModel</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Generate a quantized .tflite model file</span>
 
@@ -476,12 +474,12 @@
 
 <span class="sd">            * If none, then load keras model from MLTK model archive's `.h5` file</span>
 <span class="sd">            * If none and build=True, then build keras model rather that loading archive's `.h5`</span>
-<span class="sd">        </span>
+
 <span class="sd">        output: Optional, directory path or file path to generated `.tflite` file.</span>
 
 <span class="sd">            * If `none` then generate in model log directory and update the model's archive.</span>
 <span class="sd">            * If output='tflite_model', then return the :py:class:`mltk.core.TfliteModel` object instead of `.tflite` file path</span>
-<span class="sd">        </span>
+
 <span class="sd">            NOTE: The model archive is NOT updated if this argument is supplied</span>
 <span class="sd">        weights: Optional, path to model weights file. This is only used if no keras_model argument is given.</span>
 <span class="sd">        build: If true and keras_model is None, then first build the keras model by training for 1 epoch..</span>
@@ -492,10 +490,12 @@
 <span class="sd">        tflite_converter_override: Dictionary of zero or more :py:attr:`mltk.core.TrainMixin.tflite_converter` settings</span>
 <span class="sd">            used to override the :py:attr:`mltk.core.TrainMixin.tflite_converter` in the model specification</span>
 <span class="sd">            NOTE: The model archive is NOT updated if this argument is supplied</span>
+<span class="sd">        post_process: This allows for post-processing the quantization results (e.g. uploading to a cloud) if supported by the given MltkModel</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The file path to the generated `.tflite` OR TfliteModel object if output='tflite_model'</span>
 <span class="sd">    """</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">):</span>
         <span class="n">mltk_model</span> <span class="o">=</span> <span class="n">model</span>
 
@@ -514,7 +514,6 @@
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">get_mltk_logger</span><span class="p">()</span>
 
-
     <span class="n">tflite_converter_settings</span> <span class="o">=</span> <span class="n">DefaultDict</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">,</span> <span class="s1">'tflite_converter'</span><span class="p">):</span>
         <span class="n">tflite_converter_settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">)</span>
@@ -522,11 +521,21 @@
         <span class="n">tflite_converter_settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">tflite_converter_override</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">tflite_converter_settings</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'MltkModel does not specify tflite_converter settings'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'MltkModel does not specify tflite_converter settings'</span><span class="p">)</span>
+
+
+    <span class="n">mltk_model</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span>
+        <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">QUANTIZE_STARTUP</span><span class="p">,</span>
+        <span class="n">build</span><span class="o">=</span><span class="n">build</span><span class="p">,</span>
+        <span class="n">keras_model</span><span class="o">=</span><span class="n">keras_model</span><span class="p">,</span>
+        <span class="n">tflite_converter_settings</span><span class="o">=</span><span class="n">tflite_converter_settings</span><span class="p">,</span>
+        <span class="n">post_process</span><span class="o">=</span><span class="n">post_process</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
+    <span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Using tflite converter settings:</span><span class="se">\n</span><span class="si">{</span><span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">tflite_converter_settings</span><span class="p">))</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
-    
+
     <span class="n">gpu</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">keras_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -534,7 +543,7 @@
             <span class="kn">from</span> <span class="nn">.train_model</span> <span class="kn">import</span> <span class="n">train_model</span>
 
             <span class="n">built_mltk_model</span> <span class="o">=</span> <span class="n">load_mltk_model</span><span class="p">(</span>
-                <span class="n">mltk_model</span><span class="o">.</span><span class="n">model_specification_path</span><span class="p">,</span> 
+                <span class="n">mltk_model</span><span class="o">.</span><span class="n">model_specification_path</span><span class="p">,</span>
                 <span class="n">reload</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">)</span>
             <span class="n">built_mltk_model</span><span class="o">.</span><span class="n">enable_test_mode</span><span class="p">()</span>
@@ -550,9 +559,9 @@
 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">keras_model</span> <span class="o">=</span> <span class="n">load_tflite_or_keras_model</span><span class="p">(</span>
-                <span class="n">mltk_model</span><span class="p">,</span> 
+                <span class="n">mltk_model</span><span class="p">,</span>
                 <span class="n">model_type</span><span class="o">=</span><span class="s1">'h5'</span><span class="p">,</span>
-                <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span> 
+                <span class="n">weights</span><span class="o">=</span><span class="n">weights</span><span class="p">,</span>
             <span class="p">)</span>
 
 
@@ -578,7 +587,7 @@
 
 
     <span class="n">_update_absl_log_level</span><span class="p">(</span><span class="s1">'ERROR'</span><span class="p">)</span>
-    
+
     <span class="c1"># If we should generate an unquantized/float32 .tflite model</span>
     <span class="c1"># NOTE: Run this IF a "representative_dataset" converter setting was provided</span>
     <span class="n">float32_tflite_path</span> <span class="o">=</span> <span class="kc">None</span>
@@ -593,14 +602,14 @@
             <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'Failed to generated unquantized tflite model'</span><span class="p">)</span>
             <span class="k">raise</span>
         <span class="k">finally</span><span class="p">:</span>
-            <span class="c1"># The TfLiteConverter adds a StreamHandler to the root logger, </span>
+            <span class="c1"># The TfLiteConverter adds a StreamHandler to the root logger,</span>
             <span class="c1"># remove it so we don't double print everything to the console</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
         <span class="n">_save_flatbuffer_file</span><span class="p">(</span>
             <span class="n">mltk_model</span><span class="o">=</span><span class="n">mltk_model</span><span class="p">,</span>
             <span class="n">tflite_flatbuffer</span><span class="o">=</span><span class="n">float32_tflite_flatbuffer</span><span class="p">,</span>
-            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> 
+            <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
             <span class="n">output</span><span class="o">=</span><span class="n">float32_tflite_path</span><span class="p">,</span>
             <span class="n">add_runtime_memory_size</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -617,31 +626,41 @@
 
     <span class="k">if</span> <span class="n">tflite_converter_settings</span><span class="p">[</span><span class="s1">'representative_dataset'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'generate'</span><span class="p">:</span>
         <span class="n">converter</span><span class="o">.</span><span class="n">representative_dataset</span> <span class="o">=</span> <span class="n">create_representative_dataset_generator</span><span class="p">(</span>
-            <span class="n">mltk_model</span><span class="p">,</span> 
-            <span class="n">test</span><span class="o">=</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">test_mode_enabled</span><span class="p">,</span> 
+            <span class="n">mltk_model</span><span class="p">,</span>
+            <span class="n">test</span><span class="o">=</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">test_mode_enabled</span><span class="p">,</span>
             <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">converter</span><span class="o">.</span><span class="n">representative_dataset</span> <span class="o">=</span> <span class="n">tflite_converter_settings</span><span class="p">[</span><span class="s1">'representative_dataset'</span><span class="p">]</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating </span><span class="si">{</span><span class="n">retval</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+    <span class="n">mltk_model</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span>
+        <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">BEFORE_QUANTIZE</span><span class="p">,</span>
+        <span class="n">converter</span><span class="o">=</span><span class="n">converter</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
+    <span class="p">)</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">tflite_flatbuffer</span> <span class="o">=</span> <span class="n">converter</span><span class="o">.</span><span class="n">convert</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'Failed to quantize model'</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tflite_converter_settings</span><span class="p">[</span><span class="s1">'representative_dataset'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'generate'</span><span class="p">:</span>
-            <span class="n">append_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> 
+            <span class="n">append_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span>
                 <span class="s1">'</span><span class="se">\n\n</span><span class="s1">You may need to define a custom representative data generator</span><span class="se">\n</span><span class="s1">'</span> \
                 <span class="s1">'e.g.: my_model.tflite_converter["representative_dataset"] = _my_data_generator_function</span><span class="se">\n</span><span class="s1">'</span> \
                 <span class="s1">'See https://www.tensorflow.org/lite/performance/post_training_quantization</span><span class="se">\n</span><span class="s1">'</span>
             <span class="p">)</span>
         <span class="k">raise</span>
     <span class="k">finally</span><span class="p">:</span>
-        <span class="c1"># The TfLiteConverter adds a StreamHandler to the root logger, </span>
+        <span class="c1"># The TfLiteConverter adds a StreamHandler to the root logger,</span>
         <span class="c1"># remove it so we don't double print everything to the console</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
+    <span class="n">mltk_model</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span>
+        <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">AFTER_QUANTIZE</span><span class="p">,</span>
+        <span class="n">tflite_flatbuffer</span><span class="o">=</span><span class="n">tflite_flatbuffer</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
+    <span class="p">)</span>
 
     <span class="n">mltk_model</span><span class="o">.</span><span class="n">unload_dataset</span><span class="p">()</span>
     <span class="n">_update_absl_log_level</span><span class="p">()</span>
@@ -649,7 +668,7 @@
     <span class="n">retval</span><span class="p">,</span> <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">_save_flatbuffer_file</span><span class="p">(</span>
         <span class="n">mltk_model</span><span class="o">=</span><span class="n">mltk_model</span><span class="p">,</span>
         <span class="n">tflite_flatbuffer</span><span class="o">=</span><span class="n">tflite_flatbuffer</span><span class="p">,</span>
-        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> 
+        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
         <span class="n">output</span><span class="o">=</span><span class="n">retval</span><span class="p">,</span>
         <span class="n">add_runtime_memory_size</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
@@ -667,7 +686,13 @@
         <span class="n">mltk_model</span><span class="o">.</span><span class="n">add_archive_file</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">float32_tflite_path</span><span class="p">:</span>
             <span class="n">mltk_model</span><span class="o">.</span><span class="n">add_archive_file</span><span class="p">(</span><span class="n">float32_tflite_path</span><span class="p">)</span>
-       
+
+
+    <span class="n">mltk_model</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span>
+        <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">QUANTIZE_SHUTDOWN</span><span class="p">,</span>
+        <span class="n">tflite_model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
+        <span class="n">logger</span><span class="o">=</span><span class="n">logger</span>
+    <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">retval</span></div>
 
@@ -693,13 +718,13 @@
 
                 <span class="c1"># The TF-Lite converter expects 1 sample batches</span>
                 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batch_x</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>  
+                    <span class="k">yield</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># The TF-Lite converter expects the input to be a float32 data type</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="ow">and</span> <span class="n">batch_x</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
                     <span class="n">batch_x</span> <span class="o">=</span> <span class="n">batch_x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-                
+
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_x</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">)):</span>
                     <span class="n">batch_x_norm</span> <span class="o">=</span> <span class="p">[]</span>
                     <span class="k">for</span> <span class="n">batch_xi</span> <span class="ow">in</span> <span class="n">batch_x</span><span class="p">:</span>
@@ -711,21 +736,21 @@
 
                 <span class="c1"># The TF-Lite converter expects 1 sample batches</span>
                 <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">batch_x</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>  
-        
+                    <span class="k">yield</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
+
             <span class="c1"># 100 batches should be enough</span>
             <span class="c1"># for the converter to determine the valid ranges</span>
             <span class="c1"># required for quantization</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
                 <span class="k">break</span>
-    
+
     <span class="k">return</span> <span class="n">_representative_dataset_generator</span>
 
 
 
 <span class="k">def</span> <span class="nf">_save_flatbuffer_file</span><span class="p">(</span>
-    <span class="n">mltk_model</span><span class="p">:</span><span class="n">MltkModel</span><span class="p">,</span> 
-    <span class="n">tflite_flatbuffer</span><span class="p">:</span><span class="nb">bytes</span><span class="p">,</span> 
+    <span class="n">mltk_model</span><span class="p">:</span><span class="n">MltkModel</span><span class="p">,</span>
+    <span class="n">tflite_flatbuffer</span><span class="p">:</span><span class="nb">bytes</span><span class="p">,</span>
     <span class="n">output</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span>
     <span class="n">add_runtime_memory_size</span><span class="p">:</span><span class="nb">bool</span>
@@ -789,10 +814,10 @@
 
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">tflite_converter_settings</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span>
-            <span class="s1">'optimizations'</span><span class="p">,</span> 
-            <span class="s1">'supported_ops'</span><span class="p">,</span> 
-            <span class="s1">'inference_input_type'</span><span class="p">,</span> 
-            <span class="s1">'inference_output_type'</span><span class="p">,</span> 
+            <span class="s1">'optimizations'</span><span class="p">,</span>
+            <span class="s1">'supported_ops'</span><span class="p">,</span>
+            <span class="s1">'inference_input_type'</span><span class="p">,</span>
+            <span class="s1">'inference_output_type'</span><span class="p">,</span>
             <span class="s1">'representative_dataset'</span>
         <span class="p">):</span>
             <span class="k">continue</span>
@@ -819,10 +844,10 @@
 
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'int32'</span><span class="p">),</span> <span class="s1">'int32'</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">int32</span>
-    
+
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">'float32'</span><span class="p">),</span> <span class="s1">'float32'</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span>
-    
+
     <span class="k">return</span> <span class="n">dtype</span>
 
 
@@ -859,24 +884,19 @@
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2022, Silicon Labs.
+              &#169; Copyright 2023, Silicon Labs.
               
           </div>
             Last updated on
-              Jan 09, 2023.
+              Mar 01, 2023.
             <br/>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>
         </div>
-        <div class="survey-link" id="dlg-survey-link"> 
-    <div>We need your feedback!</div>
-    <div>
-        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
-    </div>
-</div>
+        <button id="survey-link" class="feedback-button">Feedback</button>
       </div>
     </div>
   </footer>

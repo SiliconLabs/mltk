@@ -57,26 +57,22 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.profile_model &#8212; MLTK 0.14.0 documentation</title>
+    <title>mltk.core.profile_model &#8212; MLTK 0.15.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/panels-variables.63bdf2d2865d068e5434884f20825da9.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/css/custom.css" />
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/sphinx_highlight.js"></script>
     <script src="../../../_static/clipboard.min.js"></script>
     <script src="../../../_static/copybutton.js"></script>
-    <script>let toggleHintShow = 'Click to show';</script>
-    <script>let toggleHintHide = 'Click to hide';</script>
-    <script>let toggleOpenOnPrint = 'true';</script>
-    <script src="../../../_static/togglebutton.js"></script>
-    <script>var togglebuttonSelector = '.toggle, .admonition.dropdown, .tag_hide_input div.cell_input, .tag_hide-input div.cell_input, .tag_hide_output div.cell_output, .tag_hide-output div.cell_output, .tag_hide_cell.cell, .tag_hide-cell.cell';</script>
+    <script src="../../../_static/design-tabs.js"></script>
     <script src="../../../_static/js/custom.js"></script>
     <script src="../../../_static/js/apitoc.js"></script>
     <link rel="shortcut icon" href="../../../_static/favicon.ico"/>
@@ -105,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.14.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.15.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.14.0 documentation logo">
+                   alt="MLTK 0.15.0 documentation logo">
           
         </a>
       </div>
@@ -129,7 +125,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" action="../../../search.html" method="get" name="search">
-      <input type="text" class="md-search__input" name="q" placeholder="Search"
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
              autocapitalize="off" autocomplete="off" spellcheck="false"
              data-md-component="query" data-md-state="active">
       <label class="md-icon md-search__icon" for="__search"></label>
@@ -200,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.14.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.14.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -256,7 +252,7 @@
     <li class="md-nav__item">
     
     
-      <a href="../../../docs/command_line.html" class="md-nav__link">Command-Line</a>
+      <a href="../../../docs/command_line/index.html" class="md-nav__link">Command-Line</a>
       
     
     </li>
@@ -431,18 +427,21 @@
             
   <h1 id="modules-mltk-core-profile-model--page-root">Source code for mltk.core.profile_model</h1><div class="highlight"><pre>
 <span></span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">copy</span>
 
 
 
 <span class="kn">from</span> <span class="nn">mltk.utils.logger</span> <span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">make_filelike</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="n">fullpath</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">append_exception_msg</span>
 
-<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">MltkModel</span><span class="p">,</span> <span class="n">load_tflite_model</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">MltkModel</span><span class="p">,</span>
+    <span class="n">MltkModelEvent</span><span class="p">,</span>
+    <span class="n">load_tflite_model</span><span class="p">,</span>
+    <span class="n">load_mltk_model</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
 <span class="kn">from</span> <span class="nn">.profiling_results</span> <span class="kn">import</span> <span class="n">ProfilingModelResults</span><span class="p">,</span> <span class="n">ProfilingLayerResult</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_mltk_logger</span><span class="p">,</span> <span class="n">ArchiveFileNotFoundError</span><span class="p">)</span>
@@ -457,14 +456,16 @@
     <span class="n">baud</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">115200</span><span class="p">,</span>
     <span class="n">port</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">use_device</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">build</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+    <span class="n">build</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">platform</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">runtime_buffer_size</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">post_process</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">return_estimates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProfilingModelResults</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Profile a model for the given accelerator</span>
-<span class="sd">    </span>
+
 <span class="sd">    This will profile the given model in either a</span>
 <span class="sd">    hardware simulator or on a physical device.</span>
 
@@ -482,9 +483,11 @@
 <span class="sd">        runtime_buffer_size: The size of the tensor arena. This is only used by the simulator (i.e. when use_device=False).</span>
 <span class="sd">            If greater than 0, use the size given. If the given size is too small then loading the model will fail.</span>
 <span class="sd">            If equal to 0, try to use the size built into the model's parameters, if the model size is not available or too small, find the optimal size</span>
-<span class="sd">            If less than 0, automatically find the optimal tensor arena size, ignore the size built into the model parameters  </span>
+<span class="sd">            If less than 0, automatically find the optimal tensor arena size, ignore the size built into the model parameters</span>
 <span class="sd">        test: If a "test" model is provided</span>
-<span class="sd">    </span>
+<span class="sd">        post_process: This allows for post-processing the profiling results (e.g. uploading to a cloud) if supported by the given MltkModel</span>
+<span class="sd">        return_estimates: If profiling in the simulator, this will estimate additional metrics such as CPU cycles and energy. </span>
+<span class="sd">            Disabling this option can reduce profiling time</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        The results of model profiling</span>
 <span class="sd">    """</span>
@@ -504,11 +507,15 @@
             <span class="n">image_path</span><span class="p">,</span>
             <span class="n">platform</span><span class="o">=</span><span class="n">platform</span><span class="p">,</span>
             <span class="n">baud</span><span class="o">=</span><span class="n">baud</span><span class="p">,</span>
-            <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">,</span> 
+            <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">,</span>
             <span class="n">port</span><span class="o">=</span><span class="n">port</span>
         <span class="p">)</span>
     <span class="k">elif</span> <span class="n">image_path</span><span class="p">:</span>
-        <span class="n">profiling_model_results</span> <span class="o">=</span> <span class="n">profile_model_in_executable</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="n">tflite_model</span><span class="p">,</span> <span class="n">accelerator</span><span class="p">)</span>
+        <span class="n">profiling_model_results</span> <span class="o">=</span> <span class="n">profile_model_in_executable</span><span class="p">(</span>
+            <span class="n">image_path</span><span class="o">=</span><span class="n">image_path</span><span class="p">,</span>
+            <span class="n">tflite_model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
+            <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span>
+        <span class="p">)</span>
 
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># Profile in hardware simulator</span>
@@ -516,16 +523,24 @@
             <span class="n">tflite_model</span><span class="p">,</span>
             <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">,</span>
             <span class="n">runtime_buffer_size</span><span class="o">=</span><span class="n">runtime_buffer_size</span><span class="p">,</span>
+            <span class="n">return_estimates</span><span class="o">=</span><span class="n">return_estimates</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
 
     <span class="n">profiling_model_results</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">filename</span> <span class="ow">or</span> <span class="s1">'my_model.tflite'</span><span class="p">)[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.tflite'</span><span class="p">)]</span> <span class="c1"># pylint: disable=protected-access</span>
 
+    <span class="k">if</span> <span class="n">post_process</span><span class="p">:</span>
+        <span class="n">post_process_profiling_results</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">results</span><span class="o">=</span><span class="n">profiling_model_results</span><span class="p">,</span>
+            <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span>
+        <span class="p">)</span>
+
     <span class="k">return</span> <span class="n">profiling_model_results</span></div>
 
 <span class="k">def</span> <span class="nf">profile_model_in_executable</span><span class="p">(</span>
-    <span class="n">image_path</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
-    <span class="n">tflite_model</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> 
+    <span class="n">image_path</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
+    <span class="n">tflite_model</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">accelerator</span><span class="p">:</span><span class="nb">str</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProfilingModelResults</span> <span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Profile the given model using the given profiler executable</span>
@@ -534,27 +549,34 @@
 <span class="sd">        image_path: path to the profiler executable</span>
 <span class="sd">        tflite_model: path to the model to profile</span>
 <span class="sd">        accelerator: name of the accelerator to use when profiling</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns:</span>
 <span class="sd">        ProfilingModelResults: results of the model profiling</span>
 <span class="sd">    """</span>
-    <span class="kn">from</span> <span class="nn">mltk.utils.shell_cmd</span> <span class="kn">import</span> <span class="n">run_shell_cmd</span> 
+    <span class="kn">from</span> <span class="nn">mltk.utils.shell_cmd</span> <span class="kn">import</span> <span class="n">run_shell_cmd</span>
     <span class="n">model_path</span> <span class="o">=</span> <span class="n">tflite_model</span><span class="o">.</span><span class="n">path</span>
-    <span class="n">retcode</span><span class="p">,</span> <span class="n">retval</span> <span class="o">=</span> <span class="n">run_shell_cmd</span><span class="p">([</span><span class="n">image_path</span><span class="p">,</span> <span class="s1">'--model'</span><span class="p">,</span> <span class="n">model_path</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">parse_device_model_profiler_log</span><span class="p">(</span><span class="n">log_data</span><span class="o">=</span><span class="n">retval</span><span class="p">,</span> <span class="n">tflite_model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span> <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">retval</span> <span class="o">=</span> <span class="n">run_shell_cmd</span><span class="p">([</span><span class="n">image_path</span><span class="p">,</span> <span class="s1">'--model'</span><span class="p">,</span> <span class="n">model_path</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">parse_device_model_profiler_log</span><span class="p">(</span>
+        <span class="n">log_data</span><span class="o">=</span><span class="n">retval</span><span class="p">,</span>
+        <span class="n">tflite_model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
+        <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span>
+    <span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">profile_model_in_simulator</span><span class="p">(</span>
     <span class="n">tflite_model</span><span class="p">:</span><span class="n">TfliteModel</span><span class="p">,</span>
     <span class="n">accelerator</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">runtime_buffer_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">return_estimates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProfilingModelResults</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Profile the given TfliteModel in simulator</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        tflite_model: .tflite model to profile</span>
 <span class="sd">        accelerator: Optional, name of accelerator to profile for</span>
-
+<span class="sd">        return_estimates: This will estimate additional metrics such as CPU cycles and energy. </span>
+<span class="sd">            Disabling this option can reduce profiling time</span>
+<span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        ProfilingModelResults: Results of the model profiling</span>
 <span class="sd">    """</span>
@@ -567,7 +589,7 @@
     <span class="n">profiling_results</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">profile_model</span><span class="p">(</span>
         <span class="n">tflite_model</span><span class="p">,</span>
         <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">,</span>
-        <span class="n">return_estimates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_estimates</span><span class="o">=</span><span class="n">return_estimates</span><span class="p">,</span>
         <span class="n">runtime_buffer_size</span><span class="o">=</span><span class="n">runtime_buffer_size</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span>
@@ -584,7 +606,7 @@
     <span class="n">platform</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProfilingModelResults</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Profile the given TfliteModel on a physical embedded target</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        tflite_model: TfliteModel instance</span>
 <span class="sd">        accelerator: Name of hardware accelerator</span>
@@ -622,25 +644,25 @@
         <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
         <span class="n">halt</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span>
-    
+
     <span class="c1"># We want the serial logger to always write to the file</span>
     <span class="c1"># but only to the console if verbose logging is enabled</span>
     <span class="n">serial_logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">(</span><span class="s1">'serial_logger'</span><span class="p">,</span> <span class="s1">'DEBUG'</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
     <span class="n">make_filelike</span><span class="p">(</span><span class="n">serial_logger</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="s1">'INFO'</span> <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="s1">'DEBUG'</span><span class="p">)</span>
-       
+
     <span class="c1"># Start the serial COM port reader</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">'Profiling ML model on device ...'</span><span class="p">)</span>
-    <span class="k">with</span> <span class="n">SerialReader</span><span class="p">(</span> 
+    <span class="k">with</span> <span class="n">SerialReader</span><span class="p">(</span>
         <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
-        <span class="n">baud</span><span class="o">=</span><span class="n">baud</span><span class="p">,</span> 
+        <span class="n">baud</span><span class="o">=</span><span class="n">baud</span><span class="p">,</span>
         <span class="n">outfile</span><span class="o">=</span><span class="n">serial_logger</span><span class="p">,</span>
         <span class="n">start_regex</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">'.*Starting Model Profiler'</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span> 
+            <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">'.*Starting Model Profiler'</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span>
             <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">'Loading model'</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
         <span class="p">],</span>
         <span class="n">stop_regex</span><span class="o">=</span><span class="p">[</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'.*done.*'</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)],</span>
         <span class="n">fail_regex</span><span class="o">=</span><span class="p">[</span>
-            <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'.*hardfault.*'</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span> 
+            <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'.*hardfault.*'</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span>
             <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'.*error.*'</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">),</span>
             <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'.*failed to alloc memory.*'</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
         <span class="p">]</span>
@@ -679,7 +701,7 @@
     <span class="n">runtime_memory_size</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">cpu_clock_rate</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">layer_results</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">ProfilingLayerResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-    
+
     <span class="n">cpu_clock_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'CPU clock:\s([\d\.Mk]+)Hz'</span><span class="p">)</span>
     <span class="n">runtime_memory_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Tensor runtime memory:\s([\d\.Mk]+)'</span><span class="p">)</span>
     <span class="n">layer_name_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'Op(\d+)-\S+'</span><span class="p">)</span>
@@ -765,6 +787,28 @@
     <span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">post_process_profiling_results</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">MltkModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+    <span class="n">results</span><span class="p">:</span> <span class="n">ProfilingModelResults</span><span class="p">,</span>
+    <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">):</span>
+        <span class="k">return</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">):</span>
+        <span class="n">mltk_model</span> <span class="o">=</span> <span class="n">model</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s1">'.tflite'</span><span class="p">,</span> <span class="s1">'.h5'</span><span class="p">)):</span>
+        <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mltk_model</span> <span class="o">=</span> <span class="n">load_mltk_model</span><span class="p">(</span>
+            <span class="n">model</span><span class="o">=</span><span class="n">model</span><span class="p">,</span>
+            <span class="n">test</span><span class="o">=</span><span class="n">test</span>
+        <span class="p">)</span>
+
+    <span class="n">mltk_model</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span>
+        <span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">AFTER_PROFILE</span><span class="p">,</span>
+        <span class="n">results</span><span class="o">=</span><span class="n">results</span>
+    <span class="p">)</span>
+
 <span class="k">def</span> <span class="nf">_line_to_int</span><span class="p">(</span><span class="n">line</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="n">multiplier</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="s1">'k'</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
@@ -799,24 +843,19 @@
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2022, Silicon Labs.
+              &#169; Copyright 2023, Silicon Labs.
               
           </div>
             Last updated on
-              Jan 09, 2023.
+              Mar 01, 2023.
             <br/>
             Created using
-            <a href="http://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
              and
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>
         </div>
-        <div class="survey-link" id="dlg-survey-link"> 
-    <div>We need your feedback!</div>
-    <div>
-        Please take this short <a id="survey-link">survey<i class="md-icon pulse">chevron_right</i></a>
-    </div>
-</div>
+        <button id="survey-link" class="feedback-button">Feedback</button>
       </div>
     </div>
   </footer>

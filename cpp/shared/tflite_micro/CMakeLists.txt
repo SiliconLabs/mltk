@@ -4,13 +4,13 @@ project(mltk_tflite_micro
         HOMEPAGE_URL "https://github.com/tensorflow/tflite-micro"
 )
 export(PACKAGE ${PROJECT_NAME})
-add_library(${PROJECT_NAME}) 
+add_library(${PROJECT_NAME})
 add_library(mltk::tflite_micro ALIAS ${PROJECT_NAME})
 
 include(${CMAKE_CURRENT_LIST_DIR}/tflite_micro_options.cmake)
 
 
-mltk_info("Processing Tensorflow-Lite Micro repository (this may take awhile) ...")
+mltk_info("Processing Tensorflow-Lite Micro repository (this may take awhile) ..." TAG mltk_tflite_micro)
 
 # NOTE: When updating the TFLM version, be sure to also update the Simplicity Studio files:
 # <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_tflite_micro.slcc
@@ -18,11 +18,11 @@ mltk_info("Processing Tensorflow-Lite Micro repository (this may take awhile) ..
 # <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_tflite_micro_reference_kernels.slcc
 # Also be sure to update the TFLITE_MICRO_VERSION_STR define in the mltk_tflite_micro.slcc
 # Also update the <mltk root>/README.md with the version change
-set(_tflm_cache_version "nov8_2022")
+set(_tflm_cache_version "feb1_2023")
 CPMAddPackage(
 NAME Tensorflow
   GITHUB_REPOSITORY tensorflow/tflite-micro
-  GIT_TAG 370d7bbc85f72bdb6004a8bfb7e778c271864ee2 # latest master as of November 8th, 2022
+  GIT_TAG 1caee4d5045f2744515fb8ca063bc66958e3f79b # latest master as of Feb 1st, 2023
   DOWNLOAD_ONLY ON
   CACHE_SUBDIR tflite_micro
   CACHE_VERSION ${_tflm_cache_version}
@@ -32,7 +32,7 @@ set(Tensorflow_SOURCE_DIR ${Tensorflow_SOURCE_DIR} CACHE INTERNAL "")
 set(Tensorflow_SOURCE_BASE_DIR "tensorflow/${_tflm_cache_version}")
 
 mltk_git_version(${Tensorflow_SOURCE_DIR} TFLITE_MICRO_VERSION)
-mltk_info("TFLITE_MICRO_VERSION: ${TFLITE_MICRO_VERSION}")
+mltk_info("TFLITE_MICRO_VERSION: ${TFLITE_MICRO_VERSION}" TAG mltk_tflite_micro)
 
 
 find_package(mltk_gemmlowp REQUIRED)
@@ -52,14 +52,27 @@ mltk_get(TFLITE_MICRO_ACCELERATOR)
 mltk_get(MLTK_PLATFORM_IS_EMBEDDED)
 
 if(TFLITE_MICRO_ACCELERATOR)
-    mltk_info("Using ${TFLITE_MICRO_ACCELERATOR} kernels")
-    find_package(mltk_tflite_micro_${TFLITE_MICRO_ACCELERATOR}_kernels REQUIRED)
-    set(tflm_kernels_target mltk_tflite_micro_${TFLITE_MICRO_ACCELERATOR}_kernels)
+    set(_cmsis_kernels cmsis helium)
+    if(NOT ${TFLITE_MICRO_ACCELERATOR} IN_LIST _cmsis_kernels)
+      find_package(mltk_tflite_micro_${TFLITE_MICRO_ACCELERATOR}_kernels REQUIRED)
+    endif()
+
+    if(MLTK_PLATFORM_IS_EMBEDDED)
+      mltk_info("Using ${TFLITE_MICRO_ACCELERATOR} kernels" TAG mltk_tflite_micro)
+      set(tflm_kernels_target mltk_tflite_micro_${TFLITE_MICRO_ACCELERATOR}_kernels)
+    elseif(NOT ${TFLITE_MICRO_ACCELERATOR} IN_LIST _cmsis_kernels)
+      mltk_info("Using ${TFLITE_MICRO_ACCELERATOR} kernels" TAG mltk_tflite_micro)
+      set(tflm_kernels_target mltk_tflite_micro_${TFLITE_MICRO_ACCELERATOR}_kernels)
+    else()
+      mltk_info("Using Reference kernels" TAG mltk_tflite_micro)
+      unset(TFLITE_MICRO_ACCELERATOR)
+    endif()
+
 elseif(MLTK_PLATFORM_IS_EMBEDDED)
-    mltk_info("Using CMSIS kernels")
+    mltk_info("Using CMSIS kernels" TAG mltk_tflite_micro)
     set(tflm_kernels_target mltk_tflite_micro_cmsis_kernels)
 else()
-    mltk_info("Using Reference kernels")
+    mltk_info("Using Reference kernels" TAG mltk_tflite_micro)
     set(tflm_kernels_target)
 endif()
 
@@ -75,8 +88,8 @@ include(${CMAKE_CURRENT_LIST_DIR}/mltk_tflite_micro_cmsis_kernels.cmake)
 #
 
 
-set(tflm_sources 
-tensorflow/lite/c/common.cc
+set(tflm_sources
+tensorflow/lite/core/c/common.cc
 tensorflow/lite/core/api/flatbuffer_conversions.cc
 tensorflow/lite/core/api/op_resolver.cc
 tensorflow/lite/core/api/tensor_utils.cc
@@ -84,22 +97,24 @@ tensorflow/lite/core/api/error_reporter.cc
 tensorflow/lite/schema/schema_utils.cc
 tensorflow/lite/kernels/internal/quantization_util.cc
 tensorflow/lite/kernels/internal/portable_tensor_utils.cc
-tensorflow/lite/kernels/internal/tensor_utils.cc 
+tensorflow/lite/kernels/internal/tensor_utils.cc
 tensorflow/lite/kernels/internal/reference/portable_tensor_utils.cc
-tensorflow/lite/kernels/kernel_util.cc 
+tensorflow/lite/kernels/kernel_util.cc
 tensorflow/lite/micro/arena_allocator/non_persistent_arena_buffer_allocator.cc
 tensorflow/lite/micro/arena_allocator/persistent_arena_buffer_allocator.cc
 tensorflow/lite/micro/arena_allocator/recording_single_arena_buffer_allocator.cc
 tensorflow/lite/micro/arena_allocator/single_arena_buffer_allocator.cc
-tensorflow/lite/micro/all_ops_resolver.cc 
-tensorflow/lite/micro/debug_log.cc 
+tensorflow/lite/micro/tflite_bridge/op_resolver_bridge.cc
+tensorflow/lite/micro/tflite_bridge/micro_error_reporter.cc
+tensorflow/lite/micro/tflite_bridge/flatbuffer_conversions_bridge.cc
+tensorflow/lite/micro/all_ops_resolver.cc
+tensorflow/lite/micro/debug_log.cc
 tensorflow/lite/micro/fake_micro_context.cc
 tensorflow/lite/micro/flatbuffer_utils.cc
 tensorflow/lite/micro/memory_helpers.cc
 tensorflow/lite/micro/micro_allocation_info.cc
 tensorflow/lite/micro/micro_allocator.cc
 tensorflow/lite/micro/micro_context.cc
-tensorflow/lite/micro/micro_error_reporter.cc
 #tensorflow/lite/micro/micro_graph.cc # This is overridden to enable recording and profiling
 tensorflow/lite/micro/micro_interpreter.cc
 #tensorflow/lite/micro/micro_log.cc  # This is overridden
@@ -111,7 +126,7 @@ tensorflow/lite/micro/micro_utils.cc
 tensorflow/lite/micro/mock_micro_graph.cc
 tensorflow/lite/micro/test_helpers.cc
 tensorflow/lite/micro/test_helper_custom_ops.cc
-tensorflow/lite/micro/kernels/kernel_runner.cc 
+tensorflow/lite/micro/kernels/kernel_runner.cc
 tensorflow/lite/micro/memory_planner/greedy_memory_planner.cc
 tensorflow/lite/micro/memory_planner/linear_memory_planner.cc
 tensorflow/lite/micro/kernels/kernel_util.cc
@@ -168,7 +183,7 @@ tensorflow/lite/micro/kernels/logical_common.cc
 tensorflow/lite/micro/kernels/logical.cc
 tensorflow/lite/micro/kernels/logistic_common.cc
 tensorflow/lite/micro/kernels/logistic.cc
-tensorflow/lite/micro/kernels/lstm_eval.cc
+tensorflow/lite/micro/kernels/lstm_eval_internal.cc
 tensorflow/lite/micro/kernels/maximum_minimum.cc
 tensorflow/lite/micro/kernels/mirror_pad.cc
 tensorflow/lite/micro/kernels/mul.cc
@@ -209,14 +224,14 @@ tensorflow/lite/micro/kernels/tanh.cc
 tensorflow/lite/micro/kernels/unpack.cc
 tensorflow/lite/micro/kernels/transpose_conv.cc
 tensorflow/lite/micro/kernels/transpose.cc
-tensorflow/lite/micro/kernels/unidirectional_sequence_lstm.cc
+tensorflow/lite/micro/kernels/unidirectional_sequence_lstm_internal.cc
 tensorflow/lite/micro/kernels/unpack.cc
 tensorflow/lite/micro/kernels/var_handle.cc
 tensorflow/lite/micro/kernels/while.cc
 tensorflow/lite/micro/kernels/zeros_like.cc
 )
 
-set(tflm_overidden_kernels 
+set(tflm_overidden_kernels
   kernels/concatenation.cc
   kernels/conv.cc
   kernels/depthwise_conv.cc
@@ -229,21 +244,22 @@ set(tflm_overidden_kernels
 # optimized implementations
 mltk_get(TFLITE_MICRO_EXCLUDED_REF_KERNELS)
 if(TFLITE_MICRO_EXCLUDED_REF_KERNELS)
-  mltk_info("Excluded TF-Lite Micro reference kernels: ${TFLITE_MICRO_EXCLUDED_REF_KERNELS}")
+  mltk_info("Excluded TF-Lite Micro reference kernels: ${TFLITE_MICRO_EXCLUDED_REF_KERNELS}" TAG mltk_tflite_micro)
   foreach(pat ${TFLITE_MICRO_EXCLUDED_REF_KERNELS})
     list(FILTER tflm_sources EXCLUDE REGEX ".*/${pat}\.cc")
     list(FILTER tflm_overidden_kernels EXCLUDE REGEX ".*/${pat}\.cc")
   endforeach()
 endif()
- 
+
 
 
 list(TRANSFORM tflm_sources PREPEND ${Tensorflow_SOURCE_BASE_DIR}/)
 target_sources(${PROJECT_NAME}
-PRIVATE 
+PRIVATE
     ${tflm_sources}
     ${tflm_overidden_kernels}
     micro_graph.cc
+    micro_interpreter_override.cc
     micro_log.cc
     mltk_calculate_op_metrics.cc
     mltk_tflite_micro_helper.cc
@@ -252,8 +268,8 @@ PRIVATE
 )
 
 
-target_compile_definitions(${PROJECT_NAME} 
-PUBLIC 
+target_compile_definitions(${PROJECT_NAME}
+PUBLIC
   TF_LITE_USE_GLOBAL_ROUND
   TFLITE_SINGLE_ROUNDING
   TF_LITE_STATIC_MEMORY
@@ -262,18 +278,18 @@ PRIVATE
 )
 
 if(TFLITE_MICRO_ACCELERATOR)
-  mltk_info("TFLITE_MICRO_ACCELERATOR=${TFLITE_MICRO_ACCELERATOR}")
-  target_compile_definitions(${PROJECT_NAME} 
-  PUBLIC 
+  mltk_info("TFLITE_MICRO_ACCELERATOR=${TFLITE_MICRO_ACCELERATOR}" TAG mltk_tflite_micro)
+  target_compile_definitions(${PROJECT_NAME}
+  PUBLIC
     TFLITE_MICRO_ACCELERATOR="${TFLITE_MICRO_ACCELERATOR}"
   )
 endif()
 
 mltk_get(TFLITE_MICRO_ACCELERATOR_PROFILER_ENABLED)
 if(TFLITE_MICRO_ACCELERATOR_PROFILER_ENABLED)
-  mltk_info("TFLITE_MICRO_ACCELERATOR_PROFILER_ENABLED=ON, Using accelerator profiling")
-  target_compile_definitions(${PROJECT_NAME} 
-  PUBLIC 
+  mltk_info("TFLITE_MICRO_ACCELERATOR_PROFILER_ENABLED=ON, Using accelerator profiling" TAG mltk_tflite_micro)
+  target_compile_definitions(${PROJECT_NAME}
+  PUBLIC
     TFLITE_MICRO_ACCELERATOR_PROFILER_ENABLED
   )
 endif()
@@ -281,27 +297,27 @@ endif()
 
 mltk_get(TFLITE_MICRO_PROFILER_ENABLED)
 if(TFLITE_MICRO_PROFILER_ENABLED OR TFLITE_MICRO_ACCELERATOR_PROFILER_ENABLED)
-  mltk_info("TFLITE_MICRO_PROFILER_ENABLED=ON, Enabling TFLM profiler")
-  target_compile_definitions(${PROJECT_NAME} 
-  PUBLIC 
+  mltk_info("TFLITE_MICRO_PROFILER_ENABLED=ON, Enabling TFLM profiler" TAG mltk_tflite_micro)
+  target_compile_definitions(${PROJECT_NAME}
+  PUBLIC
     TFLITE_MICRO_PROFILER_ENABLED
   )
 endif()
 
 mltk_get(TFLITE_MICRO_RECORDER_ENABLED)
 if(TFLITE_MICRO_RECORDER_ENABLED)
-  mltk_info("TFLITE_MICRO_RECORDER_ENABLED=ON, Enabling TFLM recorder")
-  target_compile_definitions(${PROJECT_NAME} 
-  PUBLIC 
+  mltk_info("TFLITE_MICRO_RECORDER_ENABLED=ON, Enabling TFLM recorder" TAG mltk_tflite_micro)
+  target_compile_definitions(${PROJECT_NAME}
+  PUBLIC
     TFLITE_MICRO_RECORDER_ENABLED
   )
 endif()
 
 mltk_get(TFLITE_MICRO_ACCELERATOR_RECORDER_ENABLED)
 if(TFLITE_MICRO_ACCELERATOR_RECORDER_ENABLED)
-  mltk_info("TFLITE_MICRO_ACCELERATOR_RECORDER_ENABLED=ON, Using accelerator instruction recorder")
-  target_compile_definitions(${PROJECT_NAME} 
-  PUBLIC 
+  mltk_info("TFLITE_MICRO_ACCELERATOR_RECORDER_ENABLED=ON, Using accelerator instruction recorder" TAG mltk_tflite_micro)
+  target_compile_definitions(${PROJECT_NAME}
+  PUBLIC
     TFLITE_MICRO_ACCELERATOR_RECORDER_ENABLED
   )
 endif()
@@ -309,58 +325,58 @@ endif()
 
 mltk_get(TFLITE_MICRO_SIMULATOR_ENABLED)
 if(TFLITE_MICRO_SIMULATOR_ENABLED)
-  mltk_info("TFLITE_MICRO_SIMULATOR_ENABLED=ON, Enabling TFLM simulator")
-  target_compile_definitions(${PROJECT_NAME} 
-  PUBLIC 
+  mltk_info("TFLITE_MICRO_SIMULATOR_ENABLED=ON, Enabling TFLM simulator" TAG mltk_tflite_micro)
+  target_compile_definitions(${PROJECT_NAME}
+  PUBLIC
     TFLITE_MICRO_SIMULATOR_ENABLED
   )
 endif()
 
 mltk_get(TFLITE_MICRO_OVERRIDE_QUANTIZED_MULTIPLIER_API)
 if(DEFINED TFLITE_MICRO_OVERRIDE_QUANTIZED_MULTIPLIER_API)
-  mltk_warn("TFLITE_MICRO_OVERRIDE_QUANTIZED_MULTIPLIER_API is deprecated as this option is now always enabled")
+  mltk_warn("TFLITE_MICRO_OVERRIDE_QUANTIZED_MULTIPLIER_API is deprecated as this option is now always enabled" TAG mltk_tflite_micro)
 endif()
 
 mltk_get(MLTK_LOG_LEVEL)
 if(DEFINED MLTK_LOG_LEVEL)
-  mltk_info("MLTK_LOG_LEVEL=${MLTK_LOG_LEVEL}")
-  target_compile_definitions(${PROJECT_NAME} 
-  PUBLIC 
+  mltk_info("MLTK_LOG_LEVEL=${MLTK_LOG_LEVEL}" TAG mltk_tflite_micro)
+  target_compile_definitions(${PROJECT_NAME}
+  PUBLIC
     MLTK_LOG_LEVEL=${MLTK_LOG_LEVEL}
   )
 endif()
 
 
-target_link_libraries(${PROJECT_NAME} 
+target_link_libraries(${PROJECT_NAME}
 PUBLIC
   mltk::platform::common
-  mltk::gemmlowp 
+  mltk::gemmlowp
   mltk::flatbuffers
   mltk::ruy
   mltk::profiling
   mltk::logging
   mltk::float16
   mltk::msgpack
-PRIVATE 
+PRIVATE
   ${tflm_kernels_target}
   mltk::cmsis_nn
   mltk::cpputils
 )
 
-target_include_directories(${PROJECT_NAME} 
-PUBLIC 
+target_include_directories(${PROJECT_NAME}
+PUBLIC
     ${Tensorflow_SOURCE_DIR}
     ${CMAKE_CURRENT_LIST_DIR}
-)	 
+)
 
-target_compile_features(${PROJECT_NAME}  
-PUBLIC 
-  cxx_constexpr 
+target_compile_features(${PROJECT_NAME}
+PUBLIC
+  cxx_constexpr
   cxx_std_11
 )
 
-target_compile_options(${PROJECT_NAME}  
-PUBLIC 
+target_compile_options(${PROJECT_NAME}
+PUBLIC
   -Wno-sign-compare
   -Wno-unused-but-set-variable
   -Wno-comment
@@ -377,7 +393,7 @@ PUBLIC
 
 mltk_load_python()
 
-# Ensure the downloaded library is patched 
+# Ensure the downloaded library is patched
 add_custom_command(OUTPUT ${Tensorflow_SOURCE_DIR}/${PROJECT_NAME}_patch_complete.txt
   DEPENDS ${Tensorflow_SOURCE_DIR}/tensorflow/lite/micro ${CMAKE_CURRENT_LIST_DIR}/patch_tensorflow.py
   COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/libpatcher.py -i ${Tensorflow_SOURCE_DIR}/tensorflow/lite -p ${CMAKE_CURRENT_LIST_DIR}/patch_tensorflow.py -o ${Tensorflow_SOURCE_DIR}/${PROJECT_NAME}_patch_complete.txt

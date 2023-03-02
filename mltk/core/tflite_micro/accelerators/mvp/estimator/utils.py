@@ -1,6 +1,7 @@
 
 import gzip
 import os
+import io
 import numpy as np
 from urllib.parse import urlparse
 import yaml
@@ -42,7 +43,7 @@ class MetricBaseEstimator(object):
 
 
     def predict(self, **kwargs):
-        X = _DataList(kwargs)  
+        X = _DataList(kwargs)
         y = self.onnx_model_backend.run(X.tonumpy())
         return float(y[0])
 
@@ -57,7 +58,7 @@ def download_estimators() -> str:
         show_progress=is_command_active()
     except:
         show_progress = False
-    
+
     with open(f'{curdir}/estimators_url.yaml', 'r') as fp:
         estimators_url_obj = yaml.load(fp, Loader=yaml.SafeLoader)
 
@@ -87,7 +88,7 @@ def load_model(name:str, accelerator:str, metric:str) -> MetricBaseEstimator:
     generated_dir = f'{curdir}/generated'
     if os.path.exists(f'{generated_dir}/__init__.py'):
         estimator_path = f'{generated_dir}/{estimator_name}'
-   
+
     else:
         # Otherwise we need to download all the estimators
         try:
@@ -101,7 +102,10 @@ def load_model(name:str, accelerator:str, metric:str) -> MetricBaseEstimator:
     try:
         if os.path.exists(estimator_path):
             with gzip.open(estimator_path, 'rb') as fp:
-                return MetricBaseEstimator(fp)
+                data = fp.read()
+
+            return MetricBaseEstimator(io.BytesIO(data))
+
     except Exception as e:
         logger.warning(f'Failed to load profiling estimator: {estimator_path}, err: {e}')
 
@@ -115,13 +119,13 @@ def activation_to_int(activation:str) -> int:
     elif activation == 'relu':
         return 1
     elif activation == 'relu_n1_to_1':
-        return 2 
+        return 2
     elif activation == 'relu6':
-        return 3 
+        return 3
     elif activation == 'tanh':
-        return 4 
+        return 4
     elif activation == 'sign_bit':
-        return 5 
+        return 5
     else:
         return -1
 
@@ -137,7 +141,7 @@ def padding_to_int(padding:str) -> int:
     elif padding == 'valid':
         return 2
     else:
-        return 0 
+        return 0
 
 def bool_to_int(value:bool) -> int:
     return 1 if value else 0
