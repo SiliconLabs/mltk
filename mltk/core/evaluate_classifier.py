@@ -21,6 +21,7 @@ from .model import (
     load_tflite_or_keras_model,
 
 )
+from .tflite_model import TfliteModel
 from .utils import get_mltk_logger
 from .summarize_model import summarize_model
 from .evaluation_results import EvaluationResults
@@ -124,13 +125,13 @@ class ClassifierEvaluationResults(EvaluationResults):
                 y_pred = np.squeeze(y_pred, -1)
 
         if len(y_pred.shape) == 1:
-           n_classes = 2
-           n_samples = len(y_pred)
-           y_pred_orig = y_pred
-           y_pred = np.zeros((n_samples, n_classes), dtype=np.float32)
-           for i, pred in enumerate(y_pred_orig):
-               class_id = 0 if pred < 0.5 else 1
-               y_pred[i][class_id] = pred
+            n_classes = 2
+            n_samples = len(y_pred)
+            y_pred_orig = y_pred
+            y_pred = np.zeros((n_samples, n_classes), dtype=np.float32)
+            for i, pred in enumerate(y_pred_orig):
+                class_id = 0 if pred < 0.5 else 1
+                y_pred[i][class_id] = pred
         else:
             n_classes = y_pred.shape[1]
 
@@ -207,19 +208,13 @@ def evaluate_classifier(
     """
 
     if not isinstance(mltk_model, TrainMixin):
-        raise Exception('MltkModel must inherit TrainMixin')
+        raise RuntimeError('MltkModel must inherit TrainMixin')
     if not isinstance(mltk_model, EvaluateClassifierMixin):
-        raise Exception('MltkModel must inherit EvaluateClassifierMixin')
+        raise RuntimeError('MltkModel must inherit EvaluateClassifierMixin')
     if not isinstance(mltk_model, DatasetMixin):
-        raise Exception('MltkModel must inherit a DatasetMixin')
+        raise RuntimeError('MltkModel must inherit a DatasetMixin')
 
-    subdir = 'eval/tflite' if tflite else 'eval/h5'
-    eval_dir = mltk_model.create_log_dir(subdir, delete_existing=True)
     logger = mltk_model.create_logger('eval', parent=get_mltk_logger())
-
-    if update_archive:
-        update_archive = mltk_model.check_archive_file_is_writable()
-    gpu.initialize(logger=logger)
 
 
     try:
@@ -233,61 +228,86 @@ def evaluate_classifier(
         prepend_exception_msg(e, 'Failed to load model evaluation dataset')
         raise
 
-
-    # Build the MLTK model's corresponding as a Keras model or .tflite
     try:
-        built_model = load_tflite_or_keras_model(
-            mltk_model,
-            model_type='tflite' if tflite else 'h5',
-            weights=weights
+        # Build the MLTK model's corresponding as a Keras model or .tflite
+        try:
+            built_model = load_tflite_or_keras_model(
+                mltk_model,
+                model_type='tflite' if tflite else 'h5',
+                weights=weights
+            )
+        except Exception as e:
+            prepend_exception_msg(e, 'Failed to build model')
+            raise
+
+        try:
+            summary = summarize_model(
+                mltk_model,
+                built_model=built_model
+            )
+            logger.info(summary)
+        except Exception as e:
+            logger.debug(f'Failed to generate model summary, err: {e}', exc_info=e)
+            logger.warning(f'Failed to generate model summary, err: {e}')
+
+        logger.info(mltk_model.summarize_dataset())
+
+        results = evaluate_classifier_with_built_model(
+            mltk_model=mltk_model,
+            built_model=built_model,
+            verbose=verbose,
+            show=show,
+            logger=logger,
+            update_archive=update_archive,
         )
-    except Exception as e:
-        prepend_exception_msg(e, 'Failed to build model')
-        raise
 
-    try:
-        summary = summarize_model(
-            mltk_model,
-            built_model=built_model
-        )
-        logger.info(summary)
-    except Exception as e:
-        logger.debug(f'Failed to generate model summary, err: {e}', exc_info=e)
-        logger.warning(f'Failed to generate model summary, err: {e}')
+    finally:
+        mltk_model.unload_dataset()
 
-    logger.info(mltk_model.summarize_dataset())
+    return results
 
-    y_pred = []
-    y_label = []
 
-    progbar =_get_progbar(mltk_model, verbose)
-    for batch_x, batch_y in _iterate_evaluation_data(mltk_model):
-        if isinstance(built_model, KerasModel):
-            pred = built_model.predict(batch_x, verbose=0)
-        else:
-            pred = built_model.predict(batch_x, y_dtype=np.float32)
+def evaluate_classifier_with_built_model(
+    mltk_model:MltkModel,
+    built_model:Union[KerasModel, TfliteModel],
+    verbose:bool=False,
+    show:bool=False,
+    logger:logging.Logger = None,
+    update_archive:bool=True,
+) -> ClassifierEvaluationResults:
+    """Evaluate a trained classification model with built model
 
-        if progbar is not None:
-            progbar.update(len(pred))
+    Args:
+        mltk_model: MltkModel instance
+        built_model: Built Keras or TfliteModel
+        verbose: Enable progress bar
+        show: Show the evaluation results diagrams
+        update_archive: Update the model archive with the eval results
+        logger: Optional python logger
 
-        y_pred.extend(pred)
-        if batch_y.shape[-1] == 1 or len(batch_y.shape) == 1:
-            y_label.extend(batch_y)
-        else:
-            y_label.extend(np.argmax(batch_y, -1))
+    Returns:
+        Dictionary containing evaluation results
+    """
 
-    if progbar is not None:
-        progbar.close()
+    if update_archive:
+        update_archive = mltk_model.check_archive_file_is_writable()
 
-    mltk_model.unload_dataset()
+    subdir = 'eval/tflite' if isinstance(built_model, TfliteModel) else 'eval/h5'
+    eval_dir = mltk_model.create_log_dir(subdir, delete_existing=True)
+    logger = logger or mltk_model.create_logger('eval', parent=get_mltk_logger())
+
+    gpu.initialize(logger=logger)
+
+    y_label, y_pred = generate_predictions(
+        mltk_model=mltk_model,
+        built_model=built_model,
+        verbose=verbose
+    )
 
     results = ClassifierEvaluationResults(
         name=mltk_model.name,
         classes=getattr(mltk_model, 'classes', None)
     )
-
-    y_pred = _list_to_numpy_array(y_pred)
-    y_label = np.asarray(y_label, dtype=np.int32)
 
     results.calculate(
         y=y_label,
@@ -320,9 +340,46 @@ def evaluate_classifier(
     if show:
         plt.show(block=True)
 
-    logger.close() # Close the eval logger
-
     return results
+
+
+def generate_predictions(
+    mltk_model: MltkModel,
+    built_model:Union[KerasModel, TfliteModel],
+    verbose:bool=None
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Generate predictions using evaluation data
+
+    Args:
+        mltk_model: MltkModel instance
+        built_model: Built/trained Keras or TfliteModel
+        verbose: Enable progress bar
+
+    Returns:
+        (y_label, y_pred) The evaluation sample labels and corresponding model predictions
+    """
+    y_pred = []
+    y_label = []
+
+    with get_progbar(mltk_model, verbose) as progbar:
+        for batch_x, batch_y in iterate_evaluation_data(mltk_model):
+            if isinstance(built_model, KerasModel):
+                pred = built_model.predict(batch_x, verbose=0)
+            else:
+                pred = built_model.predict(batch_x, y_dtype=np.float32)
+
+            progbar.update(len(pred))
+
+            y_pred.extend(pred)
+            if batch_y.shape[-1] == 1 or len(batch_y.shape) == 1:
+                y_label.extend(batch_y)
+            else:
+                y_label.extend(np.argmax(batch_y, -1))
+
+    y_pred = list_to_numpy_array(y_pred)
+    y_label = np.asarray(y_label, dtype=np.int32)
+
+    return y_label, y_pred
 
 
 def plot_results(
@@ -787,7 +844,12 @@ def _normalize_class_name(label:str) -> str:
     return label
 
 
-def _iterate_evaluation_data(mltk_model:MltkModel):
+def iterate_evaluation_data(mltk_model:MltkModel):
+    """Iterate over the given MltkModel's evaluation data
+
+    This returns a generator, which generates tuples of (batch_x, batch_y),
+    numpy arrays of the evaluation data provided by the given mltk_model instance.
+    """
     x = mltk_model.validation_data
     if x is None:
         x = mltk_model.x
@@ -816,7 +878,8 @@ def _iterate_evaluation_data(mltk_model:MltkModel):
             yield batch_x, batch_y
 
 
-def _list_to_numpy_array(python_list:List[np.ndarray], dtype=None) -> np.ndarray:
+def list_to_numpy_array(python_list:List[np.ndarray], dtype=None) -> np.ndarray:
+    """Convert the given Python list of numpy arrays to a single numpy array"""
     n_samples = len(python_list)
     if len(python_list[0].shape) > 0:
         numpy_array_shape = (n_samples,) + python_list[0].shape
@@ -850,10 +913,28 @@ def _convert_tf_tensor_to_numpy_array(x, expand_dim=None):
     return x
 
 
-def _get_progbar(mltk_model:MltkModel, verbose:bool) -> tqdm.tqdm:
-    if not verbose:
-        return None
+class ClassifierEvaluationProgressBar:
+    def __init__(self, n_samples) -> None:
+        if n_samples:
+            self.progbar = tqdm.tqdm(unit='prediction', desc='Evaluating', total=n_samples)
+        else:
+            self.progbar = None
 
+    def update(self, n):
+        if self.progbar is not None:
+            self.progbar.update(n)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args, **kwargs):
+        pass
+
+
+def get_progbar(mltk_model:MltkModel, verbose:bool) -> ClassifierEvaluationProgressBar:
+    """Return a tqdm progessbar if verbose=True
+    If verbose=False, return an empty ClassifierEvaluationProgressBar
+    """
     try:
         class_counts = getattr(mltk_model, 'class_counts', {})
         eval_class_counts = class_counts.get('evaluation', {})
@@ -870,4 +951,4 @@ def _get_progbar(mltk_model:MltkModel, verbose:bool) -> tqdm.tqdm:
     except:
         n_samples = None
 
-    return tqdm.tqdm(unit='prediction', desc='Evaluating', total=n_samples)
+    return ClassifierEvaluationProgressBar(n_samples if verbose else None)

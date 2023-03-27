@@ -8,7 +8,7 @@ from mltk.utils.path import create_tempdir
 #SPECIFIC_PLATFORM = 'brd4186'
 
 
-APP_TARGETS = [ 
+APP_TARGETS = [
     'mltk_hello_world',
     'mltk_audio_classifier',
     'mltk_image_classifier',
@@ -17,7 +17,7 @@ APP_TARGETS = [
 ]
 
 
-EMBEDDED_PLATFORMS = [ 
+EMBEDDED_PLATFORMS = [
     'brd2601',
     'brd2204',
     'brd4166',
@@ -51,7 +51,7 @@ def _add_app(target, platforms, accelerators=None):
 _add_app('mltk_hello_world', ALL_PLATFORMS)
 _add_app('mltk_model_profiler', ALL_PLATFORMS, PLATFORM_ACCELERATORS)
 _add_app('mltk_audio_classifier', [get_current_os(), 'brd2601', 'brd2204', 'brd4166'])
-_add_app('mltk_ble_audio_classifier', ['brd2601'])
+build_params.append(('mltk_ble_audio_classifier', 'brd2601', 'mvp'))
 _add_app('mltk_image_classifier', EMBEDDED_PLATFORMS)
 _add_app('mltk_fingerprint_authenticator', EMBEDDED_PLATFORMS)
 
@@ -67,7 +67,7 @@ def test_build_app(target, platform, accelerator):
     if '_ble_' in target:
         additional_variables.append('GECKO_SDK_ENABLE_BLUETOOTH=ON')
 
-    cmake.build_mltk_target( 
+    cmake.build_mltk_target(
         target=target,
         platform=platform,
         build_dir=build_dir,

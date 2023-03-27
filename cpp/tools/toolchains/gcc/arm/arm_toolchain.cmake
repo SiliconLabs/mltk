@@ -159,7 +159,7 @@ SET(MLTK_EXCLUDE_TESTS ON CACHE INTERNAL "Exclude MLTK CTest generation")
 # downloaded to the embedded device.
 #
 # target - The executabe CMake build target
-macro(mltk_toolchain_add_exe_targets target)
+function(mltk_toolchain_add_exe_targets target)
     set(_output_dir ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
     set(_output_path ${_output_dir}/${target}.elf)
     set(_output_prefix ${_output_dir}/${target})
@@ -212,7 +212,7 @@ macro(mltk_toolchain_add_exe_targets target)
         endif()
     endif()
 
-    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/post_build.cmake
+    file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${target}_post_build.cmake
 "
 execute_process(COMMAND ${CMAKE_STRIP} ${_strip_args} -o \"${_output_prefix}.stripped.elf\" \"${_output_path}\")
 execute_process(COMMAND ${CMAKE_OBJCOPY} -R .bootloader -O binary \"${_output_prefix}.stripped.elf\" \"${_output_prefix}.bin\")
@@ -226,7 +226,7 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E echo \"For more details, see: ${_out
 
     add_custom_command(TARGET ${target}
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -P post_build.cmake
+        COMMAND ${CMAKE_COMMAND} -P ${target}_post_build.cmake
         BYPRODUCTS
             "${_output_prefix}.stripped.elf"
             "${_output_prefix}.bin"
@@ -246,10 +246,5 @@ execute_process(COMMAND ${CMAKE_COMMAND} -E echo \"For more details, see: ${_out
         unset(_output_objdump_path)
     endif() # MLTK_ENABLE_OUTPUT_DISASSEMBLY
 
-
-    unset(_output_path)
-    unset(_output_prefix)
-    unset(_output_dir)
-
-endmacro()
+endfunction()
 

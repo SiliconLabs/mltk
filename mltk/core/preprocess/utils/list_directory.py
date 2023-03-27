@@ -245,6 +245,12 @@ def list_dataset_directory(
             prepend_exception_msg(e, 'Error in process_samples_function callback')
             raise
 
+    # Clamp the max sample per class if specified
+    if max_samples_per_class != -1:
+        for clazz, paths in sample_paths.items():
+            max_len = min(max_samples_per_class, len(paths))
+            sample_paths[clazz] = paths[:max_len]
+
     # If the API was provided with a "class_counts" dictionary,
     # then we want to populate the given dictionary.
     # Otherwise, just populate a dummy,local dictionary
@@ -258,12 +264,6 @@ def list_dataset_directory(
             errs.append(f'No samples found for class: {clazz}')
     if errs:
         raise RuntimeError('\n'.join(errs))
-
-
-    if max_samples_per_class != -1:
-        for clazz, paths in sample_paths.items():
-            max_len = min(max_samples_per_class, len(paths))
-            sample_paths[clazz] = paths[:max_len]
 
     sample_path_list = []
     sample_class_id_list = []

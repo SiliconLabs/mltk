@@ -178,7 +178,7 @@ class ProcessPool:
     def start(self):
         """Start the processing pool subprocesses"""
         if self.is_running:
-            raise RuntimeError('Process pool already running')
+            raise RuntimeError(f'Process pool: {self.name} already running')
 
         self._running_event.set()
 
@@ -254,13 +254,13 @@ class ProcessPool:
         See this class's docs for more info
         """
         if not self.is_running:
-            raise RuntimeError('ProcessPool not started')
+            raise RuntimeError(f'ProcessPool: {self.name} not started')
 
         batch = pool_batch or ProcessPoolBatch(self, pool_callback=pool_callback)
 
         while True:
             if not self.is_running:
-                raise RuntimeError('ProcessPool shutdown')
+                raise RuntimeError(f'ProcessPool: {self.name} shutdown')
 
             try:
                 subprocess:_Subprocess = self._ready_q.get(block=True, timeout=0.100)
@@ -273,7 +273,7 @@ class ProcessPool:
         if pool_callback is None and pool_batch is None:
             results = batch.wait()
             if not self.is_running:
-                raise RuntimeError('ProcessPool shutdown')
+                raise RuntimeError(f'ProcessPool: {self.name} shutdown')
 
             return results
 
@@ -579,7 +579,7 @@ class _Subprocess(threading.Thread):
 
 
 
-def calculate_n_jobs(n_jobs:Union[float,int]) -> int:
+def calculate_n_jobs(n_jobs:Union[float,int]=-1) -> int:
     """Calculate the number of subprocesses to use for the processing pool
 
     Args:

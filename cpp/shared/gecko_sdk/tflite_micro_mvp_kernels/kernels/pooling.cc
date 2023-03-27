@@ -385,7 +385,8 @@ TfLiteRegistration Register_MAX_POOL_2D() {
     /*profiling_string=*/nullptr,
     /*builtin_code=*/0,
     /*custom_name=*/nullptr,
-    /*version=*/0
+    /*version=*/0,
+    /*registration_external=*/nullptr
   };
 
   return max_pool_registration;
@@ -401,7 +402,8 @@ TfLiteRegistration Register_AVERAGE_POOL_2D() {
     /*profiling_string=*/nullptr,
     /*builtin_code=*/0,
     /*custom_name=*/nullptr,
-    /*version=*/0
+    /*version=*/0,
+    /*registration_external=*/nullptr
   };
 
   return avg_pool_registration;

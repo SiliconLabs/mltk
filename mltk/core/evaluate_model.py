@@ -109,8 +109,13 @@ def evaluate_model(
         post_process=post_process
     )
 
+    # If a custom function was provided,
+    # then be sure to use that instead of the default function that comes with
+    # EvaluateAutoEncoderMixin or EvaluateClassifierMixin
+    eval_custom_function = getattr(mltk_model, 'eval_custom_function', None)
 
-    if isinstance(mltk_model, EvaluateAutoEncoderMixin):
+
+    if eval_custom_function is None and isinstance(mltk_model, EvaluateAutoEncoderMixin):
         results = evaluate_autoencoder(
             mltk_model,
             tflite=tflite,
@@ -124,7 +129,7 @@ def evaluate_model(
             update_archive=update_archive
         )
 
-    elif isinstance(mltk_model, EvaluateClassifierMixin):
+    elif eval_custom_function is None and isinstance(mltk_model, EvaluateClassifierMixin):
         results = evaluate_classifier(
             mltk_model,
             tflite=tflite,
@@ -145,7 +150,8 @@ def evaluate_model(
             verbose=verbose,
             callbacks=callbacks,
             show=show,
-            update_archive=update_archive
+            update_archive=update_archive,
+            max_samples_per_class=max_samples_per_class,
         )
 
     else:
@@ -167,7 +173,8 @@ def evaluate_custom(
     callbacks:list=None,
     verbose:bool=False,
     show:bool=False,
-    update_archive:bool=True
+    update_archive:bool=True,
+    max_samples_per_class:int=-1
 ) -> EvaluationResults:
     """Evaluate a trained model based on the model's implementation
 
@@ -178,6 +185,7 @@ def evaluate_custom(
         verbose: Enable verbose log messages
         callbacks: Optional callbacks to invoke while evaluating
         update_archive: Update the model archive with the eval results
+        max_samples_per_class: Maximum number of samples per class to evaluate. This is useful for large datasets
 
     Returns:
         Dictionary containing evaluation results
@@ -185,11 +193,11 @@ def evaluate_custom(
 
 
     if not isinstance(mltk_model, TrainMixin):
-        raise Exception('MltkModel must inherit TrainMixin')
+        raise RuntimeError('MltkModel must inherit TrainMixin')
     if not isinstance(mltk_model, EvaluateMixin):
-        raise Exception('MltkModel must inherit EvaluateClassifierMixin')
+        raise RuntimeError('MltkModel must inherit EvaluateClassifierMixin')
     if not isinstance(mltk_model, DatasetMixin):
-        raise Exception('MltkModel must inherit a DatasetMixin')
+        raise RuntimeError('MltkModel must inherit a DatasetMixin')
 
     subdir = 'eval/tflite' if tflite else 'eval/h5'
     eval_dir = mltk_model.create_log_dir(subdir, delete_existing=True)
@@ -202,7 +210,8 @@ def evaluate_custom(
     try:
         mltk_model.load_dataset(
             subset='evaluation',
-            test=mltk_model.test_mode_enabled
+            test=mltk_model.test_mode_enabled,
+            max_samples_per_class=max_samples_per_class,
         )
     except Exception as e:
         prepend_exception_msg(e, 'Failed to load model evaluation dataset')
@@ -232,7 +241,7 @@ def evaluate_custom(
     logger.info(mltk_model.summarize_dataset())
 
 
-    eval_custom_function = mltk_model.eval_custom_function
+    eval_custom_function = getattr(mltk_model, 'eval_custom_function', None)
 
     try:
         if eval_custom_function is not None:
@@ -282,6 +291,17 @@ def evaluate_custom(
     with open(summary_path, 'w') as f:
         f.write(results.generate_summary())
     logger.debug(f'Generated {summary_path}')
+
+    try:
+        results.generate_plots(
+            logger=logger,
+            output_dir=eval_dir,
+            show=show
+        )
+    except NotImplementedError:
+        pass
+    except Exception as e:
+        logger.warning(f'Failed to generate evaluation plots', exc_info=e)
 
     if update_archive:
         try:

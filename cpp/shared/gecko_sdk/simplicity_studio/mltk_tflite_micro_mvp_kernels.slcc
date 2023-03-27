@@ -2,11 +2,11 @@ id: mltk_tflite_micro_mvp_kernels
 package: mltk
 label: MVP Accelerated Kernels
 description: >
-  This component includes kernel implementations that are accelerated 
+  This component includes kernel implementations that are accelerated
   using the MVP accelerator on compatible devices. By including this
   component, the MVP kernel implementations will be used instead of the
   optimized kernels.
-  
+
   The kernels which have MVP accelerated implementations are:
   pooling, fully_connected, add, conv, depthwise_conv and transpose_conv.
   Remaining kernels fall back to using optimized or reference kernel
@@ -21,6 +21,7 @@ provides:
   - name: mltk_tflite_micro_mvp_kernel_conv
   - name: mltk_tflite_micro_mvp_kernel_depthwise_conv
   - name: mltk_tflite_micro_mvp_kernel_fully_connected
+  - name: mltk_tflite_micro_mvp_kernel_mul
   - name: mltk_tflite_micro_mvp_kernel_pooling
   - name: mltk_tflite_micro_mvp_kernel_transpose_conv
 requires:
@@ -30,44 +31,92 @@ requires:
   - name: dmadrv
   - name: device_has_mvp
 config_file:
-  - path: mvp_driver/config/sl_mvp_config.h
+  - path: compute/driver/mvp/config/sl_mvp_config.h
 toolchain_settings:
   - option: fp16
     value: enabled
 root_path: shared/gecko_sdk/tflite_micro_mvp_kernels
 include:
-  - path: mvp_driver/inc
+  - path: compute/driver/mvp/inc
     file_list:
       - path: sl_mvp.h
-      - path: sl_mvp_math.h
-      - path: sl_mvp_ml_add.h
-      - path: sl_mvp_ml_conv2d.h
-      - path: sl_mvp_ml_depthwise_conv2d.h
-      - path: sl_mvp_ml_fully_connected.h
-      - path: sl_mvp_ml_pooling.h
-      - path: sl_mvp_ml_transpose_conv2d.h
       - path: sl_mvp_power.h
       - path: sl_mvp_program_area.h
       - path: sl_mvp_types.h
       - path: sl_mvp_util.h
+  - path: compute/math/inc
+    file_list:
+      - path: sl_math_matrix.h
+      - path: sl_math_types.h
+  - path: compute/math/mvp/inc
+    file_list:
+      - path: sl_math_mvp_matrix_add.h
+      - path: sl_math_mvp_matrix_mult.h
+      - path: sl_math_mvp_matrix_scale.h
+      - path: sl_math_mvp_matrix_sub.h
+      - path: sl_math_mvp_matrix_transpose.h
+      - path: sl_math_mvp_matrix_vector_mult.h
+      - path: sl_math_mvp_vector_abs.h
+      - path: sl_math_mvp_vector_add.h
+      - path: sl_math_mvp_vector_clamp.h
+      - path: sl_math_mvp_vector_clip.h
+      - path: sl_math_mvp_vector_copy.h
+      - path: sl_math_mvp_vector_dot_product.h
+      - path: sl_math_mvp_vector_fill.h
+      - path: sl_math_mvp_vector_mult.h
+      - path: sl_math_mvp_vector_negate.h
+      - path: sl_math_mvp_vector_offset.h
+      - path: sl_math_mvp_vector_scale.h
+      - path: sl_math_mvp_vector_sub.h
+      - path: sl_math_mvp.h
+  - path: compute/nn/mvp/inc
+    file_list:
+      - path: sl_mvp_ml_add.h
+      - path: sl_mvp_ml_conv2d.h
+      - path: sl_mvp_ml_depthwise_conv2d.h
+      - path: sl_mvp_ml_fully_connected.h
+      - path: sl_mvp_ml_mul.h
+      - path: sl_mvp_ml_pooling.h
+      - path: sl_mvp_ml_transpose_conv2d.h
+      - path: sl_mvp_ml.h
 source:
   - path: kernels/add.cc
   - path: kernels/conv.cc
   - path: kernels/depthwise_conv.cc
   - path: kernels/fully_connected.cc
+  - path: kernels/mul.cc
   - path: kernels/pooling.cc
   - path: kernels/transpose_conv.cc
-  - path: mvp_driver/src/sl_mvp.cc
-  - path: mvp_driver/src/sl_mvp_math.cc
-  - path: mvp_driver/src/sl_mvp_ml_add.cc
-  - path: mvp_driver/src/sl_mvp_ml_conv2d.cc
-  - path: mvp_driver/src/sl_mvp_ml_depthwise_conv2d.cc
-  - path: mvp_driver/src/sl_mvp_ml_fully_connected.cc
-  - path: mvp_driver/src/sl_mvp_ml_pooling.cc
-  - path: mvp_driver/src/sl_mvp_ml_transpose_conv2d.cc
-  - path: mvp_driver/src/sl_mvp_power.cc
-  - path: mvp_driver/src/sl_mvp_program_area.cc
-  - path: mvp_driver/src/sl_mvp_util.cc
-  - path: mvp_driver/src/sli_mvp_ml_depthwise_conv2d.cc
-  - path: mvp_driver/src/sli_mvp_ml_depthwise_conv2d_opt.cc
+  - path: compute/driver/mvp/src/sl_mvp_power.cc
+  - path: compute/driver/mvp/src/sl_mvp_program_area.cc
+  - path: compute/driver/mvp/src/sl_mvp_util.cc
+  - path: compute/driver/mvp/src/sl_mvp.cc
+  - path: compute/math/src/sl_math_matrix.cc
+  - path: compute/math/mvp/src/sl_math_mvp_matrix_add.cc
+  - path: compute/math/mvp/src/sl_math_mvp_matrix_mult.cc
+  - path: compute/math/mvp/src/sl_math_mvp_matrix_scale.cc
+  - path: compute/math/mvp/src/sl_math_mvp_matrix_sub.cc
+  - path: compute/math/mvp/src/sl_math_mvp_matrix_transpose.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_mult.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_abs.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_add.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_clamp.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_clip.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_copy.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_dot_product.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_fill.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_mult.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_negate.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_offset.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_scale.cc
+  - path: compute/math/mvp/src/sl_math_mvp_vector_sub.cc
+  - path: compute/nn/mvp/src/sl_mvp_ml_add.cc
+  - path: compute/nn/mvp/src/sl_mvp_ml_conv2d.cc
+  - path: compute/nn/mvp/src/sl_mvp_ml_depthwise_conv2d.cc
+  - path: compute/nn/mvp/src/sl_mvp_ml_fully_connected.cc
+  - path: compute/nn/mvp/src/sl_mvp_ml_mul.cc
+  - path: compute/nn/mvp/src/sl_mvp_ml_pooling.cc
+  - path: compute/nn/mvp/src/sl_mvp_ml_transpose_conv2d.cc
+  - path: compute/nn/mvp/src/sli_mvp_ml_depthwise_conv2d.cc
+  - path: compute/nn/mvp/src/sli_mvp_ml_depthwise_conv2d_opt.cc
   - path: tflite_micro_mvp_accelerator.cc

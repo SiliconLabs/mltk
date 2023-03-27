@@ -1,10 +1,14 @@
 import sys
 import os
+import sys
 import traceback
 
 stdin = open(sys.stdin.fileno(), 'rb')
 stdout = open(sys.stdout.fileno(), 'wb')
 sys.stdout = sys.stderr
+
+sys.path.append(os.getcwd())
+
 
 from mltk.utils.python import import_module_at_path
 from mltk.utils.process_pool._utils import (read_data, write_data)
@@ -37,7 +41,7 @@ def main():
         args, kwargs = read_data(stdin)
         if not args and not kwargs:
             return
-        
+
         tx_data = function_instance(*args, **kwargs)
 
         if isinstance(tx_data, (tuple,list)):

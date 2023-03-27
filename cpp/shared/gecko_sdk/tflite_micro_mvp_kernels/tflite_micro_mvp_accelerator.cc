@@ -16,7 +16,7 @@ namespace mltk
 const char* NAME = "MVP";
 
 static unsigned int dma_channel = -1;
-static const char* perfcnt_names[] = 
+static const char* perfcnt_names[] =
 {
     "run",
     "cmd",
@@ -40,13 +40,7 @@ static int current_loop_index = 0;
 /*************************************************************************************************/
 static void init_accelerator()
 {
-#ifdef __arm__
     sli_mvp_init();
-#else 
-    // NOTE: We do NOT call sli_mvp_config() for non-arm
-    // because it must be called from within the simulator
-    // As such, the sli_mvp_execute() API calls sli_mvp_config()
-#endif
 }
 
 /*************************************************************************************************/
@@ -108,15 +102,15 @@ static void stop_op_profiler(int op_idx, profiling::Profiler* profiler)
         profiler->increment_custom_stat(perfcnt_names[current_loop_index*2+1], percnt1);
 #else
         profiler->stats().accelerator_cycles = sli_mvp_perfcnt_get(0);
-#endif 
-    }  
+#endif
+    }
 
     TFLITE_MICRO_ACCELERATOR_RECORDER_END_LAYER();
 }
 
 
 
-static const TfliteMicroAccelerator accelerator = 
+static const TfliteMicroAccelerator accelerator =
 {
     /*name*/NAME,
     /*init*/init_accelerator,

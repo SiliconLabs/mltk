@@ -14,6 +14,7 @@ import inspect
 import time
 import copy
 from enum import Enum
+import warnings
 from typing import Iterable, Any, Union
 
 from mltk import MLTK_ROOT_DIR
@@ -502,3 +503,41 @@ def timeit(method):
             diff = (te - ts) * 1000
             print(f'{method.__name__} {diff:4f}ms')
     return timed
+
+
+def set_absl_log_level(level):
+    """Set the absl.logging library log level and return previous level
+
+    The absl.logging library, a google Python package, can be very verbose.
+    This sets the log level and returns the previous log level
+
+    Args:
+        level: The new log level
+
+    Returns:
+        Previous log level
+    """
+    prev_level = None
+    try:
+        import absl.logging
+        prev_level = absl.logging.get_verbosity()
+        absl.logging.set_verbosity(getattr(absl.logging, level))
+    except:
+        pass
+
+    return prev_level
+
+
+def disable_warnings(func, level='ERROR'):
+    """Function decorator hide warnings from the Python warnings library and
+    absl.logging library while the decorated function executes"""
+    def _wrapper(*args, **kwargs):
+        prev_level = set_absl_log_level(level)
+        try:
+            with warnings.catch_warnings():
+                warnings.simplefilter('ignore')
+                return func(*args, **kwargs)
+        finally:
+            set_absl_log_level(prev_level)
+
+    return _wrapper

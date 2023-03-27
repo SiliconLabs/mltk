@@ -7,7 +7,7 @@ import numpy as np
 
 from mltk.core import get_mltk_logger
 from mltk.utils.path import create_tempdir
-from mltk.utils.process_pool import (ProcessPool, calculate_n_jobs)
+from mltk.utils.process_pool import (ProcessPool, calculate_n_jobs, get_cpu_count)
 
 
 from .list_directory import list_dataset_directory

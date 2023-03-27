@@ -33,10 +33,7 @@ def main():
         if not os.path.isdir(search_dir):
             raise Exception(f'Search directory does not exist: {search_dir}')
 
-        if search_dir in (MLTK_PYTHON_DIR, MLTK_CPP_DIR):
-            search_depth=5
-        else:
-            search_depth=10
+        search_depth=10
 
         for root, _, files in walk_with_depth(search_dir, depth=search_depth):
             root = root.replace('\\', '/')
@@ -64,7 +61,7 @@ def main():
 
 
     search_paths_str = "\n".join(search_dirs)
-    print(f'Failed to find target: {args.target}, search paths:\n{search_paths_str}')
+    sys.stdout.write(f'Failed to find target: {args.target}, search paths (max depth {search_depth}):\n{search_paths_str}\n')
     sys.exit(-1)
 
 

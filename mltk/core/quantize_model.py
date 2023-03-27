@@ -7,7 +7,12 @@ import numpy as np
 import tensorflow as tf
 
 from mltk.utils import gpu
-from mltk.utils.python import DefaultDict, prepend_exception_msg, append_exception_msg
+from mltk.utils.python import (
+    DefaultDict,
+    disable_warnings,
+    prepend_exception_msg,
+    append_exception_msg
+)
 from .model import (
     MltkModel,
     MltkModelEvent,
@@ -21,6 +26,7 @@ from .summarize_model import summarize_model
 from .update_model_parameters import add_default_parameters
 
 
+@disable_warnings
 def quantize_model(
     model:Union[MltkModel, str],
     keras_model:KerasModel=None,
@@ -158,16 +164,15 @@ def quantize_model(
         retval = mltk_model.tflite_log_dir_path
 
 
-    _update_absl_log_level('ERROR')
-
     # If we should generate an unquantized/float32 .tflite model
     # NOTE: Run this IF a "representative_dataset" converter setting was provided
     float32_tflite_path = None
     if output is None and tflite_converter_settings['generate_unquantized'] and tflite_converter_settings['representative_dataset'] is not None:
         float32_tflite_path = mltk_model.unquantized_tflite_log_dir_path
         logger.info(f'Generating {float32_tflite_path}')
-        float32_converter = tf.lite.TFLiteConverter.from_keras_model(keras_model)
+
         try:
+            float32_converter = tf.lite.TFLiteConverter.from_keras_model(keras_model)
             float32_tflite_flatbuffer = float32_converter.convert()
         except Exception as e:
             logger.debug(f'Failed to generated unquantized tflite model, err: {e}', exc_info=e)
@@ -178,7 +183,7 @@ def quantize_model(
             # remove it so we don't double print everything to the console
             logger.root.handlers.clear()
 
-        _save_flatbuffer_file(
+        save_flatbuffer_file(
             mltk_model=mltk_model,
             tflite_flatbuffer=float32_tflite_flatbuffer,
             logger=logger,
@@ -188,7 +193,7 @@ def quantize_model(
 
 
     converter = tf.lite.TFLiteConverter.from_keras_model(keras_model)
-    _populate_converter_options(converter, tflite_converter_settings)
+    populate_converter_options(converter, tflite_converter_settings)
 
     try:
         mltk_model.load_dataset(subset='validation', test=mltk_model.test_mode_enabled)
@@ -199,18 +204,21 @@ def quantize_model(
     if tflite_converter_settings['representative_dataset'] == 'generate':
         converter.representative_dataset = create_representative_dataset_generator(
             mltk_model,
-            test=mltk_model.test_mode_enabled,
+            max_samples=3 if mltk_model.test_mode_enabled else 1000,
             logger=logger
         )
     else:
         converter.representative_dataset = tflite_converter_settings['representative_dataset']
 
     logger.info(f'Generating {retval}')
+    converter_dict = dict(value=converter)
     mltk_model.trigger_event(
         MltkModelEvent.BEFORE_QUANTIZE,
         converter=converter,
+        converter_dict=converter_dict,
         logger=logger
     )
+    converter = converter_dict['value']
 
     try:
         tflite_flatbuffer = converter.convert()
@@ -227,17 +235,22 @@ def quantize_model(
         # The TfLiteConverter adds a StreamHandler to the root logger,
         # remove it so we don't double print everything to the console
         logger.root.handlers.clear()
+        mltk_model.unload_dataset()
 
+    tflite_flatbuffer_dict = dict(value=tflite_flatbuffer)
     mltk_model.trigger_event(
         MltkModelEvent.AFTER_QUANTIZE,
         tflite_flatbuffer=tflite_flatbuffer,
+        tflite_flatbuffer_dict=tflite_flatbuffer_dict,
+        update_archive=update_archive,
+        keras_model=keras_model,
+        tflite_converter_settings=tflite_converter_settings,
         logger=logger
     )
+    tflite_flatbuffer = tflite_flatbuffer_dict['value']
 
-    mltk_model.unload_dataset()
-    _update_absl_log_level()
 
-    retval, tflite_model = _save_flatbuffer_file(
+    retval, tflite_model = save_flatbuffer_file(
         mltk_model=mltk_model,
         tflite_flatbuffer=tflite_flatbuffer,
         logger=logger,
@@ -263,13 +276,21 @@ def quantize_model(
     mltk_model.trigger_event(
         MltkModelEvent.QUANTIZE_SHUTDOWN,
         tflite_model=tflite_model,
-        logger=logger
+        logger=logger,
+        update_archive=update_archive,
+        keras_model=keras_model,
+        tflite_converter_settings=tflite_converter_settings
     )
 
     return retval
 
 
-def create_representative_dataset_generator(mltk_model: MltkModel, logger: logging.Logger, test:bool=False):
+def create_representative_dataset_generator(
+    mltk_model: MltkModel,
+    logger: logging.Logger,
+    test:bool=False,
+    max_samples:int=1000
+):
     """Return a data generator function
 
     See https://www.tensorflow.org/lite/performance/post_training_quantization
@@ -282,7 +303,11 @@ def create_representative_dataset_generator(mltk_model: MltkModel, logger: loggi
         validation_data = mltk_model.x
 
     def _representative_dataset_generator():
-        for i, batch in enumerate(validation_data):
+        n_samples = 0
+        for batch in validation_data:
+            if n_samples >= max_samples:
+                break
+
             batch_x, _, _ = tf.keras.utils.unpack_x_y_sample_weight(batch)
             if isinstance(batch_x, tf.Tensor):
                 if batch_x.dtype != tf.float32:
@@ -291,7 +316,9 @@ def create_representative_dataset_generator(mltk_model: MltkModel, logger: loggi
                 # The TF-Lite converter expects 1 sample batches
                 for x in batch_x:
                     yield [tf.expand_dims(x, axis=0)]
-
+                    n_samples += 1
+                    if n_samples >= max_samples:
+                        break
             else:
                 # The TF-Lite converter expects the input to be a float32 data type
                 if isinstance(batch_x, np.ndarray) and batch_x.dtype != np.float32:
@@ -309,18 +336,16 @@ def create_representative_dataset_generator(mltk_model: MltkModel, logger: loggi
                 # The TF-Lite converter expects 1 sample batches
                 for x in batch_x:
                     yield [np.expand_dims(x, axis=0)]
+                    n_samples += 1
+                    if n_samples >= max_samples:
+                        break
 
-            # 100 batches should be enough
-            # for the converter to determine the valid ranges
-            # required for quantization
-            if i > 100:
-                break
 
     return _representative_dataset_generator
 
 
 
-def _save_flatbuffer_file(
+def save_flatbuffer_file(
     mltk_model:MltkModel,
     tflite_flatbuffer:bytes,
     output:str,
@@ -362,8 +387,12 @@ def _save_flatbuffer_file(
 
 
 
-def _populate_converter_options(converter, tflite_converter_settings:dict):
-    optimizations = tflite_converter_settings['optimizations']
+def populate_converter_options(
+    converter,
+    tflite_converter_settings:dict
+):
+    converter:tf.lite.TFLiteConverter = converter
+    optimizations = tflite_converter_settings.get('optimizations', None)
     if optimizations:
         for i, opt in enumerate(optimizations):
             if isinstance(opt, str):
@@ -371,15 +400,15 @@ def _populate_converter_options(converter, tflite_converter_settings:dict):
     converter.optimizations = optimizations
 
 
-    supported_ops = tflite_converter_settings['supported_ops']
+    supported_ops = tflite_converter_settings.get('supported_ops', None)
     if supported_ops:
         for i, opt in enumerate(supported_ops):
             if isinstance(opt, str):
                 supported_ops[i] = tf.lite.OpsSet[opt]
     converter.target_spec.supported_ops = supported_ops
 
-    inference_input_type = tflite_converter_settings['inference_input_type']
-    inference_output_type = tflite_converter_settings['inference_output_type']
+    inference_input_type = tflite_converter_settings.get('inference_input_type', tf.float32)
+    inference_output_type = tflite_converter_settings.get('inference_output_type', tf.float32)
 
     converter.inference_input_type = _convert_dtype(inference_input_type)
     converter.inference_output_type = _convert_dtype(inference_output_type)
@@ -422,16 +451,3 @@ def _convert_dtype(dtype):
 
     return dtype
 
-
-def _update_absl_log_level(level=None):
-    """The ABSL package prints a bunch of warnings while doing the conversion which may be ignore"""
-    try:
-        import absl.logging
-        if level is not None:
-            globals()['absl_log_level'] = absl.logging.get_verbosity()
-            absl.logging.set_verbosity(getattr(absl.logging, level))
-
-        else:
-            absl.logging.set_verbosity(globals().get('absl_log_level', absl.logging.get_verbosity()))
-    except:
-        pass

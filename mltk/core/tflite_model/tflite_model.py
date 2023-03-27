@@ -95,8 +95,6 @@ class TfliteModel:
         self.path = path
         self._interpreter = None
         self._interpreter_batch_size = -1
-        self._input0 : TfliteTensor = None
-        self._output0 : TfliteTensor = None
         self._flatbuffer_data : bytes = flatbuffer_data
         self._model:_tflite_schema_fb.ModelT = None
         self._selected_model_subgraph_index = -1
@@ -451,7 +449,7 @@ class TfliteModel:
         output_path = output_path or self.path
 
         if not output_path:
-            raise Exception('No output path specified')
+            raise RuntimeError('No output path specified')
 
        # Re-generate the underlying flatbuffer
         self.regenerate_flatbuffer()
@@ -480,13 +478,29 @@ class TfliteModel:
 
     def predict(
         self,
-        x:Union[np.ndarray, Iterator],
+        x:Union[np.ndarray, Iterator, List[np.ndarray], Dict[int, np.ndarray]],
         y_dtype=None,
         **kwargs
     ) -> np.ndarray:
         """Invoke the TfLite interpreter with the given input sample and return the results
 
-        .. note:: This API only supports models with a single input & output
+        If the model has a single input and output, the x data can one of:
+
+        - A single sample as a numpy array
+        - Iterable list of samples
+        - Sample generator
+
+        In this case, this API will manage converting
+        the samples to the correct data type and adding the necessary batch dimension. The
+        output value will either be list of model predictions or a single prediction corresponding to the input.
+
+        If the model has multiple inputs and outputs, then the input data must be one of:
+
+        - Python list of numpy arrays. One numpy array per model input. The numpy arrays must only contain the values for one sample.
+          The input numpy arrays do NOT need to have the batch dimension. In this case, the output values will also not have the batch dimension.
+        - Dictionary of one or more numpy arrays. The dictionary key should be an integer corresponding to the model input,
+          and the value should be a numpy array. The input numpy arrays do NOT need to have the batch dimension.
+          In this case, the output values will also not have the batch dimension.
 
         Args:
             x: The input samples(s) as a numpy array or data generator.
@@ -509,23 +523,98 @@ class TfliteModel:
         """
         if self._flatbuffer_data is None:
             raise RuntimeError('Model not loaded')
-        if self.n_inputs != 1 or self.n_outputs != 1:
-            raise RuntimeError('The TfliteModel.predict() currently only supports models with 1 input and 1 output')
+
+        input0 = self.get_input_tensor(0)
+        input0_shape = input0.shape
+
+        if self.n_inputs > 1:
+            if isinstance(x, (list,tuple)):
+                if not all(isinstance(t, np.ndarray) for t in x):
+                    raise ValueError('''
+                        For multi-input models, the input data must be a list of numpy arrays
+                    ''')
+                x = {index: value for index, value in enumerate(x)}
+            elif isinstance(x, dict):
+                if not all(isinstance(k, int) and isinstance(v, np.ndarray) for k,v in x.items()):
+                    raise ValueError('''
+                        For multi-input models, the input data must be a dictionary of numpy arrays
+                        with the keys corresponding to the model input index
+                    ''')
+            else:
+                raise ValueError('''
+                    For multi-input models, the input data must be a list of numpy arrays or
+                    dictionary of numpy arrays with the keys corresponding to the model input index
+                ''')
+
+            # Set the input tensors
+            has_batch_dim = True
+            for input_index, x_i in x.items():
+                if input_index == 0:
+                    # Check if the input sample has the batch dimension
+                    if len(x_i.shape) == len(input0_shape[1:]):
+                        has_batch_dim = False
+                        self._allocate_tflite_interpreter(
+                            batch_size=1,
+                            interpreter_kwargs=kwargs.get('interpreter_kwargs', None)
+                        )
+                    else:
+                        self._allocate_tflite_interpreter(
+                            batch_size=x_i.shape[0],
+                            interpreter_kwargs=kwargs.get('interpreter_kwargs', None)
+                        )
+
+                # Add the batch_size=1 if the input sample doesn't have a batch dim
+                if not has_batch_dim:
+                    x_i = np.expand_dims(x_i, axis=0)
+
+                # If the input sample isn't the same as the model input dtype,
+                # then we need to manually convert it first
+                # NOTE: If the model input type is float32 then
+                #       quantization is done automatically inside the model
+                x_i = self.quantize_to_input_dtype(x_i, input_index=input_index)
+                self._interpreter.set_tensor(self.get_input_tensor(input_index).index, x_i)
+
+            # Execute the model
+            self._interpreter.invoke()
+
+            # Get the model results
+            y = []
+            for i, outp in enumerate(self.outputs):
+                y_i = self._interpreter.get_tensor(outp.index)
+
+                # If the input doesn't have a batch dim
+                # then remove the dim from the output
+                if not has_batch_dim:
+                    y_i = np.squeeze(y_i, axis=0)
+
+                if y_dtype == np.float32:
+                    # Convert the output data type to float32 if necessary
+                    y_i = self.dequantize_output_to_float32(y_i, output_index=i)
+
+                y.append(y_i)
+
+            return y
+
 
         # This expects either
         # [n_samples, input_shape...]
         # OR
         # [input_shape ...]
         if isinstance(x, np.ndarray):
-            input_shape = self.inputs[0].shape
             is_single_sample = False
-            if len(x.shape) == len(input_shape[1:]):
+            if len(x.shape) == len(input0_shape[1:]):
                 is_single_sample = True
                 # Add the batch dimension if we were only given a single sample
                 x = np.expand_dims(x, axis=0)
-                self._allocate_tflite_interpreter(batch_size=1)
+                self._allocate_tflite_interpreter(
+                    batch_size=1,
+                    interpreter_kwargs=kwargs.get('interpreter_kwargs', None)
+                )
             else:
-                self._allocate_tflite_interpreter(batch_size=x.shape[0])
+                self._allocate_tflite_interpreter(
+                    batch_size=x.shape[0],
+                    interpreter_kwargs=kwargs.get('interpreter_kwargs', None)
+                )
 
             # If the input sample isn't the same as the model input dtype,
             # then we need to manually convert it first
@@ -536,16 +625,16 @@ class TfliteModel:
             # If the last dimension of the model's input shape is 1,
             # and the input data is missing this dimension
             # then automatically expand the dimension
-            if len(self._input0.shape) != len(x.shape) and self._input0.shape[-1] == 1:
+            if len(input0_shape) != len(x.shape) and input0_shape[-1] == 1:
                 x = np.expand_dims(x, axis=-1)
 
             # Then set model input tensor
-            self._interpreter.set_tensor(self._input0.index, x)
+            self._interpreter.set_tensor(input0.index, x)
             # Execute the model
             self._interpreter.invoke()
 
             # Get the model results
-            y = self._interpreter.get_tensor(self._output0.index)
+            y = self._interpreter.get_tensor(self.get_output_tensor(0).index)
 
             # Convert the output data type to float32 if necessary
             # NOTE: If the model output type is float32 then
@@ -576,16 +665,16 @@ class TfliteModel:
                 # If the last dimension of the model's input shape is 1,
                 # and the batch data is missing this dimension
                 # then automatically expand the dimension
-                if len(self._input0.shape) != len(batch_x.shape) and self._input0.shape[-1] == 1:
+                if len(input0_shape) != len(batch_x.shape) and input0_shape[-1] == 1:
                     batch_x = np.expand_dims(batch_x, axis=-1)
 
                 # The set model input tensor
-                self._interpreter.set_tensor(self._input0.index, batch_x)
+                self._interpreter.set_tensor(input0.index, batch_x)
                 # Execute the model
                 self._interpreter.invoke()
 
                 # Get the model results
-                batch_y = self._interpreter.get_tensor(self._output0.index)
+                batch_y = self._interpreter.get_tensor(self.get_output_tensor(0).index)
 
                 if y_dtype == np.float32:
                     # Convert the output data type to float32 if necessary
@@ -604,7 +693,7 @@ class TfliteModel:
                     pass
 
             if len(batch_results) == 0:
-                raise Exception('No batch samples where generated by the data given data generator')
+                raise RuntimeError('No batch samples where generated by the data given data generator')
 
             batch_size = batch_results[0].shape[0]
             output_shape = batch_results[0].shape[1:]
@@ -624,47 +713,59 @@ class TfliteModel:
             return y
 
 
-    def quantize_to_input_dtype(self, x):
+    def quantize_to_input_dtype(self, x:np.ndarray, input_index=0):
         """Quantize the input sample(s) to the model's input dtype (if necessary)"""
 
-        if x.dtype == self._input0.dtype:
+        input_tensor = self.get_input_tensor(input_index)
+
+        if x.dtype == input_tensor.dtype:
             return x
 
         if x.dtype != np.float32:
-            raise Exception('The sample input must be float32 or the same dtype as the model input')
+            raise RuntimeError('The sample input must be float32 or the same dtype as the model input')
 
         # Convert from float32 to the model input data type
-        x = (x / self._input0.quantization.scale[0]) + self._input0.quantization.zeropoint[0]
-        return x.astype(self._input0.dtype)
+        x = (x / input_tensor.quantization.scale[0]) + input_tensor.quantization.zeropoint[0]
+        return x.astype(input_tensor.dtype)
 
 
-    def dequantize_output_to_float32(self, y):
+    def dequantize_output_to_float32(self, y:np.ndarray, output_index=0):
         """De-quantize the model output to float32 (if necessary)"""
         if y.dtype == np.float32:
             return y
 
+        output_tensor = self.get_output_tensor(output_index)
+
         y = y.astype(np.float32)
-        return (y - self._output0.quantization.zeropoint[0]) * self._output0.quantization.scale[0]
+        return (y - output_tensor.quantization.zeropoint[0]) * output_tensor.quantization.scale[0]
 
 
 
-    def _allocate_tflite_interpreter(self, batch_size=1):
+    def _allocate_tflite_interpreter(self, batch_size=1, interpreter_kwargs=None):
         if self._interpreter is None or self._interpreter_batch_size != batch_size:
             try:
                 import tensorflow as tf
             except ModuleNotFoundError as e:
                 raise ModuleNotFoundError(f'You must first install the "tensorflow" Python package to run inference, err: {e}') # pylint: disable=raise-missing-from
 
+            interpreter_kwargs = interpreter_kwargs or {}
             self._interpreter_batch_size = batch_size
-            self._interpreter = tf.lite.Interpreter(model_path=self._path)
-            self._input0 = self.get_input_tensor(0)
-            self._output0 = self.get_output_tensor(0)
+            self._interpreter = tf.lite.Interpreter(
+                model_path=self._path,
+                **interpreter_kwargs
+            )
 
-            new_input_shape = (batch_size, *self._input0.shape[1:])
-            new_output_shape = (batch_size, *self._output0.shape[1:])
+            input_indices = []
+            for inp in self.inputs:
+                input_indices.append(inp.index)
+                new_input_shape = (batch_size, *inp.shape[1:])
+                self._interpreter.resize_tensor_input(inp.index, new_input_shape)
 
-            self._interpreter.resize_tensor_input(self._input0.index , new_input_shape)
-            self._interpreter.resize_tensor_input(self._output0.index, new_output_shape)
+            for outp in self.outputs:
+                if outp.index in input_indices:
+                    continue
+                new_output_shape = (batch_size, *outp.shape[1:])
+                self._interpreter.resize_tensor_input(outp.index, new_output_shape)
 
             self._interpreter.allocate_tensors()
 

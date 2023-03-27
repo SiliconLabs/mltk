@@ -52,7 +52,7 @@ def test_load_tflite_model():
 
 def test_load_tflite_model_mvp():
     tflm_model = TfliteMicro.load_tflite_model(
-        IMAGE_EXAMPLE1_TFLITE_PATH, 
+        IMAGE_EXAMPLE1_TFLITE_PATH,
         accelerator='mvp'
     )
     assert isinstance(tflm_model, TfliteMicroModel)
@@ -74,6 +74,7 @@ def test_profile_model_return_estimates():
     assert results.macs > 0
     assert results.cpu_cycles > 0
     assert results.energy > 0
+    assert results.time > 0
 
 def test_profile_model_mvp():
     results = TfliteMicro.profile_model(IMAGE_EXAMPLE1_TFLITE_PATH, accelerator='mvp', return_estimates=True)

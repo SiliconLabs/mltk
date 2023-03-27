@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>python &#8212; MLTK 0.15.0 documentation</title>
+    <title>python &#8212; MLTK 0.16.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.15.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.16.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.15.0 documentation logo">
+                   alt="MLTK 0.16.0 documentation logo">
           
         </a>
       </div>
@@ -200,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.16.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.16.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -516,6 +516,10 @@
         <li class="md-nav__item"><a href="#mltk.utils.python.find_object_value_with_key_or_value" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">find_object_value_with_key_or_value()</span></code></a>
         </li>
         <li class="md-nav__item"><a href="#mltk.utils.python.timeit" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">timeit()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#mltk.utils.python.set_absl_log_level" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">set_absl_log_level()</span></code></a>
+        </li>
+        <li class="md-nav__item"><a href="#mltk.utils.python.disable_warnings" class="md-nav__link"><code class="docutils literal notranslate"><span class="pre">disable_warnings()</span></code></a>
         </li></ul>
             </nav>
         </li>
@@ -573,50 +577,56 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.debugger_is_active" title="mltk.utils.python.debugger_is_active"><code class="xref py py-obj docutils literal notranslate"><span class="pre">debugger_is_active</span></code></a>()</p></td>
 <td><p>Return if the debugger is currently active</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.find_object_key_with_value" title="mltk.utils.python.find_object_key_with_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_object_key_with_value</span></code></a>(obj, needle[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.disable_warnings" title="mltk.utils.python.disable_warnings"><code class="xref py py-obj docutils literal notranslate"><span class="pre">disable_warnings</span></code></a>(func[, level])</p></td>
+<td><p>Function decorator hide warnings from the Python warnings library and absl.logging library while the decorated function executes</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.find_object_key_with_value" title="mltk.utils.python.find_object_key_with_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_object_key_with_value</span></code></a>(obj, needle[, ...])</p></td>
 <td><p>Given an  class or class instance, search the attribute values of the object for the given "needle" and return its corresponding key.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.find_object_value_with_key" title="mltk.utils.python.find_object_value_with_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_object_value_with_key</span></code></a>(obj, needle[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.find_object_value_with_key" title="mltk.utils.python.find_object_value_with_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_object_value_with_key</span></code></a>(obj, needle[, ...])</p></td>
 <td><p>Given a class or class instance, search the attribute keys of the object for the given "needle" and return its corresponding value.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.find_object_value_with_key_or_value" title="mltk.utils.python.find_object_value_with_key_or_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_object_value_with_key_or_value</span></code></a>(obj, needle)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.find_object_value_with_key_or_value" title="mltk.utils.python.find_object_value_with_key_or_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_object_value_with_key_or_value</span></code></a>(obj, needle)</p></td>
 <td><p>Given a class or class instance, search the attribute keys and values of the object for the given "needle" and return its corresponding value.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.flatten_list" title="mltk.utils.python.flatten_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flatten_list</span></code></a>(l)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.flatten_list" title="mltk.utils.python.flatten_list"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flatten_list</span></code></a>(l)</p></td>
 <td><p>Flatten the given iterable object to a list</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.forward_method_kwargs" title="mltk.utils.python.forward_method_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">forward_method_kwargs</span></code></a>(**kwargs)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.forward_method_kwargs" title="mltk.utils.python.forward_method_kwargs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">forward_method_kwargs</span></code></a>(**kwargs)</p></td>
 <td><p>Return all the keyword-arguments of a method, excluding the 'self' argument</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.get_case_insensitive" title="mltk.utils.python.get_case_insensitive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_case_insensitive</span></code></a>(value, l)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.get_case_insensitive" title="mltk.utils.python.get_case_insensitive"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_case_insensitive</span></code></a>(value, l)</p></td>
 <td><p>Get the given string with case-insensitive comparsion</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.import_module_at_path" title="mltk.utils.python.import_module_at_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_module_at_path</span></code></a>(path[, reload])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.import_module_at_path" title="mltk.utils.python.import_module_at_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">import_module_at_path</span></code></a>(path[, reload])</p></td>
 <td><p>Import the Python module at the given path and return the imported module</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.install_pip_package" title="mltk.utils.python.install_pip_package"><code class="xref py py-obj docutils literal notranslate"><span class="pre">install_pip_package</span></code></a>(package[, module_name, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.install_pip_package" title="mltk.utils.python.install_pip_package"><code class="xref py py-obj docutils literal notranslate"><span class="pre">install_pip_package</span></code></a>(package[, module_name, ...])</p></td>
 <td><p>Install the given pip package is necessary</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.is_false" title="mltk.utils.python.is_false"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_false</span></code></a>(arg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.is_false" title="mltk.utils.python.is_false"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_false</span></code></a>(arg)</p></td>
 <td><p>Return if the given argument is a False value</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.is_true" title="mltk.utils.python.is_true"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_true</span></code></a>(arg)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.is_true" title="mltk.utils.python.is_true"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_true</span></code></a>(arg)</p></td>
 <td><p>Return if the given argument is a True value</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.list_rindex" title="mltk.utils.python.list_rindex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_rindex</span></code></a>(lst, value)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.list_rindex" title="mltk.utils.python.list_rindex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list_rindex</span></code></a>(lst, value)</p></td>
 <td><p>Reverse find element index that is given value</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.load_json_safe" title="mltk.utils.python.load_json_safe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_json_safe</span></code></a>(path, *args, **kwargs)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.load_json_safe" title="mltk.utils.python.load_json_safe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_json_safe</span></code></a>(path, *args, **kwargs)</p></td>
 <td><p>Load a JSON file and ignoring any single-line, multi-line comments and trailing commas</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.merge_dict" title="mltk.utils.python.merge_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_dict</span></code></a>(destination, source[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.merge_dict" title="mltk.utils.python.merge_dict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">merge_dict</span></code></a>(destination, source[, ...])</p></td>
 <td><p>Merge the source dictionary into the destination and return the destination</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.notebook_is_active" title="mltk.utils.python.notebook_is_active"><code class="xref py py-obj docutils literal notranslate"><span class="pre">notebook_is_active</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.notebook_is_active" title="mltk.utils.python.notebook_is_active"><code class="xref py py-obj docutils literal notranslate"><span class="pre">notebook_is_active</span></code></a>()</p></td>
 <td><p>Return if script is executing in a IPython notebook (e.g.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.prepend_exception_msg" title="mltk.utils.python.prepend_exception_msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepend_exception_msg</span></code></a>(e, msg)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.prepend_exception_msg" title="mltk.utils.python.prepend_exception_msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prepend_exception_msg</span></code></a>(e, msg)</p></td>
 <td><p>Prepend a message to the given exception</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#mltk.utils.python.set_absl_log_level" title="mltk.utils.python.set_absl_log_level"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_absl_log_level</span></code></a>(level)</p></td>
+<td><p>Set the absl.logging library log level and return previous level</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mltk.utils.python.timeit" title="mltk.utils.python.timeit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timeit</span></code></a>(method)</p></td>
 <td><p>Decorator to measure time it takes for method or function to execute</p></td>
@@ -967,6 +977,27 @@ attribute keys and values of the object for the given “needle” and return it
 <span class="sig-name descname"><span class="pre">timeit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/utils/python.html#timeit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.utils.python.timeit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decorator to measure time it takes for method or function to execute</p>
 </dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="mltk.utils.python.set_absl_log_level">
+<span class="sig-name descname"><span class="pre">set_absl_log_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/utils/python.html#set_absl_log_level"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.utils.python.set_absl_log_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the absl.logging library log level and return previous level</p>
+<p>The absl.logging library, a google Python package, can be very verbose.
+This sets the log level and returns the previous log level</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>level</strong> – The new log level</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Previous log level</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py function">
+<dt class="sig sig-object py" id="mltk.utils.python.disable_warnings">
+<span class="sig-name descname"><span class="pre">disable_warnings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ERROR'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../../_modules/mltk/utils/python.html#disable_warnings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#mltk.utils.python.disable_warnings" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function decorator hide warnings from the Python warnings library and
+absl.logging library while the decorated function executes</p>
+</dd></dl>
 </section>
 
 
@@ -1017,7 +1048,7 @@ attribute keys and values of the object for the given “needle” and return it
               
           </div>
             Last updated on
-              Mar 01, 2023.
+              Mar 27, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

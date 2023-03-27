@@ -1,5 +1,6 @@
 from typing import List, Dict
 import io
+import sys
 import struct
 
 try:
@@ -13,13 +14,13 @@ MAX_LENGTH = ((1 << 28) - 1)
 
 
 def write_data(
-    pipe:io.FileIO, 
-    args:List[object], 
+    pipe:io.FileIO,
+    args:List[object],
     kwargs:Dict[str,object],
 ):
     tx_buf = io.BytesIO()
 
-    data = dict( 
+    data = dict(
         args=args,
         kwargs=kwargs,
     )
@@ -30,7 +31,7 @@ def write_data(
     tx_len = len(tx_bytes)
     if tx_len > MAX_LENGTH:
         raise OverflowError(f'TX length ({tx_len}) > max length ({MAX_LENGTH})')
-    
+
 
     tx_length_bytes = struct.pack('<L', tx_len)
 
@@ -47,13 +48,16 @@ def read_data(pipe:io.FileIO) -> dict:
     rx_length = struct.unpack('<L', rx_length_bytes)[0]
     if rx_length > MAX_LENGTH:
         raise OverflowError(f'RX length ({rx_length}) > max length ({MAX_LENGTH})')
-    
+
     rx_bytes = pipe.read(rx_length)
     if not rx_bytes:
         return [], {}
 
     rx_buf = io.BytesIO(rx_bytes)
-    rx_data = pickle.load(rx_buf)
+    try:
+        rx_data = pickle.load(rx_buf)
+    except Exception as e:
+        raise RuntimeError(f'Failed to unpick object, err: {e}\n' + "sys.path=\n" + '\n'.join(sys.path))
     args = rx_data['args']
     kwargs = rx_data['kwargs']
 

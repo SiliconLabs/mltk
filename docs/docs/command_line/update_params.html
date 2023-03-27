@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>update_params &#8212; MLTK 0.15.0 documentation</title>
+    <title>update_params &#8212; MLTK 0.16.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../index.html" title="MLTK 0.15.0 documentation"
+        <a href="../../index.html" title="MLTK 0.16.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../_static/logo.png"
-                   alt="MLTK 0.15.0 documentation logo">
+                   alt="MLTK 0.16.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
+    <a href="../../index.html" title="MLTK 0.16.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../index.html"
-       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.16.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -464,57 +464,84 @@
 </section>
 <section id="usage">
 <h2 id="usage">Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>                                                                                                                                                                                                                                                                                               
- Usage: mltk update_params [OPTIONS] &lt;model&gt;                                                                                                                                                                                                                                                   
-                                                                                                                                                                                                                                                                                               
- Update the parameters of a previously trained model                                                                                                                                                                                                                                           
- This updates the metadata of a previously trained .tflite model.                                                                                                                                                                                                                              
- The parameters are taken from either the given MltkModel's python script                                                                                                                                                                                                                      
- or the given "params" .json/.yaml file. Additional int/float/str parameters can also be                                                                                                                                                                                                       
- given on the command line (see examples below).                                                                                                                                                                                                                                               
-                                                                                                                                                                                                                                                                                               
- NOTE: The .tflite metadata is only modified.                                                                                                                                                                                                                                                  
- The weights and model structure of the .tflite file are NOT modified.                                                                                                                                                                                                                         
-                                                                                                                                                                                                                                                                                               
- For more details see:                                                                                                                                                                                                                                                                         
- https://siliconlabs.github.io/mltk/docs/guides/model_parameters                                                                                                                                                                                                                               
-                                                                                                                                                                                                                                                                                               
- ----------                                                                                                                                                                                                                                                                                    
-  Examples                                                                                                                                                                                                                                                                                     
- ----------                                                                                                                                                                                                                                                                                    
-                                                                                                                                                                                                                                                                                               
- # Update the tflite_micro_speech model parameters with any modifications                                                                                                                                                                                                                      
- # made in mltk/models/tflite_micro/tflite_micro_speech.py                                                                                                                                                                                                                                     
- # The associated model archive is updated with the updated .tflite                                                                                                                                                                                                                            
- mltk update_params tflite_micro_speech                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                               
- # Update my_model.tflite with parameters in my_params.json                                                                                                                                                                                                                                    
- # Also update the model description                                                                                                                                                                                                                                                           
- mltk update_params my_model.tflite --params my_params.json --description "My model is great!"                                                                                                                                                                                                 
-                                                                                                                                                                                                                                                                                               
- # Update my_model.tflite with additional params on the command-line                                                                                                                                                                                                                           
- mltk update_params my_model.tflite my_custom_param="some value" led_period_ms=43                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                                               
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>                                                                               
+ Usage: mltk update_params [OPTIONS] &lt;model&gt;                                   
+                                                                               
+ Update the parameters of a previously trained model                           
+ This updates the metadata of a previously trained .tflite model.              
+ The parameters are taken from either the given MltkModel's python script      
+ or the given "params" .json/.yaml file. Additional int/float/str parameters   
+ can also be                                                                   
+ given on the command line (see examples below).                               
+                                                                               
+ NOTE: The .tflite metadata is only modified.                                  
+ The weights and model structure of the .tflite file are NOT modified.         
+                                                                               
+ For more details see:                                                         
+ https://siliconlabs.github.io/mltk/docs/guides/model_parameters               
+                                                                               
+ ----------                                                                    
+  Examples                                                                     
+ ----------                                                                    
+                                                                               
+ # Update the tflite_micro_speech model parameters with any modifications      
+ # made in mltk/models/tflite_micro/tflite_micro_speech.py                     
+ # The associated model archive is updated with the updated .tflite            
+ mltk update_params tflite_micro_speech                                        
+                                                                               
+ # Update my_model.tflite with parameters in my_params.json                    
+ # Also update the model description                                           
+ mltk update_params my_model.tflite --params my_params.json --description "My  
+ model is great!"                                                              
+                                                                               
+ # Update my_model.tflite with additional params on the command-line           
+ mltk update_params my_model.tflite my_custom_param="some value"               
+ led_period_ms=43                                                              
+                                                                               
  Arguments 
- *    model      &lt;model&gt;  One of the following:                         [default: None] [required]                                                                                                                                                                                           
-                          - Name of trained MLTK model                                                                                                                                                                                                                                       
-                          - Path to trained model's archive (.mltk.zip)                                                                                                                                                                                                                      
-                          - Path to .tflite model file                                                                                                                                                                                                                                       
+ *    model      &lt;model&gt;  One of the following:                              
+                          - Name of trained MLTK model                       
+                          - Path to trained model's archive (.mltk.zip)      
+                          - Path to .tflite model file                       
+                          [default: None]                                    
+                          [required]                                         
 
  Options 
- --params       -p      &lt;params path&gt;  Optional path to .json or .yaml file contains parameters to add to given model [default: None]                                                                                                                                                        
- --description  -d      &lt;description&gt;  Optional description to add to the generated .tflite [default: None]                                                                                                                                                                                  
- --verbose      -v                     Enable verbose console logs                                                                                                                                                                                                                           
- --output       -o      &lt;path&gt;         One of the following:                                                                                                 [default: None]                                                                                                                 
-                                       - Path to generated output .tflite file                                                                                                                                                                                                               
-                                       - Directory where output .tflite is generated                                                                                                                                                                                                         
-                                       - If omitted, .tflite is generated in the MLTK model's log directory and the model archive is updated (if applicable)                                                                                                                                 
- --accelerator  -a      &lt;accelerator&gt;  Optional accelerator to use when calculating the "runtime_memory_size" model parameter. If omitted then use the CMSIS kernels [default: None]                                                                                                         
- --device       -d                     If provided, program the updated .tflite to end of the flash memory of the the connected device.                                                                                                                                                      
-                                       Supported apps (e.g. model_profiler, audio_classifier, etc) will use this .tflite instead of the default model.                                                                                                                                       
-                                       This allows for making changes to the model without re-building the firmware application.                                                                                                                                                             
-                                       If this option is provided, then the device must be locally connected                                                                                                                                                                                 
- --help                                Show this message and exit.                                                                                                                                                                                                                           
+ --params       -p      &lt;params path&gt;  Optional path to .json or .yaml file  
+                                       contains parameters to add to given   
+                                       model                                 
+                                       [default: None]                       
+ --description  -d      &lt;description&gt;  Optional description to add to the    
+                                       generated .tflite                     
+                                       [default: None]                       
+ --verbose      -v                     Enable verbose console logs           
+ --output       -o      &lt;path&gt;         One of the following:                 
+                                       - Path to generated output .tflite    
+                                       file                                  
+                                       - Directory where output .tflite is   
+                                       generated                             
+                                       - If omitted, .tflite is generated in 
+                                       the MLTK model's log directory and    
+                                       the model archive is updated (if      
+                                       applicable)                           
+                                       [default: None]                       
+ --accelerator  -a      &lt;accelerator&gt;  Optional accelerator to use when      
+                                       calculating the "runtime_memory_size" 
+                                       model parameter. If omitted then use  
+                                       the CMSIS kernels                     
+                                       [default: None]                       
+ --device       -d                     If provided, program the updated      
+                                       .tflite to end of the flash memory of 
+                                       the the connected device.             
+                                       Supported apps (e.g. model_profiler,  
+                                       audio_classifier, etc) will use this  
+                                       .tflite instead of the default model. 
+                                       This allows for making changes to the 
+                                       model without re-building the         
+                                       firmware application.                 
+                                       If this option is provided, then the  
+                                       device must be locally connected      
+ --help                                Show this message and exit.           
 </pre></div>
 </div>
 </section>
@@ -568,7 +595,7 @@
               
           </div>
             Last updated on
-              Mar 01, 2023.
+              Mar 27, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

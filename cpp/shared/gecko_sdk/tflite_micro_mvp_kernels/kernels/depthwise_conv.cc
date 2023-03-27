@@ -461,7 +461,9 @@ TfLiteRegistration Register_DEPTHWISE_CONV_2D() {
           /*profiling_string=*/nullptr,
           /*builtin_code=*/0,
           /*custom_name=*/nullptr,
-          /*version=*/0};
+          /*version=*/0,
+          /*registration_external=*/nullptr
+  };
 }
 
 }  // namespace tflite

@@ -1,4 +1,7 @@
+__NOTE:__ Refer to the [online documentation](https://siliconlabs.github.io/mltk) to properly view this file
 # Frequently Asked Questions
+
+The following is a list of frequently asked questions:
 
 ```{eval-rst}
 .. toctree::
@@ -13,3 +16,5 @@
    ./linux_why_is_gpu_not_working
    ./windows_tensorflow_dll_error
 ```
+
+Alternatively, questions may be asked [here](https://github.com/SiliconLabs/mltk/issues).

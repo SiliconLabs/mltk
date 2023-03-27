@@ -292,7 +292,8 @@ def load_tflite_model(
     print_not_found_err:bool=False,
     return_tflite_path:bool=False,
     test:bool=False,
-    logger: logging.Logger=None
+    logger: logging.Logger=None,
+    archive_file_ext:str=None
 ) -> Union[TfliteModel,str]:
     """Return the path to a .tflite model file or a TfliteModel instance
 
@@ -309,6 +310,8 @@ def load_tflite_model(
         return_tflite_path: If true, return the file path to the .tflite, otherwise return a TfliteModel instance
         test: If a "test" model is provided
         logger: Optional logger
+        archive_file_ext: The extension of the .tflite model file in the mltk archive, e.g. .streaming.tflite
+            This is only used if the "model" argument is the path to a .mltk.zip, the path to a .py MLTK model specification, or the name of an MLTK model
 
     Return:
         The corresponding TfliteModel if return_tflite_path=False or the path to the .tflite if return_tflite_path=True
@@ -377,11 +380,16 @@ def load_tflite_model(
 
         if model.endswith('.mltk.zip'):
             model_name = os.path.basename(model[:-len('.mltk.zip')])
-            if model_name.endswith('-test'):
+            if archive_file_ext:
+                if not archive_file_ext.startswith('.'):
+                    archive_file_ext = '.' + archive_file_ext
+                tflite_name = f'{model_name}{archive_file_ext}'
+            elif model_name.endswith('-test'):
                 model_name = model_name[:-len('-test')]
                 tflite_name = f'{model_name}.test.tflite'
             else:
                  tflite_name = f'{model_name}.tflite'
+
             tflite_path = extract_file(model, tflite_name)
             if return_tflite_path:
                 return tflite_path

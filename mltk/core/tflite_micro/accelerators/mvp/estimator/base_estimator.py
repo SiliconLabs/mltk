@@ -63,7 +63,7 @@ class BaseEstimator(abc.ABC):
                 cpu_cycles=layer.cpu_cycles,
             )
 
-        layer._time = self.predict_time(
+        layer['time'] = self.predict_time(
             accelerator_cycles=layer.accelerator_cycles,
             cpu_cycles=layer.cpu_cycles,
             cpu_clock_rate=cpu_clock_rate

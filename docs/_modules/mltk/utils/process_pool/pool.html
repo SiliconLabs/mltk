@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.utils.process_pool.pool &#8212; MLTK 0.15.0 documentation</title>
+    <title>mltk.utils.process_pool.pool &#8212; MLTK 0.16.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.15.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.16.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.15.0 documentation logo">
+                   alt="MLTK 0.16.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.16.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.16.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -606,7 +606,7 @@
 <div class="viewcode-block" id="ProcessPool.start"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Start the processing pool subprocesses"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Process pool already running'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Process pool: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> already running'</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_running_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
@@ -682,13 +682,13 @@
 <span class="sd">        See this class's docs for more info</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'ProcessPool not started'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ProcessPool: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> not started'</span><span class="p">)</span>
 
         <span class="n">batch</span> <span class="o">=</span> <span class="n">pool_batch</span> <span class="ow">or</span> <span class="n">ProcessPoolBatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool_callback</span><span class="o">=</span><span class="n">pool_callback</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'ProcessPool shutdown'</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ProcessPool: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> shutdown'</span><span class="p">)</span>
 
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">subprocess</span><span class="p">:</span><span class="n">_Subprocess</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ready_q</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mf">0.100</span><span class="p">)</span>
@@ -701,7 +701,7 @@
         <span class="k">if</span> <span class="n">pool_callback</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">pool_batch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">results</span> <span class="o">=</span> <span class="n">batch</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'ProcessPool shutdown'</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'ProcessPool: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> shutdown'</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">results</span>
 
@@ -1007,7 +1007,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">calculate_n_jobs</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">calculate_n_jobs</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Calculate the number of subprocesses to use for the processing pool</span>
 
 <span class="sd">    Args:</span>
@@ -1055,7 +1055,7 @@
               
           </div>
             Last updated on
-              Mar 01, 2023.
+              Mar 27, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

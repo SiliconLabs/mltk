@@ -821,9 +821,9 @@ macro(mltk_find_package name)
     )
     if(result)
       if(_ARGS_REQUIRED)
-        mltk_error("Failed to find package in MLTK with target: ${name} Search paths: ${CMAKE_MODULE_PATH}")
+        mltk_error("${target_and_dir}")
       elseif(NOT _ARGS_QUIET)
-        mltk_warn("Failed to find package in MLTK with target: ${name} Search paths: ${CMAKE_MODULE_PATH}")
+        mltk_warn("${target_and_dir}")
       endif()
     else()
       list(GET target_and_dir 0 target)
@@ -864,7 +864,7 @@ endmacro()
 # See cpp/hello_world/CMakieLists.txt
 #
 # exe_target - Executable CMake target
-macro(mltk_add_exe_targets exe_target)
+function(mltk_add_exe_targets exe_target)
   if(COMMAND mltk_toolchain_add_exe_targets)
     mltk_toolchain_add_exe_targets(${exe_target})
   endif()
@@ -872,7 +872,7 @@ macro(mltk_add_exe_targets exe_target)
   if(COMMAND mltk_platform_add_exe_targets)
     mltk_platform_add_exe_targets(${exe_target})
   endif()
-endmacro()
+endfunction()
 
 
 ####################################################################

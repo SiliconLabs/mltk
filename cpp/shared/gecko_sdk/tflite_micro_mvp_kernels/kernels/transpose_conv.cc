@@ -143,7 +143,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
   int dummy_height, dummy_width;
   const auto padding = ComputePaddingHeightWidth(
                          params->stride_height, params->stride_width,
-                         1, 1,
+                         1, 1, //dilation_rate_height and dilation_rate_width
                          data->op_params.input_height, data->op_params.input_width,
                          data->op_params.filter_height, data->op_params.filter_width,
                          params->padding,
@@ -366,7 +366,9 @@ TfLiteRegistration Register_TRANSPOSE_CONV() {
           /*profiling_string=*/nullptr,
           /*builtin_code=*/0,
           /*custom_name=*/nullptr,
-          /*version=*/0};
+          /*version=*/0,
+          /*registration_external=*/nullptr
+  };
 }
 
 }  // namespace tflite

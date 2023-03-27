@@ -6,9 +6,6 @@
 #include <cstring>
 
 
-#define uint32_t unsigned long
-
-
 
 namespace uart_stream 
 {

@@ -42,10 +42,7 @@ PRIVATE
     microsecond_timer.c
     sl_system_init.c
 )
-target_compile_options(platform_linux_clib_override
-PUBLIC
-    -I $(CMAKE_CURRENT_LIST_DIR)
-)
+
 target_compile_definitions(platform_linux_clib_override
 PRIVATE
     MLTK_CPU_CLOCK=${MLTK_CPU_CLOCK}
@@ -68,10 +65,9 @@ PUBLIC
     mltk::gecko_sdk::emulation
 )
 
-target_include_directories(${PROJECT_NAME}
-INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-)
+# This ensures ./assert.h (which supports stack tracing)
+# is accessible to all files in the build
+mltk_append_global_cxx_flags("-I${CMAKE_CURRENT_SOURCE_DIR}")
 
 target_link_libraries(${PROJECT_NAME}
 INTERFACE

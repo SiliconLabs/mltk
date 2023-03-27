@@ -367,8 +367,7 @@ def model(flags):
 
   input_audio = tf.keras.layers.Input(
       shape=modes.get_input_data_shape(flags, modes.Modes.TRAINING),
-      #batch_size=flags.batch_size
-    )
+      batch_size=flags.batch_size)
   net = input_audio
 
   if flags.preprocess == 'raw':

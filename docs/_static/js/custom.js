@@ -1,7 +1,15 @@
 
 window.SURVEY_URL = 'https://www.surveymonkey.com/r/8KCP7P5';
-window.SHOW_SURVEY_AFTER_SECONDS = 3*60; // Show the survey after 3min of activity
-window.IGNORED_SURVEY_TIMEOUT = 30*24*60*60; // Reshow the survey after 1 month if it was previously ignored
+
+const MINUTE = 60;
+const DAY = 24*60*60;
+
+window.SHOW_SURVEY_AFTER_SECONDS = 10*MINUTE; // Show the survey after 10min of activity
+window.INITIAL_IGNORED_SURVEY_TIMEOUT = 15*DAY; // Reshow the survey after 15 days the first time it was ignored
+window.ADDITIONAL_IGNORED_SURVEY_TIMEOUT = 25*DAY; // Reshow the survey after 25 days each additional time the survey is ignored
+window.RESHOW_SURVEY_TIMEOUT = 35*DAY; // Reshow the survey every 35 days after it was successfully completed
+
+
 window.dataLayer = window.dataLayer || [];
 window.loadingSurvey = false;
 window.showingSurvey = false;
@@ -97,7 +105,7 @@ function checkIfAcceptedCookies() {
             $('.privacy-banner').hide()
             onAcceptedCookies();
         });
-        
+
     } else {
         onAcceptedCookies();
     }
@@ -120,12 +128,42 @@ function initializeSurvey() {
 
     let now = Date.now() / 1000;
 
-    if(localStorage.ignoredSurveyTimestamp && (now - parseFloat(localStorage.ignoredSurveyTimestamp)) > window.IGNORED_SURVEY_TIMEOUT) {
-        console.log('Reshowing survey since last time it was ignored');
-        window.tookSurvey = false;
-        localStorage.removeItem('surveyUrl');
-        localStorage.removeItem('ignoredSurveyTimestamp');
-        localStorage.activeSeconds = window.SHOW_SURVEY_AFTER_SECONDS;
+    if(localStorage.ignoredSurveyTimestamp) {
+        let timeSinceIgnored = (now - parseFloat(localStorage.ignoredSurveyTimestamp));
+        let ignoredSurveyCounter = localStorage.ignoredSurveyCounter || 1;
+        let ignoredSurveyTimeout = (ignoredSurveyCounter == 1) ? window.INITIAL_IGNORED_SURVEY_TIMEOUT : window.ADDITIONAL_IGNORED_SURVEY_TIMEOUT;
+
+        if(timeSinceIgnored >= ignoredSurveyTimeout) {
+            if(ignoredSurveyCounter == 1) {
+                console.log('Reshowing survey since it was initially ignored');
+            } else {
+                console.log('Reshowing survey since it was ignored again');
+            }
+
+            window.tookSurvey = false;
+            localStorage.removeItem('surveyUrl');
+            localStorage.removeItem('ignoredSurveyTimestamp');
+            localStorage.removeItem('surveyCompletedTimestamp');
+            localStorage.activeSeconds = window.SHOW_SURVEY_AFTER_SECONDS;
+        }
+    }
+
+    // If the survey was previously successfully completed
+    // then ensure the cache variable exists
+    if(window.tookSurvey && !localStorage.ignoredSurveyTimestamp && !localStorage.surveyCompletedTimestamp) {
+        localStorage.surveyCompletedTimestamp = now;
+    }
+
+    if(localStorage.surveyCompletedTimestamp) {
+        let timeSinceCompletedSurvey = (now - parseFloat(localStorage.surveyCompletedTimestamp));
+        if(timeSinceCompletedSurvey >= window.RESHOW_SURVEY_TIMEOUT) {
+            console.log('Reshowing survey again after it was previously completed');
+            window.tookSurvey = false;
+            localStorage.removeItem('surveyUrl');
+            localStorage.removeItem('ignoredSurveyTimestamp');
+            localStorage.removeItem('surveyCompletedTimestamp');
+            localStorage.activeSeconds = window.SHOW_SURVEY_AFTER_SECONDS;
+        }
     }
 
     if(!window.tookSurvey) {
@@ -133,7 +171,7 @@ function initializeSurvey() {
         // then reset the activity counter
         if(localStorage.surveyUrl && localStorage.surveyUrl !== window.SURVEY_URL) {
             localStorage.activeSeconds = 0;
-        } 
+        }
         // Otherwise, if no counter has been previously set
         // then set one now
         else if(!localStorage.activeSeconds) {
@@ -158,6 +196,8 @@ function showSurvey() {
             // This is invoked when the survey is completed
             if(window.showingSurvey) {
                 localStorage.removeItem('ignoredSurveyTimestamp');
+                localStorage.removeItem('ignoredSurveyCounter');
+                localStorage.surveyCompletedTimestamp = Date.now() / 1000;
                 $('#survey-link').css('display', 'none');
                 closeSurvey();
             } else {
@@ -169,8 +209,10 @@ function showSurvey() {
 
         // This is invoked when the survey is ignored by clicking the exit button
         $("#dlg-survey-close").on("click", function() {
-            localStorage.ignoredSurveyTimestamp = Date.now() / 1000;
             closeSurvey();
+            localStorage.removeItem('surveyCompletedTimestamp');
+            localStorage.ignoredSurveyTimestamp = Date.now() / 1000;
+            localStorage.ignoredSurveyCounter = localStorage.ignoredSurveyCounter ? (parseInt(localStorage.ignoredSurveyCounter) + 1) : 1;
         });
     }
 }
@@ -188,8 +230,8 @@ function closeSurvey() {
 function updateSurveyActivity() {
     let now = Date.now() / 1000;
     let elapsed = now - parseFloat(localStorage.lastActivityTimestamp);
-    
-    if(!elapsed || elapsed < 1) { 
+
+    if(!elapsed || elapsed < 1) {
         return
     }
     localStorage.lastActivityTimestamp = now;
@@ -216,7 +258,7 @@ function addScrollToTopButton() {
             $('.go-top').css({'bottom' : difference});
         }else{
             $('.go-top').css({'bottom' : 0});
-        };   
+        };
 
         if ($(this).scrollTop() > 200) {
             $('.go-top').fadeIn(200);

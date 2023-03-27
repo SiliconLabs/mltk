@@ -9,6 +9,7 @@
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/fully_connected.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
+
 #include "sl_mvp_ml_fully_connected.h"
 
 namespace tflite {
@@ -152,7 +153,7 @@ TfLiteStatus EvalQuantizedInt8_MVP(TfLiteContext* context, TfLiteNode* node,
   sli_mvp_ml_fully_connected_s8_params_t *params = const_cast<sli_mvp_ml_fully_connected_s8_params_t*>(&data.op_params);
   params->input  = tflite::micro::GetTensorData<int8_t>(input);
   params->output = tflite::micro::GetTensorData<int8_t>(output);
-  
+
   sl_status_t result = sli_mvp_ml_fully_connected_s8(params);
   if (result == SL_STATUS_OK) {
     return kTfLiteOk;
@@ -355,7 +356,9 @@ TfLiteRegistration Register_FULLY_CONNECTED() {
           /*profiling_string*/nullptr,
           /*builtin_code*/0,
           /*custom_name*/nullptr,
-          /*version*/0};
+          /*version=*/0,
+          /*registration_external=*/nullptr
+  };
 }
 
 #ifdef __arm__
@@ -367,7 +370,9 @@ TfLiteRegistration Register_FULLY_CONNECTED_INT8() {
           /*profiling_string*/nullptr,
           /*builtin_code*/0,
           /*custom_name*/nullptr,
-          /*version*/0};
+          /*version=*/0,
+          /*registration_external=*/nullptr
+  };
 }
 #endif
 

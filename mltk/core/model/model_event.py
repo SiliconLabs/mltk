@@ -11,20 +11,20 @@ class MltkModelEvent(str, enum.Enum):
 
 
     BEFORE_MODEL_LOAD = enum.auto()
-    """Invoked **before** the :py:class:`~MltkModel` is fully loaded. 
+    """Invoked **before** the :py:class:`~MltkModel` is fully loaded.
 
     This event does not have any additional keyword arguments.
     """
 
     AFTER_MODEL_LOAD = enum.auto()
-    """Invoked **after** the :py:class:`~MltkModel` is fully loaded. 
+    """Invoked **after** the :py:class:`~MltkModel` is fully loaded.
 
     This event does not have any additional keyword arguments.
     """
 
     BEFORE_LOAD_DATASET = enum.auto()
     """Invoked at the beginning of :py:class:`~DatasetMixin.load_dataset`
-    
+
     This has the additional keyword arguments:
 
     - **subset** - One of training, validation or evaluation
@@ -33,7 +33,7 @@ class MltkModelEvent(str, enum.Enum):
 
     AFTER_LOAD_DATASET = enum.auto()
     """Invoked at the end of :py:class:`~DatasetMixin.load_dataset`
-    
+
     This has the additional keyword arguments:
 
     - **subset** - One of training, validation or evaluation
@@ -54,7 +54,7 @@ class MltkModelEvent(str, enum.Enum):
 
     SUMMARIZE_DATASET = enum.auto()
     """Invoked at the end of :py:class:`~DatasetMixin.summarize_dataset`
-    
+
     This has the additional keyword arguments:
 
     - **summary** - The generated summary as a string, the summary cannot be modified in the event handler
@@ -63,7 +63,7 @@ class MltkModelEvent(str, enum.Enum):
 
     SUMMARIZE_MODEL = enum.auto()
     """Invoked at the end of :py:class:`~summarize_model`
-    
+
     This has the additional keyword arguments:
 
     - **summary** - The generated summary as a string, the summary cannot be modified in the event handler
@@ -72,7 +72,7 @@ class MltkModelEvent(str, enum.Enum):
 
     TRAIN_STARTUP = enum.auto()
     """Invoked at the beginning of :py:class:`~train_model`
-    
+
     This has the additional keyword arguments:
 
     - **post_process** - True if post-processing is enabled
@@ -80,13 +80,13 @@ class MltkModelEvent(str, enum.Enum):
 
     BEFORE_BUILD_TRAIN_MODEL = enum.auto()
     """Invoked before :py:class:`~TrainMixin.build_model_function` is called
-    
+
     This event does not have any additional keyword arguments.
     """
 
     AFTER_BUILD_TRAIN_MODEL = enum.auto()
     """Invoked after :py:class:`~TrainMixin.build_model_function` is called
-    
+
     This has the additional keyword arguments:
 
     - **keras_model** - The built Keras model
@@ -94,7 +94,7 @@ class MltkModelEvent(str, enum.Enum):
 
     POPULATE_TRAIN_CALLBACKS = enum.auto()
     """Invoked during :py:class:`~train_model` before Keras training starts.
-    
+
     This has the additional keyword arguments:
 
     - **keras_callbacks** - A list of Keras Callbacks that will be passed to `KerasModel.fit() <https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit>`_
@@ -102,7 +102,7 @@ class MltkModelEvent(str, enum.Enum):
 
     BEFORE_TRAIN = enum.auto()
     """Invoked during :py:class:`~train_model` before Keras training
-    
+
     This has the additional keyword arguments:
 
     - **fit_kwargs** - Keyword args passed to `KerasModel.fit() <https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit>`_
@@ -110,7 +110,7 @@ class MltkModelEvent(str, enum.Enum):
 
     AFTER_TRAIN = enum.auto()
     """Invoked during :py:class:`~train_model` after Keras training
-    
+
     This has the additional keyword arguments:
 
     - **training_history** - The value returned by `KerasModel.fit() <https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit>`_
@@ -118,7 +118,7 @@ class MltkModelEvent(str, enum.Enum):
 
     BEFORE_SAVE_TRAIN_MODEL = enum.auto()
     """Invoked during :py:class:`~train_model` before the trained model is saved
-    
+
     This has the additional keyword arguments:
 
     - **keras_model** - The trained Keras model, this cannot be modified by the event handler
@@ -127,7 +127,7 @@ class MltkModelEvent(str, enum.Enum):
 
     AFTER_SAVE_TRAIN_MODEL = enum.auto()
     """Invoked during :py:class:`~train_model` after the trained model is saved
-    
+
     This has the additional keyword arguments:
 
     - **keras_model** - The trained Keras model, this cannot be modified by the event handler
@@ -136,7 +136,7 @@ class MltkModelEvent(str, enum.Enum):
 
     BEFORE_SAVE_TRAIN_RESULTS = enum.auto()
     """Invoked during :py:class:`~train_model` before the training results are saved
-    
+
     This has the additional keyword arguments:
 
     - **keras_model** - The trained Keras model, this cannot be modified by the event handler
@@ -146,7 +146,7 @@ class MltkModelEvent(str, enum.Enum):
 
     AFTER_SAVE_TRAIN_RESULTS = enum.auto()
     """Invoked during :py:class:`~train_model` after the training results are saved
-    
+
     This has the additional keyword arguments:
 
     - **keras_model** - The trained Keras model, this cannot be modified by the event handler
@@ -156,7 +156,7 @@ class MltkModelEvent(str, enum.Enum):
 
     BEFORE_SAVE_TRAIN_ARCHIVE = enum.auto()
     """Invoked during :py:class:`~train_model` before the model archive is saved
-    
+
     This has the additional keyword arguments:
 
     - **archive_path** - Path where archive will be saved
@@ -164,7 +164,7 @@ class MltkModelEvent(str, enum.Enum):
 
     AFTER_SAVE_TRAIN_ARCHIVE = enum.auto()
     """Invoked during :py:class:`~train_model` after the model archive is saved
-    
+
     This has the additional keyword arguments:
 
     - **archive_path** - Path where archive was saved
@@ -172,7 +172,7 @@ class MltkModelEvent(str, enum.Enum):
 
     TRAIN_SHUTDOWN = enum.auto()
     """Invoked at the end of :py:class:`~train_model`
-    
+
     This has the additional keyword arguments:
 
     - **results** - The model :py:class:`~TrainingResults`
@@ -180,43 +180,50 @@ class MltkModelEvent(str, enum.Enum):
 
     QUANTIZE_STARTUP = enum.auto()
     """Invoked at the beginning of :py:class:`~quantize_model`
-    
+
     This has the additional keyword arguments:
 
     - **build** - True if the model is being built for profiling
     - **keras_model** - The provided Keras model, if one was given
-    - **tflite_converter_settings** - Dictionary of settings that will be given to `TfliteConverter <https://www.tensorflow.org/lite/convert>`_ 
+    - **tflite_converter_settings** - Dictionary of settings that will be given to `TfliteConverter <https://www.tensorflow.org/lite/convert>`_
     - **post_process** - True if post-processing is enabled
     """
 
     BEFORE_QUANTIZE = enum.auto()
     """Invoked during :py:class:`~quantize_model` before the ` <https://www.tensorflow.org/lite/convert>`_ is invoked
-    
+
     This has the additional keyword arguments:
 
-    - **archive_path** - Path where archive was saved
     - **converter** - The `TfliteConverter <https://www.tensorflow.org/lite/convert>`_ used to quantize the model
+    - **converter_dict** - The `TfliteConverter <https://www.tensorflow.org/lite/convert>`_ as ``converter_dict=dict(value=converter)``, update ``converter_dict['value']`` to return a new converter by the event handler
     """
 
     AFTER_QUANTIZE = enum.auto()
     """Invoked during :py:class:`~quantize_model` after the TfliteConverter is invoked
-    
+
     This has the additional keyword arguments:
 
     - **tflite_flatbuffer** - The tflite flatbuffer binary array
+    - **tflite_flatbuffer_dict** - The ``tflite_flatbuffer`` as ``tflite_flatbuffer_dict=dict(value=tflite_flatbuffer)``, update ``tflite_flatbuffer_dict['value']`` to return a new tflite_flatbuffer by the event handler
+    - **update_archive** - True if the model archive was updated with the quantized model
+    - **keras_model** - The provided Keras model, if one was given
+    - **tflite_converter_settings** - Dictionary of settings that will be given to `TfliteConverter <https://www.tensorflow.org/lite/convert>`_
     """
 
     QUANTIZE_SHUTDOWN = enum.auto()
     """Invoked at the end of :py:class:`~quantize_model`
-    
+
     This has the additional keyword arguments:
 
     - **tflite_model** - The quantized :py:class:`~TfliteModel` instance
+    - **update_archive** - True if the model archive was updated with the quantized model
+    - **keras_model** - The provided Keras model, if one was given
+    - **tflite_converter_settings** - Dictionary of settings that will be given to `TfliteConverter <https://www.tensorflow.org/lite/convert>`_
     """
 
     EVALUATE_STARTUP = enum.auto()
     """Invoked at the beginning of :py:class:`~evaluate_model`
-    
+
     This has the additional keyword arguments:
 
     - **tflite** - True if should evaluate `.tflite` model, else evaluating Keras model
@@ -226,7 +233,7 @@ class MltkModelEvent(str, enum.Enum):
 
     EVALUATE_SHUTDOWN = enum.auto()
     """Invoked at the end of :py:class:`~evaluate_model`
-    
+
     This has the additional keyword arguments:
 
     - **results** - The generated :py:class:`~EvaluationResults`
@@ -234,7 +241,7 @@ class MltkModelEvent(str, enum.Enum):
 
     GENERATE_EVALUATE_PLOT = enum.auto()
     """Invoked when generating a plot during :py:class:`~evaluate_model`
-    
+
     This has the additional keyword arguments:
 
     - **tflite** - True if evaluating `.tflite` model, else evaluating Keras model

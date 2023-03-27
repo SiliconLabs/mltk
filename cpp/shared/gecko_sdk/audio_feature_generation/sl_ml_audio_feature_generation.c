@@ -39,8 +39,8 @@
  *********************************   DEFINES   *********************************
  ******************************************************************************/
 #define AUDIO_BUFFER_SIZE           (SL_ML_AUDIO_FEATURE_GENERATION_AUDIO_BUFFER_SIZE)
-#define FEATURE_BUFFER_SLICE_COUNT  (1 + ((SL_ML_FRONTEND_SAMPLE_LENGTH_MS - SL_ML_FRONTEND_WINDOW_SIZE_MS) / SL_ML_FRONTEND_WINDOW_STEP_MS)) 
-#define FEATURE_BUFFER_SIZE         (SL_ML_FRONTEND_FILTERBANK_N_CHANNELS * FEATURE_BUFFER_SLICE_COUNT)                    
+#define FEATURE_BUFFER_SLICE_COUNT  (1 + ((SL_ML_FRONTEND_SAMPLE_LENGTH_MS - SL_ML_FRONTEND_WINDOW_SIZE_MS) / SL_ML_FRONTEND_WINDOW_STEP_MS))
+#define FEATURE_BUFFER_SIZE         (SL_ML_FRONTEND_FILTERBANK_N_CHANNELS * FEATURE_BUFFER_SLICE_COUNT)
 
 
 #define max(a,b) \
@@ -67,7 +67,8 @@ static uint16_t* feature_buffer;
 // Buffer indices
 static volatile size_t audio_buffer_read_index;
 static volatile size_t audio_buffer_write_index;
-static volatile size_t feature_buffer_start;
+static volatile size_t feature_buffer_read_index;
+static volatile size_t feature_buffer_write_index;
 
 // Counter to maintain number of new and available slices
 static size_t num_unfetched_slices = 0;
@@ -119,7 +120,8 @@ sl_status_t sl_ml_audio_feature_generation_frontend_init()
   // Set ring-buffer indices
   audio_buffer_read_index = 0;
   audio_buffer_write_index = 0;
-  feature_buffer_start = 0;
+  feature_buffer_read_index = 0;
+  feature_buffer_write_index = 0;
 
   struct FrontendConfig config;
 
@@ -226,9 +228,9 @@ sl_status_t sl_ml_audio_feature_generation_update_features()
   {
     return SL_STATUS_EMPTY;
   }
- 
-  int new_data_length = (audio_buffer_read_index < audio_buffer_write_index) ? 
-    (audio_buffer_write_index - audio_buffer_read_index) : 
+
+  int new_data_length = (audio_buffer_read_index < audio_buffer_write_index) ?
+    (audio_buffer_write_index - audio_buffer_read_index) :
     ((AUDIO_BUFFER_SIZE - audio_buffer_read_index) + audio_buffer_write_index);
 
   if(new_data_length > 0)
@@ -262,7 +264,6 @@ sl_status_t sl_ml_audio_feature_generation_update_features()
   }
 
   num_unfetched_slices += num_slices_updated;
-
   dump_raw_spectrogram(feature_buffer, FEATURE_BUFFER_SIZE);
 
 
@@ -278,13 +279,15 @@ sl_status_t sl_ml_audio_feature_generation_get_features_raw(uint16_t *buffer, si
   if (num_elements != FEATURE_BUFFER_SIZE) {
     return SL_STATUS_INVALID_PARAMETER;
   }
-
+  int read_index = feature_buffer_read_index;
   for (int i = 0; i < FEATURE_BUFFER_SIZE; i++) {
-    const uint32_t capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
-    buffer[i] = feature_buffer[capture_index];
+    buffer[i] = feature_buffer[read_index];
+    read_index = (read_index + 1) % FEATURE_BUFFER_SIZE;
   }
 
+  feature_buffer_read_index = read_index;
   num_unfetched_slices = 0;
+
   return SL_STATUS_OK;
 }
 
@@ -297,12 +300,15 @@ sl_status_t sl_ml_audio_feature_generation_get_features_raw_float32(float *buffe
     return SL_STATUS_INVALID_PARAMETER;
   }
 
+  int read_index = feature_buffer_read_index;
   for (int i = 0; i < FEATURE_BUFFER_SIZE; i++) {
-    const uint32_t capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
-    buffer[i] = (float)feature_buffer[capture_index];
+    buffer[i] = (float)feature_buffer[read_index];
+    read_index = (read_index + 1) % FEATURE_BUFFER_SIZE;
   }
 
+  feature_buffer_read_index = read_index;
   num_unfetched_slices = 0;
+
   return SL_STATUS_OK;
 }
 
@@ -314,9 +320,9 @@ sl_status_t sl_ml_audio_feature_generation_get_features_raw_float32(float *buffe
  *    @ref range_min and @ref range_max set the valid range of which values are
  *    quantized from.
  ******************************************************************************/
-sl_status_t sli_ml_audio_feature_generation_get_features_quantized(int8_t *buffer, 
-                                                                   size_t num_elements, 
-                                                                   uint16_t range_min, 
+sl_status_t sli_ml_audio_feature_generation_get_features_quantized(int8_t *buffer,
+                                                                   size_t num_elements,
+                                                                   uint16_t range_min,
                                                                    uint16_t range_max)
 {
   if (num_elements != FEATURE_BUFFER_SIZE) {
@@ -327,12 +333,13 @@ sl_status_t sli_ml_audio_feature_generation_get_features_quantized(int8_t *buffe
     return SL_STATUS_INVALID_PARAMETER;
   }
 
+  int read_index = feature_buffer_read_index;
   for (int i = 0; i < FEATURE_BUFFER_SIZE; i++) {
-    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
-    const int32_t value_scale = 256; 
+    const int32_t value_scale = 256;
     const int32_t value_div = range_max - range_min;
-    int32_t value = (((feature_buffer[capture_index] - range_min) * value_scale) + (value_div / 2))
+    int32_t value = (((feature_buffer[read_index] - range_min) * value_scale) + (value_div / 2))
                     / value_div;
+    read_index = (read_index + 1) % FEATURE_BUFFER_SIZE;
     value -= 128;
     if (value < -128) {
       value = -128;
@@ -343,7 +350,9 @@ sl_status_t sli_ml_audio_feature_generation_get_features_quantized(int8_t *buffe
     buffer[i] = (int8_t)value;
   }
 
+  feature_buffer_read_index = read_index;
   num_unfetched_slices = 0;
+
   return SL_STATUS_OK;
 }
 
@@ -363,26 +372,28 @@ sl_status_t sli_ml_audio_feature_generation_get_features_dynamically_quantized(i
   if (num_elements != FEATURE_BUFFER_SIZE) {
     return SL_STATUS_INVALID_PARAMETER;
   }
-
   if (dynamic_range == 0) {
     return SL_STATUS_INVALID_PARAMETER;
   }
 
+  int read_index = feature_buffer_read_index;
+
   // Find the maximum value in the uint16 spectrogram
   int32_t maxval = 0;
   for (int i = 0; i < FEATURE_BUFFER_SIZE; i++) {
-    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
-    const int32_t value = (int32_t)feature_buffer[capture_index];
+    const int32_t value = (int32_t)feature_buffer[read_index];
+    read_index = (read_index + 1) % FEATURE_BUFFER_SIZE;
     maxval = max(value, maxval);
   }
 
+  read_index = feature_buffer_read_index;
   const int32_t minval = max(maxval - dynamic_range, 0);
   const int32_t val_range = max(maxval - minval, 1);
 
   // Scaling the uint16 spectrogram between -128 and +127 using the given range
   for (int i = 0; i < FEATURE_BUFFER_SIZE; i++) {
-    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
-    int32_t value = (int32_t)feature_buffer[capture_index];
+    int32_t value = (int32_t)feature_buffer[read_index];
+    read_index = (read_index + 1) % FEATURE_BUFFER_SIZE;
     value -= minval;
     value *= 255;
     value /= val_range;
@@ -391,7 +402,9 @@ sl_status_t sli_ml_audio_feature_generation_get_features_dynamically_quantized(i
     buffer[i] = (int8_t)value;
   }
 
+  feature_buffer_read_index = read_index;
   num_unfetched_slices = 0;
+
   return SL_STATUS_OK;
 }
 
@@ -408,12 +421,16 @@ sl_status_t sl_ml_audio_feature_generation_get_features_scaled(float *buffer, si
     return SL_STATUS_INVALID_PARAMETER;
   }
 
+  int read_index = feature_buffer_read_index;
   for (int i = 0; i < FEATURE_BUFFER_SIZE; i++) {
-    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
-    const float value = (float)feature_buffer[capture_index];
+    const float value = (float)feature_buffer[read_index];
+    read_index = (read_index + 1) % FEATURE_BUFFER_SIZE;
     buffer[i] = value * scaler;
   }
+
+  feature_buffer_read_index = read_index;
   num_unfetched_slices = 0;
+
   return SL_STATUS_OK;
 }
 
@@ -429,12 +446,13 @@ sl_status_t sl_ml_audio_feature_generation_get_features_mean_std_normalized(floa
   float mean = 0.0f;
   float count = 0.0f;
   float m2 = 0.0f;
+  int read_index = feature_buffer_read_index;
 
   // Calculate the STD and mean
   for(int i = FEATURE_BUFFER_SIZE; i > 0; --i)
   {
-    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
-    const float value = (float)feature_buffer[capture_index];
+    const float value = (float)feature_buffer[read_index];
+    read_index = (read_index + 1) % FEATURE_BUFFER_SIZE;
 
     count += 1;
 
@@ -444,6 +462,7 @@ sl_status_t sl_ml_audio_feature_generation_get_features_mean_std_normalized(floa
     m2 += delta * delta2;
   }
 
+  read_index = feature_buffer_read_index;
   const float variance = m2 / count;
   const float std = sqrtf(variance);
   const float std_recip = 1.0f / std; // multiplication is faster than division
@@ -452,14 +471,16 @@ sl_status_t sl_ml_audio_feature_generation_get_features_mean_std_normalized(floa
   float* dst = buffer;
   for(int i = FEATURE_BUFFER_SIZE; i > 0; --i)
   {
-    const int capture_index = (feature_buffer_start + i) % FEATURE_BUFFER_SIZE;
-    const float value = (float)feature_buffer[capture_index];
+    const float value = (float)feature_buffer[read_index];
+    read_index = (read_index + 1) % FEATURE_BUFFER_SIZE;
     const float x = value - mean;
 
     *dst++ = x * std_recip;
   }
 
+  feature_buffer_read_index = read_index;
   num_unfetched_slices = 0;
+
   return SL_STATUS_OK;
 }
 
@@ -472,12 +493,12 @@ sl_status_t sl_ml_audio_feature_generation_fill_tensor(TfLiteTensor *input_tenso
   if (input_tensor->type == kTfLiteInt8) {
     if(SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_DYNAMIC_SCALE_ENABLE) {
       status = sli_ml_audio_feature_generation_get_features_dynamically_quantized(input_tensor->data.int8,
-                                                                                  input_tensor->bytes, 
+                                                                                  input_tensor->bytes,
                                                                                   quantize_dynamic_scale_range);
     } else {
       status = sli_ml_audio_feature_generation_get_features_quantized(input_tensor->data.int8,
-                                                                    input_tensor->bytes, 
-                                                                    SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MIN, 
+                                                                    input_tensor->bytes,
+                                                                    SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MIN,
                                                                     SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MAX);
     }
 
@@ -489,7 +510,7 @@ sl_status_t sl_ml_audio_feature_generation_fill_tensor(TfLiteTensor *input_tenso
   } else if(input_tensor -> type == kTfLiteFloat32) {
     if(SL_ML_AUDIO_FEATURE_GENERATION_SAMPLEWISE_NORM_RESCALE != 0) {
       status = sl_ml_audio_feature_generation_get_features_scaled(input_tensor->data.f,
-                                                                  input_tensor->bytes / sizeof(float), 
+                                                                  input_tensor->bytes / sizeof(float),
                                                                   SL_ML_AUDIO_FEATURE_GENERATION_SAMPLEWISE_NORM_RESCALE);
     } else if(SL_ML_AUDIO_FEATURE_GENERATION_SAMPLEWISE_NORM_MEAN_AND_STD) {
       status = sl_ml_audio_feature_generation_get_features_mean_std_normalized(input_tensor->data.f,
@@ -531,7 +552,8 @@ void sl_ml_audio_feature_generation_reset()
   // Reset ring-buffer indices
   audio_buffer_read_index = 0;
   audio_buffer_write_index = 0;
-  feature_buffer_start = 0;
+  feature_buffer_read_index = 0;
+  feature_buffer_write_index = 0;
 
   // Reset slice counter
   num_unfetched_slices = 0;
@@ -573,7 +595,7 @@ sl_status_t sl_ml_audio_feature_generation_activity_detected()
  *
  *  @param[in] audio_data
  *    Next chunk from the audio_data buffer to process
- * 
+ *
  * @param[in] num_samples
  *    Number of samples to process in the audio_data buffer
  *
@@ -582,6 +604,8 @@ sl_status_t sl_ml_audio_feature_generation_activity_detected()
  ******************************************************************************/
 static sl_status_t process_audio_buffer_chunk(const int16_t *audio_data, size_t num_samples, size_t *slices_updated)
 {
+  int write_index = feature_buffer_write_index;
+
   while (num_samples > 0) {
     size_t num_samples_read;
     struct FrontendOutput output = FrontendProcessSamples(
@@ -591,16 +615,27 @@ static sl_status_t process_audio_buffer_chunk(const int16_t *audio_data, size_t 
     num_samples -= num_samples_read;
     if (output.values != NULL) {
       for (size_t i = 0; i < output.size; i++) {
-        feature_buffer[feature_buffer_start + i] = output.values[i];
+        feature_buffer[write_index + i] = output.values[i];
       }
 
-      feature_buffer_start = (feature_buffer_start + output.size) % (FEATURE_BUFFER_SIZE);
+      write_index = (write_index + output.size) % (FEATURE_BUFFER_SIZE);
       *slices_updated += 1;
     } else {
       // No feature slice was generated, but data is stored internally in the frontend for
       // next iteration.
     }
   }
+
+  feature_buffer_write_index = write_index;
+
+  // Currently, we assume that the entire feature buffer is always processed
+  // each time a sl_ml_audio_feature_generation_get_features_xxx API is called.
+  // Thus, we set the read index to point the the next write index
+  // (which is the oldest element in the circular buffer).
+  // In this way, the sl_ml_audio_feature_generation_get_features_xxx APIs
+  // will always return the latest features.
+  // This helps to work-around dropped data.
+  feature_buffer_read_index = feature_buffer_write_index;
 
   return SL_STATUS_OK;
 }

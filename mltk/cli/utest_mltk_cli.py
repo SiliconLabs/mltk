@@ -10,7 +10,7 @@ from mltk import cli
 
 @cli.root_cli.command('utest')
 def utest_command(
-    test_type: str = typer.Argument(None, 
+    test_type: str = typer.Argument(None,
         help='''\b
 Comma separated list of unit test types, options are:
 - all - Run all the tests, default if omitted
@@ -22,19 +22,19 @@ Comma separated list of unit test types, options are:
 - studio - Simplicity Studio project generation/building tests
 '''
     ),
-    test_arg: str = typer.Argument(None, 
+    test_arg: str = typer.Argument(None,
         help='Argument for specific test(s) to run. Refer to the pytests -k option for more details: https://docs.pytest.org/en/latest/example/markers.html#using-k-expr-to-select-tests-based-on-their-name'
     ),
-    verbose: bool = typer.Option(False, '--verbose', '-v', 
+    verbose: bool = typer.Option(False, '--verbose', '-v',
         help='Enable verbose console logs'
     ),
-    list_only: bool = typer.Option(False, '--list', '-l', 
+    list_only: bool = typer.Option(False, '--list', '-l',
         help='Only list the available unit tests'
     ),
-    clear_cache: bool = typer.Option(False, 
+    clear_cache: bool = typer.Option(False,
         help='Clear the MLTK cache directory before running tests'
     ),
-    unique_temp_dir: bool = typer.Option(False, 
+    unique_temp_dir: bool = typer.Option(False,
         help='Use a unique path for the tmp directory'
     ),
 ):
@@ -103,7 +103,7 @@ Comma separated list of unit test types, options are:
         logger.warning(f'Setting MLTK_CACHE_DIR="{os.environ["MLTK_CACHE_DIR"]}"\n')
     else:
         logger.warning('NOT clearing MLTK cache, using existing cache at ~/.mltk\n')
-    
+
     os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # Disable the GPU as well
     cli.print_info('Disabling usage of the GPU, e.g.: CUDA_VISIBLE_DEVICES=-1')
 
@@ -124,11 +124,15 @@ Comma separated list of unit test types, options are:
 
     for d in test_dirs:
         cmd.append(f'{MLTK_DIR}/{d}')
-    
+
 
     logger.info('Executing: pytest ' + " ".join(cmd) + '\n')
     with redirect_stdout(logger):
         retcode = pytest.main(cmd)
-    
+
+    if unique_temp_dir:
+        logger.info(f'Cleaning {path.TEMP_BASE_DIR}')
+        clean_directory(path.TEMP_BASE_DIR)
+
     logger.info(f'\n\nFor more details, see: {pytest_results_dir}\n')
     cli.abort(code=retcode)

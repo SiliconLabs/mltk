@@ -159,10 +159,10 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
 
       float16_t *bias_data = static_cast<float16_t*>(context->AllocatePersistentBuffer(
                              context, num_channels * sizeof(float16_t)));
-      if(bias != nullptr) {
+      if (bias != nullptr && bias->data.i32 != nullptr) {
         data->op_params.bias = bias_data;
         int32_t i32_bias;
-        for(int i = 0; i < num_channels; i++) {
+        for (int i = 0; i < num_channels; i++) {
           i32_bias = bias->data.i32[i];
           bias_data[i] = float16_t(i32_bias * SLI_MVP_ACCUMULATOR_SCALER);
         }
@@ -264,7 +264,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
   if (bias != nullptr) {
     micro_context->DeallocateTempTfLiteTensor(bias);
   }
-  
+
   return kTfLiteOk;
 }
 
@@ -468,7 +468,9 @@ TfLiteRegistration Register_CONV_2D() {
           /*profiling_string=*/nullptr,
           /*builtin_code=*/0,
           /*custom_name=*/nullptr,
-          /*version=*/0};
+          /*version=*/0,
+          /*registration_external=*/nullptr
+  };
 }
 
 }  // namespace tflite

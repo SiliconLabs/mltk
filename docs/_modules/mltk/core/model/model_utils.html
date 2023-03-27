@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.model.model_utils &#8212; MLTK 0.15.0 documentation</title>
+    <title>mltk.core.model.model_utils &#8212; MLTK 0.16.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.15.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.16.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.15.0 documentation logo">
+                   alt="MLTK 0.16.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.16.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.16.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -720,7 +720,8 @@
     <span class="n">print_not_found_err</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">return_tflite_path</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">archive_file_ext</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">TfliteModel</span><span class="p">,</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Return the path to a .tflite model file or a TfliteModel instance</span>
 
@@ -737,6 +738,8 @@
 <span class="sd">        return_tflite_path: If true, return the file path to the .tflite, otherwise return a TfliteModel instance</span>
 <span class="sd">        test: If a "test" model is provided</span>
 <span class="sd">        logger: Optional logger</span>
+<span class="sd">        archive_file_ext: The extension of the .tflite model file in the mltk archive, e.g. .streaming.tflite</span>
+<span class="sd">            This is only used if the "model" argument is the path to a .mltk.zip, the path to a .py MLTK model specification, or the name of an MLTK model</span>
 
 <span class="sd">    Return:</span>
 <span class="sd">        The corresponding TfliteModel if return_tflite_path=False or the path to the .tflite if return_tflite_path=True</span>
@@ -805,11 +808,16 @@
 
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.mltk.zip'</span><span class="p">):</span>
             <span class="n">model_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'.mltk.zip'</span><span class="p">)])</span>
-            <span class="k">if</span> <span class="n">model_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'-test'</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">archive_file_ext</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">archive_file_ext</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'.'</span><span class="p">):</span>
+                    <span class="n">archive_file_ext</span> <span class="o">=</span> <span class="s1">'.'</span> <span class="o">+</span> <span class="n">archive_file_ext</span>
+                <span class="n">tflite_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}{</span><span class="n">archive_file_ext</span><span class="si">}</span><span class="s1">'</span>
+            <span class="k">elif</span> <span class="n">model_name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'-test'</span><span class="p">):</span>
                 <span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="s1">'-test'</span><span class="p">)]</span>
                 <span class="n">tflite_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.test.tflite'</span>
             <span class="k">else</span><span class="p">:</span>
                  <span class="n">tflite_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s1">.tflite'</span>
+
             <span class="n">tflite_path</span> <span class="o">=</span> <span class="n">extract_file</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">tflite_name</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">return_tflite_path</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">tflite_path</span>
@@ -1052,7 +1060,7 @@
               
           </div>
             Last updated on
-              Mar 01, 2023.
+              Mar 27, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

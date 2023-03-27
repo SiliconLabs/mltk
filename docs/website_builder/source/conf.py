@@ -279,20 +279,20 @@ for fn in recursive_listdir(docs_src_dir, return_relative_paths=True):
 
 
 # Generate a markdown file containing each command's CLI --help
-# runner = CliRunner()
-# cli.create_cli()
-# for cmd in (
-#     'profile', 'train', 'tensorboard', 'ssh',
-#     'evaluate', 'quantize', 'summarize', 'view',
-#     'update_params', 'view_audio', 'classify_audio',
-#     'classify_image', 'fingerprint_reader', 'commander'
-# ):
-#     result = runner.invoke(cli.root_cli, [cmd, '--help'], prog_name='mltk')
-#     help_str = ''.join(c for c in result.stdout if c in string.printable)
-#     with open(f'{docs_dst_dir}/command_line/{cmd}_cli_help.md', 'w') as f:
-#         f.write('```text\n')
-#         f.write(help_str)
-#         f.write('```\n')
+runner = CliRunner()
+cli.create_cli()
+for cmd in (
+    'profile', 'train', 'tensorboard', 'ssh',
+    'evaluate', 'quantize', 'summarize', 'view',
+    'update_params', 'view_audio', 'classify_audio',
+    'classify_image', 'fingerprint_reader', 'commander'
+):
+    result = runner.invoke(cli.root_cli, [cmd, '--help'], color=False, prog_name='mltk')
+    help_str = ''.join(c for c in result.stdout if c in string.printable)
+    with open(f'{docs_dst_dir}/command_line/{cmd}_cli_help.md', 'w') as f:
+        f.write('```text\n')
+        f.write(help_str)
+        f.write('```\n')
 
 # Copy all the files in <mltk root>/docs/img
 # to <mltk root>/docs/website_builder/source/docs/img

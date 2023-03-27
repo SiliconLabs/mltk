@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.model.model &#8212; MLTK 0.15.0 documentation</title>
+    <title>mltk.core.model.model &#8212; MLTK 0.16.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.15.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.16.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.15.0 documentation logo">
+                   alt="MLTK 0.16.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.15.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.16.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.15.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.16.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -427,7 +427,7 @@
             
   <h1 id="modules-mltk-core-model-model--page-root">Source code for mltk.core.model.model</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">NamedTuple</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -438,6 +438,7 @@
 <span class="kn">from</span> <span class="nn">mltk.core.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.logger</span> <span class="kn">import</span> <span class="n">get_logger</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.string_formatting</span> <span class="kn">import</span> <span class="n">format_units</span>
+<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">prepend_exception_msg</span>
 
 <span class="kn">from</span> <span class="nn">.mixins.archive_mixin</span> <span class="kn">import</span> <span class="n">ArchiveMixin</span>
 <span class="kn">from</span> <span class="nn">.mixins.tflite_model_metadata_mixin</span> <span class="kn">import</span> <span class="n">TfliteModelMetadataMixin</span>
@@ -479,7 +480,7 @@
             <span class="n">add_completion</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span> <span class="o">=</span> <span class="n">MltkModelAttributes</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="n">MltkModelEvent</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Callable</span><span class="p">[[</span><span class="n">MltkModel</span><span class="p">,</span><span class="n">Any</span><span class="p">],</span><span class="kc">None</span><span class="p">],</span><span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="n">MltkModelEvent</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">_EventHandlerContext</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># At this point, no model properties have been registered</span>
         <span class="c1"># See load_mltk_model_with_path() for the AFTER_MODEL_LOAD event</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span><span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">BEFORE_MODEL_LOAD</span><span class="p">)</span></div>
@@ -739,6 +740,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">event</span><span class="p">:</span><span class="n">MltkModelEvent</span><span class="p">,</span>
         <span class="n">handler</span><span class="p">:</span><span class="n">Callable</span><span class="p">[[</span><span class="n">MltkModel</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span><span class="kc">None</span><span class="p">],</span>
+        <span class="n">_raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Register an event handler</span>
@@ -758,19 +760,28 @@
 
 <span class="sd">        .. note::</span>
 
-<span class="sd">            - Exceptions raised by the handler will be logged, but not stop further execution</span>
+<span class="sd">            - By default, exceptions raised by the handler will be logged, but not stop further execution</span>
+<span class="sd">                Use ``_raise_exception``` to cause the handler to raise the exception.</span>
 <span class="sd">            - Event handlers are invoked in the order in which they are registered</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            event: The :py:class:`~MltkModelEvent` on which the handler will be invoked</span>
 <span class="sd">            handler: Function to be invoked for the given event</span>
+<span class="sd">            _raise_exception: By default, exceptions are only logged.</span>
+<span class="sd">                This allows for raising the handler exception.</span>
 <span class="sd">            kwargs: Additional keyword arguments to provided to the ``handler``</span>
 <span class="sd">                NOTE: These keyword arguments must not collide with the event-specific keyword arguments</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="n">event</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">[</span><span class="n">event</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">[</span><span class="n">event</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">handler</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">[</span><span class="n">event</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">_EventHandlerContext</span><span class="p">(</span>
+                <span class="n">handler</span><span class="o">=</span><span class="n">handler</span><span class="p">,</span>
+                <span class="n">raise_exception</span><span class="o">=</span><span class="n">_raise_exception</span><span class="p">,</span>
+                <span class="n">kwargs</span><span class="o">=</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MltkModel.trigger_event"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/model.html#mltk.core.MltkModel.trigger_event">[docs]</a>    <span class="k">def</span> <span class="nf">trigger_event</span><span class="p">(</span>
@@ -804,12 +815,20 @@
 
         <span class="n">logger</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'logger'</span><span class="p">,</span> <span class="n">get_mltk_logger</span><span class="p">())</span>
 
-        <span class="k">for</span> <span class="n">handler</span><span class="p">,</span> <span class="n">kws</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">[</span><span class="n">event</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">context</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_event_handlers</span><span class="p">[</span><span class="n">event</span><span class="p">]:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">handler</span><span class="p">(</span><span class="n">mltk_model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span> <span class="o">**</span><span class="n">kws</span><span class="p">)</span>
+                <span class="n">context</span><span class="o">.</span><span class="n">handler</span><span class="p">(</span>
+                    <span class="n">mltk_model</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+                    <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+                    <span class="o">**</span><span class="n">context</span><span class="o">.</span><span class="n">kwargs</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Model event: </span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s1">, handler: </span><span class="si">{</span><span class="n">handler</span><span class="si">}</span><span class="s1">, failed, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span></div>
-
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">context</span><span class="o">.</span><span class="n">raise_exception</span><span class="p">:</span>
+                    <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Model event: </span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s1">, handler: </span><span class="si">{</span><span class="n">context</span><span class="o">.</span><span class="n">handler</span><span class="si">}</span><span class="s1">, failed, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">prepend_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'Model event: </span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s1">, handler: </span><span class="si">{</span><span class="n">context</span><span class="o">.</span><span class="n">handler</span><span class="si">}</span><span class="s1">, failed'</span><span class="p">)</span>
+                    <span class="k">raise</span></div>
 
 
     <span class="k">def</span> <span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
@@ -855,6 +874,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'keras_custom_objects'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
 
 
+<span class="k">class</span> <span class="nc">_EventHandlerContext</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">handler</span><span class="p">:</span><span class="n">Callable</span><span class="p">[[</span><span class="n">MltkModel</span><span class="p">,</span><span class="n">Any</span><span class="p">],</span><span class="kc">None</span><span class="p">]</span>
+    <span class="n">kwargs</span><span class="p">:</span><span class="nb">dict</span>
+    <span class="n">raise_exception</span><span class="p">:</span><span class="nb">bool</span>
 </pre></div>
 
           </article>
@@ -880,7 +903,7 @@
               
           </div>
             Last updated on
-              Mar 01, 2023.
+              Mar 27, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

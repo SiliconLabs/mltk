@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List, Tuple, Callable, Any, Dict
+from typing import List, Tuple, Callable, Any, Dict, NamedTuple
 import inspect
 import os
 import logging
@@ -10,6 +10,7 @@ from mltk.utils.path import clean_directory, create_user_dir
 from mltk.core.utils import get_mltk_logger
 from mltk.utils.logger import get_logger
 from mltk.utils.string_formatting import format_units
+from mltk.utils.python import prepend_exception_msg
 
 from .mixins.archive_mixin import ArchiveMixin
 from .mixins.tflite_model_metadata_mixin import TfliteModelMetadataMixin
@@ -51,7 +52,7 @@ class MltkModel(
             add_completion=False
         )
         self._attributes = MltkModelAttributes()
-        self._event_handlers:Dict[MltkModelEvent, Tuple[Callable[[MltkModel,Any],None],dict]] = {}
+        self._event_handlers:Dict[MltkModelEvent, List[_EventHandlerContext]] = {}
         # At this point, no model properties have been registered
         # See load_mltk_model_with_path() for the AFTER_MODEL_LOAD event
         self.trigger_event(MltkModelEvent.BEFORE_MODEL_LOAD)
@@ -311,6 +312,7 @@ class MltkModel(
         self,
         event:MltkModelEvent,
         handler:Callable[[MltkModel, logging.Logger, Any],None],
+        _raise_exception=False,
         **kwargs
     ):
         """Register an event handler
@@ -330,19 +332,28 @@ class MltkModel(
 
         .. note::
 
-            - Exceptions raised by the handler will be logged, but not stop further execution
+            - By default, exceptions raised by the handler will be logged, but not stop further execution
+                Use ``_raise_exception``` to cause the handler to raise the exception.
             - Event handlers are invoked in the order in which they are registered
 
         Args:
             event: The :py:class:`~MltkModelEvent` on which the handler will be invoked
             handler: Function to be invoked for the given event
+            _raise_exception: By default, exceptions are only logged.
+                This allows for raising the handler exception.
             kwargs: Additional keyword arguments to provided to the ``handler``
                 NOTE: These keyword arguments must not collide with the event-specific keyword arguments
         """
         if event not in self._event_handlers:
             self._event_handlers[event] = []
 
-        self._event_handlers[event].append((handler, kwargs))
+        self._event_handlers[event].append(
+            _EventHandlerContext(
+                handler=handler,
+                raise_exception=_raise_exception,
+                kwargs=kwargs
+            )
+        )
 
 
     def trigger_event(
@@ -376,12 +387,20 @@ class MltkModel(
 
         logger = kwargs.pop('logger', get_mltk_logger())
 
-        for handler, kws in self._event_handlers[event]:
+        for context in self._event_handlers[event]:
             try:
-                handler(mltk_model=self, logger=logger, **kwargs, **kws)
+                context.handler(
+                    mltk_model=self,
+                    logger=logger,
+                    **kwargs,
+                    **context.kwargs
+                )
             except Exception as e:
-                get_mltk_logger().warning(f'Model event: {event}, handler: {handler}, failed, err: {e}', exc_info=e)
-
+                if not context.raise_exception:
+                    get_mltk_logger().warning(f'Model event: {event}, handler: {context.handler}, failed, err: {e}', exc_info=e)
+                else:
+                    prepend_exception_msg(e, f'Model event: {event}, handler: {context.handler}, failed')
+                    raise
 
 
     def __setattr__(self, name, value):
@@ -427,3 +446,7 @@ class MltkModel(
         self._attributes.register('keras_custom_objects', dtype=dict)
 
 
+class _EventHandlerContext(NamedTuple):
+    handler:Callable[[MltkModel,Any],None]
+    kwargs:dict
+    raise_exception:bool

@@ -314,7 +314,10 @@ extern "C" void app_process_action()
     if(should_run_inference)
     {
       // Execute the processed audio in the ML model
-      run_inference();
+      sl_status_t status = run_inference();
+      if (status != SL_STATUS_OK){
+        return;
+      }
     }
 
     // Process the ML model results

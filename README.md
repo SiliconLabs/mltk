@@ -7,7 +7,7 @@ This package is made available as a self-serve reference supported only by the o
 There are no Silicon Labs support services for this software at this time.
 ```
 
-<a href="https://siliconlabs.github.io/mltk" target="_blank">![version](https://img.shields.io/badge/MLTK%20Version-0.15.0-red?style=for-the-badge)</a>
+<a href="https://siliconlabs.github.io/mltk" target="_blank">![version](https://img.shields.io/badge/MLTK%20Version-0.16.0-red?style=for-the-badge)</a>
 <a href="https://pypi.org/project/silabs-mltk" target="_blank">![PyPI - Python Version](https://img.shields.io/pypi/pyversions/silabs-mltk?style=for-the-badge)</a>
 <a href="https://github.com/SiliconLabs/gecko_sdk/tree/v4.2.1" target="_blank">![gsdk](https://img.shields.io/badge/Gecko%20SDK-4.2.1-green?style=for-the-badge)</a>
 <a href="https://github.com/tensorflow/tflite-micro/tree/1caee4d5045f2744515fb8ca063bc66958e3f79b" target="_blank">![tflm](https://img.shields.io/badge/Tensorflow--Lite%20Micro-February%202023-orange?style=for-the-badge)</a>
@@ -104,6 +104,7 @@ Refer to the [Installation Guide](./docs/installation.md) for more details on ho
 - [Model Search Path](./docs/guides/model_search_path.md)
 - [Environment Variables](./docs/other/environment_variables.md)
 - [C++ Development](./docs/cpp_development/index.md)
+- [Ask a Question](https://github.com/SiliconLabs/mltk/issues)
 
 ## License
 
