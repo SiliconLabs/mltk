@@ -87,13 +87,13 @@ This step is __highly recommended__ as the MLTK installs other dependencies like
 
       .. code-block:: shell
 
-         pip  install git+https://github.com/siliconlabs/mltk.git[full]
+         pip  install git+https://github.com/siliconlabs/mltk.git
 
    .. tab-item:: Linux
 
       .. code-block:: shell
       
-         pip3 install git+https://github.com/siliconlabs/mltk.git[full]
+         pip3 install git+https://github.com/siliconlabs/mltk.git
   ```
 
   __NOTE:__ The `[full]` part of the command is _optional_. This will install additional dependencies used by some the the MLTK commands.
