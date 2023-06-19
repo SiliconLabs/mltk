@@ -1,6 +1,6 @@
 
 
-set(AUDIO_CLASSIFIER_SUPPORTED_PLATFORMS windows linux brd2204 brd2601 brd4166)
+set(AUDIO_CLASSIFIER_SUPPORTED_PLATFORMS windows linux brd2204 brd2601)
 if(NOT ${MLTK_PLATFORM_NAME} IN_LIST AUDIO_CLASSIFIER_SUPPORTED_PLATFORMS)
     mltk_info(
         "Audio Classifier app NOT currently supported by platform: ${MLTK_PLATFORM_NAME}"
@@ -115,7 +115,7 @@ endif()
 # Use the default model if one wasn't provided on the command-line
 mltk_get(AUDIO_CLASSIFIER_MODEL)
 if(NOT AUDIO_CLASSIFIER_MODEL)
-    set(AUDIO_CLASSIFIER_MODEL "keyword_spotting_on_off_v2")
+    set(AUDIO_CLASSIFIER_MODEL "keyword_spotting_on_off_v3")
 endif()
 mltk_info("AUDIO_CLASSIFIER_MODEL=${AUDIO_CLASSIFIER_MODEL}" TAG mltk_audio_classifier)
 

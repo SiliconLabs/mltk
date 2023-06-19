@@ -34,7 +34,7 @@ struct CmisOpDataPooling
 };
 
 
-TfLiteStatus AveragePoolingPrepare(TfLiteContext* context, TfLiteNode* node) {
+TfLiteStatus WrappedAveragePoolingPrepare(TfLiteContext* context, TfLiteNode* node) {
   TfLiteStatus status = PoolingPrepare(context, node);
   CmisOpDataPooling* data = static_cast<CmisOpDataPooling*>(node->user_data);
   MicroContext* micro_context = GetMicroContext(context);
@@ -146,11 +146,11 @@ void* Init(TfLiteContext* context, const char* buffer, size_t length) {
 
 }  // namespace
 
-TfLiteRegistration Register_AVERAGE_POOL_2D() {
-  return tflite::micro::RegisterOp(Init, AveragePoolingPrepare, AverageEval);
+TFLMRegistration Register_AVERAGE_POOL_2D() {
+  return tflite::micro::RegisterOp(Init, WrappedAveragePoolingPrepare, AverageEval);
 }
 
-TfLiteRegistration Register_MAX_POOL_2D() {
+TFLMRegistration Register_MAX_POOL_2D() {
   return tflite::micro::RegisterOp(Init, PoolingPrepare, MaxEval);
 }
 

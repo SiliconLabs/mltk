@@ -20,19 +20,19 @@ This file has been modified by Silicon Labs.
 
 
 void DcNotchFilterProcessSamples(struct DcNotchFilterState *state, const int16_t *in, int16_t *out, int num_samp)
-{  
+{
   // compute fist output samples
   const int16_t kDcNotchCoef = state->dc_notch_coef;
   int16_t d = in[0] - state->prev_in;
   int32_t p = kDcNotchCoef * state->prev_out;
-  int16_t sum = d + ((p>>14)+1)>>1;
+  int16_t sum = d + (((p>>14)+1)>>1);
   out[0] = sum;
   // compute next num_samp-1 output samples
   for(int n=1; n<num_samp; n++)
   {
     d = in[n] - in[n-1];
     p = kDcNotchCoef*out[n-1];
-    sum = d + ((p>>14)+1)>>1;
+    sum = d + (((p>>14)+1)>>1);
     out[n] = sum;
   }
   // update filter states

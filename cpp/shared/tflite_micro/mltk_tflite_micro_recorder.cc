@@ -55,9 +55,9 @@ bool get_recorded_data(const uint8_t** data_ptr, uint32_t* length_ptr)
 
 /*************************************************************************************************/
 void record_layer(
-  int op_idx, 
-  const TfLiteContext& context, 
-  const TfLiteNode &node, 
+  int op_idx,
+  const TfLiteContext& context,
+  const TfLiteNode &node,
   bool record_input
 )
 {
@@ -87,14 +87,14 @@ void record_layer(
           tensor = context.GetTensor(&context, tensor_idx);
           msgpack_write_bin(_msgpack_context, tensor->data.raw, tensor->bytes);
         }
-        else 
+        else
         {
           msgpack_write_nil(_msgpack_context);
         }
       }
     }
   }
-  else 
+  else
   {
     if(model_tensor_recorder_enabled)
     {
@@ -109,7 +109,7 @@ void record_layer(
           tensor = context.GetTensor(&context, tensor_idx);
           msgpack_write_bin(_msgpack_context, tensor->data.raw, tensor->bytes);
         }
-        else 
+        else
         {
           msgpack_write_nil(_msgpack_context);
         }
@@ -122,7 +122,7 @@ void record_layer(
 }
 
 /*************************************************************************************************/
-#ifndef MLTK_DLL_IMPORT 
+#ifndef MLTK_DLL_IMPORT
 extern "C"  msgpack_context_t* get_layer_recording_context(bool force)
 {
   if(!force && !model_tensor_recorder_enabled)
@@ -136,10 +136,10 @@ extern "C"  msgpack_context_t* get_layer_recording_context(bool force)
 
 
 /*************************************************************************************************/
-#ifndef MLTK_DLL_IMPORT 
+#ifndef MLTK_DLL_IMPORT
 extern "C" void record_layer_conv_params(
-  const tflite::ConvParams& params, 
-  const int32_t* per_channel_output_multiplier, 
+  const tflite::ConvParams& params,
+  const int32_t* per_channel_output_multiplier,
   const int32_t *per_channel_output_shift,
   int n_channels
 )
@@ -162,14 +162,14 @@ extern "C" void record_layer_conv_params(
   msgpack_write_dict_int(msgpack, "quantized_activation_max", params.quantized_activation_max);
   msgpack_finalize_dynamic(msgpack);
 }
-#endif // MLTK_DLL_IMPORT 
+#endif // MLTK_DLL_IMPORT
 
 
 /*************************************************************************************************/
 #ifndef MLTK_DLL_IMPORT
 extern "C" void record_layer_depthwise_conv_params(
-  const tflite::DepthwiseParams& params, 
-  const int32_t* per_channel_output_multiplier, 
+  const tflite::DepthwiseParams& params,
+  const int32_t* per_channel_output_multiplier,
   const int32_t *per_channel_output_shift,
   int n_channels
 )

@@ -145,6 +145,7 @@ def build_docs_command(
             '--ignore-url', r'.*linuxize\.com.*',
             '--ignore-url', r'.*timeseriesclassification\.com.*',
             '--ignore-url', r'http\:\/\/localhost.*',
+            '--ignore-url', r' https\:\/\/www\.pnas\.org.*',
             index_path],
             outfile=logger,
             logger=logger

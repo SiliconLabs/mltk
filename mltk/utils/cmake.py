@@ -103,7 +103,7 @@ def build_mltk_target(
 
     if platform not in PLATFORM_TOOLCHAIN_MAPPING:
         support_platforms = list(PLATFORM_TOOLCHAIN_MAPPING.keys())
-        raise Exception(f'Unsupported platform {platform}, supported platforms are: {support_platforms}')
+        raise ValueError(f'Unsupported platform {platform}, supported platforms are: {support_platforms}')
     toolchain_file = PLATFORM_TOOLCHAIN_MAPPING[platform]
 
     python_dir = os.path.dirname(os.path.dirname(sys.executable)).replace('\\', '/')

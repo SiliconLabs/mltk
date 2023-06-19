@@ -7,7 +7,7 @@ The source code for these models may be found on Github: [https://github.com/sil
 
 | Name                                                                                                                            | Description                                                                                                                                           |
 | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [TF-Lite Micro Magic Wand](https://siliconlabs.github.io/mltk/docs/python_api/models/tflite_micro/tflite_micro_magic_wand.html) | Model used by the TF-Lite Micro [Magic Wand](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/magic_wand) demo     |
+| [TF-Lite Micro Magic Wand](https://siliconlabs.github.io/mltk/docs/python_api/models/tflite_micro/tflite_micro_magic_wand.html) | Model used by the TF-Lite Micro [Magic Wand](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples) demo     |
 | [TF-Lite Micro Speech](https://siliconlabs.github.io/mltk/docs/python_api/models/tflite_micro/tflite_micro_speech.html)         | Model used by the TF-Lite Micro [Micro Speech](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/micro_speech) demo |
 
 

@@ -11,13 +11,8 @@
 #include "mltk_tflite_micro_recorder.hpp"
 
 
-#define SET_CURRENT_KERNEL(op_idx, op_code) \
-mltk::_current_kernel_index = op_idx; \
-mltk::_current_kernel_op_code = op_code; \
-mltk::_issued_unsupported_msg = false;
-#define CLEAR_CURRENT_KERNEL() \
-mltk::_current_kernel_index = -1; \
-mltk::_current_kernel_op_code = -1;
+#define SET_CURRENT_KERNEL(op_idx, op_code) mltk::set_current_kernel(op_idx, (tflite::BuiltinOperator)op_code);
+#define CLEAR_CURRENT_KERNEL() mltk::clear_current_kernel();
 
 
 
@@ -47,7 +42,6 @@ if(subgraph_idx == 0) \
 }
 
 #define START_OP_PROFILER(subgraph_idx, op_idx, op_code) \
-SET_CURRENT_KERNEL(op_idx, op_code) \
 if(subgraph_idx == 0) \
 { \
   if(mltk::_kernel_profilers != nullptr) mltk::_kernel_profilers[op_idx]->start(); \
@@ -55,7 +49,6 @@ if(subgraph_idx == 0) \
 }
 
 #define STOP_OP_PROFILER(subgraph_idx, op_idx) \
-CLEAR_CURRENT_KERNEL() \
 if(subgraph_idx == 0) \
 { \
   if(mltk::mltk_tflite_micro_get_registered_accelerator() != nullptr) mltk::mltk_tflite_micro_get_registered_accelerator()->stop_op_profiler(op_idx, (mltk::_kernel_profilers != nullptr) ? mltk::_kernel_profilers[op_idx] : nullptr); \
@@ -70,8 +63,8 @@ if(subgraph_idx == 0) \
 #define FREE_PROFILERS(...)
 #define START_INFERENCE_PROFILER(...)
 #define STOP_INFERENCE_PROFILER(...)
-#define START_OP_PROFILER(subgraph_idx, op_idx, op_code) SET_CURRENT_KERNEL(op_idx, op_code)
-#define STOP_OP_PROFILER(subgraph_idx, op_idx) CLEAR_CURRENT_KERNEL()
+#define START_OP_PROFILER(subgraph_idx, op_idx, op_code)
+#define STOP_OP_PROFILER(subgraph_idx, op_idx)
 
 #endif // TFLITE_MICRO_PROFILER_ENABLED
 
@@ -100,7 +93,10 @@ if(subgraph_idx == 0) \
 
 #define INVOKE_PROCESSING_CALLBACK() \
 if(mltk::_processing_callback != nullptr) mltk::_processing_callback(mltk::_processing_callback_arg)
-
+#define INVOKE_LAYER_CALLBACK(index, context, node_and_registration, invoke_status) \
+if(mltk::_layer_callback != nullptr){\
+  invoke_status = mltk::_layer_callback(index, context, node_and_registration, invoke_status, mltk::_layer_callback_arg); \
+}
 
 
 namespace mltk
@@ -113,19 +109,27 @@ extern profiling::Profiler *_inference_profiler;
 extern profiling::Profiler **_kernel_profilers;
 extern int _current_kernel_index;
 extern int _current_kernel_op_code;
-extern bool _issued_unsupported_msg;
 extern void (*_processing_callback)(void*);
 extern void* _processing_callback_arg;
 
+typedef TfLiteStatus (*TfliteMicroLayerCallback)(
+  int index,
+  TfLiteContext& context,
+  const tflite::NodeAndRegistration& node_and_registration,
+  TfLiteStatus invoke_status,
+  void* arg
+);
+extern TfliteMicroLayerCallback _layer_callback;
+extern void *_layer_callback_arg;
 
 void allocate_profilers(int subgraph_index, int op_count);
 
 void register_profiler(
-  int subgraph_idx, 
-  int op_idx, 
+  int subgraph_idx,
+  int op_idx,
   tflite::BuiltinOperator op_type,
   const TfLiteContext* context,
-  const tflite::NodeAndRegistration& node_and_registration 
+  const tflite::NodeAndRegistration& node_and_registration
 );
 
 void free_profilers();
@@ -139,8 +143,24 @@ bool calculate_op_metrics(
 
 
 
-const char* to_str(tflite::BuiltinOperator op_type);
-const char* op_to_str(int op_idx, tflite::BuiltinOperator op_type);
+static inline void set_current_kernel(int op_index, tflite::BuiltinOperator op_code)
+{
+  _current_kernel_index = op_index;
+  _current_kernel_op_code = op_code;
+  reset_unsupported_kernel_messages();
+}
 
+static inline void clear_current_kernel()
+{
+  _current_kernel_index = -1;
+  _current_kernel_op_code = -1;
+  reset_unsupported_kernel_messages();
+}
+
+static inline void set_layer_callback(TfliteMicroLayerCallback callback, void *arg)
+{
+  _layer_callback = callback;
+  _layer_callback_arg = arg;
+}
 
 } // namespace mltk

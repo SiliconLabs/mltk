@@ -8,21 +8,22 @@ if(NOT GECKO_SDK_BOARD_TARGET)
     mltk_error("Must specify GECKO_SDK_BOARD_TARGET global property")
 endif()
 
-target_include_directories(${NAME} 
+target_include_directories(${NAME}
 PUBLIC
     inc
-PRIVATE 
+PRIVATE
     src
 )
 
-target_sources(${NAME} 
-PRIVATE 
+target_sources(${NAME}
+PRIVATE
     src/sl_hfxo_manager.c
-    src/sl_hfxo_manager_hal_s2.c 
+    src/sl_hfxo_manager_hal_s2.c
 )
 
 target_link_libraries(${NAME}
-PRIVATE 
+PRIVATE
     ${GECKO_SDK_BOARD_TARGET}
     mltk::gecko_sdk::sleeptimer_service
+    mltk::gecko_sdk::platform_peripheral
 )

@@ -1,12 +1,12 @@
 #include "msgpack_internal.h"
 
 
-static int push_container(msgpack_context_t *context, int32_t count);
+
 static int write_marker(msgpack_context_t *context, msgpack_marker_t marker);
 static int write_marker_and_bytes(msgpack_context_t *context, msgpack_marker_t marker, const uint8_t *buffer, uint32_t length);
 static int write_bytes(msgpack_context_t *context, const uint8_t *buffer, uint32_t length);
-
-
+static int push_container(msgpack_context_t *context, int32_t count);
+static int increment_container_count(msgpack_context_t *context);
 
 
 /*************************************************************************************************/
@@ -194,12 +194,25 @@ int msgpack_write_bin(msgpack_context_t *context, const void *data, uint32_t len
 /*************************************************************************************************/
 int msgpack_write_context(msgpack_context_t *context, const msgpack_context_t *value_context)
 {
-    if(value_context->buffer.ptr == NULL || value_context->buffer.buffer == NULL)
+    uint8_t* buffer;
+    uint32_t length;
+
+    if(msgpack_buffered_writer_get_buffer(value_context, &buffer, &length) == 0)
+    {
+    }
+    else if(value_context != NULL && value_context->buffer.ptr != NULL && value_context->buffer.buffer != NULL)
+    {
+        buffer = value_context->buffer.buffer;
+        length = MSGPACK_BUFFER_USED(value_context);
+    }
+    else
     {
         return -1;
     }
 
-    return write_bytes(context, value_context->buffer.buffer, MSGPACK_BUFFER_USED(value_context));
+    RETURN_ON_FAILURE(increment_container_count(context));
+
+    return write_bytes(context, buffer, length);
 }
 
 /*************************************************************************************************/
@@ -498,7 +511,7 @@ int msgpack_finalize_dynamic(msgpack_context_t *context)
     context->container_index -= 1;
 
     return 0;
-#else 
+#else
     return -1;
 #endif
 }
@@ -511,7 +524,10 @@ int msgpack_finalize_dynamic(msgpack_context_t *context)
 
 
 
-/*************************************************************************************************/
+/*************************************************************************************************
+ * Push an array or dict container onto the current context
+ * This is used by "dynamic" arrays or dict writing
+ */
 static int push_container(msgpack_context_t *context, int32_t count)
 {
 #ifdef MSGPACK_MAX_NESTED_CONTAINERS
@@ -519,24 +535,37 @@ static int push_container(msgpack_context_t *context, int32_t count)
     {
         return -1;
     }
+    // If this array or dict does not have any elements
+    // then there's no need to push it onto the stack
     else if(count == 0)
     {
         return 0;
     }
-    
+
+    // Increase to the next container index
     context->container_index += 1;
 
+    // Ensure we haven't exceeded the maximum number of nested containers
     if(context->container_index >= MSGPACK_MAX_NESTED_CONTAINERS)
     {
         return -1;
     }
 
+    // If count < 0 then this container will have dynamic entries as well.
+    // In this case, we set the count to 0 and increment as entries are dynamically written.
+    // Otherwise, this container has a pre-defined number of entries
     context->containers[context->container_index].count = (count < 0) ? 0 : count;
 
+    // If count < 0 then this container will have dynamic entries as well
     if(count < 0)
     {
+        // Ensure the context has a valid write buffer
         if(context->buffer.ptr != NULL && context->buffer.buffer != NULL)
         {
+            // Store the buffer offset to this container's "marker"
+            // Later, when the dynamic array or dict is "finalized", we update the marker count
+            // to be the number of entries that were dynamically written.
+            // -3 --> 1 byte for marker, 2 bytes for uint16 count
             context->containers[context->container_index].marker_offset = (uintptr_t)(context->buffer.ptr - context->buffer.buffer) - 3;
         }
         else
@@ -544,8 +573,10 @@ static int push_container(msgpack_context_t *context, int32_t count)
             return -1;
         }
     }
-    else 
+    else
     {
+        // Otherwise, this container has a pre-defined number of entries (i.e. it is NOT dynamic)
+        // In this case, we do not need to store the container's marker offset.
         context->containers[context->container_index].marker_offset = UINT32_MAX;
     }
 #endif
@@ -554,31 +585,48 @@ static int push_container(msgpack_context_t *context, int32_t count)
 }
 
 /*************************************************************************************************/
-static int write_marker(msgpack_context_t *context, msgpack_marker_t marker)
+static int increment_container_count(msgpack_context_t *context)
 {
-    RETURN_ON_FAILURE(write_bytes(context, &marker, 1));
-
 #ifdef MSGPACK_MAX_NESTED_CONTAINERS
+    // If this element is using dynamic entries
+    // e.g. If we're dynamically writing array or dict entries
     if(context->container_index >= 0)
     {
+        // If the current container has a pre-defined number of entries
+        // (i.e. if the current array of dict is NOT dynamic)
         if(context->containers[context->container_index].marker_offset == UINT32_MAX)
         {
+            // If the count is already 0
+            // then we cannot increment, so return the error
             if(context->containers[context->container_index].count == 0)
             {
                 return -1;
             }
 
+            // Since the current container (e.g. array or dict) has a pre-defined
+            // number of elements, we want to decrement the count.
             context->containers[context->container_index].count -= 1;
+
+            // Once the count reaches 0, we can "pop" the current container
+            // from the stack.
             if(context->containers[context->container_index].count == 0)
             {
                 if(context->container_index < 0)
                 {
                     return -1;
                 }
+
+                // Pop the current container from the stack
+                // by decrement the index
                 context->container_index -= 1;
             }
         }
-        else 
+        // Otherwise, the current container's entries are being dynamically written
+        // (i.e. we didn't pre-define the number of entries)
+        // In this case, we increment the count.
+        // Later, this container's "marker" will be updated with the count
+        // during the msgpack_finalize_dynamic() API
+        else
         {
             context->containers[context->container_index].count += 1;
         }
@@ -588,6 +636,13 @@ static int write_marker(msgpack_context_t *context, msgpack_marker_t marker)
     return 0;
 }
 
+
+/*************************************************************************************************/
+static int write_marker(msgpack_context_t *context, msgpack_marker_t marker)
+{
+    RETURN_ON_FAILURE(write_bytes(context, &marker, 1));
+    return increment_container_count(context);
+}
 
 /*************************************************************************************************/
 static int write_marker_and_bytes(msgpack_context_t *context, msgpack_marker_t marker, const uint8_t *buffer, uint32_t length)

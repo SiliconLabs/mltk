@@ -9,17 +9,22 @@ if(NOT GECKO_SDK_BOARD_TARGET)
 endif()
 
 
-target_include_directories(${NAME} 
+target_include_directories(${NAME}
 PUBLIC
     inc
 )
 
 target_sources(${NAME}
-PRIVATE 
-    src/peripheral_sysrtc.c 
+PRIVATE
+    src/peripheral_sysrtc.c
 )
 
 target_link_libraries(${NAME}
-PRIVATE 
+PRIVATE
     ${GECKO_SDK_BOARD_TARGET}
+)
+
+target_link_options(${NAME}
+PUBLIC
+    -Wl,-usl_sysrtc_clear_group_interrupts # This works around a linking error
 )

@@ -295,7 +295,7 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 
 }  // namespace
 
-TfLiteRegistration Register_CONCATENATION() {
+TFLMRegistration Register_CONCATENATION() {
   return tflite::micro::RegisterOp(Init, Prepare, Eval);
 }
 

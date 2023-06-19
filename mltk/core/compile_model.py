@@ -6,7 +6,7 @@ from typing import Union
 from .tflite_model import TfliteModel
 from .tflite_micro import TfliteMicro
 from .model import (
-    MltkModel, 
+    MltkModel,
     load_mltk_model,
 )
 from .utils import get_mltk_logger
@@ -18,9 +18,10 @@ def compile_model(
     accelerator:str,
     output:str=None,
     update_archive:bool=None,
+    **kwargs,
 ) -> Union[str,TfliteModel]:
     """Compile the given quantized .tflite model for the specified accelerator
-    
+
     Returns:
         The file path to the compiled `.tflite` OR TfliteModel object if output='tflite_model'
     """
@@ -51,7 +52,7 @@ def compile_model(
             'model archive (.mltk.zip) or specification script (.py)'
         )
 
-   
+
     if not TfliteMicro.accelerator_is_supported(accelerator):
         raise ValueError(f'Unknown accelerator: {accelerator}, supported accelerators are: {", ".join(TfliteMicro.get_supported_accelerators())}')
 
@@ -63,9 +64,13 @@ def compile_model(
     if not tflm_accelerator.supports_model_compilation:
         raise RuntimeError(f'Accelerator {accelerator} does not support compilation')
 
+    report_path = f'{tflite_model.path}.{accelerator}-compilation_report.txt'
+
     compiled_tflite_model = tflm_accelerator.compile_model(
         tflite_model,
-        logger=logger 
+        logger=logger,
+        report_path=report_path,
+        **kwargs
     )
 
     # Determine if we should update the model archive with the generated .tflite

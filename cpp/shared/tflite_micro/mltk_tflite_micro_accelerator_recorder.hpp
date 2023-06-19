@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include <new>
 #include <cassert>
@@ -12,6 +12,7 @@
 #define TFLITE_MICRO_ACCELERATOR_RECORDER_START_LAYER() ::mltk::TfliteMicroAcceleratorRecorder::instance().start_layer()
 #define TFLITE_MICRO_ACCELERATOR_RECORDER_END_LAYER() ::mltk::TfliteMicroAcceleratorRecorder::instance().end_layer()
 #define TFLITE_MICRO_ACCELERATOR_RECORD_PROGRAM(data, length) ::mltk::TfliteMicroAcceleratorRecorder::instance().record_program((const void*)data, length)
+#define TFLITE_MICRO_ACCELERATOR_RECORD_PROGRAM_METADATA(key, data) ::mltk::TfliteMicroAcceleratorRecorder::instance().record_program_metadata(key, data)
 #define TFLITE_MICRO_ACCELERATOR_RECORD_DATA(key, data, ...) ::mltk::TfliteMicroAcceleratorRecorder::instance().record_data(key, data, ##__VA_ARGS__)
 
 
@@ -19,55 +20,6 @@ namespace mltk
 {
 
 
-struct RecordedProgram 
-{
-    void* data;
-    uint32_t length;
-
-    RecordedProgram() = default;
-
-    RecordedProgram(const void* data, uint32_t length)
-    {
-        this->data = malloc(length);
-        if(this->data != nullptr)
-        {
-            this->length = length;
-            memcpy(this->data, data, length);
-        }
-        else 
-        {
-            this->length = 0;
-        }
-    }
-
-    RecordedProgram(RecordedProgram && rhs)
-    {
-        data = rhs.data;
-        length = rhs.length;
-        rhs.data = nullptr;
-        rhs.length = 0;
-    }
-
-    RecordedProgram& operator=(RecordedProgram && rhs)
-    {
-        this->data = rhs.data;
-        this->length = rhs.length;
-
-        rhs.data = nullptr;
-        rhs.length = 0;
-        return *this;
-    }
-
-    ~RecordedProgram()
-    {
-        if(this->data != nullptr)
-        {
-            free(this->data);
-        }
-        this->data = nullptr;
-        this->length = 0;
-    }
-};
 
 
 
@@ -76,11 +28,14 @@ struct TfliteMicroAcceleratorRecorder
     bool program_recording_enabled = false;
     bool data_recording_enabled = false;
     bool layer_started = false;
-    std::vector<RecordedProgram> programs;
+    bool program_started = false;
+    msgpack_context_t *program_context = nullptr;
 
-    void clear() 
+    void clear()
     {
-        programs.clear();
+        msgpack_buffered_writer_deinit(program_context, true);
+        program_context = nullptr;
+        program_started = false;
     }
 
     void set_program_recording_enabled(bool enabled = true)
@@ -96,6 +51,12 @@ struct TfliteMicroAcceleratorRecorder
     void start_layer()
     {
         layer_started = true;
+        program_started = false;
+        if(program_recording_enabled)
+        {
+            msgpack_buffered_writer_init(&program_context, 4096);
+            msgpack_write_array_marker(program_context, -1);
+        }
     }
 
     void end_layer()
@@ -103,33 +64,69 @@ struct TfliteMicroAcceleratorRecorder
         if(layer_started)
         {
             layer_started = false;
-            auto msgpack = get_layer_recording_context(true);
 
-            if(programs.size() > 0)
+            if(program_context != nullptr)
             {
-                msgpack_write_dict_array(msgpack, "programs", programs.size());
-                for(auto& p : programs)
+                if(msgpack_finalize_dynamic(program_context) == 0) // finalize the program array
                 {
-                    msgpack_write_bin(msgpack, p.data, p.length);
+                    auto msgpack = get_layer_recording_context(true);
+                    msgpack_write_dict_context(msgpack, "programs", program_context);
                 }
-                programs.clear();
+
+                msgpack_buffered_writer_deinit(program_context, true);
+                program_context = nullptr;
             }
         }
     }
 
     bool record_program(const void* data, unsigned length)
     {
-        if(!program_recording_enabled || ! layer_started)
+        if(!program_recording_enabled || ! layer_started || program_context == nullptr)
         {
             return false;
         }
-        programs.push_back({data, length});
+
+        _start_program();
+        msgpack_write_dict_bin(program_context, "data", data, length);
+        msgpack_finalize_dynamic(program_context); // finalize the program dict
+        program_started = false;
 
         return true;
     }
 
     template<typename T>
-    bool record_data(const char* key, const std::vector<T> data)
+    bool record_program_metadata(const char* key, T value)
+    {
+        if(!program_recording_enabled || ! layer_started || program_context == nullptr)
+        {
+            return false;
+        }
+        _start_program();
+        msgpack_write_dict(program_context, key, value);
+
+        return true;
+    }
+
+    template<typename T>
+    bool record_program_metadata(const char* key, const std::vector<T>& data)
+    {
+        if(!program_recording_enabled || ! layer_started || program_context == nullptr)
+        {
+            return false;
+        }
+
+        _start_program();
+        msgpack_write_dict_array(program_context, key, data.size());
+        for(T e : data)
+        {
+            msgpack_write(program_context, e);
+        }
+
+        return true;
+    }
+
+    template<typename T>
+    bool record_data(const char* key, const std::vector<T>& data)
     {
         if(!data_recording_enabled || !layer_started)
         {
@@ -137,12 +134,11 @@ struct TfliteMicroAcceleratorRecorder
         }
         auto msgpack = get_layer_recording_context(true);
         msgpack_write_dict_array(msgpack, key, data.size());
-        for(auto& e : data)
+        for(T e : data)
         {
             msgpack_write(msgpack, e);
         }
     }
-
 
     bool record_data(const char* key, const void* data, uint32_t length)
     {
@@ -202,8 +198,18 @@ struct TfliteMicroAcceleratorRecorder
         {
             instance = new(instance_buffer)TfliteMicroAcceleratorRecorder();
         }
-        
+
         return *instance;
+    }
+
+private:
+    void _start_program()
+    {
+        if(!program_started)
+        {
+            program_started = true;
+            msgpack_write_dict_marker(program_context, -1);
+        }
     }
 };
 
@@ -211,11 +217,12 @@ struct TfliteMicroAcceleratorRecorder
 } // namespace mltk
 
 
-#else 
+#else
 #define TFLITE_MICRO_ACCELERATOR_RECORDER_CLEAR()
 #define TFLITE_MICRO_ACCELERATOR_RECORDER_START_LAYER()
 #define TFLITE_MICRO_ACCELERATOR_RECORDER_END_LAYER()
 #define TFLITE_MICRO_ACCELERATOR_RECORD_PROGRAM(data, length)
+#define TFLITE_MICRO_ACCELERATOR_RECORD_PROGRAM_METADATA(key, data)
 #define TFLITE_MICRO_ACCELERATOR_RECORD_DATA(key, data, ...)
 
 #endif

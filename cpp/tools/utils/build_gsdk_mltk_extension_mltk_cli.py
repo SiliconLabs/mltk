@@ -4,7 +4,7 @@ import webbrowser
 import yaml
 import typer
 from mltk import cli, MLTK_ROOT_DIR
-
+from mltk.utils.cmake import build_mltk_target
 
 
 
@@ -20,9 +20,15 @@ def build_gsdk_mltk_extension_command(
     This allows for building and running the MLTK example C++ applications
     from the Simplicity Studio 5 development environment
     """
-    
+
     logger = cli.get_logger(verbose=True)
     gsdk_mltk_dir = f'{MLTK_ROOT_DIR}/cpp/shared/gecko_sdk'
+
+    try:
+        _update_mltk_dependencies(logger=logger)
+    except Exception as e:
+        cli.handle_exception('Failed to update MLTK C++ dependencies', e)
+
 
     try:
         gsdk_dir, git_tag = _get_gsdk_dir(gsdk_mltk_dir, logger=logger)
@@ -48,7 +54,7 @@ def build_gsdk_mltk_extension_command(
         _create_mltk_symlink(gsdk_dir, logger=logger)
     except Exception as e:
         cli.handle_exception('Failed to create symlink to MLTK', e)
-    
+
     try:
         _update_apps_xml(gsdk_mltk_dir, logger=logger)
     except Exception as e:
@@ -67,13 +73,23 @@ def build_gsdk_mltk_extension_command(
     logger.info('4. SDKs')
     logger.info('5. Add SDK...')
     logger.info(f'6. Update the Location to: {os.path.normpath(gsdk_dir)}')
-    logger.info(f'7. Click: OK')
-    logger.info(f'8. If prompted, click the "Trust" button')
-    logger.info(f'9. Click: Apply and Close')
+    logger.info('7. Click: OK')
+    logger.info('8. If prompted, click the "Trust" button')
+    logger.info('9. Click: Apply and Close')
     logger.info('\nAt this point, the "MLTK Gecko SDK Suite" is now available in Simplicity Studio 5')
     logger.info('From the Launcher, select your connected device, then select the "Preferred SDK" to be: MLTK Gecko SDK Suite')
     logger.info('The MLTK example applications should now be available for project creation.')
-    
+
+
+def _update_mltk_dependencies(logger):
+    """Clone all the embedded C++ dependencies"""
+    logger.info('Updating C++ dependencies')
+    build_mltk_target(
+        platform='brd2601',
+        config_only=True,
+        clean=True
+    )
+
 
 def _update_gsdk_properties_file(gsdk_dir, logger):
     """Update the .properties file to rename:
@@ -130,7 +146,7 @@ def _create_mltk_symlink(gsdk_dir, logger):
 
     dst_dir = os.path.normpath(f'{gsdk_dir}/extension/mltk')
     src_dir = os.path.normpath(os.path.realpath(f'{MLTK_ROOT_DIR}/cpp'))
-    
+
     logger.info(f'Creating symlink: {src_dir} <-> {dst_dir}')
     if not os.path.exists(dst_dir):
         if os.name == 'nt':
@@ -147,7 +163,7 @@ def _update_apps_xml(gsdk_mltk_dir, logger):
     project_path_re = re.compile(r'<properties key="projectFilePaths" value="([\w\.\/]+)"\/>')
     apps_xml_path = f'{gsdk_mltk_dir}/simplicity_studio/apps.xml'
     apps_xml_dir = os.path.dirname(apps_xml_path)
-    
+
     with open(apps_xml_path, 'r') as f:
         app_xml_lines = f.read().splitlines(keepends=True)
 
@@ -200,7 +216,7 @@ def _update_app_xml_entry(lines, start, end, project_path):
     with open(project_path, 'r') as f:
         project_data = yaml.load(f, Loader=yaml.SafeLoader)
 
-    
+
     description = _xml_escape(project_data['description'])
     _set_line(0, f'  <descriptors name="{project_data["project_name"]}" label="{project_data["label"]}" description="{description}">\n')
 
@@ -209,19 +225,19 @@ def _update_app_xml_entry(lines, start, end, project_path):
             _set_line(lineno, f'    <properties key="category" value="{project_data["category"]}" />\n')
         if line.strip().startswith('<properties key="quality"'):
             _set_line(lineno, f'    <properties key="quality" value="{project_data["quality"]}" />\n')
-    
+
     return updated
 
 
 def _get_gsdk_dir(gsdk_mltk_dir, logger) -> str:
-    """Get the path to the GSDK repo downloaded by the MLTK build scripts 
+    """Get the path to the GSDK repo downloaded by the MLTK build scripts
     """
     cmakeliststxt_path = f'{gsdk_mltk_dir}/CMakeLists.txt'
 
     cache_version_re = re.compile(r'\s*CACHE_VERSION\s+([\w\.]+)\s*.*')
     git_tag_re = re.compile(r'\s*GIT_TAG\s+([\w\.]+)\s*.*')
 
-    sdk_version = None 
+    sdk_version = None
     git_tag = None
     with open(cmakeliststxt_path, 'r') as f:
         for line in f:
@@ -231,7 +247,7 @@ def _get_gsdk_dir(gsdk_mltk_dir, logger) -> str:
             match = git_tag_re.match(line)
             if match:
                 git_tag = match.group(1)
-        
+
     if not (sdk_version and git_tag):
         raise RuntimeError(f'Failed to parse {cmakeliststxt_path} for GSDK version and GIT tag')
 
@@ -255,14 +271,14 @@ def _update_gsdk_dir(gsdk_dir, git_tag, logger):
         retcode, retmsg = run_shell_cmd(['git', 'clone', gsdk_git_url, version_dir], cwd=os.path.dirname(gsdk_dir), outfile=logger)
         if retcode  != 0:
             raise RuntimeError(f'Failed to clone {gsdk_git_url} to {gsdk_dir}')
-    
+
         retcode, retmsg = run_shell_cmd(['git', 'checkout', git_tag], cwd=gsdk_dir, outfile=logger)
         if retcode != 0:
             raise RuntimeError(f'Failed to checkout {git_tag} from  {gsdk_dir}')
-    
+
     else:
         logger.info(f'Updating {gsdk_dir}\nNOTE: This may take awhile as all of the GSDK binary assets need to be downloaded ...')
         retcode, retmsg = run_shell_cmd(['git', 'lfs', 'pull'], cwd=gsdk_dir, outfile=logger)
         if retcode  != 0:
             raise RuntimeError(f'Failed to update {gsdk_dir}')
-    
+

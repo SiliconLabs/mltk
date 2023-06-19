@@ -80,7 +80,9 @@ class DictObject(dict):
 
 
 def merge_dict(destination: dict, source: dict, copy_destination=False) -> dict:
-    """Merge the source dictionary into the destination and return the destination"""
+    """Recursively merge the source dictionary into the destination and return the destination
+
+    """
     if copy_destination:
         destination = copy.deepcopy(destination)
 
@@ -166,7 +168,7 @@ def is_true(arg) -> bool:
         return arg
     if isinstance(arg, int):
         return arg != 0
-    raise Exception(f'Invalid boolean arg: {arg}')
+    raise ValueError(f'Invalid boolean arg: {arg}')
 
 def is_false(arg) -> bool:
     """Return if the given argument is a False value"""
@@ -176,7 +178,7 @@ def is_false(arg) -> bool:
         return arg
     if isinstance(arg, int):
         return arg == 0
-    raise Exception(f'Invalid boolean arg: {arg}')
+    raise ValueError(f'Invalid boolean arg: {arg}')
 
 
 def forward_method_kwargs(**kwargs) -> dict:
@@ -291,7 +293,7 @@ def install_pip_package(
     logger.warning(f'Running cmd: {" ".join(cmd)}\n(This may take awhile, please be patient ...)')
     retcode, retval = run_shell_cmd(cmd, outfile=logger)
     if retcode != 0:
-        raise Exception(f'Failed to install pip package: {package}, err:\n{retval}')
+        raise RuntimeError(f'Failed to install pip package: {package}, err:\n{retval}')
 
 
 def import_module_at_path(path:str, reload=False):
@@ -327,7 +329,7 @@ def import_module_at_path(path:str, reload=False):
     # Else the path to external Python directory was provided
     else:
         if not os.path.exists(f'{path}/__init__.py'):
-            raise Exception(f'Given path to directory: {path} does not contain a __init__.py file')
+            raise RuntimeError(f'Given path to directory: {path} does not contain a __init__.py file')
 
         parent_dir = os.path.dirname(path).replace('\\', '/')
         module_name = os.path.basename(path)
@@ -495,8 +497,8 @@ def find_object_value_with_key_or_value(
 def timeit(method):
     """Decorator to measure time it takes for method or function to execute"""
     def timed(*args, **kw):
+        ts = time.time()
         try:
-            ts = time.time()
             return method(*args, **kw)
         finally:
             te = time.time()

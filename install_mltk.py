@@ -5,7 +5,6 @@ _version = sys.version_info
 _architecture_bits = platform.architecture()[0]
 if _version[0] != 3 or _version[1] < 7 or _version[1] >= 11 or _architecture_bits != '64bit':
     sys.stdout.write(f'Cannot install MLTK, Python 64-bit, version 3.7, 3.8, 3.9, 3.10 is required (current version is: Python {_architecture_bits}  v{_version[0]}.{_version[1]})\n')
-    sys.stdout
     sys.exit(-1)
 
 import argparse

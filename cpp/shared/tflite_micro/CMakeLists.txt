@@ -18,11 +18,11 @@ mltk_info("Processing Tensorflow-Lite Micro repository (this may take awhile) ..
 # <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_tflite_micro_reference_kernels.slcc
 # Also be sure to update the TFLITE_MICRO_VERSION_STR define in the mltk_tflite_micro.slcc
 # Also update the <mltk root>/README.md with the version change
-set(_tflm_cache_version "feb1_2023")
+set(_tflm_cache_version "jun13_2023")
 CPMAddPackage(
 NAME Tensorflow
   GITHUB_REPOSITORY tensorflow/tflite-micro
-  GIT_TAG 1caee4d5045f2744515fb8ca063bc66958e3f79b # latest master as of Feb 1st, 2023
+  GIT_TAG 9bc9deab8db4d24dcca4070c8153e7d7b5d28770 # latest master as of ${_tflm_cache_version}
   DOWNLOAD_ONLY ON
   CACHE_SUBDIR tflite_micro
   CACHE_VERSION ${_tflm_cache_version}
@@ -98,16 +98,16 @@ tensorflow/lite/schema/schema_utils.cc
 tensorflow/lite/kernels/internal/quantization_util.cc
 tensorflow/lite/kernels/internal/portable_tensor_utils.cc
 tensorflow/lite/kernels/internal/tensor_utils.cc
+tensorflow/lite/kernels/internal/tensor_ctypes.cc
 tensorflow/lite/kernels/internal/reference/portable_tensor_utils.cc
+tensorflow/lite/kernels/internal/reference/comparisons.cc
 tensorflow/lite/kernels/kernel_util.cc
 tensorflow/lite/micro/arena_allocator/non_persistent_arena_buffer_allocator.cc
 tensorflow/lite/micro/arena_allocator/persistent_arena_buffer_allocator.cc
 tensorflow/lite/micro/arena_allocator/recording_single_arena_buffer_allocator.cc
 tensorflow/lite/micro/arena_allocator/single_arena_buffer_allocator.cc
-tensorflow/lite/micro/tflite_bridge/op_resolver_bridge.cc
 tensorflow/lite/micro/tflite_bridge/micro_error_reporter.cc
 tensorflow/lite/micro/tflite_bridge/flatbuffer_conversions_bridge.cc
-tensorflow/lite/micro/all_ops_resolver.cc
 tensorflow/lite/micro/debug_log.cc
 tensorflow/lite/micro/fake_micro_context.cc
 tensorflow/lite/micro/flatbuffer_utils.cc
@@ -118,6 +118,7 @@ tensorflow/lite/micro/micro_context.cc
 #tensorflow/lite/micro/micro_graph.cc # This is overridden to enable recording and profiling
 tensorflow/lite/micro/micro_interpreter.cc
 #tensorflow/lite/micro/micro_log.cc  # This is overridden
+tensorflow/lite/micro/micro_op_resolver.cc
 tensorflow/lite/micro/micro_profiler.cc
 tensorflow/lite/micro/micro_resource_variable.cc
 tensorflow/lite/micro/micro_string.cc
@@ -183,7 +184,8 @@ tensorflow/lite/micro/kernels/logical_common.cc
 tensorflow/lite/micro/kernels/logical.cc
 tensorflow/lite/micro/kernels/logistic_common.cc
 tensorflow/lite/micro/kernels/logistic.cc
-tensorflow/lite/micro/kernels/lstm_eval_internal.cc
+tensorflow/lite/micro/kernels/lstm_eval_common.cc
+tensorflow/lite/micro/kernels/lstm_eval.cc
 tensorflow/lite/micro/kernels/maximum_minimum.cc
 tensorflow/lite/micro/kernels/mirror_pad.cc
 tensorflow/lite/micro/kernels/mul.cc
@@ -224,7 +226,7 @@ tensorflow/lite/micro/kernels/tanh.cc
 tensorflow/lite/micro/kernels/unpack.cc
 tensorflow/lite/micro/kernels/transpose_conv.cc
 tensorflow/lite/micro/kernels/transpose.cc
-tensorflow/lite/micro/kernels/unidirectional_sequence_lstm_internal.cc
+tensorflow/lite/micro/kernels/unidirectional_sequence_lstm.cc
 tensorflow/lite/micro/kernels/unpack.cc
 tensorflow/lite/micro/kernels/var_handle.cc
 tensorflow/lite/micro/kernels/while.cc
@@ -258,6 +260,7 @@ target_sources(${PROJECT_NAME}
 PRIVATE
     ${tflm_sources}
     ${tflm_overidden_kernels}
+    all_ops_resolver.cc
     micro_graph.cc
     micro_interpreter_override.cc
     micro_log.cc
@@ -388,6 +391,7 @@ PUBLIC
   -Wno-unused-variable
   -Wno-unused-value
   -Wno-psabi
+  -Wno-stringop-overflow
 )
 
 

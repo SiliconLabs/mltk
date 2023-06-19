@@ -11,23 +11,24 @@ add_library(mltk::msgpack ALIAS ${PROJECT_NAME})
 find_package(mltk_str_util REQUIRED)
 find_package(mltk_dynamic_buffer REQUIRED)
 
-target_sources(${PROJECT_NAME} 
-PRIVATE 
+target_sources(${PROJECT_NAME}
+PRIVATE
     src/msgpack.c
-    src/msgpack_deserialize.c 
+    src/msgpack_deserialize.c
     src/msgpack_serialize.c
     src/msgpack_buffered_writer.c
+    src/msgpack_dump.c
 )
 
 target_include_directories(${PROJECT_NAME}
-PRIVATE 
+PRIVATE
     ./src
-PUBLIC 
+PUBLIC
     ${PROJECT_SOURCE_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME}
-PRIVATE 
+PRIVATE
     mltk::str_util
     mltk::dynamic_buffer
 )

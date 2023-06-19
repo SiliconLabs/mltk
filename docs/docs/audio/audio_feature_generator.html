@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>Audio Feature Generator &#8212; MLTK 0.16.0 documentation</title>
+    <title>Audio Feature Generator &#8212; MLTK 0.17.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../index.html" title="MLTK 0.16.0 documentation"
+        <a href="../../index.html" title="MLTK 0.17.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../_static/logo.png"
-                   alt="MLTK 0.16.0 documentation logo">
+                   alt="MLTK 0.17.0 documentation logo">
           
         </a>
       </div>
@@ -198,13 +198,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../index.html" title="MLTK 0.16.0 documentation" class="md-nav__button md-logo">
+    <a href="../../index.html" title="MLTK 0.17.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../index.html"
-       title="MLTK 0.16.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.17.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -637,15 +637,14 @@ When the <a class="reference internal" href="../python_api/data_preprocessing/au
 <section id="usage">
 <h3 id="usage">Usage<a class="headerlink" href="#usage" title="Permalink to this heading">¶</a></h3>
 <p>The recommended way of using the AudioFeatureGenerator <a class="reference internal" href="../cpp_development/wrappers/audio_feature_generator_wrapper.html"><span class="doc std std-doc">C++ wrapper</span></a>
-is via the <a class="reference internal" href="../python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator" title="mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator"><span class="xref myst py py-class">ParallelAudioDataGenerator</span></a> which is required by the
-<a class="reference internal" href="../python_api/mltk_model/audio_dataset_mixin.html#mltk.core.AudioDatasetMixin" title="mltk.core.AudioDatasetMixin"><span class="xref myst py py-class">AudioDatasetMixin</span></a>.</p>
-<p>Refer to the <a class="reference external" href="https://github.com/siliconlabs/mltk/tree/master/mltk/models/siliconlabs/keyword_spotting_on_off.py">keyword_spotting_on_off.py</a> <a class="reference internal" href="../guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> for an example of how this is used.</p>
+is by calling the <a class="reference external" href="../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.apply_frontend">mltk.core.preprocess.utils.audio.apply_frontend()</a> API.</p>
+<p>Refer to the <a class="reference external" href="https://github.com/siliconlabs/mltk/tree/master/mltk/models/siliconlabs/keyword_spotting_on_off_v3.py">keyword_spotting_on_off_v3.py</a> <a class="reference internal" href="../guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> for an example of how this is used.</p>
 <p>Basically,</p>
-<p>1 ) In your <a class="reference internal" href="../guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> file, define a model object to inherit the <a class="reference internal" href="../python_api/mltk_model/audio_dataset_mixin.html#mltk.core.AudioDatasetMixin" title="mltk.core.AudioDatasetMixin"><span class="xref myst py py-class">AudioDatasetMixin</span></a>, e.g.:</p>
+<p>1 ) In your <a class="reference internal" href="../guides/model_specification.html"><span class="doc std std-doc">model specification</span></a> file, define a model object to inherit the <a class="reference internal" href="../python_api/mltk_model/dataset_mixin.html#mltk.core.DatasetMixin" title="mltk.core.DatasetMixin"><span class="xref myst py py-class">DatasetMixin</span></a>, e.g.:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span> 
     <span class="n">TrainMixin</span><span class="p">,</span> 
-    <span class="n">AudioDatasetMixin</span><span class="p">,</span> 
+    <span class="n">DatasetMixin</span><span class="p">,</span> 
     <span class="n">EvaluateClassifierMixin</span>
 <span class="p">):</span>
     <span class="k">pass</span>
@@ -656,30 +655,44 @@ is via the <a class="reference internal" href="../python_api/data_preprocessing/
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>
 <span class="n">frontend_settings</span> <span class="o">=</span> <span class="n">AudioFeatureGeneratorSettings</span><span class="p">()</span>
 
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="mi">8000</span>  <span class="c1"># This can also be 16k for slightly better performance at the cost of more RAM</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="mi">16000</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="mi">1000</span>                       <span class="c1"># A 1s buffer should be enough to capture the keywords</span>
 <span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_size_ms</span> <span class="o">=</span> <span class="mi">30</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_step_ms</span> <span class="o">=</span> <span class="mi">20</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_n_channels</span> <span class="o">=</span> <span class="mi">32</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_upper_band_limit</span> <span class="o">=</span> <span class="mf">4000.0</span><span class="o">-</span><span class="mi">1</span> <span class="c1"># Spoken language usually only goes up to 4k</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_lower_band_limit</span> <span class="o">=</span> <span class="mf">100.0</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_enable</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_smoothing_bits</span> <span class="o">=</span> <span class="mi">5</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_even_smoothing</span> <span class="o">=</span> <span class="mf">0.004</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_odd_smoothing</span> <span class="o">=</span> <span class="mf">0.004</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_min_signal_remaining</span> <span class="o">=</span> <span class="mf">0.05</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_enable</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_strength</span> <span class="o">=</span> <span class="mf">0.95</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_offset</span> <span class="o">=</span> <span class="mf">80.0</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">pcan_gain_bits</span> <span class="o">=</span> <span class="mi">21</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">log_scale_enable</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="n">frontend_settings</span><span class="o">.</span><span class="n">log_scale_shift</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">window_step_ms</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_n_channels</span> <span class="o">=</span> <span class="mi">104</span>                   <span class="c1"># We want this value to be as large as possible</span>
+                                                                <span class="c1"># while still allowing for the ML model to execute efficiently on the hardware</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_upper_band_limit</span> <span class="o">=</span> <span class="mf">7500.0</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">filterbank_lower_band_limit</span> <span class="o">=</span> <span class="mf">125.0</span>           <span class="c1"># The dev board mic seems to have a lot of noise at lower frequencies</span>
+
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_enable</span> <span class="o">=</span> <span class="kc">True</span>                 <span class="c1"># Enable the noise reduction block to help ignore background noise in the field</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_smoothing_bits</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_even_smoothing</span> <span class="o">=</span>  <span class="mf">0.025</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_odd_smoothing</span> <span class="o">=</span> <span class="mf">0.06</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">noise_reduction_min_signal_remaining</span> <span class="o">=</span> <span class="mf">0.40</span>   <span class="c1"># This value is fairly large (which makes the background noise reduction small)</span>
+                                                                <span class="c1"># But it has been found to still give good results</span>
+                                                                <span class="c1"># i.e. There is still some background noise reduction,</span>
+                                                                <span class="c1"># but the actual signal is still (mostly) untouched</span>
+
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">dc_notch_filter_enable</span> <span class="o">=</span> <span class="kc">True</span>                 <span class="c1"># Enable the DC notch filter, to help remove the DC signal from the dev board's mic</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">dc_notch_filter_coefficient</span> <span class="o">=</span> <span class="mf">0.95</span>
+
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">quantize_dynamic_scale_enable</span> <span class="o">=</span> <span class="kc">True</span>          <span class="c1"># Enable dynamic quantization, this dynamically converts the uint16 spectrogram to int8</span>
+<span class="n">frontend_settings</span><span class="o">.</span><span class="n">quantize_dynamic_scale_range_db</span> <span class="o">=</span> <span class="mf">40.0</span>
+
+<span class="c1"># Add the Audio Feature generator settings to the model parameters</span>
+<span class="c1"># This way, they are included in the generated .tflite model file</span>
+<span class="c1"># See https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">frontend_settings</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>3 ) Configure the <a class="reference internal" href="../python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator" title="mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator"><span class="xref myst py py-class">ParallelAudioDataGenerator</span></a> to use the settings, e.g.:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">datagen</span> <span class="o">=</span> <span class="n">ParallelAudioDataGenerator</span><span class="p">(</span>
-    <span class="n">frontend_settings</span><span class="o">=</span><span class="n">frontend_settings</span><span class="p">,</span>
-    <span class="o">...</span>
+<p>3 ) Configure the your data pipeline to call the frontend:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mltk.core.preprocess.utils</span> <span class="kn">import</span> <span class="n">audio</span> <span class="k">as</span> <span class="n">audio_utils</span>
+
+<span class="n">spectrogram</span> <span class="o">=</span> <span class="n">audio_utils</span><span class="o">.</span><span class="n">apply_frontend</span><span class="p">(</span>
+   <span class="n">sample</span><span class="o">=</span><span class="n">augmented_sample</span><span class="p">,</span>
+   <span class="n">settings</span><span class="o">=</span><span class="n">frontend_settings</span><span class="p">,</span>
+   <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 <p>During model <a class="reference internal" href="../guides/model_training.html"><span class="doc std std-doc">training</span></a>, spectrograms will be dynamically generated from the dataset’s audio samples using the
@@ -749,7 +762,7 @@ It allows for adjusting the various spectrogram settings and seeing how the resu
               
           </div>
             Last updated on
-              Mar 30, 2023.
+              Jun 19, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

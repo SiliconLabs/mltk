@@ -1,11 +1,11 @@
-#pragma once 
+#pragma once
 
 #include <cstdint>
 
 #include "logging/logging.hpp"
 #include "tflite_micro_model/tflite_micro_model.hpp"
 #include "tflite_micro_model/tflite_micro_tensor.hpp"
-#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "all_ops_resolver.h"
 #include "fingerprint_reader/fingerprint_reader.h"
 
 #include "fingerprint_vault.h"
@@ -27,29 +27,29 @@ public:
     bool load_model(const void* flatbuffer);
 
     bool generate_signature(
-        const fingerprint_reader_image_t fingerprint_image, 
+        const fingerprint_reader_image_t fingerprint_image,
         FingerprintSignature& signature,
         bool &fingerprint_image_valid
     );
 
     bool authenticate_signature(
-        const FingerprintSignature &signature, 
+        const FingerprintSignature &signature,
         int32_t &user_id
     );
     bool save_signature(
-        const FingerprintSignature &signature, 
+        const FingerprintSignature &signature,
         int32_t user_id
     );
     bool remove_signatures(int32_t user_id);
 
 
-    bool is_disabled() const 
+    bool is_disabled() const
     {
         return _disabled;
     }
 
     static const char* signature_to_str(const FingerprintSignature& signature, char* buffer = nullptr);
-    
+
 
 private:
     tflite::AllOpsResolver _op_resolver;

@@ -12,6 +12,8 @@ macro(mltk_commander_add_download_target target)
   mltk_get(MLTK_JLINK_SERIAL_NUMBER)
   mltk_get(MLTK_DOWNLOAD_RUN_SERIAL_NUMBER)
   mltk_get(MLTK_DOWNLOAD_RUN_IP_ADDRESS)
+  mltk_get(MLTK_DOWNLOAD_RUN_SETUP_SCRIPT)
+  mltk_get(MLTK_DOWNLOAD_RUN_SETUP_SCRIPT_ARGS)
 
   if(MLTK_JLINK_DEVICE)
     set(device_arg --device ${MLTK_JLINK_DEVICE})
@@ -28,9 +30,23 @@ macro(mltk_commander_add_download_target target)
     set(ip_address_arg --ip-address ${MLTK_DOWNLOAD_RUN_IP_ADDRESS})
   endif()
 
+  if(MLTK_DOWNLOAD_RUN_SETUP_SCRIPT)
+    if(MLTK_DOWNLOAD_RUN_SETUP_SCRIPT_ARGS)
+      separate_arguments(_setup_script_args NATIVE_COMMAND ${MLTK_DOWNLOAD_RUN_SETUP_SCRIPT_ARGS})
+    endif()
+    add_custom_target(${target}_run_setup_script
+      COMMAND ${PYTHON_EXECUTABLE} "${MLTK_DOWNLOAD_RUN_SETUP_SCRIPT}" ${_setup_script_args}
+      DEPENDS ${target}
+      COMMENT "Executing ${PYTHON_EXECUTABLE} ${MLTK_DOWNLOAD_RUN_SETUP_SCRIPT} ${MLTK_DOWNLOAD_RUN_SETUP_SCRIPT_ARGS}"
+      USES_TERMINAL
+    )
+  else()
+    add_custom_target(  ${target}_run_setup_script )
+  endif()
+
   add_custom_target(${target}_download
     COMMAND ${PYTHON_EXECUTABLE} "${MLTK_DIR}/utils/commander/commander.py" --platform ${MLTK_PLATFORM_NAME} --path "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.s37" --clear_end_of_flash ${device_arg} ${serial_number_arg} ${ip_address_arg}
-    DEPENDS ${target}
+    DEPENDS ${target} ${target}_run_setup_script
     COMMENT "Downloading ${target}.s37 to ${MLTK_PLATFORM_NAME}'s flash ..."
     USES_TERMINAL
   )

@@ -52,6 +52,9 @@ If omitted, then attempt to automatically determine the serial COM port''',
     ),
     post_process: bool = typer.Option(False, '--post',
         help='This allows for post-processing the profiling results (e.g. uploading to a cloud) if supported by the given MltkModel'
+    ),
+    full_summary: bool = typer.Option(False, '--full-summary',
+        help='Generate a full summary from the profiling report. This includes any extra info logged by the selected accelerator'
     )
 ):
     """Profile a model to determine how efficiently is may run on hardware
@@ -119,10 +122,14 @@ If omitted, then attempt to automatically determine the serial COM port''',
         logger.info(f'Generating profiling report at {output}')
         profiling_report.generate_report(
             output_dir=output,
-            format_units=not no_format_units
+            format_units=not no_format_units,
+            full_summary=full_summary
         )
     else:
-        cli.print_info('\n' + profiling_report.to_string(format_units=not no_format_units))
+        cli.print_info('\n' + profiling_report.to_string(
+            format_units=not no_format_units,
+            full_summary=full_summary
+        ))
 
     cli.print_info(f'Profiling time: {time.time()-start_time:3f} seconds')
 

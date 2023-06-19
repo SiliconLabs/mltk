@@ -587,8 +587,10 @@ enum msgpack_flag_enum
     MSGPACK_FLAGS_NONE = 0,                                 //!< No flags
     MSGPACK_DESERIALIZE_WITH_PERSISTENT_STRINGS = (1 << 0), //!< If specified, strings within the de-serialize objects will persist after the provided buffer is freed
                                                             //!< If NOT specified, then strings will NOT be valid after the provided buffer is freed
-    MSGPACK_PACK_16BIT_DICTS                    = (1 << 1)  //!< If specified, the dictionary length is always 16bits
+    MSGPACK_PACK_16BIT_DICTS                    = (1 << 1), //!< If specified, the dictionary length is always 16bits
                                                             //!< If NOT specified, the dictionary length is variable based on the provided element count
+
+    _MSGPACK_BUFFERED_WRITER                    = (1 << 31) //!< This is used internally to indicate if the contents was initialized as a buffered writer
 };
 
 
@@ -621,7 +623,7 @@ typedef struct
         uint8_t *end;           ///< Address of end of buffer ( end = buffer + sizeof(buffer) )
     } buffer;
     msgpack_writer_t writer;    ///< Data writer, see @ref msgpack_writer_t
-    
+
     void *user;                 ///< Optional user argument to pass to @ref msgpack_writer_t
 #ifdef MSGPACK_MAX_NESTED_CONTAINERS
     struct
@@ -642,13 +644,13 @@ typedef struct
  *
  * @param buffer Data buffer to initialize context with
  * @param uint32_t Length of supplied data buffer
- * @return Initialize @ref msgpack_context_t 
+ * @return Initialize @ref msgpack_context_t
  */
 static inline msgpack_context_t msgpack_init_with_buffer(uint8_t* buffer, uint32_t length)
 {
-    msgpack_context_t context = 
+    msgpack_context_t context =
     {
-        .buffer = 
+        .buffer =
         {
             .buffer = buffer,
             .ptr = buffer,
@@ -670,10 +672,10 @@ static inline msgpack_context_t msgpack_init_with_buffer(uint8_t* buffer, uint32
  * @param user Optional user argument given to the data writer
  */
 static inline msgpack_context_t msgpack_init_with_writer(msgpack_writer_t writer, void* user)
-{        
-    msgpack_context_t context = 
+{
+    msgpack_context_t context =
     {
-        .buffer = 
+        .buffer =
         {
             .buffer = NULL,
             .ptr = NULL,
@@ -806,10 +808,32 @@ msgpack_object_t* msgpack_get_array_object(const msgpack_object_array_t *array, 
  * @param dict_or_array A @ref msgpack_object_dict_t or @ref msgpack_object_array_t object to iterate
  * @param iterator_callback @ref msgpack_iterator_t callback to be invoked for each entry in the dictionary or array
  * @param arg Custom argument to pass to the `iterator_callback`
- * @param depth Recursion depth, 0 will only iterate the entries in the given `dict_or_array`, greater than 0 will iterate sub array/dictionaries
+ * @param recursive_depth Recursion depth, 0 will only iterate the entries in the given `dict_or_array`, greater than 0 will iterate sub array/dictionaries
  * @return 0 if all all entries iterated, else failure
  */
-int msgpack_foreach(const msgpack_object_t *dict_or_array, msgpack_iterator_t iterator_callback, void *arg, uint32_t recursive_depth);
+int msgpack_foreach(
+    const msgpack_object_t *dict_or_array,
+    msgpack_iterator_t iterator_callback,
+    void *arg,
+    uint32_t recursive_depth
+);
+
+/**
+ * Recursively dump the contents of the given dict or array as a string
+ *
+ * @param dict_or_array A @ref msgpack_object_dict_t or @ref msgpack_object_array_t object to iterate
+ * @param recursive_depth Recursion depth, 0 will only iterate the entries in the given `dict_or_array`, greater than 0 will iterate sub array/dictionaries
+ * @param write_callback Callback to invoke to write the generate strings
+ * @param write_callback_arg Optional argument to pass to `write_callback`
+ *
+ * @return 0 if all all entries dumped, else failure
+*/
+int msgpack_dump(
+    const msgpack_object_t *dict_or_array,
+    uint32_t recursive_depth,
+    void (*write_callback)(const char*, void*),
+    void *write_callback_arg
+);
 
 /**
  * Convert a @ref msgpack_object_t to a string
@@ -834,7 +858,7 @@ char* msgpack_to_str(const msgpack_object_t *obj, char *buffer, uint32_t max_len
  * @param obj Object to remove and de-allocate from dictionary
  * @return @ref result_t of API call
  */
-int      msgpack_remove_dict_object(msgpack_object_dict_t *dict_obj, void *obj);
+int  msgpack_remove_dict_object(msgpack_object_dict_t *dict_obj, void *obj);
 
 /**
  * Return if an object is a given type
@@ -1116,7 +1140,7 @@ int msgpack_write_bin_marker(msgpack_context_t *context, uint32_t size);
  * The @ref msgpack_context_t should have been previously initialized.
  *
  * @note The msgpack_write_dict_xxx APIs may be used to write the dictionary key/values.
- * 
+ *
  * @note Set the `size` to `-1` to automatically count the number of elements.
  * In this case, @ref msgpack_finalize_dynamic() must be called once the elements are written.
  *
@@ -1133,7 +1157,7 @@ int msgpack_write_dict_marker(msgpack_context_t *context, int32_t size);
  * The array values MUST be immediately written after calling this function.
  *
  * The @ref msgpack_context_t should have been previously initialized.
- * 
+ *
  * @note Set the `size` to `-1` to automatically count the number of elements.
  * In this case, @ref msgpack_finalize_dynamic() must be called once the elements are written.
  *
@@ -1300,7 +1324,7 @@ int msgpack_write_dict_bin(msgpack_context_t *context, const char*key, const voi
  * The @ref msgpack_context_t should have been previously initialized.
  *
  * @ref msgpack_write_dict_marker() MUST have been previously called to specify the dictionary.
- * 
+ *
  * @note Set the `dict_count` to `-1` to automatically count the number of elements.
  * In this case, @ref msgpack_finalize_dynamic() must be called once the elements are written.
  *
@@ -1318,7 +1342,7 @@ int msgpack_write_dict_dict(msgpack_context_t *context, const char*key, int32_t 
  * The @ref msgpack_context_t should have been previously initialized.
  *
  * @ref msgpack_write_dict_marker() MUST have been previously called to specify the dictionary.
- * 
+ *
  * @note Set the `array_count` to `-1` to automatically count the number of elements.
  * In this case, @ref msgpack_finalize_dynamic() must be called once the elements are written.
  *
@@ -1348,15 +1372,15 @@ int msgpack_write_dict_context(msgpack_context_t *context, const char*key, const
 
 /**
  * Finalize a dynamic dict or array
- * 
+ *
  * When calling @ref msgpack_write_dict_marker(), @ref msgpack_write_dict_array_marker(),
  * @ref msgpack_write_dict_dict(), or @ref msgpack_write_dict_array() with the "count" argument
  * set to `-1` then the number of elements written will be automatically counted as they're written.
  * Once all of the desired elements are written, this API should be called to finalize th actual count.
- * 
+ *
  * @note This feature does have an overhead in that the element count always uses 16-bits.
  *       There is also an upper limit of 65535 elements that may be stored.
- * 
+ *
  * @param context Previously initialize @ref msgpack_context_t
  * @return 0 on success
 */

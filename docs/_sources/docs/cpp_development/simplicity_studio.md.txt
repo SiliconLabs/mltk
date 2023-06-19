@@ -168,7 +168,7 @@ From Simplicity Studio,
 3. The on the sidebar, expand the __Simplicity Studio__ entry
 4. Click the __SDKs__ entry
 5. Click the __Add SDK...__ button
-6. Populate the __Location__ with the path to the locally cloned GSDK, e.g. `<mltk repo root>/cpp/shared/gecko_sdk/v4.2.1`
+6. Populate the __Location__ with the path to the locally cloned GSDK, e.g. `<mltk repo root>/cpp/shared/gecko_sdk/v4.3.0`
 7. Click: __OK__
 9. If prompted, click the __Trust__ button to "trust" the locally cloned MLTK GSDK
 9. Click: __Apply and Close__

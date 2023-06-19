@@ -5,6 +5,7 @@
 #include <complex>
 
 
+#include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/c/builtin_op_data.h"
 #include "tensorflow/lite/kernels/internal/types.h"
@@ -58,7 +59,6 @@
     if(status != kTfLiteOk) return status; \
 }
 #define GET_SCRATCH_BUFFER(type, scratch_buffer_index) ::mltk::get_scratch_buffer<type>(context, scratch_buffer_index)
-#define ENSURE_POINTER_STATUS(ptr) if(ptr == nullptr){ assert(ptr != nullptr); return kTfLiteError; }
 #define MLTK_KERNEL_UNSUPPORTED_MSG(fmt, ...) ::mltk::issue_unsupported_kernel_message(fmt, ## __VA_ARGS__);
 
 
@@ -90,12 +90,15 @@ struct TfliteMicroAccelerator
 
 extern bool model_profiler_enabled;
 extern bool model_tensor_recorder_enabled;
-extern bool model_error_reporter_enabled;
-extern bool model_has_unsupported_layers;
+extern bool model_has_unknown_layers;
 extern const char* TFLITE_MICRO_VERSION;
 
 
 extern "C" DLL_EXPORT void issue_unsupported_kernel_message(const char* fmt, ...);
+extern "C" DLL_EXPORT void flush_unsupported_kernel_messages(logging::Level level = logging::Warn);
+extern "C" DLL_EXPORT void reset_unsupported_kernel_messages();
+extern "C" DLL_EXPORT bool has_unsupported_kernel_messages();
+extern "C" DLL_EXPORT void set_unsupported_kernel_messages_enabled(bool enabled);
 extern "C" DLL_EXPORT void mltk_tflite_micro_set_accelerator(const TfliteMicroAccelerator* accelerator);
 extern "C" DLL_EXPORT const TfliteMicroAccelerator* mltk_tflite_micro_get_registered_accelerator();
 extern "C" DLL_EXPORT void mltk_tflite_micro_get_current_layer_opcode_and_index(int* opcode, int* index);
@@ -108,8 +111,19 @@ bool set_log_level(LogLevel level);
 TfLiteStatus allocate_scratch_buffer(TfLiteContext *ctx, unsigned size_bytes, int *scratch_buffer_index);
 const void* get_metadata_from_tflite_flatbuffer(const void* tflite_flatbuffer, const char* tag, uint32_t* length = nullptr);
 bool get_tflite_flatbuffer_from_end_of_flash(const uint8_t** tflite_flatbuffer, uint32_t* length=nullptr, const uint32_t* flash_end_addr=nullptr);
+const char* to_str(tflite::BuiltinOperator op_type);
+const char* op_to_str(int op_idx, tflite::BuiltinOperator op_type);
 
 
+
+/*************************************************************************************************/
+static inline const char* get_current_layer_str()
+{
+    int opcode;
+    int index;
+    mltk_tflite_micro_get_current_layer_opcode_and_index(&opcode, &index);
+    return op_to_str(index, (tflite::BuiltinOperator)opcode);
+}
 
 /*************************************************************************************************/
 template<typename T>

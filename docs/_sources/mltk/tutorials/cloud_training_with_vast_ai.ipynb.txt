@@ -4,6 +4,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -42,6 +44,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -68,13 +72,15 @@
 
     "\n",
 
-    "__In this tutorial, we credit our account with $10__ which is more than enough to train the [keyword_spotting_on_off_v2](../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.md) model in less than one hour (note that on typical laptops, it can take 12hr+ to train this model)."
+    "__In this tutorial, we credit our account with $10__ which is more than enough to train the [keyword_spotting_on_off_v3](../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v3.md) model in less than one hour (note that on typical laptops, it can take 12hr+ to train this model)."
 
    ]
 
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -97,6 +103,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -135,6 +143,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -232,6 +242,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -266,6 +278,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -299,6 +313,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -356,6 +372,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -381,6 +399,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -417,6 +437,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -459,6 +481,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -522,6 +546,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -560,6 +586,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -589,6 +617,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -758,6 +788,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -828,6 +860,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -866,7 +900,7 @@
 
     "\n",
 
-    "For this tutorial, we'll train the reference model: [keyword_spotting_on_off_v2](../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.md).  \n",
+    "For this tutorial, we'll train the reference model: [keyword_spotting_on_off_v3](../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v3.md).  \n",
 
     "Note that while this is a \"Keyword Spotting\" model, any other type of model will work similarly.\n",
 
@@ -882,6 +916,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -892,31 +928,29 @@
 
     "\n",
 
-    "1. Download the model specification file (i.e. python script): [keyword_spotting_on_off_v2.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v2.py) to your local machine\n",
+    "1. Download the model specification file (i.e. python script): [keyword_spotting_on_off_v3.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v3.py) to your local machine\n",
 
-    "2. Open `keyword_spotting_on_off_v2.py` on your local machine in a text editor\n",
+    "2. Open `keyword_spotting_on_off_v3.py` on your local machine in a text editor\n",
 
-    "3. Locate the line `my_model.datagen = ParallelAudioDataGenerator(`  \n",
+    "3. Locate the line `features_ds, pool = tf_dataset_utils.parallel_process(`  \n",
 
-    "   We need to adjust two settings to take advantage of the large cloud machine:\n",
+    "   We need to adjust one settings to take advantage of the large cloud machine:\n",
 
-    "4. Change the line `cores=0.45,` to `cores=72,`  \n",
+    "4. Change the line `n_jobs=8,` to `n_jobs=72 if subset == 'training' else 32, # These are the settings for a 128 CPU core cloud machine`  \n",
 
-    "   i.e. Instead of using 45% of the available cores, we'll hardcode to using 72 cores.  \n",
+    "   i.e. Instead of using 8 of the available cores, we'll hardcode to using 72 cores for training and 32 for validation.   \n",
 
-    "   Note that we don't want to use all the cores for augmentations, we'll save the cores for doing other training tasks (which the system automatically manages)\n",
+    "   Note that we don't want to use all the cores for augmentations, we'll save the cores for doing other training tasks (which the system automatically manages)  \n",
 
-    "   Also, there is an upper limit to the number of processes that can be spun up in the linux environment\n",
-
-    "5. Change the line `max_batches_pending=16,` to `max_batches_pending=256`  \n",
-
-    "   The cloud machine we'll rent should have lots of RAM, so we can have lots of preprocessed batches ready to go in RAM to further improve the training time"
+    "   Also, there is an upper limit to the number of processes that can be spun up in the linux environment"
 
    ]
 
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -930,7 +964,7 @@
 
     "The model is trained on a remote machine. This means the dataset needs to be downloaded to the remote machine before training starts.\n",
 
-    "The [keyword_spotting_on_off_v2](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html) model uses the [Google Speech Commands v2](https://siliconlabs.github.io/mltk/docs/python_api/datasets/index.html#module-mltk.datasets.audio.speech_commands.speech_commands_v2) dataset which manages downloading the dataset.\n",
+    "The [keyword_spotting_on_off_v3](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_on_off_v3.html) model uses the [Google Speech Commands v2](https://siliconlabs.github.io/mltk/docs/python_api/datasets/index.html#module-mltk.datasets.audio.speech_commands.speech_commands_v2) dataset which manages downloading the dataset.\n",
 
     "\n",
 
@@ -988,6 +1022,8 @@
 
   {
 
+   "attachments": {},
+
    "cell_type": "markdown",
 
    "metadata": {},
@@ -1008,7 +1044,7 @@
 
     "cd <same directory as model specification .py>\n",
 
-    "mltk train keyword_spotting_on_off_v2-test\n",
+    "mltk train keyword_spotting_on_off_v3-test\n",
 
     "```\n",
 
@@ -1023,6 +1059,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -1048,7 +1086,7 @@
 
     "cd <same directory as model specification .py>\n",
 
-    "mltk profile keyword_spotting_on_off_v2 --build --accelerator mvp --device\n",
+    "mltk profile keyword_spotting_on_off_v3 --build --accelerator mvp --device\n",
 
     "```\n",
 
@@ -1062,7 +1100,7 @@
 
     "cd <same directory as model specification .py>\n",
 
-    "mltk profile keyword_spotting_on_off_v2 --build --accelerator mvp\n",
+    "mltk profile keyword_spotting_on_off_v3 --build --accelerator mvp\n",
 
     "```\n",
 
@@ -1085,6 +1123,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -1116,7 +1156,7 @@
 
     "- `1+` GPUs  \n",
 
-    "  The [keyword_spotting_on_off_v2](../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.md) model does not have that many trainable parameters, so 1 \"mid-range\" GPU is enough.\n",
+    "  The [keyword_spotting_on_off_v3](../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v3.md) model does not have that many trainable parameters, so 1 \"mid-range\" GPU is enough.\n",
 
     "\n",
 
@@ -1135,6 +1175,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -1158,15 +1200,15 @@
 
     "# Navigate to the directory containing the model specification\n",
 
-    "cd <directory where keyword_spotting_on_off_v2.py is located>\n",
+    "cd <directory where keyword_spotting_on_off_v3.py is located>\n",
 
     "\n",
 
-    "# Train keyword_spotting_on_off_v2 model in cloud\n",
+    "# Train keyword_spotting_on_off_v3 model in cloud\n",
 
     "# --clean will clean all previous  training files before starting\n",
 
-    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --clean\n",
+    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v3 --clean\n",
 
     "```\n",
 
@@ -1190,13 +1232,13 @@
 
     "```shell\n",
 
-    "# Train keyword_spotting_on_off_v2 model in cloud\n",
+    "# Train keyword_spotting_on_off_v3 model in cloud\n",
 
     "# --clean will clean all previous  training files before starting\n",
 
     "# Only one command may be active, --force will abort any previous commands still executing\n",
 
-    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --clean --force\n",
+    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v3 --clean --force\n",
 
     "\n",
 
@@ -1204,13 +1246,13 @@
 
     "# --resume may be used to re-connect without restarting the remote command\n",
 
-    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --resume\n",
+    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v3 --resume\n",
 
     "\n",
 
     "# Use the --verbose option to see verbose logs\n",
 
-    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2 --verbose\n",
+    "mltk ssh -p 39975 -h root@ssh6.vast.ai -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v3 --verbose\n",
 
     "```"
 
@@ -1219,6 +1261,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -1243,6 +1287,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 
@@ -1275,6 +1321,8 @@
   },
 
   {
+
+   "attachments": {},
 
    "cell_type": "markdown",
 

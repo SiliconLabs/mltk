@@ -50,7 +50,7 @@ def _add_app(target, platforms, accelerators=None):
 
 _add_app('mltk_hello_world', ALL_PLATFORMS)
 _add_app('mltk_model_profiler', ALL_PLATFORMS, PLATFORM_ACCELERATORS)
-_add_app('mltk_audio_classifier', [get_current_os(), 'brd2601', 'brd2204', 'brd4166'])
+_add_app('mltk_audio_classifier', [get_current_os(), 'brd2601', 'brd2204'])
 build_params.append(('mltk_ble_audio_classifier', 'brd2601', 'mvp'))
 _add_app('mltk_image_classifier', EMBEDDED_PLATFORMS)
 _add_app('mltk_fingerprint_authenticator', EMBEDDED_PLATFORMS)

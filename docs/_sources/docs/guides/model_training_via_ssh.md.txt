@@ -563,23 +563,23 @@ The following are examples of how remote SSH training can be invoked from the co
 
 ### Example 1: Train with settings configured in user_settings.yaml
 
-The following shows how to train the `keyword_spotting_on_off_v2` model on a remote server.  
+The following shows how to train the `keyword_spotting_on_off_v3` model on a remote server.  
 In this example, all of the SSH settings are configured in the `~/.mltk/user_settings.yaml`.  
 After training completes, the results are downloaded to the local machine.
 
 ```shell
-mltk ssh train keyword_spotting_on_off_v2
+mltk ssh train keyword_spotting_on_off_v3
 ```
 
 
 ### Example 2: Train with settings on command-line
 
-The following shows to train the `keyword_spotting_on_off_v2` model on a remote server.  
+The following shows to train the `keyword_spotting_on_off_v3` model on a remote server.  
 In this example, the SSH server settings are provided on the command-line.  
 After training completes, the results are downloaded to the local machine.
 
 ```shell
-mltk ssh -h root@ssh5.vast.ai/workspace -p 23452 -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2
+mltk ssh -h root@ssh5.vast.ai/workspace -p 23452 -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v3
 ```
 
 The `-h` option has the following format: `[<user name>@]<host>[:<port>][/<path>]`  
@@ -595,14 +595,14 @@ And the `-i` option points to the SSH [private key](https://wiki.archlinux.org/t
 
 ### Example 3: Train without wait for results
 
-The following shows to train the `keyword_spotting_on_off_v2` model on a remote server.  
+The following shows to train the `keyword_spotting_on_off_v3` model on a remote server.  
 In this example, the SSH server hostname is provided and the login info is retrieved from the `~/.ssh/config` file.
 Since the `--no-wait` option is provided, the command does _not_ wait for the training to complete on the remote server.
 Instead, the command immediately returns and the training command executes on the remote server in the background.
 To retrieve the training results, the `--resume` option was be later provided (see Example 4 below).
 
 ```shell
-mltk ssh -h vast.ai train keyword_spotting_on_off_v2 --no-wait
+mltk ssh -h vast.ai train keyword_spotting_on_off_v3 --no-wait
 ```
 
 ### Example 4: Retrieve results from previous training session
@@ -614,7 +614,7 @@ This will wait until the previously invoked command has completed on the remote 
 download the training results.
 
 ```shell
-mltk ssh -h vast.ai train keyword_spotting_on_off_v2 --resume
+mltk ssh -h vast.ai train keyword_spotting_on_off_v3 --resume
 ```
 
 __HINT:__ You could also use the `--no-wait` option to poll the remote server to see if the command has completed without waiting for it to finish.
@@ -625,5 +625,5 @@ __HINT:__ You could also use the `--no-wait` option to poll the remote server to
 Only one command may be active on the remote server. The `--force` option may be used to abort a previously invoked command.
 
 ```shell
-mltk ssh train keyword_spotting_on_off_v2 --force
+mltk ssh train keyword_spotting_on_off_v3 --force
 ```

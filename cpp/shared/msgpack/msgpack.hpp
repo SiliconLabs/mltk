@@ -28,7 +28,7 @@ namespace mltk
  * @return 0 on success
  */
 template<typename T>
-int msgpack_write_dict(msgpack_context_t* context, const char* key, T v)
+int msgpack_write_dict(msgpack_context_t* context, const char* key, const T v)
 {
     if constexpr(std::is_same<T, bool>::value)
     {
@@ -38,17 +38,17 @@ int msgpack_write_dict(msgpack_context_t* context, const char* key, T v)
     {
         return msgpack_write_dict_ulong(context, key, v);
     }
-    else if constexpr(std::is_same<T, uint32_t>::value)
-    {
-        return msgpack_write_dict_uint(context, key, v);
-    }
     else if constexpr(std::is_same<T, int64_t>::value)
     {
         return msgpack_write_dict_long(context, key, v);
     }
-    else if constexpr(std::is_same<T, int32_t>::value)
+    else if constexpr(std::is_same<T, int8_t>::value || std::is_same<T, int16_t>::value || std::is_same<T, int32_t>::value)
     {
         return msgpack_write_dict_int(context, key, v);
+    }
+    else if constexpr(std::is_same<T, uint8_t>::value || std::is_same<T, uint16_t>::value || std::is_same<T, uint32_t>::value)
+    {
+        return msgpack_write_dict_uint(context, key, v);
     }
     else if constexpr(std::is_same<T, double>::value)
     {
@@ -58,7 +58,7 @@ int msgpack_write_dict(msgpack_context_t* context, const char* key, T v)
     {
         return msgpack_write_dict_float(context, key, v);
     }
-    else if constexpr(std::is_same<T, char*>::value || std::is_same<T, const char*>::value)
+    else if constexpr(std::is_same<T, const char*>::value)
     {
         if(v == nullptr)
         {
@@ -66,7 +66,7 @@ int msgpack_write_dict(msgpack_context_t* context, const char* key, T v)
         }
         return msgpack_write_dict_str(context, key, v);
     }
-    else 
+    else
     {
         assert("Unsupported data type");
         return -1;
@@ -85,37 +85,37 @@ int msgpack_write_dict(msgpack_context_t* context, const char* key, T v)
  * @return 0 on success
  */
 template<typename T>
-int msgpack_write(msgpack_context_t* context, T v)
+int msgpack_write(msgpack_context_t* context, const T v)
 {
-    if(std::is_same<T, bool>::value)
+    if constexpr(std::is_same<T, bool>::value)
     {
         return msgpack_write_bool(context, v);
     }
-    else if(std::is_same<T, uint64_t>::value)
+    else if constexpr(std::is_same<T, uint64_t>::value)
     {
         return msgpack_write_ulong(context, v);
     }
-    else if(std::is_same<T, uint32_t>::value)
-    {
-        return msgpack_write_uint(context, v);
-    }
-    else if(std::is_same<T, int64_t>::value)
+    else if constexpr(std::is_same<T, int64_t>::value)
     {
         return msgpack_write_long(context, v);
     }
-    else if(std::is_same<T, int32_t>::value)
+    else if constexpr(std::is_same<T, int8_t>::value || std::is_same<T, int16_t>::value || std::is_same<T, int32_t>::value)
     {
         return msgpack_write_int(context, v);
     }
-    else if(std::is_same<T, double>::value)
+    else if constexpr(std::is_same<T, uint8_t>::value || std::is_same<T, uint16_t>::value || std::is_same<T, uint32_t>::value)
+    {
+        return msgpack_write_uint(context, v);
+    }
+    else if constexpr(std::is_same<T, double>::value)
     {
         return msgpack_write_double(context, v);
     }
-    else if(std::is_same<T, float>::value)
+    else if constexpr(std::is_same<T, float>::value)
     {
         return msgpack_write_float(context, v);
     }
-    else if(std::is_same<T, char*>::value || std::is_same<T, const char*>::value)
+    else if constexpr(std::is_same<T, const char*>::value)
     {
         if(v == nullptr)
         {
@@ -123,7 +123,7 @@ int msgpack_write(msgpack_context_t* context, T v)
         }
         return msgpack_write_str(context, v);
     }
-    else 
+    else
     {
         assert("Unsupported data type");
         return -1;

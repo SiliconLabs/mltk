@@ -137,13 +137,16 @@ macro(mltk_toolchain_add_exe_targets target)
   mltk_load_python()
   mltk_get(MLTK_PLATFORM_NAME)
 
+  file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${target}_post_build.cmake
+  "
+  execute_process(COMMAND ${CMAKE_SIZE} \"${_output_path}.exe\")
+  execute_process(COMMAND ${PYTHON_EXECUTABLE} \"${MLTK_CPP_DIR}/tools/utils/update_launch_json.py\" --name ${target} --path \"${_output_path}.exe\" --toolchain \"${TOOLCHAIN_DIR}/bin\" --platform windows --workspace \"${CMAKE_SOURCE_DIR}\" )
+  ")
+
   add_custom_command(TARGET ${target}
     POST_BUILD
-    COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/utils/update_launch_json.py --name ${target} --path \"${_output_path}\" --toolchain \"${TOOLCHAIN_DIR}/bin\" --platform windows --workspace \"${CMAKE_SOURCE_DIR}\"
-    COMMAND ${CMAKE_SIZE} ${_output_path}.exe
-    COMMENT "Application ${target} binary size"
+    COMMAND ${CMAKE_COMMAND} -P ${target}_post_build.cmake
   )
-
 
   add_custom_target(${target}_download_run
     COMMAND ${_output_path}.exe

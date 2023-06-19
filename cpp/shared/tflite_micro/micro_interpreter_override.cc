@@ -10,7 +10,6 @@
 #include "tensorflow/lite/micro/micro_op_resolver.h"
 #include "tensorflow/lite/micro/micro_profiler_interface.h"
 #include "tensorflow/lite/micro/tflite_bridge/flatbuffer_conversions_bridge.h"
-#include "tensorflow/lite/micro/tflite_bridge/op_resolver_bridge.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/schema/schema_utils.h"
 
@@ -18,7 +17,7 @@
 
 namespace mltk
 {
-    bool model_has_unsupported_layers;
+    bool model_has_unknown_layers;
 }
 
 
@@ -124,7 +123,7 @@ TfLiteStatus MicroInterpreter::PrepareNodeAndRegistrationDataFromFlatbuffer() {
 
   if(retval != kTfLiteOk)
   {
-    mltk::model_has_unsupported_layers = true;
+    mltk::model_has_unknown_layers = true;
   }
   return retval;
 }

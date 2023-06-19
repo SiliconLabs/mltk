@@ -14,7 +14,7 @@ from mltk.core.utils import get_mltk_logger
 from mltk.utils.python import (as_list, get_case_insensitive, import_module_at_path, append_exception_msg)
 from mltk.utils.path import (fullpath, get_user_setting)
 from ..profiling_results import ProfilingModelResults, ProfilingLayerResult
-from .tflite_micro_accelerator import TfliteMicroAccelerator
+from .tflite_micro_accelerator import (TfliteMicroAccelerator, PlaceholderTfliteMicroAccelerator)
 from .tflite_micro_model import TfliteMicroModel, TfliteMicroModelDetails
 
 
@@ -61,7 +61,7 @@ class TfliteMicro:
         wrapper = TfliteMicro._load_wrapper()
         prev_level = wrapper.get_log_level()
         if not wrapper.set_log_level(level):
-            raise Exception(f'Failed to set MLTK log level to {level}')
+            raise RuntimeError(f'Failed to set MLTK log level to {level}')
         return prev_level
 
     @staticmethod
@@ -101,8 +101,9 @@ class TfliteMicro:
             is unknown
         """
         TfliteMicro._load_wrapper()
-        if accelerator is None or accelerator.lower() == 'cmsis':
-            return  None
+        if accelerator is None:
+            return None
+
         return get_case_insensitive(accelerator, TfliteMicro._accelerators)
 
     @staticmethod
@@ -137,8 +138,10 @@ class TfliteMicro:
         """
         wrapper = TfliteMicro._load_wrapper()
 
-        if accelerator:
+        if accelerator is not None:
             tflm_accelerator = TfliteMicro.get_accelerator(accelerator)
+            if hasattr(tflm_accelerator, 'init_variant'):
+                tflm_accelerator.init_variant()
         else:
             tflm_accelerator = None
 
@@ -162,8 +165,13 @@ class TfliteMicro:
         return tflm_model
 
     @staticmethod
-    def unload_model(model: TfliteModel):
+    def unload_model(model: TfliteMicroModel):
         """Unload a previously loaded model"""
+        accelerator = model.accelerator
+        if accelerator is not None:
+            if hasattr(accelerator, 'deinit_variant'):
+                accelerator.deinit_variant()
+
         del model
         TfliteMicro._model_lock.release()
 
@@ -176,6 +184,7 @@ class TfliteMicro:
         return_estimates=False,
         disable_simulator_backend=False,
         runtime_buffer_size=-1, # If runtime_buffer_size not given, determine the optimal memory size
+        input_data: Union[np.ndarray,List[np.ndarray]]=None,
         **kwargs
     ) -> ProfilingModelResults:
         """Profile the given model in the simulator and optionally determine metric estimates
@@ -207,6 +216,18 @@ class TfliteMicro:
                 tflm_accelerator.set_calculate_accelerator_cycles_only_enabled(True)
 
             tflm_model_details = tflm_model.details
+
+            if input_data is not None:
+                if isinstance(input_data, list):
+                    for i, v in enumerate(input_data):
+                        tflm_model.input(index=i, value=v)
+                else:
+                    tflm_model.input(value=input_data)
+            else:
+                for i in range(tflm_model.input_size):
+                    input_tensor = tflm_model.input(i)
+                    empty_tensor = np.zeros_like(input_tensor)
+                    tflm_model.input(i, value=empty_tensor)
 
             tflm_model.invoke()
             tflm_results = tflm_model.get_profiling_results()
@@ -323,6 +344,10 @@ class TfliteMicro:
                 # pylint: disable=protected-access
                 tf_layer = copy.deepcopy(tflite_model.layers[layer_index])
                 retval.append(tf_layer)
+
+                layer_err = tflm_model.get_layer_error(layer_index)
+                tf_layer.metadata['error_msg'] = None if layer_err is None else layer_err.msg
+
                 for input_index, input_bytes in enumerate(recorded_layer_data['inputs']):
                     if input_index >= tf_layer.n_inputs:
                         break
@@ -369,29 +394,37 @@ class TfliteMicro:
             acc_api_version = accelerator.api_version
         except Exception as e:
             # pylint:disable=raise-missing-from
-            raise Exception(
+            raise RuntimeError(
                 f'Failed to load accelerator: {accelerator.name}, ' + \
                 f'failed to retrieve api version from wrapper, err: {e}')
 
         tflm_api_version = TfliteMicro.api_version()
         if tflm_api_version != acc_api_version:
-            raise Exception(
+            raise RuntimeError(
                 f'Accelerator: {accelerator.name} not compatible, ' + \
                 f'accelerator API version ({acc_api_version}) != TFLM wrapper version ({tflm_api_version})'
             )
 
-        if TfliteMicro.accelerator_is_supported(accelerator.name):
-            raise Exception(f'Accelerator {accelerator.name} has already been registered')
+        for variant in accelerator.variants:
+            if TfliteMicro.accelerator_is_supported(variant):
+                raise RuntimeError(f'Accelerator "{variant}" has already been registered')
 
-        TfliteMicro._accelerators[accelerator.name] = accelerator
+            acc = copy.deepcopy(accelerator)
+            acc.active_variant = variant
+            TfliteMicro._accelerators[variant] = acc
 
 
     @staticmethod
     def get_accelerator(name:str) -> TfliteMicroAccelerator:
-        """Return an instance to the specified accelerator"""
+        """Return an instance to the specified accelerator wrapper"""
+
+        TfliteMicro._load_wrapper()
+
+
         norm_accelerator = TfliteMicro.normalize_accelerator_name(name)
         if norm_accelerator is None:
             raise ValueError(f'Unknown accelerator: {name}. Known accelerators are: {", ".join(TfliteMicro.get_supported_accelerators())}')
+
         return TfliteMicro._accelerators[norm_accelerator]
 
 
@@ -469,6 +502,9 @@ class TfliteMicro:
             if not os.path.exists(init_py_path):
                 continue
             TfliteMicro._load_accelerator(search_path)
+
+        TfliteMicro.register_accelerator(PlaceholderTfliteMicroAccelerator('cmsis'))
+
 
 
     @staticmethod
@@ -556,4 +592,4 @@ def _load_tflite_model(model:Union[str,TfliteModel]) -> TfliteModel:
             raise ValueError('Provided model must be a path to an existing .tflite file')
         return TfliteModel.load_flatbuffer_file(model)
     else:
-        raise Exception('Must provide TfliteModel or path to .tflite file')
+        raise RuntimeError('Must provide TfliteModel or path to .tflite file')

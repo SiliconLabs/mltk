@@ -75,10 +75,10 @@ This step is __highly recommended__ as the MLTK installs other dependencies like
          pip3 install silabs-mltk[full] --upgrade
   ```
 
-  __OR__
+  __Alternatively,__
 
-  This builds and installs the Python package from the [Github repository](https://github.com/siliconlabs/mltk). This may take longer
-  to install but will use the most up-to-date source code.
+  This builds and installs the Python package from the [Github repository](https://github.com/siliconlabs/mltk).  
+  __This will take longer to install__ but will use the most up-to-date source code.
 
   ```{eval-rst}
 .. tab-set::
@@ -87,16 +87,16 @@ This step is __highly recommended__ as the MLTK installs other dependencies like
 
       .. code-block:: shell
 
-         pip  install git+https://github.com/siliconlabs/mltk.git
+         pip  install "silabs-mltk[full] @ git+https://github.com/siliconlabs/mltk.git"
 
    .. tab-item:: Linux
 
       .. code-block:: shell
       
-         pip3 install git+https://github.com/siliconlabs/mltk.git
+         pip3 install "silabs-mltk[full] @ git+https://github.com/siliconlabs/mltk.git"
   ```
 
-  __NOTE:__ The `[full]` part of the command is _optional_. This will install additional dependencies used by some the the MLTK commands.
+  __NOTE:__ The `silabs-mltk[full] @ ` part of the command is _optional_. This will install additional dependencies used by some the the MLTK commands.
   Omitting this from the command will speedup installation but may cause some of the commands like `classify_audio`, `view`, `tensorboard` 
   to require additional install step.
 
@@ -151,16 +151,16 @@ Alternatively, you can update to a specific version with:
 
       .. code-block:: shell
 
-         pip  install silabs-mltk[full]==0.16.0
+         pip  install silabs-mltk[full]==0.17.0
 
    .. tab-item:: Linux
 
       .. code-block:: shell
 
-         pip3 install silabs-mltk[full]==0.16.0
+         pip3 install silabs-mltk[full]==0.17.0
 ```
 
-and replace `0.16.0` with the desired version.
+and replace `0.17.0` with the desired version.
 
 
 

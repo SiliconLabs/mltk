@@ -90,6 +90,9 @@ class ProcessPool:
             This function must exist at the root of its module (i.e. it must not be nested or a class method)
             Typically the function will accept one or more arguments, process the data, and return a result
         n_jobs: The number of subprocesses to use for processing. Typically more jobs means faster processing at the expends of more RAM/CPU usage
+            - A float value between (0, 1.0], which specifies the percentage of the available CPUs
+            - Integer specifying the exact number of CPUs. This will automatically clamp to the maximum CPUs in the system if necessary
+            - If `-1` then use all available CPUs
         name: The name to prefix to the python threads used to monitor the subprocesses
         start: Automatically start the subprocesses. If false, then the start() must be called before processing
         debug: If true then the entry_point is executed in a single thread instead of multiple subprocesses. This reduces complexity which can aid debugging
@@ -100,7 +103,7 @@ class ProcessPool:
     def __init__(
         self,
         entry_point:Callable,
-        n_jobs:int,
+        n_jobs:Union[int,float]=-1,
         name='ProcessPool',
         start=True,
         debug=False,
@@ -184,7 +187,7 @@ class ProcessPool:
 
         for i in range(self._n_jobs):
             subprocess = _Subprocess(
-                name=f'{self._name}-ProcessPool-{i}',
+                name=f'{self._name}-{i}',
                 pool=self,
                 entry_point=self._entry_point,
                 debug=self._debug,

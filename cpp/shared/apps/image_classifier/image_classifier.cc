@@ -23,7 +23,7 @@
 #include "sl_led.h"
 #include "sl_simple_led_instances.h"
 #include "sl_sleeptimer.h"
-#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "all_ops_resolver.h"
 #include "tflite_micro_model/tflite_micro_model.hpp"
 #include "tflite_micro_model/tflite_micro_utils.hpp"
 #include "mltk_tflite_micro_helper.hpp"
@@ -47,7 +47,7 @@ static CPU_STK stack[TASK_STACK_SIZE];
 
 static void image_classifier_task(void *arg);
 
-#else 
+#else
 static sl_sleeptimer_timer_handle_t inference_timer;
 #endif
 
@@ -127,7 +127,7 @@ void image_classifier_init(void)
         while(1)
         ;
     }
-    
+
     if(!initialize_camera())
     {
         printf("ERROR: Failed to initialize camera. Is it properly connected?\n");
@@ -135,8 +135,8 @@ void image_classifier_init(void)
         ;
     }
 
-  
-  // Instantiate CommandRecognizer  
+
+  // Instantiate CommandRecognizer
   static RecognizeCommands static_recognizer(
       app_settings.average_window_duration_ms,
       app_settings.detection_threshold,
@@ -145,7 +145,7 @@ void image_classifier_init(void)
 );
   command_recognizer = &static_recognizer;
 
-  // Add EM1 requirement to allow microphone sampling 
+  // Add EM1 requirement to allow microphone sampling
   sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM1);
 
 
@@ -170,12 +170,12 @@ void image_classifier_init(void)
 
   EFM_ASSERT((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE));
 
-#else 
+#else
   // The device will go to sleep after each loop.
   // This timer will wake it up to execute another loop every app_settings.latency_ms
   sl_status_t status = sl_sleeptimer_start_periodic_timer_ms(
-      &inference_timer, 
-      std::max(app_settings.latency_ms, (uint32_t)1), 
+      &inference_timer,
+      std::max(app_settings.latency_ms, (uint32_t)1),
       nullptr, nullptr, 0, 0);
   if(status != SL_STATUS_OK)
   {
@@ -201,7 +201,7 @@ static void image_classifier_task(void *arg)
     RTOS_ERR err;
 
     app_process_action();
-       
+
     // Delay task in order to do periodic inference
     OSTimeDlyHMSM(0, 0, 0, std::max(app_settings.latency_ms, (uint32_t)1), OS_OPT_TIME_PERIODIC, &err);
     EFM_ASSERT((RTOS_ERR_CODE_GET(err) == RTOS_ERR_NONE));
@@ -224,7 +224,7 @@ void app_process_action()
     {
         return;
     }
-    
+
     // Perform a detection
     prev_loop_timestamp = current_timestamp;
 
@@ -326,7 +326,7 @@ static bool load_model_parameters()
 }
 
 /***************************************************************************//**
- * Initialize the ArduCAM 
+ * Initialize the ArduCAM
  ******************************************************************************/
 static bool initialize_camera()
 {
@@ -338,14 +338,14 @@ static bool initialize_camera()
     arducam_config_t cam_config = ARDUCAM_DEFAULT_CONFIG;
     cam_config.image_resolution.width = input_shape[2];
     cam_config.image_resolution.height = input_shape[1];
-    cam_config.data_format = input_shape[3] == 1 ? 
+    cam_config.data_format = input_shape[3] == 1 ?
         ARDUCAM_DATA_FORMAT_GRAYSCALE : ARDUCAM_DATA_FORMAT_RGB888;
-   
+
     // Calculate the size required to buffer an image
     // NOTE: The buffer size may be different than the image size
     const uint32_t length_per_image = arducam_calculate_image_buffer_length(
-        cam_config.data_format, 
-        cam_config.image_resolution.width, 
+        cam_config.data_format,
+        cam_config.image_resolution.width,
         cam_config.image_resolution.height
     );
 
@@ -447,7 +447,7 @@ static void standardize_image_data(uint8_t* image_data, uint32_t image_size)
             *dst++ = (float)(*src++);
         }
     }
-    else 
+    else
     {
             printf("ERROR: Invalid data type\n");
             while (1)
@@ -472,7 +472,7 @@ static void process_inference_output()
     TfLiteStatus process_status = command_recognizer->ProcessLatestResults(
         model.output(), current_time_stamp, &result, &score, &is_new_command);
 
-    if (process_status == kTfLiteOk) 
+    if (process_status == kTfLiteOk)
     {
         handle_result(current_time_stamp, result, score, is_new_command);
     }
@@ -491,19 +491,19 @@ static void process_inference_output()
  *   of the result classification.
  * @param is_new_command true if the result is a new command, false otherwise.
  ******************************************************************************/
-static void handle_result(int32_t current_time, int result, uint8_t score, bool is_new_command) 
+static void handle_result(int32_t current_time, int result, uint8_t score, bool is_new_command)
 {
   const char *label = get_category_label(result);
 
-  if (is_new_command) 
+  if (is_new_command)
   {
     printf("Detected class=%d label=%s score=%d @%ldms\n", result, label, score, current_time);
     fflush(stdout);
     sl_led_turn_on(&DETECTION_LED);
     sl_led_turn_off(&ACTIVITY_LED);
     detected_timeout = current_time + 1100;
-  } 
-  else if (detected_timeout != 0 && current_time >= detected_timeout) 
+  }
+  else if (detected_timeout != 0 && current_time >= detected_timeout)
   {
     detected_timeout = 0;
     previous_score = score;
@@ -512,9 +512,9 @@ static void handle_result(int32_t current_time, int result, uint8_t score, bool 
     sl_led_turn_off(&DETECTION_LED);
   }
 
-  if (detected_timeout == 0) 
+  if (detected_timeout == 0)
   {
-    if (previous_score == 0) 
+    if (previous_score == 0)
     {
       previous_result = result;
       previous_score = score;
@@ -530,12 +530,12 @@ static void handle_result(int32_t current_time, int result, uint8_t score, bool 
     previous_score = score;
     previous_score_timestamp = current_time;
 
-    if (diff >= app_settings.activity_sensitivity || (previous_result != result)) 
+    if (diff >= app_settings.activity_sensitivity || (previous_result != result))
     {
       previous_result = result;
       activity_timestamp = current_time + 500;
-    } 
-    else if(current_time >= activity_timestamp) 
+    }
+    else if(current_time >= activity_timestamp)
     {
       activity_timestamp = 0;
       sl_led_turn_off(&ACTIVITY_LED);
@@ -543,7 +543,7 @@ static void handle_result(int32_t current_time, int result, uint8_t score, bool 
 
     if (activity_timestamp != 0)
     {
-      if (current_time - activity_toggle_timestamp >= 100) 
+      if (current_time - activity_toggle_timestamp >= 100)
       {
         activity_toggle_timestamp = current_time;
         sl_led_toggle(&ACTIVITY_LED);

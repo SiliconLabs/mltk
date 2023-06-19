@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.tflite_micro.tflite_micro &#8212; MLTK 0.16.0 documentation</title>
+    <title>mltk.core.tflite_micro.tflite_micro &#8212; MLTK 0.17.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.16.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.17.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.16.0 documentation logo">
+                   alt="MLTK 0.17.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.16.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.17.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.16.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.17.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -442,7 +442,7 @@
 <span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="p">(</span><span class="n">as_list</span><span class="p">,</span> <span class="n">get_case_insensitive</span><span class="p">,</span> <span class="n">import_module_at_path</span><span class="p">,</span> <span class="n">append_exception_msg</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">get_user_setting</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">..profiling_results</span> <span class="kn">import</span> <span class="n">ProfilingModelResults</span><span class="p">,</span> <span class="n">ProfilingLayerResult</span>
-<span class="kn">from</span> <span class="nn">.tflite_micro_accelerator</span> <span class="kn">import</span> <span class="n">TfliteMicroAccelerator</span>
+<span class="kn">from</span> <span class="nn">.tflite_micro_accelerator</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TfliteMicroAccelerator</span><span class="p">,</span> <span class="n">PlaceholderTfliteMicroAccelerator</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.tflite_micro_model</span> <span class="kn">import</span> <span class="n">TfliteMicroModel</span><span class="p">,</span> <span class="n">TfliteMicroModelDetails</span>
 
 
@@ -489,7 +489,7 @@
         <span class="n">wrapper</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_load_wrapper</span><span class="p">()</span>
         <span class="n">prev_level</span> <span class="o">=</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">get_log_level</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">wrapper</span><span class="o">.</span><span class="n">set_log_level</span><span class="p">(</span><span class="n">level</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to set MLTK log level to </span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to set MLTK log level to </span><span class="si">{</span><span class="n">level</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">prev_level</span></div>
 
 <div class="viewcode-block" id="TfliteMicro.get_log_level"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/wrapper.html#mltk.core.tflite_micro.TfliteMicro.get_log_level">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -529,8 +529,9 @@
 <span class="sd">            is unknown</span>
 <span class="sd">        """</span>
         <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_load_wrapper</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">accelerator</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">accelerator</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">'cmsis'</span><span class="p">:</span>
-            <span class="k">return</span>  <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">accelerator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
         <span class="k">return</span> <span class="n">get_case_insensitive</span><span class="p">(</span><span class="n">accelerator</span><span class="p">,</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_accelerators</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TfliteMicro.get_supported_accelerators"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/wrapper.html#mltk.core.tflite_micro.TfliteMicro.get_supported_accelerators">[docs]</a>    <span class="nd">@staticmethod</span>
@@ -565,8 +566,10 @@
 <span class="sd">        """</span>
         <span class="n">wrapper</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_load_wrapper</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">accelerator</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">accelerator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">tflm_accelerator</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">get_accelerator</span><span class="p">(</span><span class="n">accelerator</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tflm_accelerator</span><span class="p">,</span> <span class="s1">'init_variant'</span><span class="p">):</span>
+                <span class="n">tflm_accelerator</span><span class="o">.</span><span class="n">init_variant</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">tflm_accelerator</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -590,8 +593,13 @@
         <span class="k">return</span> <span class="n">tflm_model</span></div>
 
 <div class="viewcode-block" id="TfliteMicro.unload_model"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/wrapper.html#mltk.core.tflite_micro.TfliteMicro.unload_model">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">unload_model</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">TfliteModel</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">unload_model</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">TfliteMicroModel</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Unload a previously loaded model"""</span>
+        <span class="n">accelerator</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">accelerator</span>
+        <span class="k">if</span> <span class="n">accelerator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accelerator</span><span class="p">,</span> <span class="s1">'deinit_variant'</span><span class="p">):</span>
+                <span class="n">accelerator</span><span class="o">.</span><span class="n">deinit_variant</span><span class="p">()</span>
+
         <span class="k">del</span> <span class="n">model</span>
         <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_model_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
@@ -604,6 +612,7 @@
         <span class="n">return_estimates</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">disable_simulator_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">runtime_buffer_size</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="c1"># If runtime_buffer_size not given, determine the optimal memory size</span>
+        <span class="n">input_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProfilingModelResults</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Profile the given model in the simulator and optionally determine metric estimates</span>
@@ -635,6 +644,18 @@
                 <span class="n">tflm_accelerator</span><span class="o">.</span><span class="n">set_calculate_accelerator_cycles_only_enabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
             <span class="n">tflm_model_details</span> <span class="o">=</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">details</span>
+
+            <span class="k">if</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">input_data</span><span class="p">):</span>
+                        <span class="n">tflm_model</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">tflm_model</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">input_data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">tflm_model</span><span class="o">.</span><span class="n">input_size</span><span class="p">):</span>
+                    <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                    <span class="n">empty_tensor</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">input_tensor</span><span class="p">)</span>
+                    <span class="n">tflm_model</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">empty_tensor</span><span class="p">)</span>
 
             <span class="n">tflm_model</span><span class="o">.</span><span class="n">invoke</span><span class="p">()</span>
             <span class="n">tflm_results</span> <span class="o">=</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">get_profiling_results</span><span class="p">()</span>
@@ -751,6 +772,10 @@
                 <span class="c1"># pylint: disable=protected-access</span>
                 <span class="n">tf_layer</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">layer_index</span><span class="p">])</span>
                 <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tf_layer</span><span class="p">)</span>
+
+                <span class="n">layer_err</span> <span class="o">=</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">get_layer_error</span><span class="p">(</span><span class="n">layer_index</span><span class="p">)</span>
+                <span class="n">tf_layer</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">'error_msg'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">layer_err</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">layer_err</span><span class="o">.</span><span class="n">msg</span>
+
                 <span class="k">for</span> <span class="n">input_index</span><span class="p">,</span> <span class="n">input_bytes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">recorded_layer_data</span><span class="p">[</span><span class="s1">'inputs'</span><span class="p">]):</span>
                     <span class="k">if</span> <span class="n">input_index</span> <span class="o">&gt;=</span> <span class="n">tf_layer</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">:</span>
                         <span class="k">break</span>
@@ -797,29 +822,37 @@
             <span class="n">acc_api_version</span> <span class="o">=</span> <span class="n">accelerator</span><span class="o">.</span><span class="n">api_version</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1"># pylint:disable=raise-missing-from</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Failed to load accelerator: </span><span class="si">{</span><span class="n">accelerator</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">, '</span> <span class="o">+</span> \
                 <span class="sa">f</span><span class="s1">'failed to retrieve api version from wrapper, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
         <span class="n">tflm_api_version</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">api_version</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">tflm_api_version</span> <span class="o">!=</span> <span class="n">acc_api_version</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Accelerator: </span><span class="si">{</span><span class="n">accelerator</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> not compatible, '</span> <span class="o">+</span> \
                 <span class="sa">f</span><span class="s1">'accelerator API version (</span><span class="si">{</span><span class="n">acc_api_version</span><span class="si">}</span><span class="s1">) != TFLM wrapper version (</span><span class="si">{</span><span class="n">tflm_api_version</span><span class="si">}</span><span class="s1">)'</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">accelerator_is_supported</span><span class="p">(</span><span class="n">accelerator</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Accelerator </span><span class="si">{</span><span class="n">accelerator</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> has already been registered'</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">variant</span> <span class="ow">in</span> <span class="n">accelerator</span><span class="o">.</span><span class="n">variants</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">accelerator_is_supported</span><span class="p">(</span><span class="n">variant</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Accelerator "</span><span class="si">{</span><span class="n">variant</span><span class="si">}</span><span class="s1">" has already been registered'</span><span class="p">)</span>
 
-        <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_accelerators</span><span class="p">[</span><span class="n">accelerator</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">accelerator</span></div>
+            <span class="n">acc</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">accelerator</span><span class="p">)</span>
+            <span class="n">acc</span><span class="o">.</span><span class="n">active_variant</span> <span class="o">=</span> <span class="n">variant</span>
+            <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_accelerators</span><span class="p">[</span><span class="n">variant</span><span class="p">]</span> <span class="o">=</span> <span class="n">acc</span></div>
 
 
 <div class="viewcode-block" id="TfliteMicro.get_accelerator"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/wrapper.html#mltk.core.tflite_micro.TfliteMicro.get_accelerator">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">get_accelerator</span><span class="p">(</span><span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteMicroAccelerator</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Return an instance to the specified accelerator"""</span>
+<span class="w">        </span><span class="sd">"""Return an instance to the specified accelerator wrapper"""</span>
+
+        <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_load_wrapper</span><span class="p">()</span>
+
+
         <span class="n">norm_accelerator</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">normalize_accelerator_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">norm_accelerator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Unknown accelerator: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">. Known accelerators are: </span><span class="si">{</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">TfliteMicro</span><span class="o">.</span><span class="n">get_supported_accelerators</span><span class="p">())</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_accelerators</span><span class="p">[</span><span class="n">norm_accelerator</span><span class="p">]</span></div>
 
 
@@ -897,6 +930,9 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">init_py_path</span><span class="p">):</span>
                 <span class="k">continue</span>
             <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_load_accelerator</span><span class="p">(</span><span class="n">search_path</span><span class="p">)</span>
+
+        <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">register_accelerator</span><span class="p">(</span><span class="n">PlaceholderTfliteMicroAccelerator</span><span class="p">(</span><span class="s1">'cmsis'</span><span class="p">))</span>
+
 
 
     <span class="nd">@staticmethod</span>
@@ -984,7 +1020,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Provided model must be a path to an existing .tflite file'</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">TfliteModel</span><span class="o">.</span><span class="n">load_flatbuffer_file</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Must provide TfliteModel or path to .tflite file'</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Must provide TfliteModel or path to .tflite file'</span><span class="p">)</span>
 </pre></div>
 
           </article>
@@ -1010,7 +1046,7 @@
               
           </div>
             Last updated on
-              Mar 30, 2023.
+              Jun 19, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

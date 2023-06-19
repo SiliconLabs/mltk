@@ -105,21 +105,20 @@ When the [AudioFeatureGenerator](mltk.core.preprocess.audio.audio_feature_genera
 ### Usage
 
 The recommended way of using the AudioFeatureGenerator [C++ wrapper](../cpp_development/wrappers/audio_feature_generator_wrapper.md)
-is via the [ParallelAudioDataGenerator](mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator) which is required by the
-[AudioDatasetMixin](mltk.core.AudioDatasetMixin).
+is by calling the [mltk.core.preprocess.utils.audio.apply_frontend()](https://siliconlabs.github.io/mltk/docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.apply_frontend) API.
 
-Refer to the [keyword_spotting_on_off.py](https://github.com/siliconlabs/mltk/tree/master/mltk/models/siliconlabs/keyword_spotting_on_off.py) [model specification](../guides/model_specification.md) for an example of how this is used.
+Refer to the [keyword_spotting_on_off_v3.py](https://github.com/siliconlabs/mltk/tree/master/mltk/models/siliconlabs/keyword_spotting_on_off_v3.py) [model specification](../guides/model_specification.md) for an example of how this is used.
 
 Basically, 
 
 
-1 ) In your [model specification](../guides/model_specification.md) file, define a model object to inherit the [AudioDatasetMixin](mltk.core.AudioDatasetMixin), e.g.:
+1 ) In your [model specification](../guides/model_specification.md) file, define a model object to inherit the [DatasetMixin](mltk.core.DatasetMixin), e.g.:
 
 ```python
 class MyModel(
     MltkModel, 
     TrainMixin, 
-    AudioDatasetMixin, 
+    DatasetMixin, 
     EvaluateClassifierMixin
 ):
     pass
@@ -132,32 +131,45 @@ class MyModel(
 
 frontend_settings = AudioFeatureGeneratorSettings()
 
-frontend_settings.sample_rate_hz = 8000  # This can also be 16k for slightly better performance at the cost of more RAM
-frontend_settings.sample_length_ms = 1000
+frontend_settings.sample_rate_hz = 16000
+frontend_settings.sample_length_ms = 1000                       # A 1s buffer should be enough to capture the keywords
 frontend_settings.window_size_ms = 30
-frontend_settings.window_step_ms = 20
-frontend_settings.filterbank_n_channels = 32
-frontend_settings.filterbank_upper_band_limit = 4000.0-1 # Spoken language usually only goes up to 4k
-frontend_settings.filterbank_lower_band_limit = 100.0
-frontend_settings.noise_reduction_enable = True
-frontend_settings.noise_reduction_smoothing_bits = 5
-frontend_settings.noise_reduction_even_smoothing = 0.004
-frontend_settings.noise_reduction_odd_smoothing = 0.004
-frontend_settings.noise_reduction_min_signal_remaining = 0.05
-frontend_settings.pcan_enable = False
-frontend_settings.pcan_strength = 0.95
-frontend_settings.pcan_offset = 80.0
-frontend_settings.pcan_gain_bits = 21
-frontend_settings.log_scale_enable = True
-frontend_settings.log_scale_shift = 6
+frontend_settings.window_step_ms = 10
+frontend_settings.filterbank_n_channels = 104                   # We want this value to be as large as possible
+                                                                # while still allowing for the ML model to execute efficiently on the hardware
+frontend_settings.filterbank_upper_band_limit = 7500.0
+frontend_settings.filterbank_lower_band_limit = 125.0           # The dev board mic seems to have a lot of noise at lower frequencies
+
+frontend_settings.noise_reduction_enable = True                 # Enable the noise reduction block to help ignore background noise in the field
+frontend_settings.noise_reduction_smoothing_bits = 10
+frontend_settings.noise_reduction_even_smoothing =  0.025
+frontend_settings.noise_reduction_odd_smoothing = 0.06
+frontend_settings.noise_reduction_min_signal_remaining = 0.40   # This value is fairly large (which makes the background noise reduction small)
+                                                                # But it has been found to still give good results
+                                                                # i.e. There is still some background noise reduction,
+                                                                # but the actual signal is still (mostly) untouched
+
+frontend_settings.dc_notch_filter_enable = True                 # Enable the DC notch filter, to help remove the DC signal from the dev board's mic
+frontend_settings.dc_notch_filter_coefficient = 0.95
+
+frontend_settings.quantize_dynamic_scale_enable = True          # Enable dynamic quantization, this dynamically converts the uint16 spectrogram to int8
+frontend_settings.quantize_dynamic_scale_range_db = 40.0
+
+# Add the Audio Feature generator settings to the model parameters
+# This way, they are included in the generated .tflite model file
+# See https://siliconlabs.github.io/mltk/docs/guides/model_parameters.html
+my_model.model_parameters.update(frontend_settings)
 ```
 
-3 ) Configure the [ParallelAudioDataGenerator](mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator) to use the settings, e.g.:
-
+3 ) Configure the your data pipeline to call the frontend:
 ```python
-my_model.datagen = ParallelAudioDataGenerator(
-    frontend_settings=frontend_settings,
-    ...
+from mltk.core.preprocess.utils import audio as audio_utils
+
+spectrogram = audio_utils.apply_frontend(
+   sample=augmented_sample,
+   settings=frontend_settings,
+   dtype=np.int8
+)
 ```
 
 

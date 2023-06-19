@@ -171,7 +171,7 @@ class TfliteMicroModel:
                 force_buffer_overlap,
                 runtime_buffer_size
             ):
-                raise Exception(
+                raise RuntimeError(
                     f'Failed to load model, additional info:\n{TfliteMicro._get_logged_errors_str()}'
                 )
         finally:
@@ -241,7 +241,7 @@ class TfliteMicroModel:
 
         TfliteMicro._clear_logged_errors()
         if not self._model_wrapper.invoke():
-            raise Exception(f'Failed to invoke model, additional info:\n{TfliteMicro._get_logged_errors_str()}')
+            raise RuntimeError(f'Failed to invoke model, additional info:\n{TfliteMicro._get_logged_errors_str()}')
 
 
     @property
@@ -284,7 +284,7 @@ class TfliteMicroModel:
         try:
             recorded_data = msgpack.loads(results_bin)
         except Exception as e:
-            raise RuntimeError(f'Failed to parse recorded model binary data, err: {e}')
+            raise RuntimeError(f'Failed to parse recorded model binary msgpack data, err: {e}')
 
         return recorded_data
 

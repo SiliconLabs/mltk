@@ -1,5 +1,5 @@
 
-#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "all_ops_resolver.h"
 #include "mltk_tflite_micro_helper.hpp"
 #include "tflite_micro_accelerator_wrapper.hpp"
 

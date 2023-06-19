@@ -35,10 +35,11 @@ int msgpack_buffered_writer_init(msgpack_context_t **context_ptr, uint32_t initi
     else
     {
         context->msgpack = msgpack_init_with_writer(buffered_msgpack_writer, context);
-        
+
         context->msgpack.buffer.buffer = context->dynamic_buffer.buffer;
         context->msgpack.buffer.ptr = context->dynamic_buffer.append;
         context->msgpack.buffer.end = (uint8_t*)context->dynamic_buffer.buffer_end;
+        context->msgpack.flags |= _MSGPACK_BUFFERED_WRITER;
 
         *context_ptr = (msgpack_context_t*)context;
     }
@@ -53,6 +54,11 @@ int msgpack_buffered_writer_deinit(msgpack_context_t *context, bool free_buffer)
 
     if(buf_context != NULL)
     {
+        if(!(buf_context->msgpack.flags & _MSGPACK_BUFFERED_WRITER))
+        {
+            return -1;
+        }
+
         if(free_buffer)
         {
             dynamic_buffer_free(&buf_context->dynamic_buffer);
@@ -73,7 +79,7 @@ int msgpack_buffered_writer_get_buffer(const msgpack_context_t *context, uint8_t
     *buffer_ptr = NULL;
     *length_ptr = 0;
 
-    if(buf_context == NULL || buf_context->dynamic_buffer.buffer == NULL)
+    if(buf_context == NULL || !(buf_context->msgpack.flags & _MSGPACK_BUFFERED_WRITER) || buf_context->dynamic_buffer.buffer == NULL)
     {
         result = -1;
     }
@@ -97,7 +103,7 @@ static int buffered_msgpack_writer(void *user, const void *data, uint32_t length
     buffered_writer_context_t *context = user;
 
     RETURN_ON_FAILURE(dynamic_buffer_write(&context->dynamic_buffer, data, length));
-   
+
     context->msgpack.buffer.buffer = context->dynamic_buffer.buffer;
     context->msgpack.buffer.ptr = context->dynamic_buffer.append;
     context->msgpack.buffer.end = (uint8_t*)context->dynamic_buffer.buffer_end;

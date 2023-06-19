@@ -24,7 +24,7 @@ Consider the [Tensorflow-Lite Micro Examples](https://github.com/tensorflow/tfli
 | Example Name | MLTK Solution                                                                                                                     | Tensorflow-Lite Micro Solution                                                                                               |
 | ------------ | --------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
 | micro_speech | [tflite_micro_speech.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tflite_micro/tflite_micro_speech.py)         | [micro_speech/train](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/micro_speech/train) |
-| magic_wand   | [tflite_micro_magic_wand.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tflite_micro/tflite_micro_magic_wand.py) | [magic_wand/train](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/magic_wand/train)     |
+| magic_wand   | [tflite_micro_magic_wand.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/tflite_micro/tflite_micro_magic_wand.py) | [magic_wand/train](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples)     |
 
 
 

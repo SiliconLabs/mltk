@@ -18,7 +18,7 @@ PUBLIC
 
 target_compile_definitions(${NAME}
 PUBLIC
-    MBEDTLS_CONFIG_FILE=<mbedtls_config.h>
+    MBEDTLS_CONFIG_FILE=<sl_mbedtls_config.h>
     MBEDTLS_PSA_CRYPTO_CONFIG_FILE=<psa_crypto_config.h>
 )
 

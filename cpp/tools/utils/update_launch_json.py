@@ -27,6 +27,7 @@ def update_launch_json(
     serial_number:str=None,
     interface:str='swd',
     speed:str='auto',
+    svd_path:str=None
 ):
     """
     Update the .vscode/launch.json
@@ -142,7 +143,7 @@ def update_launch_json(
         if speed:
             new_config['serverArgs'].extend(['-speed', speed])
 
-        svd_path = get_user_setting(f'{platform}_svd_path')
+        svd_path = get_user_setting(f'{platform}_svd_path', default=svd_path)
         if svd_path:
             new_config['svdFile'] = fullpath(svd_path)
 
@@ -189,6 +190,7 @@ if __name__ == '__main__':
     parser.add_argument('--ip_address', help=' JLink debugger IP address')
     parser.add_argument('--interface', help=' JLink debugger interface (jtag, swd, etc)', default='swd')
     parser.add_argument('--speed', help=' JLink debugger speed', default='auto')
+    parser.add_argument('--svd_path', help='File path to .svd file for given platform')
 
 
     args = parser.parse_args()
@@ -204,7 +206,8 @@ if __name__ == '__main__':
             serial_number=args.serial_number,
             ip_address=args.ip_address,
             interface=args.interface,
-            speed=args.speed
+            speed=args.speed,
+            svd_path=args.svd_path
         )
     except Exception as cli_ex:
         traceback.print_exc()

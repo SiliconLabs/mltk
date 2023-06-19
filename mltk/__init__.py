@@ -1,8 +1,9 @@
 
 import sys
 import os
+from typing import TYPE_CHECKING
 
-__version__ = '0.16.0'
+__version__ = '0.17.0'
 
 MLTK_DIR = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
 MLTK_ROOT_DIR = os.path.dirname(MLTK_DIR).replace('\\', '/')
@@ -20,5 +21,5 @@ def disable_tensorflow():
     sys.path.insert(0, f'{MLTK_DIR}/core/keras/tensorflow_placeholder')
 
 
-if os.environ.get('MLTK_DISABLE_TF', '0') == '1':
+if os.environ.get('MLTK_DISABLE_TF', '0') == '1' or TYPE_CHECKING:
     disable_tensorflow()

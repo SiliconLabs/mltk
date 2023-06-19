@@ -81,4 +81,5 @@ sl_status_t sl_ml_audio_feature_generation_init()
 sl_status_t sl_ml_audio_feature_generation_set_mic_callback(sl_ml_audio_feature_generation_mic_callback_t callback)
 {
   mic_callback = callback;
+  return SL_STATUS_OK;
 }

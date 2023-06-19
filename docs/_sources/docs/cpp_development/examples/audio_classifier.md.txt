@@ -50,9 +50,9 @@ results. This behavior can be disabled in the application configuration file.
 
 ## Updating the model  
 
-The default model used in this application is called `keyword_spotting_on_off_v2.tflite`
+The default model used in this application is called `keyword_spotting_on_off_v3.tflite`
 and is able to classify audio into 3 different classes labeled "on", "off", "_unknown_". The source for the model can be found here: 
-[https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v2.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v2.py)
+[https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v3.py](https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v3.py)
 
 
 The application is designed to work with an audio classification model created
@@ -138,13 +138,13 @@ For example:
 
 ```shell
 # Dump spectrograms generated on the embedded device to the local PC
-mltk classify_audio keyword_spotting_on_off_v2 --device --dump-spectrograms
+mltk classify_audio keyword_spotting_on_off_v3 --device --dump-spectrograms
 ```
 
 
 ```shell
 # Dump audio recorded by the embedded device to the local PC
-mltk classify_audio keyword_spotting_on_off_v2 --device --dump-audio
+mltk classify_audio keyword_spotting_on_off_v3 --device --dump-audio
 ```
 
 See the [Audio classifier utility](https://siliconlabs.github.io/mltk/docs/audio/audio_utilities.html#audio-classification-utility)

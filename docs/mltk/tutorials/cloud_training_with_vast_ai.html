@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>Cloud Training with vast.ai &#8212; MLTK 0.16.0 documentation</title>
+    <title>Cloud Training with vast.ai &#8212; MLTK 0.17.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../index.html" title="MLTK 0.16.0 documentation"
+        <a href="../../index.html" title="MLTK 0.17.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../_static/logo.png"
-                   alt="MLTK 0.16.0 documentation logo">
+                   alt="MLTK 0.17.0 documentation logo">
           
         </a>
       </div>
@@ -199,13 +199,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../index.html" title="MLTK 0.16.0 documentation" class="md-nav__button md-logo">
+    <a href="../../index.html" title="MLTK 0.17.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../index.html"
-       title="MLTK 0.16.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.17.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -760,7 +760,7 @@ With this, you can develop your model locally then quickly and seamlessly train 
 <li><p>The amount of time the machine is in use (billed by the second)</p></li>
 </ul>
 <p>Refer to the vast.ai <a class="reference external" href="https://vast.ai/faq/#Billing">FAQ</a> for more details about how billing works.</p>
-<p><strong>In this tutorial, we credit our account with $10</strong> which is more than enough to train the <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html"><span class="doc std std-doc">keyword_spotting_on_off_v2</span></a> model in less than one hour (note that on typical laptops, it can take 12hr+ to train this model).</p>
+<p><strong>In this tutorial, we credit our account with $10</strong> which is more than enough to train the <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v3.html"><span class="doc std std-doc">keyword_spotting_on_off_v3</span></a> model in less than one hour (note that on typical laptops, it can take 12hr+ to train this model).</p>
 </section>
 <section id="quick-links">
 <h2 id="quick-links">Quick Links<a class="headerlink" href="#quick-links" title="Permalink to this heading">¶</a></h2>
@@ -1081,29 +1081,27 @@ Since the cloud instance will be destroyed after training, we do not need to was
 </section>
 <section id="example-development-flow">
 <h3 id="example-development-flow">Example Development Flow<a class="headerlink" href="#example-development-flow" title="Permalink to this heading">¶</a></h3>
-<p>For this tutorial, we’ll train the reference model: <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html"><span class="doc std std-doc">keyword_spotting_on_off_v2</span></a>.<br/>
+<p>For this tutorial, we’ll train the reference model: <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v3.html"><span class="doc std std-doc">keyword_spotting_on_off_v3</span></a>.<br/>
 Note that while this is a “Keyword Spotting” model, any other type of model will work similarly.</p>
 <p>This model uses the <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_data_generator.html"><span class="doc std std-doc">ParallelAudioDataGenerator</span></a> to dynamically augment the samples during training. The dynamic augmentations can be computationally expensive which can slow down training.<br/>
 To speed up the model training, we’ll spread the augmentations across 72 cores (in a later step we’ll rent a cloud machine with 128 cores).</p>
 <section id="modify-the-model-specification">
 <h4 id="modify-the-model-specification">Modify the model specification<a class="headerlink" href="#modify-the-model-specification" title="Permalink to this heading">¶</a></h4>
 <ol class="arabic simple">
-<li><p>Download the model specification file (i.e. python script): <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v2.py">keyword_spotting_on_off_v2.py</a> to your local machine</p></li>
-<li><p>Open <code class="docutils literal notranslate"><span class="pre">keyword_spotting_on_off_v2.py</span></code> on your local machine in a text editor</p></li>
-<li><p>Locate the line <code class="docutils literal notranslate"><span class="pre">my_model.datagen</span> <span class="pre">=</span> <span class="pre">ParallelAudioDataGenerator(</span></code><br/>
-We need to adjust two settings to take advantage of the large cloud machine:</p></li>
-<li><p>Change the line <code class="docutils literal notranslate"><span class="pre">cores=0.45,</span></code> to <code class="docutils literal notranslate"><span class="pre">cores=72,</span></code><br/>
-i.e. Instead of using 45% of the available cores, we’ll hardcode to using 72 cores.<br/>
-Note that we don’t want to use all the cores for augmentations, we’ll save the cores for doing other training tasks (which the system automatically manages)
+<li><p>Download the model specification file (i.e. python script): <a class="reference external" href="https://github.com/siliconlabs/mltk/blob/master/mltk/models/siliconlabs/keyword_spotting_on_off_v3.py">keyword_spotting_on_off_v3.py</a> to your local machine</p></li>
+<li><p>Open <code class="docutils literal notranslate"><span class="pre">keyword_spotting_on_off_v3.py</span></code> on your local machine in a text editor</p></li>
+<li><p>Locate the line <code class="docutils literal notranslate"><span class="pre">features_ds,</span> <span class="pre">pool</span> <span class="pre">=</span> <span class="pre">tf_dataset_utils.parallel_process(</span></code><br/>
+We need to adjust one settings to take advantage of the large cloud machine:</p></li>
+<li><p>Change the line <code class="docutils literal notranslate"><span class="pre">n_jobs=8,</span></code> to <code class="docutils literal notranslate"><span class="pre">n_jobs=72</span> <span class="pre">if</span> <span class="pre">subset</span> <span class="pre">==</span> <span class="pre">'training'</span> <span class="pre">else</span> <span class="pre">32,</span> <span class="pre">#</span> <span class="pre">These</span> <span class="pre">are</span> <span class="pre">the</span> <span class="pre">settings</span> <span class="pre">for</span> <span class="pre">a</span> <span class="pre">128</span> <span class="pre">CPU</span> <span class="pre">core</span> <span class="pre">cloud</span> <span class="pre">machine</span></code><br/>
+i.e. Instead of using 8 of the available cores, we’ll hardcode to using 72 cores for training and 32 for validation.<br/>
+Note that we don’t want to use all the cores for augmentations, we’ll save the cores for doing other training tasks (which the system automatically manages)<br/>
 Also, there is an upper limit to the number of processes that can be spun up in the linux environment</p></li>
-<li><p>Change the line <code class="docutils literal notranslate"><span class="pre">max_batches_pending=16,</span></code> to <code class="docutils literal notranslate"><span class="pre">max_batches_pending=256</span></code><br/>
-The cloud machine we’ll rent should have lots of RAM, so we can have lots of preprocessed batches ready to go in RAM to further improve the training time</p></li>
 </ol>
 </section>
 <section id="note-about-custom-datasets">
 <h4 id="note-about-custom-datasets">Note about custom datasets<a class="headerlink" href="#note-about-custom-datasets" title="Permalink to this heading">¶</a></h4>
 <p>The model is trained on a remote machine. This means the dataset needs to be downloaded to the remote machine before training starts.
-The <a class="reference external" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html">keyword_spotting_on_off_v2</a> model uses the <a class="reference external" href="../../docs/python_api/datasets/index.html#module-mltk.datasets.audio.speech_commands.speech_commands_v2">Google Speech Commands v2</a> dataset which manages downloading the dataset.</p>
+The <a class="reference external" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v3.html">keyword_spotting_on_off_v3</a> model uses the <a class="reference external" href="../../docs/python_api/datasets/index.html#module-mltk.datasets.audio.speech_commands.speech_commands_v2">Google Speech Commands v2</a> dataset which manages downloading the dataset.</p>
 <p>For custom datasets, you’ll need to specify your own download URL.</p>
 <p>One way of doing this is by adding something like the following to your model specification:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Import helper function to download and extract dataset</span>
@@ -1134,7 +1132,7 @@ The <a class="reference external" href="../../docs/python_api/models/siliconlabs
 <p>Before training in the cloud, it is helpful to do a training “dry run” locally to ensure everything is basically working.<br/>
 This can be done with the command:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;same<span class="w"> </span>directory<span class="w"> </span>as<span class="w"> </span>model<span class="w"> </span>specification<span class="w"> </span>.py&gt;
-mltk<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2-test
+mltk<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v3-test
 </pre></div>
 </div>
 <p>This will train the model for a few epochs using a subset of the dataset.
@@ -1146,12 +1144,12 @@ This way, you can quickly fix any errors locally before invoking the actual trai
 For this reason, the MLTK features a <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">model profiler</span></a>.</p>
 <p>Assuming you have a <a class="reference internal" href="../../docs/other/supported_hardware.html"><span class="doc std std-doc">supported</span></a> development board and are targeting the <a class="reference external" href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/mvp-accelerator">MVP</a> hardware accelerator, issue the command:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;same<span class="w"> </span>directory<span class="w"> </span>as<span class="w"> </span>model<span class="w"> </span>specification<span class="w"> </span>.py&gt;
-mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--build<span class="w"> </span>--accelerator<span class="w"> </span>mvp<span class="w"> </span>--device
+mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_on_off_v3<span class="w"> </span>--build<span class="w"> </span>--accelerator<span class="w"> </span>mvp<span class="w"> </span>--device
 </pre></div>
 </div>
 <p>If you do not have a development board, you can still profile using the simulator:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>&lt;same<span class="w"> </span>directory<span class="w"> </span>as<span class="w"> </span>model<span class="w"> </span>specification<span class="w"> </span>.py&gt;
-mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--build<span class="w"> </span>--accelerator<span class="w"> </span>mvp
+mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_on_off_v3<span class="w"> </span>--build<span class="w"> </span>--accelerator<span class="w"> </span>mvp
 </pre></div>
 </div>
 <p>This will profile the <em>untrained</em> model and provide statistics such as:</p>
@@ -1176,7 +1174,7 @@ Machines may be cheaper if the “instance duration” is low</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">128+</span></code> CPU cores<br/>
 Ensure the CPUs are <code class="docutils literal notranslate"><span class="pre">i7</span></code> or better (AMD Threadripper or EPYC is usually a good choice; Xeon can be slow)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">1+</span></code> GPUs<br/>
-The <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html"><span class="doc std std-doc">keyword_spotting_on_off_v2</span></a> model does not have that many trainable parameters, so 1 “mid-range” GPU is enough.</p></li>
+The <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_on_off_v3.html"><span class="doc std std-doc">keyword_spotting_on_off_v3</span></a> model does not have that many trainable parameters, so 1 “mid-range” GPU is enough.</p></li>
 </ul>
 <p>(If you already have another cloud instance running that doesn’t have 128+ CPU cores, then shut it down first, see <a class="reference internal" href="#shutdown-cloud-instance"><span class="std std-doc">Shutdown Cloud Instance</span></a>)</p>
 <p>Be sure to note the SSH host and port which we’ll need in the next section:</p>
@@ -1187,11 +1185,11 @@ The <a class="reference internal" href="../../docs/python_api/models/siliconlabs
 <p>With the model specification ready and cloud instance started, it’s time to train it in the cloud.</p>
 <p>This done using the <a class="reference internal" href="../../docs/guides/model_training_via_ssh.html"><span class="doc std std-doc">mltk ssh train</span></a>, e.g.:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Navigate to the directory containing the model specification</span>
-<span class="nb">cd</span><span class="w"> </span>&lt;directory<span class="w"> </span>where<span class="w"> </span>keyword_spotting_on_off_v2.py<span class="w"> </span>is<span class="w"> </span>located&gt;
+<span class="nb">cd</span><span class="w"> </span>&lt;directory<span class="w"> </span>where<span class="w"> </span>keyword_spotting_on_off_v3.py<span class="w"> </span>is<span class="w"> </span>located&gt;
 
-<span class="c1"># Train keyword_spotting_on_off_v2 model in cloud</span>
+<span class="c1"># Train keyword_spotting_on_off_v3 model in cloud</span>
 <span class="c1"># --clean will clean all previous  training files before starting</span>
-mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--clean
+mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v3<span class="w"> </span>--clean
 </pre></div>
 </div>
 <ul class="simple">
@@ -1202,17 +1200,17 @@ mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span
 <section id="other-cli-options">
 <h3 id="other-cli-options">Other CLI options<a class="headerlink" href="#other-cli-options" title="Permalink to this heading">¶</a></h3>
 <p>There are some other CLI options you may use while training:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Train keyword_spotting_on_off_v2 model in cloud</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Train keyword_spotting_on_off_v3 model in cloud</span>
 <span class="c1"># --clean will clean all previous  training files before starting</span>
 <span class="c1"># Only one command may be active, --force will abort any previous commands still executing</span>
-mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--clean<span class="w"> </span>--force
+mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v3<span class="w"> </span>--clean<span class="w"> </span>--force
 
 <span class="c1"># If a previous command's SSH connection prematurely closed, </span>
 <span class="c1"># --resume may be used to re-connect without restarting the remote command</span>
-mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--resume
+mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v3<span class="w"> </span>--resume
 
 <span class="c1"># Use the --verbose option to see verbose logs</span>
-mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v2<span class="w"> </span>--verbose
+mltk<span class="w"> </span>ssh<span class="w"> </span>-p<span class="w"> </span><span class="m">39975</span><span class="w"> </span>-h<span class="w"> </span>root@ssh6.vast.ai<span class="w"> </span>-i<span class="w"> </span>~/.ssh/id_vast_ai<span class="w"> </span>train<span class="w"> </span>keyword_spotting_on_off_v3<span class="w"> </span>--verbose
 </pre></div>
 </div>
 </section>
@@ -1290,7 +1288,7 @@ So be sure you’ve downloaded all output files (like the trained <a class="refe
               
           </div>
             Last updated on
-              Mar 30, 2023.
+              Jun 19, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

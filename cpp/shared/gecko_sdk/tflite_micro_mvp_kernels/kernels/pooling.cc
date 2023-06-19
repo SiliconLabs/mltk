@@ -248,7 +248,7 @@ TfLiteStatus AverageEval(TfLiteContext* context, TfLiteNode* node)
                                tflite::micro::GetTensorShape(output),
                                tflite::micro::GetTensorData<int8_t>(output));
 #endif // __arm__
-  } 
+  }
   else if (data->supported == kTFLMrefF32) {
     // Use TFLM reference kernel.
     tflite::PoolParams op_params;
@@ -376,37 +376,29 @@ TfLiteStatus MaxEval(TfLiteContext* context, TfLiteNode* node)
 }  // namespace pooling
 }  // namespace sl
 
-TfLiteRegistration Register_MAX_POOL_2D() {
-  static TfLiteRegistration max_pool_registration = {
+TFLMRegistration Register_MAX_POOL_2D() {
+  return {
     /*init=*/sl::pooling::Init,
     /*free=*/nullptr,
     /*prepare=*/sl::pooling::MaxPrepare,
     /*invoke=*/sl::pooling::MaxEval,
-    /*profiling_string=*/nullptr,
+    /*reset=*/nullptr,
     /*builtin_code=*/0,
-    /*custom_name=*/nullptr,
-    /*version=*/0,
-    /*registration_external=*/nullptr
+    /*custom_name=*/nullptr
   };
-
-  return max_pool_registration;
 }
 
 // Just to keep all_ops_resolver() happy during development ...
-TfLiteRegistration Register_AVERAGE_POOL_2D() {
-  static TfLiteRegistration avg_pool_registration = {
+TFLMRegistration Register_AVERAGE_POOL_2D() {
+  return {
     /*init=*/sl::pooling::Init,
     /*free=*/nullptr,
     /*prepare=*/sl::pooling::AveragePrepare,
     /*invoke=*/sl::pooling::AverageEval,
-    /*profiling_string=*/nullptr,
+    /*reset=*/nullptr,
     /*builtin_code=*/0,
-    /*custom_name=*/nullptr,
-    /*version=*/0,
-    /*registration_external=*/nullptr
+    /*custom_name=*/nullptr
   };
-
-  return avg_pool_registration;
 }
 
 }  // namespace tflite

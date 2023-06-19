@@ -5,15 +5,18 @@ const MINUTE = 60;
 const DAY = 24*60*60;
 
 window.SHOW_SURVEY_AFTER_SECONDS = 10*MINUTE; // Show the survey after 10min of activity
+window.SHOW_SURVEY_ON_ACTIVITY_DELAY = 45; // Once the survey should be shown, wait 45s before displaying it (this ensures the user is actively using the page)
 window.INITIAL_IGNORED_SURVEY_TIMEOUT = 15*DAY; // Reshow the survey after 15 days the first time it was ignored
 window.ADDITIONAL_IGNORED_SURVEY_TIMEOUT = 25*DAY; // Reshow the survey after 25 days each additional time the survey is ignored
 window.RESHOW_SURVEY_TIMEOUT = 35*DAY; // Reshow the survey every 35 days after it was successfully completed
+window.IGNORE_ACTIVITY_ELAPSED_TIMEOUT = 3*MINUTE; // If more than 3min have elapsed since the last user activity, then do NOT update the activity timer. In this case, we assume the user was not actively looking at the docs
 
 
 window.dataLayer = window.dataLayer || [];
 window.loadingSurvey = false;
 window.showingSurvey = false;
 window.tookSurvey = localStorage.surveyUrl === window.SURVEY_URL
+window.showSurveyTimer = null;
 
 
 // Open external links in a new tab
@@ -236,14 +239,14 @@ function updateSurveyActivity() {
     }
     localStorage.lastActivityTimestamp = now;
 
-    if(elapsed > 5*60) { // If more than 5min elapsed, then assume the user walked away so ignore this activity
+    if(elapsed > window.IGNORE_ACTIVITY_ELAPSED_TIMEOUT) {
         return;
     }
 
     let totalSeconds = parseFloat(localStorage.activeSeconds) + elapsed;
     localStorage.activeSeconds = totalSeconds;
-    if(totalSeconds >= window.SHOW_SURVEY_AFTER_SECONDS) {
-        showSurvey();
+    if(window.showSurveyTimer == null && totalSeconds >= window.SHOW_SURVEY_AFTER_SECONDS) {
+        window.showSurveyTimer = setTimeout(showSurvey, window.SHOW_SURVEY_ON_ACTIVITY_DELAY*1000);
     }
 }
 

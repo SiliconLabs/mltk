@@ -8,19 +8,20 @@ add_library(${PROJECT_NAME})
 add_library(mltk::cpputils ALIAS ${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
-PRIVATE 
-    cpputils/dict.cc 
-    cpputils/linked_list.cc 
+PRIVATE
+    cpputils/dict.cc
+    cpputils/linked_list.cc
     cpputils/list.cc
     cpputils/heap.cc
     cpputils/string.cc
     cpputils/buffer.cc
     cpputils/prng.cc
     cpputils/semver.cc
+    cpputils/std_formatted_string.cc
 )
 
 target_include_directories(${PROJECT_NAME}
-PUBLIC 
+PUBLIC
     ${CMAKE_CURRENT_LIST_DIR}
 )
 

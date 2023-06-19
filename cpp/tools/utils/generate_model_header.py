@@ -2,6 +2,7 @@
 import os
 import argparse
 import json
+import hashlib
 
 from mltk.core.model import load_tflite_model
 from mltk.core.tflite_model import TfliteModel
@@ -9,6 +10,7 @@ from mltk.core.tflite_micro import TfliteMicro
 from mltk.utils.bin2header import bin2header
 from mltk.utils.path import fullpath, create_tempdir
 from mltk.utils.hasher import hash_file
+from mltk.utils.python import as_list
 from mltk import cli
 
 
@@ -20,6 +22,7 @@ def generate_model_header(
     length_variable_name='MODEL_DATA_LENGTH',
     accelerator:str=None,
     memory_section:str=None,
+    depends:str=None,
 ):
     """Generate a model header file from a MLTK model or .tflite
 
@@ -31,6 +34,7 @@ def generate_model_header(
         length_variable_name: Name of C variable to hold length of C array
         accelerator: Name of accelerator for which to generate header
         memory_section: The memory section to place the model
+        depends: semi-colon separated list of paths of additional dependency files (used to determine if the model is up-to-date)
     """
 
     try:
@@ -41,6 +45,13 @@ def generate_model_header(
         )
     except Exception as e:
         cli.abort(msg=f'\n\nFailed to load tflite model, err: {e}\n\n')
+
+
+    depends_paths = list(fullpath(x) for x in as_list(depends, split=';'))
+    depends_hasher=hashlib.md5()
+    for p in depends_paths:
+        hash_file(p, algorithm=depends_hasher)
+    depends_hash = depends_hasher.hexdigest().lower()
 
     output = fullpath(output)
     old_generation_details = None
@@ -53,8 +64,10 @@ def generate_model_header(
         variable_name=variable_name,
         variable_attributes=variable_attributes,
         length_variable_name=length_variable_name,
-        memory_section=memory_section
+        memory_section=memory_section,
+        depends_hash=depends_hash
     )
+
     if os.path.exists(generation_args_path):
         try:
             with open(generation_args_path, 'r') as f:
@@ -66,12 +79,7 @@ def generate_model_header(
         print(f'{os.path.basename(output)} up-to-date')
         return
 
-
-
-    if accelerator:
-        if not TfliteMicro.accelerator_is_supported(accelerator):
-            raise ValueError(f'Unknown accelerator: {accelerator}, supported accelerators are: {", ".join(TfliteMicro.get_supported_accelerators())}')
-
+    if accelerator and accelerator.lower() != 'cmsis':
         tflm_accelerator = TfliteMicro.get_accelerator(accelerator)
         if tflm_accelerator.supports_model_compilation:
             compilation_report_path = output + '-compilation_report.txt'
@@ -79,7 +87,8 @@ def generate_model_header(
             compiled_tflite_model = tflm_accelerator.compile_model(
                 tflite_model,
                 report_path=compilation_report_path,
-                logger=cli.get_logger()
+                logger=cli.get_logger(),
+                settings_dir=os.path.dirname(output)
             )
             model_name = os.path.basename(tflite_path)[:-len('.tflite')]
             tflite_path = f'{create_tempdir("tmp_models")}/{model_name}.{accelerator}.tflite'
@@ -112,6 +121,7 @@ if __name__ == '__main__':
     parser.add_argument('--attributes', default=None, help='Attributes to prepend to C array variable')
     parser.add_argument('--accelerator', default=None, help='Specific accelerator for which to generate model header')
     parser.add_argument('--memory-section', default=None, help='The memory section to place the model')
+    parser.add_argument('--depends', default=None, help='Semi-colon separated list of paths of additional dependency files (used to determine if the model is up-to-date)')
 
     args = parser.parse_args()
     cli.get_logger(verbose=True)
@@ -123,7 +133,8 @@ if __name__ == '__main__':
             variable_attributes=args.attributes,
             length_variable_name=args.length_name,
             accelerator=args.accelerator,
-            memory_section=args.memory_section
+            memory_section=args.memory_section,
+            depends=args.depends
         )
     except Exception as _ex:
         cli.handle_exception('Failed to generate model header', _ex)

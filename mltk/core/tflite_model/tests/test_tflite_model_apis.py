@@ -666,7 +666,7 @@ def test_max_pool_params():
     from mltk.core.tflite_micro import TfliteMicro
     from mltk.core import load_tflite_model
 
-    tflite_model = load_tflite_model('keyword_spotting_on_off_v2')
+    tflite_model = load_tflite_model('keyword_spotting_on_off_v3')
     recorded_layers = TfliteMicro.record_model(tflite_model.path)
 
     for layer_index, recorded_data in enumerate(recorded_layers):

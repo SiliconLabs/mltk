@@ -32,7 +32,7 @@
 #include "sl_ml_audio_feature_generation.h"
 #include "sl_ml_audio_feature_generation_config.h"
 #include "sl_sleeptimer.h"
-#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "all_ops_resolver.h"
 #include "tflite_micro_model/tflite_micro_model.hpp"
 #include "mltk_tflite_micro_helper.hpp"
 #include "app.h"
@@ -93,7 +93,7 @@ extern "C" void ble_audio_classifier_init(void)
   // Register the accelerator if the TFLM lib was built with one
   mltk::mltk_tflite_micro_register_accelerator();
 
-  // Register the basic kernels 
+  // Register the basic kernels
   opcode_resolver.AddConv2D();
   opcode_resolver.AddDepthwiseConv2D();
   opcode_resolver.AddMaxPool2D();
@@ -126,7 +126,7 @@ extern "C" void ble_audio_classifier_init(void)
     while(1)
       ;
   }
- 
+
   // Load the other application-specific model parameters from the .tflite
   if(!ble_audio_classifier_config_load(model_flatbuffer))
   {
@@ -146,7 +146,7 @@ extern "C" void ble_audio_classifier_init(void)
       ;
   }
 
-  // Instantiate CommandRecognizer  
+  // Instantiate CommandRecognizer
   static RecognizeCommands static_recognizer(SMOOTHING_WINDOW_DURATION_MS,
       DETECTION_THRESHOLD, SUPPRESION_TIME_MS, MINIMUM_DETECTION_COUNT, IGNORE_UNDERSCORE_LABELS);
   command_recognizer = &static_recognizer;
@@ -185,7 +185,7 @@ extern "C" void ble_audio_classifier_init(void)
       ;
   }
 
-  // Add EM1 requirement to allow microphone sampling 
+  // Add EM1 requirement to allow microphone sampling
   sl_power_manager_add_em_requirement(SL_POWER_MANAGER_EM1);
 
 
@@ -248,13 +248,13 @@ extern "C" void ble_audio_classifier_set_detection_callback(BleAudioClassifierDe
 void audio_classifier_task(void *arg)
 {
   (void)&arg;
-  while(1) 
+  while(1)
   {
     // Wait for audio classifier to start (if it hasn't already)
     xEventGroupWaitBits(event_handle, 0x01, pdFALSE, pdTRUE, portMAX_DELAY);
 
     app_process_action();
-       
+
     // Delay task in order to do periodic inference
     vTaskDelay(pdMS_TO_TICKS(INFERENCE_INTERVAL_MS));
   }
@@ -283,12 +283,12 @@ extern "C" void app_process_action()
     // Process the audio buffer
     sl_ml_audio_feature_generation_update_features();
 
-  
+
     // Determine if we should run inference
     // If the activity detection block is disabled, then always run inference
     // If the activity detection block is enabled, then ensure there is activity before running inference
-    const bool should_run_inference = 
-      (!SL_ML_FRONTEND_ACTIVITY_DETECTION_ENABLE || 
+    const bool should_run_inference =
+      (!SL_ML_FRONTEND_ACTIVITY_DETECTION_ENABLE ||
       (sl_ml_audio_feature_generation_activity_detected() == SL_STATUS_OK));
 
     if(should_run_inference)
@@ -296,7 +296,7 @@ extern "C" void app_process_action()
       // Execute the processed audio in the ML model
       run_inference();
     }
-   
+
     // Process the ML model results
     // NOTE: We do this even if we didn't run inference.
     //       This way, the LEDs blink correctly
@@ -306,9 +306,9 @@ extern "C" void app_process_action()
 
 
 /***************************************************************************//**
- * Run model inference 
- * 
- * Copies the currently available data from the feature_buffer into the input 
+ * Run model inference
+ *
+ * Copies the currently available data from the feature_buffer into the input
  * tensor and runs inference, updating the global output tensor.
  *
  * @return
@@ -346,10 +346,10 @@ static sl_status_t process_output(const bool did_run_inference){
 
   if(did_run_inference)
       process_status = command_recognizer->ProcessLatestResults(
-        model.output(), 
-        current_timestamp, 
-        &result, 
-        &score, 
+        model.output(),
+        current_timestamp,
+        &result,
+        &score,
         &is_new_command
       );
 
@@ -382,10 +382,10 @@ static void handle_results(int32_t current_time, int result, uint8_t score, bool
     //       until processing states again (this effectively clears the audio buffer)
     if(SUPPRESION_TIME_MS <= 1)
     {
-      sl_ml_audio_feature_generation_reset(); 
+      sl_ml_audio_feature_generation_reset();
     }
-    
-    
+
+
     printf("Detected class=%d label=%s score=%d @%ldms\n", result, label, score, current_time);
     if(detection_callback != nullptr)
     {
@@ -429,7 +429,7 @@ static void handle_results(int32_t current_time, int result, uint8_t score, bool
 
   // If the activity detection block is NOT used,
   // then inference is also done a a specific interval.
-  // In this case, we control the LEDs based on the scores 
+  // In this case, we control the LEDs based on the scores
   // returned by the inference
   if (detected_timeout == 0) {
     if (previous_score == 0) {

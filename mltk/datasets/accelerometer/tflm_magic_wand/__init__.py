@@ -1,7 +1,7 @@
 """Tensorflow-Lite Micro Magic Wand
 ***************************************
 
-https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/magic_wand
+https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples
 
 
 

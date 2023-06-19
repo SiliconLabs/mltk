@@ -188,6 +188,7 @@ function(mltk_toolchain_add_exe_targets target)
     endif()
 
     mltk_get(MLTK_PLATFORM_NAME)
+    mltk_get(MLTK_PLATFORM_SVD_PATH)
     mltk_get(MLTK_JLINK_DEVICE)
     if(NOT MLTK_JLINK_DEVICE)
         mltk_get(MLTK_DOWNLOAD_RUN_DEVICE)
@@ -212,6 +213,7 @@ function(mltk_toolchain_add_exe_targets target)
         endif()
     endif()
 
+
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${target}_post_build.cmake
 "
 execute_process(COMMAND ${CMAKE_STRIP} ${_strip_args} -o \"${_output_prefix}.stripped.elf\" \"${_output_path}\")
@@ -220,7 +222,7 @@ execute_process(COMMAND ${CMAKE_OBJCOPY} -j .bootloader -O binary \"${_output_pr
 execute_process(COMMAND ${CMAKE_OBJCOPY} -O srec \"${_output_prefix}.stripped.elf\" \"${_output_prefix}.s37\")
 execute_process(COMMAND ${CMAKE_SIZE} \"${_output_path}\")
 execute_process(COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/elf-size-analyze/elf-size-analyze.py \"${_output_path}\" --toolchain-path ${TOOLCHAIN_BIN_DIR}/arm-none-eabi- --no-color --ram --rom --human-readable --max-width 120 --output \"${_output_dir}/${target}-memory_usage.txt\")
-execute_process(COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/utils/update_launch_json.py --name ${target} --path \"${_output_path}\" --toolchain \"${TOOLCHAIN_BIN_DIR}\" --platform ${MLTK_PLATFORM_NAME} --workspace \"${CMAKE_SOURCE_DIR}\" --device \"${MLTK_JLINK_DEVICE}\" --serial_number \"${MLTK_JLINK_SERIAL_NUMBER}\" --ip_address \"${MLTK_JLINK_IP_ADDRESS}\" )
+execute_process(COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/utils/update_launch_json.py --name ${target} --path \"${_output_path}\" --toolchain \"${TOOLCHAIN_BIN_DIR}\" --platform ${MLTK_PLATFORM_NAME} --workspace \"${CMAKE_SOURCE_DIR}\" --device \"${MLTK_JLINK_DEVICE}\" --serial_number \"${MLTK_JLINK_SERIAL_NUMBER}\" --ip_address \"${MLTK_JLINK_IP_ADDRESS}\" --svd_path \"${MLTK_PLATFORM_SVD_PATH}\" )
 execute_process(COMMAND ${CMAKE_COMMAND} -E echo \"For more details, see: ${_output_dir}/${target}-memory_usage.txt\")
 ")
 

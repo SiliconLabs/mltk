@@ -9,6 +9,7 @@ The source code for these models may be found on Github: [https://github.com/sil
 |---------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [Keyword Spotting On/Off](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_on_off.html)                                 | This model is designed to work with the [Keyword Spotting On/Off](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_on_off.html) tutorial                                  |
 | [Keyword Spotting On/Off v2](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_on_off_v2.html)                           | This is the second version of the model designed to work with the [Keyword Spotting On/Off](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_on_off.html) tutorial        |
+| [Keyword Spotting On/Off v3](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_on_off_v3.html)                           | This is the third version of the model designed to work with the [Keyword Spotting On/Off](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_on_off.html) tutorial        |
 | [Keyword Spotting MobileNetv2](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_mobilenetv2.html)                       | This model is designed to work with the [Model Optimization](https://siliconlabs.github.io/mltk/mltk/tutorials/model_optimization.html) tutorial                                            |
 | [Keyword Spotting with Transfer Learning](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_with_transfer_learning.html) | This model is designed to work with the [Keyword Spotting with Transfer Learning](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_with_transfer_learning.html) tutorial  |
 | [Keyword Spotting Pac-Man](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_pacman.html)                                | This model is designed to work with the [Keyword Spotting Pac-Man](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_pacman.html) tutorial                                 |
@@ -29,6 +30,7 @@ The source code for these models may be found on Github: [https://github.com/sil
 ./keyword_spotting_mobilenetv2
 ./keyword_spotting_on_off
 ./keyword_spotting_on_off_v2
+./keyword_spotting_on_off_v3
 ./keyword_spotting_with_transfer_learning
 ./keyword_spotting_pacman
 ./keyword_spotting_pacman_v2

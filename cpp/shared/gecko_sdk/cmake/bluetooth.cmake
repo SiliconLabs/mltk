@@ -25,7 +25,7 @@ PRIVATE
     src/sl_bt_rtos_adaptation.c
     src/sl_bt_stack_init.c
     src/sli_bt_advertiser_config.c
-    src/sli_bt_channel_sounding_config.c
+    src/sli_bt_accept_list_config.c
     src/sli_bt_connection_config.c
     src/sli_bt_dynamic_gattdb_config.c
     src/sli_bt_l2cap_config.c
@@ -38,6 +38,7 @@ PRIVATE
 target_include_directories(${NAME}
 PUBLIC
     inc
+    bgstack/ll/inc
 )
 
 

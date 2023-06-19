@@ -232,7 +232,7 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node)
 #ifndef __arm__
         // If we're building for the wrapper
         // then just use the reference kernels
-        // We still need the calculations above so we can 
+        // We still need the calculations above so we can
         // determine the required tensor arena size
         data->supported = kTFLMrefI8;
 #endif // __arm__
@@ -441,11 +441,11 @@ TfLiteStatus Invoke(TfLiteContext* context, TfLiteNode* node)
 
   if (data->supported == kMvp) {
     status = eval_mvp_int8(context, data, input, filter, output);
-  } 
+  }
 #ifdef __arm__
   else if (data->supported == kCmsisNN) {
     status = eval_cmsis_int8(context, data, input, filter, bias, output);
-  } 
+  }
 #endif
   else if (data->supported == kTFLMrefI8) {
     status = eval_tflm_int8(data, input, filter, bias, output);
@@ -460,16 +460,14 @@ TfLiteStatus Invoke(TfLiteContext* context, TfLiteNode* node)
 }  // namespace conv2d
 }  // namespace sl
 
-TfLiteRegistration Register_CONV_2D() {
+TFLMRegistration Register_CONV_2D() {
   return {/*init=*/sl::conv2d::Init,
           /*free=*/nullptr,
           /*prepare=*/sl::conv2d::Prepare,
           /*invoke=*/sl::conv2d::Invoke,
-          /*profiling_string=*/nullptr,
+          /*reset=*/nullptr,
           /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0,
-          /*registration_external=*/nullptr
+          /*custom_name=*/nullptr
   };
 }
 

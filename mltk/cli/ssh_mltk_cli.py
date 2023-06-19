@@ -19,8 +19,8 @@ Where:
 \b
 Examples:
 --host myserver.com
---host 192.168.1.56 
---host ubuntu@192.168.1.56 
+--host 192.168.1.56
+--host ubuntu@192.168.1.56
 --host ubuntu@192.168.1.56:456
 --host ubuntu@192.168.1.56/workspace
 \b
@@ -57,7 +57,7 @@ NOTE: If the given hostname exists in ~/.ssh/config or the config file path defi
     verbose: bool = typer.Option(False, '-v', '--verbose',
         help='''Enable verbose logging'''
     ),
-    mltk_command: str = typer.Argument(..., 
+    mltk_command: str = typer.Argument(...,
         help='''\b
 MLTK command to run on remote SSH server
 The currently supported commands are: train
@@ -79,7 +79,7 @@ The currently supported commands are: train
        Using the settings specified in the --host option, in ~/.mltk/user_settings.yaml, or in ~/.ssh/config
     2. Create remote working directory
        Specified in --host option or in ~/.mltk/user_settings.yaml
-    3. Create and activate an MLTK python virtual environment 
+    3. Create and activate an MLTK python virtual environment
        (if not disabled in model specification or ~/.mltk/user_settings.yaml)
     4. Upload files configured in model specification and/or ~/.mltk/user_settings.yaml
     5. Export any environment variables configured in model specification and/or ~/.mltk/user_settings.yaml
@@ -97,21 +97,21 @@ The currently supported commands are: train
     \b
     # Train model on the remote SSH server using the SSH credentials configured in ~/.mltk/user_settings.yaml.
     # After training completes, the model will be copied to the local machine
-    mltk ssh train keyword_spotting_on_off_v2
+    mltk ssh train keyword_spotting_on_off_v3
     \b
     # Train model on the remote SSH server using the SSH credentials provided on the command-line.
     # After training completes, the model will be copied to the local machine
-    mltk ssh --host root@ssh4.vast.ai -p 18492 -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v2
+    mltk ssh --host root@ssh4.vast.ai -p 18492 -i ~/.ssh/id_vast_ai train keyword_spotting_on_off_v3
     \b
     # Start model training but do NOT wait for it to complete.
     # The model will train on the remote server
     # We can later poll the results using the --resume option
     # NOTE: In this example, the SSH settings are stored in the ~/.mltk/user_settings.yaml file
-    mltk ssh train keyword_spotting_on_off_v2 --no-wait
+    mltk ssh train keyword_spotting_on_off_v3 --no-wait
     \b
     # Retrieve the results of a previously started command
     # This can be used if the SSH connection prematurely disconnects OR if --no-wait was previously called
-    mltk ssh train keyword_spotting_on_off_v2 --resume
+    mltk ssh train keyword_spotting_on_off_v3 --resume
     \b
     # Train a model and discard a previously invoked command
     mltk ssh train audio_example1 --force
@@ -129,12 +129,12 @@ The currently supported commands are: train
 
     from mltk.utils import ssh
     from mltk.cli.utils import log_file
-  
+
 
     SUPPORTED_COMMANDS = ('train', )
 
     logger = cli.get_logger(verbose=verbose)
-    
+
     if mltk_command not in SUPPORTED_COMMANDS:
         cli.abort(msg=f'Unsupported MLTK command, supported commands are: {", ".join(SUPPORTED_COMMANDS)}')
 
@@ -146,7 +146,7 @@ The currently supported commands are: train
     try:
         if not verbose:
             cli.print_info(f'HINT: For verbose remote server logs, see: {log_file}')
-        
+
         else:
             cmd.append('--verbose')
 
@@ -157,9 +157,9 @@ The currently supported commands are: train
             ssh_password=password,
             cmd=cmd,
             clean=clean,
-            force=force, 
-            resume_only=resume, 
-            wait_for_results=wait, 
+            force=force,
+            resume_only=resume,
+            wait_for_results=wait,
             logger=logger
         )
 
@@ -168,10 +168,10 @@ The currently supported commands are: train
 
     except Exception as e:
         cli.handle_exception('Failed to run SSH command', e)
-    
+
     finally:
         cli.print_info('\nDo not forget to shutdown your cloud instance when you\'re done! (if applicable)')
-    
+
 
 class KeyType(str, Enum):
     rsa = 'rsa'
@@ -184,7 +184,7 @@ def ssh_gen_key_command(
         help='The name of the key',
         metavar='<name>'
     ),
-    key_type:KeyType = typer.Option(KeyType.ed25519, '-t', '--type', 
+    key_type:KeyType = typer.Option(KeyType.ed25519, '-t', '--type',
         case_sensitive=False,
         metavar='<type>'
     ),
@@ -198,7 +198,7 @@ def ssh_gen_key_command(
     )
 ):
     """Generate an SSH keypair
-    
+
     \b
     This is a helper command to generate an keypair for an SSH connection.
     \b

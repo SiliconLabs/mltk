@@ -32,7 +32,6 @@ constexpr int kOutputTensor = 0;
 // TODO(b/169801227): This global struct is needed for the linker to drop unused
 // code (for example, by using Register_FULLY_CONNECTED_INT8 instead of
 // Register_FULLY_CONNECTED).
-//TfLiteRegistration fully_connected_registration;
 
 sli_shape_t dims2shape(const TfLiteIntArray *dim)
 {
@@ -234,7 +233,7 @@ TfLiteStatus EvalQuantizedInt8(TfLiteContext* context, TfLiteNode* node,
             tflite::micro::GetTensorData<int32_t>(bias), &output_dims,
             tflite::micro::GetTensorData<int8_t>(output)),
         ARM_CMSIS_NN_SUCCESS);
-  } else 
+  } else
 #endif // __arm__
   {
     tflite::FullyConnectedParams op_params;
@@ -348,30 +347,26 @@ TfLiteStatus EvalInt8(TfLiteContext* context, TfLiteNode* node) {
 }  // namespace fully_connected
 }  // namespace sl
 
-TfLiteRegistration Register_FULLY_CONNECTED() {
+TFLMRegistration Register_FULLY_CONNECTED() {
   return {/*init*/sl::fully_connected::Init,
           /*free*/nullptr,
           /*prepare*/sl::fully_connected::Prepare,
           /*invoke*/sl::fully_connected::Eval,
-          /*profiling_string*/nullptr,
+          /*reset*/nullptr,
           /*builtin_code*/0,
-          /*custom_name*/nullptr,
-          /*version=*/0,
-          /*registration_external=*/nullptr
+          /*custom_name*/nullptr
   };
 }
 
 #ifdef __arm__
-TfLiteRegistration Register_FULLY_CONNECTED_INT8() {
+TFLMRegistration Register_FULLY_CONNECTED_INT8() {
   return {/*init*/sl::fully_connected::Init,
           /*free*/nullptr,
           /*prepare*/sl::fully_connected::Prepare,
           /*invoke*/sl::fully_connected::EvalInt8,
-          /*profiling_string*/nullptr,
+          /*reset*/nullptr,
           /*builtin_code*/0,
-          /*custom_name*/nullptr,
-          /*version=*/0,
-          /*registration_external=*/nullptr
+          /*custom_name*/nullptr
   };
 }
 #endif

@@ -27,7 +27,7 @@
 #include "sl_ml_audio_feature_generation.h"
 #include "sl_ml_audio_feature_generation_config.h"
 #include "sl_sleeptimer.h"
-#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "all_ops_resolver.h"
 #include "tflite_micro_model/tflite_micro_model.hpp"
 #include "mltk_tflite_micro_helper.hpp"
 

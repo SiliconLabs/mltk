@@ -13,25 +13,16 @@
 #include "mltk_tflite_micro_helper.hpp"
 
 
-namespace mltk
-{
-    bool model_error_reporter_enabled = true;
-}
-
-
 
 
 void Log(const char* format, va_list args) {
 #if !defined(TF_LITE_STRIP_ERROR_STRINGS)
-  if(mltk::model_error_reporter_enabled)
-  {
-    auto& logger = mltk::get_logger();
-    const auto orig_flags = logger.flags();
-    logger.flags().clear(logging::Newline);
-    logger.vwrite(logging::Warn, format, args);
-    logger.write(logging::Warn, "\n");
-    logger.flags(orig_flags);
-  }
+  auto& logger = mltk::get_logger();
+  const auto orig_flags = logger.flags();
+  logger.flags().clear(logging::Newline);
+  logger.vwrite(logging::Warn, format, args);
+  logger.write(logging::Warn, "\n");
+  logger.flags(orig_flags);
 #endif
 }
 

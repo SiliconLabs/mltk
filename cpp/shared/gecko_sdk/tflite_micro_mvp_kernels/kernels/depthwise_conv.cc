@@ -453,16 +453,14 @@ TfLiteStatus Invoke(TfLiteContext* context, TfLiteNode* node)
 }  // namespace depthwise_conv2d
 }  // namespace sl
 
-TfLiteRegistration Register_DEPTHWISE_CONV_2D() {
+TFLMRegistration Register_DEPTHWISE_CONV_2D() {
   return {/*init=*/sl::depthwise_conv2d::Init,
           /*free=*/nullptr,
           /*prepare=*/sl::depthwise_conv2d::Prepare,
           /*invoke=*/sl::depthwise_conv2d::Invoke,
-          /*profiling_string=*/nullptr,
+          /*reset=*/nullptr,
           /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0,
-          /*registration_external=*/nullptr
+          /*custom_name=*/nullptr
   };
 }
 

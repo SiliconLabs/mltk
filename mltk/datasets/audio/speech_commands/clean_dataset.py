@@ -1,4 +1,4 @@
-import os 
+import os
 from typing import List
 import shutil
 import json
@@ -40,7 +40,7 @@ def clean_dataset(
         directory=src_dataset_dir,
         classes=classes,
         return_audio_data=False,
-        class_counts=class_counts, 
+        class_counts=class_counts,
         list_valid_filenames_in_directory_function=speech_commands_v2.list_valid_filenames_in_directory
     )
 
@@ -61,7 +61,7 @@ def clean_dataset(
         sample, sr = audio_utils.read_audio_file(src_path, return_sample_rate=True)
 
         sample = noisereduce.reduce_noise(
-            y=sample, 
+            y=sample,
             sr=sr,
             stationary=True
         )
@@ -79,8 +79,8 @@ def clean_dataset(
         )
 
         spectrogram = audio_utils.apply_frontend(
-                sample=adjusted_sample, 
-                settings=frontend_settings, 
+                sample=adjusted_sample,
+                settings=frontend_settings,
                 dtype=tflite_model.outputs[0].dtype
         )
         # The output spectrogram is 2D, add a channel dimension to make it 3D:
@@ -127,7 +127,7 @@ def list_valid_samples():
 
 if __name__ == '__main__':
     # clean_dataset(
-    #     'keyword_spotting_on_off_v2',
+    #     'keyword_spotting_on_off_v3',
     #     classes=('on', 'off')
     # )
     list_valid_samples()

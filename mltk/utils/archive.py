@@ -239,7 +239,7 @@ def _extractnested_archive(
 ):
     ext = path.extension(archive_path)
     if not ext:
-        raise Exception(f'Archive path: {archive_path} does not have a valid file extension')
+        raise ValueError(f'Archive path: {archive_path} does not have a valid file extension')
     ext = '.' + ext
 
     tmp_dir = path.create_tempdir('tmp_archives/' + os.path.basename(archive_path).replace(ext, ''))
@@ -256,7 +256,7 @@ def _extractnested_archive(
                     break
 
         if nested_archive_path is None:
-            raise Exception(f'No nested archive found in {archive_path}')
+            raise RuntimeError(f'No nested archive found in {archive_path}')
 
 
         ext = path.extension(archive_path)
@@ -273,7 +273,7 @@ def _extractnested_archive(
         for fn in os.listdir(tmp_dir):
             p = f'{tmp_dir}/{fn}'
             if os.path.isfile(p) or (os.path.isdir(p) and nested_src_dir is not None):
-                raise Exception('Archive does not contain a single root directory')
+                raise RuntimeError('Archive does not contain a single root directory')
             nested_src_dir = p
 
 

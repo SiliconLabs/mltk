@@ -2,6 +2,7 @@
 
 See the source code on Github: `mltk/utils/hasher.py <https://github.com/siliconlabs/mltk/blob/master/mltk/utils/hasher.py>`_
 """
+from typing import Union
 import os
 import hashlib
 
@@ -15,23 +16,27 @@ def generate_hash(*args) -> str:
 
 def hash_file(
     path: str,
-    algorithm: str = 'md5',
-    include_filename: bool = False
+    algorithm: Union[str,'hashlib._Hash'] = 'md5',
+    include_filename: bool = False,
 ) -> str:
     """Generate a hash of the given file"""
     if not os.path.exists(path):
         return None
 
-    algorithm = algorithm.lower()
-
-    if algorithm in ('sha256', 'sha2'):
-        hasher = hashlib.sha256()
-    elif algorithm in ('sha128', 'sha1'):
-        hasher = hashlib.sha1()
-    elif algorithm == 'md5':
-        hasher = hashlib.md5()
+    if isinstance(algorithm, str):
+        algorithm = algorithm.lower()
+        if algorithm in ('sha256', 'sha2'):
+            hasher = hashlib.sha256()
+        elif algorithm in ('sha128', 'sha1'):
+            hasher = hashlib.sha1()
+        elif algorithm == 'md5':
+            hasher = hashlib.md5()
+        else:
+            raise ValueError('Hash algorithm must be md5, sha1, or sha256')
+    elif hasattr(algorithm, 'update') and hasattr(algorithm, 'hexdigest'):
+        hasher = algorithm
     else:
-        raise Exception('Hash algorithm must be md5, sha1, or sha256')
+        raise ValueError('"algorithm argument must be the name of a hash algorithm or a hashlib._Hash instance')
 
     with open(path, 'rb') as f:
         if include_filename:

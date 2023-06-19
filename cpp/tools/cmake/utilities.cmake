@@ -1097,9 +1097,11 @@ function(mltk_bundle_static_library tgt_name bundled_tgt_name)
 
     add_custom_command(
       COMMAND ${ar_tool} -M < ${tgt_location}/${bundled_tgt_name}.ar
+      DEPENDS ${static_libs}
       OUTPUT ${bundled_tgt_full_name}
       COMMENT "Bundling ${bundled_tgt_name}"
-      VERBATIM)
+      VERBATIM
+    )
   elseif(MSVC)
     find_program(lib_tool lib)
 
@@ -1109,9 +1111,11 @@ function(mltk_bundle_static_library tgt_name bundled_tgt_name)
 
     add_custom_command(
       COMMAND ${lib_tool} /NOLOGO /OUT:${bundled_tgt_full_name} ${static_libs_full_names}
+      DEPENDS ${static_libs}
       OUTPUT ${bundled_tgt_full_name}
       COMMENT "Bundling ${tgt_name} into ${bundled_tgt_name}"
-      VERBATIM)
+      VERBATIM
+    )
   else()
     mltk_error("Unsupported compiler")
   endif()
@@ -1164,8 +1168,13 @@ function(mltk_add_tflite_model target tflite_path)
     set(_generate_model_memory_section_arg --memory-section ${_PARSED_MEMORY_SECTION})
   endif()
 
+  mltk_get(MLTK_TFLITE_MODEL_DEPENDENCIES)
+  if(MLTK_TFLITE_MODEL_DEPENDENCIES)
+    set(_dependency_arg --depends ${MLTK_TFLITE_MODEL_DEPENDENCIES})
+  endif()
+
   add_custom_target(${target}_generate_model
-      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/generate_model_header.py "${tflite_path}" --name "sl_tflite_model_array" --length_name "sl_tflite_model_len" --output "${_generated_model_output_path}" ${_accelerator_arg} ${_generate_model_memory_section_arg}
+      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/generate_model_header.py "${tflite_path}" --name "sl_tflite_model_array" --length_name "sl_tflite_model_len" --output "${_generated_model_output_path}" ${_accelerator_arg} ${_generate_model_memory_section_arg} ${_dependency_arg}
       COMMENT "Generating ${target}_generated_model.tflite.c from ${tflite_path}"
       BYPRODUCTS ${_generated_model_output_path}
   )

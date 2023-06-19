@@ -1,6 +1,6 @@
 #include <exception>
 
-#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "all_ops_resolver.h"
 #include "tflite_micro_model_wrapper.hpp"
 #include "tflite_micro_accelerator_wrapper.hpp"
 #include "mltk_tflite_micro_helper.hpp"
@@ -23,7 +23,7 @@ TfliteMicroModelWrapper::~TfliteMicroModelWrapper()
 
 /*************************************************************************************************/
 bool TfliteMicroModelWrapper::load(
-    const std::string& flatbuffer_data, 
+    const std::string& flatbuffer_data,
     void* accelerator,
     bool enable_profiler,
     bool enable_tensor_recorder,
@@ -70,7 +70,7 @@ bool TfliteMicroModelWrapper::load(
     bool retval = TfliteMicroModel::load(
         this->_flatbuffer_data.c_str(),
         *op_resolver,
-        runtime_buffer, 
+        runtime_buffer,
         runtime_memory_size
     );
 
@@ -84,14 +84,14 @@ bool TfliteMicroModelWrapper::invoke() const
 {
     if(this->_accelerator_wrapper != nullptr)
     {
-        // Technically, this should not be required as the accelerator should have already 
-        // been set by the accelerator wrapper when calling mltk_tflite_micro_register_accelerator() in the load() 
+        // Technically, this should not be required as the accelerator should have already
+        // been set by the accelerator wrapper when calling mltk_tflite_micro_register_accelerator() in the load()
         // However, for some reason the pointer is being cleared on Linux in some instances.
         // So, as a failsafe we set the accelerator pointer again before invoking the simulator.
         auto accelerator_wrapper = (const TfliteMicroAcceleratorWrapper*)this->_accelerator_wrapper;
         mltk_tflite_micro_set_accelerator(accelerator_wrapper->accelerator);
     }
-    
+
     return TfliteMicroModel::invoke();
 }
 
@@ -198,7 +198,7 @@ py::bytes TfliteMicroModelWrapper::get_recorded_data()
     const uint8_t* data;
     uint32_t length;
 
-    if(this->recorded_data(&data, &length)) 
+    if(this->recorded_data(&data, &length))
     {
         std::string buf((const char*)data, length);
         return py::bytes(buf);

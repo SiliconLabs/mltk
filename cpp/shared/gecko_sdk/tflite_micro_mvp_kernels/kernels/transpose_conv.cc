@@ -358,16 +358,14 @@ TfLiteStatus Invoke(TfLiteContext* context, TfLiteNode* node)
 }  // namespace transpose_conv2d
 }  // namespace sl
 
-TfLiteRegistration Register_TRANSPOSE_CONV() {
+TFLMRegistration Register_TRANSPOSE_CONV() {
   return {/*init=*/sl::transpose_conv2d::Init,
           /*free=*/nullptr,
           /*prepare=*/sl::transpose_conv2d::Prepare,
           /*invoke=*/sl::transpose_conv2d::Invoke,
           /*profiling_string=*/nullptr,
           /*builtin_code=*/0,
-          /*custom_name=*/nullptr,
-          /*version=*/0,
-          /*registration_external=*/nullptr
+          /*custom_name=*/nullptr
   };
 }
 

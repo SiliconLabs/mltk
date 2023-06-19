@@ -1,15 +1,18 @@
 #include <cstdarg>
 #include <cassert>
+#include <string>
 #include "em_device.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "mltk_tflite_micro_internal.hpp"
-
+#include "cpputils/std_formatted_string.hpp"
 
 namespace mltk
 {
 
+static std::string _unsupported_msg;
 static Logger *mltk_logger =  nullptr;
 bool model_profiler_enabled = false;
+static bool _unsupported_kernel_messages_enabled = true;
 
 #ifdef TFLITE_MICRO_VERSION_STR
 const char* TFLITE_MICRO_VERSION = TFLITE_MICRO_VERSION_STR;
@@ -33,23 +36,57 @@ TfLiteStatus allocate_scratch_buffer(TfLiteContext *ctx, unsigned size_bytes, in
 #ifndef MLTK_DLL_IMPORT
 extern "C" void issue_unsupported_kernel_message(const char* fmt, ...)
 {
-  if(_current_kernel_index == -1 || _issued_unsupported_msg || !model_error_reporter_enabled)
-  {
-    return;
-  }
+    if(_current_kernel_index == -1)
+    {
+        return;
+    }
 
-  _issued_unsupported_msg = true;
+    if(has_unsupported_kernel_messages())
+    {
+        va_list args;
+        va_start(args, fmt);
+        _unsupported_msg = _unsupported_msg + ", " + cpputils::vformat(fmt, args);
+        va_end(args);
+    }
+    else
+    {
+        va_list args;
+        va_start(args, fmt);
+        _unsupported_msg = cpputils::vformat(fmt, args);
+        va_end(args);
+    }
+}
 
-  char buffer[256];
-  char op_name[92];
-  const int l = snprintf(buffer, sizeof(buffer), "%s not supported: ", op_to_str(_current_kernel_index, (tflite::BuiltinOperator)_current_kernel_op_code));
+/*************************************************************************************************/
+extern "C" void flush_unsupported_kernel_messages(logging::Level level)
+{
+    if(has_unsupported_kernel_messages())
+    {
+        if(_unsupported_kernel_messages_enabled)
+        {
+            auto& logger = get_logger();
+            logger.write(level, "%s not supported: %s", get_current_layer_str(), _unsupported_msg.c_str());
+        }
+        reset_unsupported_kernel_messages();
+    }
+}
 
-  va_list args;
-  va_start(args, fmt);
-  vsnprintf(&buffer[l], sizeof(buffer)-l, fmt, args);
-  va_end(args);
+/*************************************************************************************************/
+extern "C" void reset_unsupported_kernel_messages()
+{
+    _unsupported_msg.clear();
+}
 
-  get_logger().warn("%s", buffer);
+/*************************************************************************************************/
+extern "C" bool has_unsupported_kernel_messages()
+{
+    return _unsupported_msg.size() > 0;
+}
+
+/*************************************************************************************************/
+extern "C" void set_unsupported_kernel_messages_enabled(bool enabled)
+{
+    _unsupported_kernel_messages_enabled = enabled;
 }
 
 /*************************************************************************************************/
@@ -216,6 +253,25 @@ bool verify_model_flatbuffer(const void* flatbuffer, int flatbuffer_length)
     flatbuffers::Verifier verifier((const uint8_t*)flatbuffer, flatbuffer_length);
     return tflite::VerifyModelBuffer(verifier);
 }
+
+/*************************************************************************************************/
+const char* to_str(tflite::BuiltinOperator op_type)
+{
+  if (op_type == tflite::BuiltinOperator_CUSTOM) {
+    return "custom";
+  } else {
+    return tflite::EnumNameBuiltinOperator(op_type);
+  }
+}
+
+/*************************************************************************************************/
+const char* op_to_str(int op_idx, tflite::BuiltinOperator op_type)
+{
+  static char op_name_buffer[128];
+  snprintf(op_name_buffer, sizeof(op_name_buffer), "Op%d-%s", op_idx, to_str(op_type));
+  return op_name_buffer;
+}
+
 
 
 

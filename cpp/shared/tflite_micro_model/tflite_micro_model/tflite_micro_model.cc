@@ -44,7 +44,8 @@ bool TfliteMicroModel::load(
 )
 {
     uint32_t allocated_buffer_size = 0;
-    model_has_unsupported_layers = false;
+    model_has_unknown_layers = false;
+    set_unsupported_kernel_messages_enabled(true);
 
     if(TFLITE_MICRO_VERSION != nullptr)
     {
@@ -130,7 +131,7 @@ bool TfliteMicroModel::load(
 
                     // If the model has unsupported layers,
                     // then just return as we cannot load it
-                    if(model_has_unsupported_layers)
+                    if(model_has_unknown_layers)
                     {
                         MLTK_WARN("Model contains one or more unknown layers. You may need to update your OpResolver");
                         unload();
@@ -164,13 +165,13 @@ bool TfliteMicroModel::load(
             if(!find_optimal_buffer_size(flatbuffer, op_resolver, runtime_buffer_size))
             {
                 // On failure, just return
-                if(model_has_unsupported_layers)
+                if(model_has_unknown_layers)
                 {
                     MLTK_WARN("Model contains one or more unknown layers. You may need to update your OpResolver");
                 }
                 else
                 {
-                    MLTK_ERROR("Failed to allocate buffer for model (likely heap memory overflow)");
+                    MLTK_ERROR("Failed to allocate buffer for model (due to heap memory overflow or the model is not fully supported)");
                 }
                 unload();
                 return false;
@@ -225,7 +226,7 @@ bool TfliteMicroModel::load(
         else if(!load_interpreter(flatbuffer, op_resolver, runtime_buffer, runtime_buffer_size))
         {
             // Return the error on failure
-            if(model_has_unsupported_layers)
+            if(model_has_unknown_layers)
             {
                 MLTK_WARN("Model contains one or more unknown layers. You may need to update your OpResolver");
             }
@@ -561,6 +562,10 @@ bool TfliteMicroModel::load_interpreter(
         retval = false;
     }
 
+    // Unsupported kernel message should only be printed the first time we attempt to load the model.
+    // Need to all TfliteMicroModel.load() to print them again.
+    set_unsupported_kernel_messages_enabled(false);
+
     if(disable_logs)
     {
         get_logger().level(saved_log_level);
@@ -587,8 +592,6 @@ bool TfliteMicroModel::find_optimal_buffer_size(
 
     MLTK_INFO("Searching for optimal runtime memory size ...");
 
-    // Don't print error while find the optimal size
-    model_error_reporter_enabled = false;
 
     // Try to get the optimal buffer size to within 128 bytes
     while((upper_limit - lower_limit) > 128)
@@ -626,8 +629,8 @@ bool TfliteMicroModel::find_optimal_buffer_size(
         else
         {
             // Immediately break out of the loop
-            // if the model has unsupported layers
-            if(model_has_unsupported_layers)
+            // if the model has unknown layers
+            if(model_has_unknown_layers)
             {
                 break;
             }
@@ -640,8 +643,6 @@ bool TfliteMicroModel::find_optimal_buffer_size(
         // Free the buffer for the next iteration
         free(buffer);
     }
-
-    model_error_reporter_enabled = true;
 
     if(last_working_buffer_size == -1)
     {

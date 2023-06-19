@@ -3,7 +3,7 @@
 #include "cpputils/string.hpp"
 #include "sl_system_init.h"
 
-#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "all_ops_resolver.h"
 #include "tflite_micro_model/tflite_micro_model.hpp"
 #include "mltk_tflite_micro_helper.hpp"
 #include "mltk_tflite_micro_accelerator_recorder.hpp"
@@ -115,6 +115,13 @@ extern "C" int main(void)
     auto profiler = model.profiler();
     profiling::print_metrics(profiler, &logger);
 
+    // Initialize the input tensors to 0
+    for(int i = 0; i < model.input_size(); ++i)
+    {
+        auto& input_tensor = *model.input(i);
+        memset(input_tensor.data.raw, 0, input_tensor.shape().flat_size());
+    }
+
     if(!model.invoke())
     {
         logger.error("Error while running inference");
@@ -208,81 +215,31 @@ static void dump_recorded_data(TfliteMicroModel &model, logging::Logger& logger)
     uint32_t buffer_length;
     msgpack_object_t* root_obj;
 
+
+
     if(!model.recorded_data(&buffer, &buffer_length))
     {
-         logger.error("No recorded data available");
+        logger.error("No recorded data available");
         return;
     }
     if(msgpack_deserialize_with_buffer(&root_obj, buffer, buffer_length, MSGPACK_FLAGS_NONE) != 0)
     {
-         logger.error("Failed to de-serialize recorded data");
+        logger.error("Failed to de-serialize recorded data");
         return;
     }
 
-    struct Context {
-        logging::Logger& logger;
-        int n_values = 0;
-        int current_index = 0;
-        int layer_index = 0;
+    auto saved_flags = logger.flags(logging::None);
 
-        Context(logging::Logger& logger): logger(logger){}
-    };
-
-    auto msgpack_iterator = [](const msgpack_object_t *key, const msgpack_object_t *value, void *arg) -> int
+    if(msgpack_dump(root_obj, 10, [](const char* s, void *arg)
     {
-        auto& context = *(Context*)arg;
-
-        if(context.current_index == context.n_values)
-        {
-            if(key == nullptr)
-            {
-                context.logger.info("Layer %d:", context.layer_index);
-                context.layer_index += 1;
-                return 0;
-            }
-
-            char key_str[256];
-            context.current_index = 0;
-            context.logger.info("  %s:", msgpack_to_str(key, key_str, sizeof(key_str)));
-
-            if(MSGPACK_IS_ARRAY(value))
-            {
-                context.n_values = MSGPACK_ARRAY_LENGTH(value);
-            }
-            else if(MSGPACK_IS_DICT(value))
-            {
-                context.n_values = MSGPACK_DICT_LENGTH(value);
-            }
-            else
-            {
-                return -1;
-            }
-        }
-        else if(key == nullptr)
-        {
-            context.logger.info("    %d: %d elements", context.current_index, MSGPACK_BIN_LENGTH(value));
-            context.current_index += 1;
-        }
-        else
-        {
-            char key_str[64];
-            char val_str[64];
-            context.logger.info("    %s: %s", msgpack_to_str(key, key_str, sizeof(key_str)), msgpack_to_str(value, val_str, sizeof(val_str)));
-            context.current_index += 1;
-        }
-
-        return 0;
-    };
-
-
-
-    Context context(logger);
-
-    logger.info("Recording results (%d layers):", MSGPACK_ARRAY_LENGTH(root_obj));
-    if(msgpack_foreach(root_obj, msgpack_iterator, &context, 10) != 0)
+        auto& l = *reinterpret_cast<logging::Logger*>(arg);
+        l.write_buffer(logging::Info, s);
+    }, &logger) != 0)
     {
-        logger.error("Failed to process recorded data");
+        logger.error("Error while dumping recorded data");
     }
+
+    logger.flags(saved_flags);
 
     msgpack_free_objects(root_obj);
 }

@@ -248,7 +248,7 @@ setup(
         ],
         'mltk.models.siliconlabs': [
             'fingerprint_signature_generator.mltk.zip',
-            'keyword_spotting_on_off_v2.mltk.zip',
+            'keyword_spotting_on_off_v3.mltk.zip',
             'keyword_spotting_mobilenetv2.mltk.zip',
             'keyword_spotting_with_transfer_learning.mltk.zip',
             'keyword_spotting_pacman_v3.mltk.zip',

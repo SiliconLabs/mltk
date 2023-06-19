@@ -22,7 +22,7 @@ def should_patch_file(path: str) -> object:
     if path.endswith('/micro/memory_planner/greedy_memory_planner.cc'):
         return dict(func=process_greedy_memory_planner_cc, state=0)
 
-    if path.endswith(('/micro/micro_interpreter.h', '/micro/micro_allocator.h')):
+    if path.endswith(('/micro/micro_interpreter.h', '/micro/micro_allocator.h', '/micro/micro_context.h')):
         return dict(func=process_header_visibility, state=0)
 
     if path.endswith('/kernels/kernel_util.cc'):

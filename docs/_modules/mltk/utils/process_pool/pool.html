@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.utils.process_pool.pool &#8212; MLTK 0.16.0 documentation</title>
+    <title>mltk.utils.process_pool.pool &#8212; MLTK 0.17.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.16.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.17.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.16.0 documentation logo">
+                   alt="MLTK 0.17.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.16.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.17.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.16.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.17.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -518,6 +518,9 @@
 <span class="sd">            This function must exist at the root of its module (i.e. it must not be nested or a class method)</span>
 <span class="sd">            Typically the function will accept one or more arguments, process the data, and return a result</span>
 <span class="sd">        n_jobs: The number of subprocesses to use for processing. Typically more jobs means faster processing at the expends of more RAM/CPU usage</span>
+<span class="sd">            - A float value between (0, 1.0], which specifies the percentage of the available CPUs</span>
+<span class="sd">            - Integer specifying the exact number of CPUs. This will automatically clamp to the maximum CPUs in the system if necessary</span>
+<span class="sd">            - If `-1` then use all available CPUs</span>
 <span class="sd">        name: The name to prefix to the python threads used to monitor the subprocesses</span>
 <span class="sd">        start: Automatically start the subprocesses. If false, then the start() must be called before processing</span>
 <span class="sd">        debug: If true then the entry_point is executed in a single thread instead of multiple subprocesses. This reduces complexity which can aid debugging</span>
@@ -528,7 +531,7 @@
 <div class="viewcode-block" id="ProcessPool.__init__"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">entry_point</span><span class="p">:</span><span class="n">Callable</span><span class="p">,</span>
-        <span class="n">n_jobs</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">n_jobs</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">'ProcessPool'</span><span class="p">,</span>
         <span class="n">start</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -612,7 +615,7 @@
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_jobs</span><span class="p">):</span>
             <span class="n">subprocess</span> <span class="o">=</span> <span class="n">_Subprocess</span><span class="p">(</span>
-                <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">-ProcessPool-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
                 <span class="n">pool</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
                 <span class="n">entry_point</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_entry_point</span><span class="p">,</span>
                 <span class="n">debug</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_debug</span><span class="p">,</span>
@@ -1055,7 +1058,7 @@
               
           </div>
             Last updated on
-              Mar 30, 2023.
+              Jun 19, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
