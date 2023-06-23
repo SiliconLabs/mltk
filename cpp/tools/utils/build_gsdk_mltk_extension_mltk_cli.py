@@ -85,11 +85,11 @@ def _update_mltk_dependencies(logger):
     """Clone all the embedded C++ dependencies"""
     logger.info('Updating C++ dependencies')
     build_mltk_target(
+        mltk_target='mltk_audio_classifier',
+        target='mltk_tflite_micro_apply_patch',
         platform='brd2601',
-        config_only=True,
         clean=True
     )
-
 
 def _update_gsdk_properties_file(gsdk_dir, logger):
     """Update the .properties file to rename:
