@@ -352,6 +352,8 @@ class TfliteMicro:
                     if input_index >= tf_layer.n_inputs:
                         break
                     input_tensor = tf_layer.inputs[input_index]
+                    if input_tensor is None:
+                        continue
                     input_buf = np.frombuffer(input_bytes, dtype=input_tensor.dtype)
                     if input_tensor.shape.flat_size > 0:
                         tf_layer.inputs[input_index]._data = np.reshape(input_buf, newshape=input_tensor.shape)

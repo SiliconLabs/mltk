@@ -58,7 +58,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.TrainMixin &#8212; MLTK 0.17.0 documentation</title>
+    <title>mltk.core.TrainMixin &#8212; MLTK 0.18.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -104,11 +104,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.17.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.18.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.17.0 documentation logo">
+                   alt="MLTK 0.18.0 documentation logo">
           
         </a>
       </div>
@@ -200,13 +200,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.17.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.18.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.17.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.18.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -1058,8 +1058,10 @@ model.stop_training is marked True and the training terminates.</p>
                                                             <span class="c1"># for the model. The converter can use the dataset to evaluate different optimizations.</span>
                                                             <span class="c1"># Note that this is an optional attribute but it is necessary if INT8 is the only</span>
                                                             <span class="c1"># support builtin ops in target ops.</span>
-                                                            <span class="c1"># If the keyword 'generate' is used, then use update to 1000 samples from the model's</span>
+                                                            <span class="c1"># If the keyword 'generate' is used, then use update to "representative_dataset_max_samples" samples from the model's</span>
                                                             <span class="c1"># validation dataset as the representative dataset</span>
+
+    <span class="n">representative_dataset_max_samples</span> <span class="o">=</span> <span class="mi">1000</span>               <span class="c1"># The maximum number of samples to use when representative_dataset == 'generate'</span>
 
     <span class="n">allow_custom_ops</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>                               <span class="c1"># Boolean indicating whether to allow custom operations. When False, any unknown operation is an error.</span>
                                                             <span class="c1"># When True, custom ops are created for any op that is unknown. The developer needs to provide these to the</span>
@@ -1073,6 +1075,11 @@ model.stop_training is marked True and the training terminates.</p>
                                                             <span class="c1"># This is only allowed if from_saved_model interface is used. (default False)</span>
 
     <span class="n">generate_unquantized</span> <span class="o">=</span> <span class="kc">True</span>                             <span class="c1"># Also generate a float32/unquantized .tflite model in addition to the quantized .tflite model</span>
+
+    <span class="n">generate_quantization_report</span> <span class="o">=</span> <span class="kc">False</span>                    <span class="c1"># Generate a quantization report. This can help determine if layers have quantization errors compared to the float32 model</span>
+                                                            <span class="c1"># See:</span>
+                                                            <span class="c1"># https://www.tensorflow.org/lite/performance/quantization_debugger</span>
+                                                            <span class="c1"># https://siliconlabs.github.io/mltk/mltk/tutorials/model_quantization_tips.html</span>
 <span class="p">)</span>
 </pre></div>
 </div>
@@ -1092,6 +1099,7 @@ used to perform custom quantization</p>
 <li><p><a class="reference external" href="../../../docs/guides/model_quantization.html">Model Quantization</a> guide</p></li>
 <li><p><a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter">tf.lite.TFLiteConverter</a></p></li>
 <li><p><a class="reference external" href="https://www.tensorflow.org/lite/performance/post_training_integer_quant">Post-training integer quantization</a></p></li>
+<li><p><a class="reference external" href="../../../mltk/tutorials/model_quantization_tips.html">Model Quantization Tips</a></p></li>
 </ul>
 </div>
 </dd></dl>
@@ -1201,7 +1209,7 @@ These keyword arguments will override the other model properties passed to fit()
               
           </div>
             Last updated on
-              Jun 21, 2023.
+              Aug 04, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

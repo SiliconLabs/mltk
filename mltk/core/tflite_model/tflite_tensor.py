@@ -80,6 +80,17 @@ class TfliteTensor(_tflite_schema_fb.TensorT):
     def quantization(self, v:TfliteQuantization):
         self._quantization = TfliteQuantization(v)
 
+    @property
+    def is_variable(self) ->bool:
+        """True if this tensor is populated at runtime and its state persists between inferences"""
+        return self.isVariable
+
+    @property
+    def size_bytes(self) -> int:
+        """The number of bytes required to hold the data for this tensor"""
+        if self._data is None:
+            return 0
+        return self.data.nbytes
 
     @property
     def data(self) -> np.ndarray:

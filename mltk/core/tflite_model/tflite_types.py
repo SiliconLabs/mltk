@@ -12,7 +12,7 @@ from . import tflite_schema as _tflite_schema_fb
 
 class TfliteActivation(IntEnum):
     """Activation types
-    
+
     This may be instantiated with either an integer OR string, e.g.:
 
     .. highlight:: python
@@ -51,21 +51,21 @@ TfliteActivation.__new__ = \
 class _TflitePaddingEnumMeta(EnumMeta):
     def __call__(cls, value, *args, width:int=0, height:int=0):
         self = super(EnumMeta, cls).__call__(
-            _convert_object_value_to_int(_tflite_schema_fb.Padding(), value), 
+            _convert_object_value_to_int(_tflite_schema_fb.Padding(), value),
         )
         if len(args) == 2:
             self.width = args[0]
             self.height = args[1]
         else:
-            self.width = width 
-            self.height = height 
+            self.width = width
+            self.height = height
 
         return self
 
 
 class TflitePadding(IntEnum, metaclass=_TflitePaddingEnumMeta):
     """Padding types
-    
+
     This may be instantiated with either an integer OR string, e.g.:
 
     .. highlight:: python
@@ -76,7 +76,7 @@ class TflitePadding(IntEnum, metaclass=_TflitePaddingEnumMeta):
     """
     SAME = _tflite_schema_fb.Padding.SAME
     """Add zeros to the borders of the input so that the output has the same dimensions when applying the kernel
-    
+
     .. highlight:: python
     .. code-block:: python
 
@@ -85,7 +85,7 @@ class TflitePadding(IntEnum, metaclass=_TflitePaddingEnumMeta):
     """
     VALID = _tflite_schema_fb.Padding.VALID
     """Apply the kernel only the valid regions of the input, the output dimensions will be reduced
-    
+
     .. highlight:: python
     .. code-block:: python
 
@@ -122,9 +122,9 @@ class TflitePadding(IntEnum, metaclass=_TflitePaddingEnumMeta):
 @dataclass
 class TfliteConvParams:
     """Calculated Convolution Parameters
-    
+
     .. seealso::
-    
+
        - `ConvParamsQuantize <https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/kernels/conv_common.cc#L54>`_
        - `Quantization Specification <https://www.tensorflow.org/lite/performance/quantization_spec>`_
     """
@@ -179,7 +179,7 @@ class TfliteConvParams:
         params.input_offset = int(-input.quantization.zeropoint[0])
         params.weights_offset = int(-filters.quantization.zeropoint[0])
         params.output_offset = int(output.quantization.zeropoint[0])
-        
+
 
         _compute_padding_height_width(
             padding = params.padding,
@@ -212,9 +212,9 @@ class TfliteConvParams:
 @dataclass
 class TfliteDepthwiseConvParams:
     """Calculated Depthwise Convolution Parameters
-    
+
     .. seealso::
-    
+
        - `DepthwiseConvParamsQuantized <https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/kernels/depthwise_conv_common.cc#L59>`_
        - `Quantization Specification <https://www.tensorflow.org/lite/performance/quantization_spec>`_
     """
@@ -272,7 +272,7 @@ class TfliteDepthwiseConvParams:
         params.input_offset = int(-input.quantization.zeropoint[0])
         params.weights_offset = int(-filters.quantization.zeropoint[0])
         params.output_offset = int(output.quantization.zeropoint[0])
-        
+
 
         _compute_padding_height_width(
             padding = params.padding,
@@ -304,9 +304,9 @@ class TfliteDepthwiseConvParams:
 @dataclass
 class TfliteTransposeConvParams:
     """Calculated Transpose Convolution Parameters
-    
+
     .. seealso::
-    
+
        - `CalculateOpData <https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/kernels/transpose_conv.cc#L72>`_
        - `Quantization Specification <https://www.tensorflow.org/lite/performance/quantization_spec>`_
     """
@@ -355,7 +355,7 @@ class TfliteTransposeConvParams:
         params.input_offset = int(-input.quantization.zeropoint[0])
         params.weights_offset = int(-filters.quantization.zeropoint[0])
         params.output_offset = int(output.quantization.zeropoint[0])
-        
+
 
         _compute_padding_height_width(
             padding = params.padding,
@@ -388,9 +388,9 @@ class TfliteTransposeConvParams:
 @dataclass
 class TfliteFullyConnectedParams:
     """Calculated Full Connected Parameters
-    
+
     .. seealso::
-    
+
        - `FullyConnectedParamsQuantized <https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/kernels/fully_connected_common.cc#L34>`_
        - `Quantization Specification <https://www.tensorflow.org/lite/performance/quantization_spec>`_
     """
@@ -426,7 +426,7 @@ class TfliteFullyConnectedParams:
         params.input_offset = int(-input.quantization.zeropoint[0])
         params.weights_offset = int(-weights.quantization.zeropoint[0])
         params.output_offset = int(output.quantization.zeropoint[0])
-        
+
         input_product_scale = float(np.float32(input.quantization.scale[0]) * np.float32(weights.quantization.scale[0])) # NOTE: TFLM uses float32 for the multiplication
         real_multiplier = input_product_scale / output.quantization.scale[0]
         params.output_multiplier, params.output_shift = _quantize_multiplier(real_multiplier)
@@ -443,9 +443,9 @@ class TfliteFullyConnectedParams:
 @dataclass
 class TflitePoolParams:
     """Calculated Pooling Parameters
-    
+
     .. seealso::
-    
+
        - `AveragePoolingEvalQuantized <https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/kernels/pooling_common.cc#L105>`_
        - `Quantization Specification <https://www.tensorflow.org/lite/performance/quantization_spec>`_
     """
@@ -507,7 +507,7 @@ def _compute_padding_height_width(
     padding: TflitePadding,
     stride_height:int,
     stride_width:int,
-    dilation_height_factor:int, 
+    dilation_height_factor:int,
     dilation_width_factor:int,
     height:int,
     width:int,
@@ -555,7 +555,7 @@ def _populate_convolution_quantization_params(
     per_channel_shift:List[int],
 ) -> Tuple[int, int]:
     num_channels = filters.shape[filters.quantization.quantization_dimension]
-    
+
     input_scale = input.quantization.scale[0]
     output_scale = output.quantization.scale[0]
     filter_scales = filters.quantization.scale
@@ -570,7 +570,7 @@ def _populate_convolution_quantization_params(
         significand, channel_shift = _quantize_multiplier(effective_output_scale)
         per_channel_multiplier.append(significand)
         per_channel_shift.append(channel_shift)
-  
+
 
 def _calculate_activation_range_quantized(
     activation:TfliteActivation,
@@ -586,7 +586,7 @@ def _calculate_activation_range_quantized(
         tmp_q = _quantize(scale, zeropoint, 0.0)
         act_min = max(qmin, tmp_q)
         act_max = qmax
-    
+
     elif activation == TfliteActivation.RELU6:
         tmp_q = _quantize(scale, zeropoint, 0.0)
         act_min = max(qmin, tmp_q)
@@ -602,7 +602,7 @@ def _calculate_activation_range_quantized(
         act_max = min(qmax, tmp_q)
 
     else:
-        act_min = qmin 
+        act_min = qmin
         act_max = qmax
 
     return act_min, act_max
@@ -672,12 +672,12 @@ def _quantize(scale:float, zeropoint:int, f:float) -> int:
     assert tmp >= _int32_min and tmp <= _int32_max
     q = zeropoint + int(tmp)
     return q
-    
+
 
 def _convert_object_value_to_int(obj:object, needle:str, default:int=-1) -> int:
     if isinstance(needle, int):
         return needle
-    
+
     for key in dir(obj):
         if key.lower() == needle.lower():
             return getattr(obj, key)

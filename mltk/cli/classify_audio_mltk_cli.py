@@ -452,7 +452,13 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
                     spectrogram = np.clip(spectrogram / 4, 0, 255)
                     spectrogram = spectrogram.astype(np.uint8)
                 elif dtype_str == 'float32':
-                    spectrogram = np.clip(spectrogram *255, 0, 255)
+                    # Convert from float32 to uint8
+                    # NOTE: We hardcode the min/max values so that the spectrogram images are consistent..
+                    max_val = 2 # np.max(spectrogram_dumped)
+                    min_val = -2 # np.min(spectrogram_dumped)
+                    val_range = max_val - min_val
+                    spectrogram = (spectrogram - min_val) * 255 / val_range
+                    spectrogram = np.clip(spectrogram, 0, 255)
                     spectrogram = spectrogram.astype(np.uint8)
 
                 jpg_data = cv2.applyColorMap(spectrogram, cv2.COLORMAP_HOT)
@@ -538,7 +544,8 @@ In this case, ONLY the .tflite will be programmed and the existing audio_classif
         spectrogram_size = spectrogram_rows*spectrogram_cols
         raw_spectrogram_min_read_size = spectrogram_size*2
         raw_spectrogram_buffer = bytearray()
-        quantized_spectrogram_min_read_size = spectrogram_size
+
+        quantized_spectrogram_min_read_size = spectrogram_size * np.dtype(input_dtype).itemsize
         quantized_spectrogram_buffer = bytearray()
         audio_min_read_size = 1024
         audio_start_timeout = None

@@ -50,6 +50,7 @@ my_model.tflite_converter['representative_dataset'] = 'generate'
 ```{seealso}
 - [Post-training Quantization](https://www.tensorflow.org/lite/performance/post_training_quantization)
 - [TFLiteConverter](https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter)
+- [Model Quantization Tips](https://siliconlabs.github.io/mltk/mltk/tutorials/model_quantization_tips.html)
 ```
 
 

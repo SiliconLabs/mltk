@@ -266,8 +266,8 @@ class TfliteModel:
         ]
 
         for i, layer in enumerate(self.layers):
-            inputs = '\n'.join([x.shape_dtype_str(include_batch=False) for x in layer.inputs])
-            outputs = '\n'.join([x.shape_dtype_str(include_batch=False) for x in layer.outputs])
+            inputs = '\n'.join([x.shape_dtype_str(include_batch=False) for x in layer.inputs if x is not None])
+            outputs = '\n'.join([x.shape_dtype_str(include_batch=False) for x in layer.outputs if x is not None])
             t.add_row([
                 i,
                 layer.opcode_str,

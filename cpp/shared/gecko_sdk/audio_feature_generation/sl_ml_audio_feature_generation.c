@@ -492,35 +492,48 @@ sl_status_t sl_ml_audio_feature_generation_fill_tensor(TfLiteTensor *input_tenso
   sl_status_t status = SL_STATUS_OK;
   if (input_tensor->type == kTfLiteInt8) {
     if(SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_DYNAMIC_SCALE_ENABLE) {
-      status = sli_ml_audio_feature_generation_get_features_dynamically_quantized(input_tensor->data.int8,
-                                                                                  input_tensor->bytes,
-                                                                                  quantize_dynamic_scale_range);
+      status = sli_ml_audio_feature_generation_get_features_dynamically_quantized(
+        input_tensor->data.int8,
+        input_tensor->bytes,
+        quantize_dynamic_scale_range
+      );
     } else {
-      status = sli_ml_audio_feature_generation_get_features_quantized(input_tensor->data.int8,
-                                                                    input_tensor->bytes,
-                                                                    SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MIN,
-                                                                    SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MAX);
+      status = sli_ml_audio_feature_generation_get_features_quantized(
+        input_tensor->data.int8,
+        input_tensor->bytes,
+        SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MIN,
+        SL_ML_AUDIO_FEATURE_GENERATION_QUANTIZE_FEATURE_RANGE_MAX
+      );
     }
 
      dump_int8_spectrogram(input_tensor->data.int8, input_tensor->bytes);
 
   } else if(input_tensor -> type == kTfLiteUInt16) {
-    status = sl_ml_audio_feature_generation_get_features_raw(input_tensor->data.ui16, input_tensor->bytes / sizeof(uint16_t));
+    const int n_elements = input_tensor->bytes / sizeof(uint16_t);
+    status = sl_ml_audio_feature_generation_get_features_raw(input_tensor->data.ui16, n_elements);
 
   } else if(input_tensor -> type == kTfLiteFloat32) {
+    const int n_elements = input_tensor->bytes / sizeof(float);
+
     if(SL_ML_AUDIO_FEATURE_GENERATION_SAMPLEWISE_NORM_RESCALE != 0) {
-      status = sl_ml_audio_feature_generation_get_features_scaled(input_tensor->data.f,
-                                                                  input_tensor->bytes / sizeof(float),
-                                                                  SL_ML_AUDIO_FEATURE_GENERATION_SAMPLEWISE_NORM_RESCALE);
+      status = sl_ml_audio_feature_generation_get_features_scaled(
+        input_tensor->data.f,
+        n_elements,
+        SL_ML_AUDIO_FEATURE_GENERATION_SAMPLEWISE_NORM_RESCALE
+      );
     } else if(SL_ML_AUDIO_FEATURE_GENERATION_SAMPLEWISE_NORM_MEAN_AND_STD) {
-      status = sl_ml_audio_feature_generation_get_features_mean_std_normalized(input_tensor->data.f,
-                                                                               input_tensor->bytes / sizeof(float));
+      status = sl_ml_audio_feature_generation_get_features_mean_std_normalized(
+        input_tensor->data.f,
+        n_elements
+      );
     } else {
-      status = sl_ml_audio_feature_generation_get_features_raw_float32(input_tensor->data.f,
-                                                                       input_tensor->bytes / sizeof(float));
+      status = sl_ml_audio_feature_generation_get_features_raw_float32(
+        input_tensor->data.f,
+        n_elements
+      );
     }
 
-    dump_float_spectrogram(input_tensor->data.f, input_tensor->bytes / sizeof(float));
+    dump_float_spectrogram(input_tensor->data.f, n_elements);
 
   } else {
     status = SL_STATUS_INVALID_PARAMETER;

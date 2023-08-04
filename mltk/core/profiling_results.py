@@ -103,19 +103,19 @@ class ProfilingLayerResult(defaultdict):
     @property
     def input_shape_str(self) -> str:
         """Layer input shape(s) as a string"""
-        return ','.join([f'{x.shape}' for x in self.tflite_layer.inputs])
+        return ','.join([f'{x.shape}' for x in self.tflite_layer.inputs if x is not None])
     @property
     def input_dtype_str(self) -> str:
         """Layer input data type(s) as a string"""
-        return ','.join([x.dtype_str for x in self.tflite_layer.inputs])
+        return ','.join([x.dtype_str for x in self.tflite_layer.inputs if x is not None])
     @property
     def output_shape_str(self) -> str:
         """Layer output shape(s) as a string"""
-        return ','.join([f'{x.shape}' for x in self.tflite_layer.outputs])
+        return ','.join([f'{x.shape}' for x in self.tflite_layer.outputs if x is not None])
     @property
     def output_dtype_str(self) -> str:
         """Layer output data type(s) as a string"""
-        return ','.join([f'{x.dtype_str}' for x in self.tflite_layer.outputs])
+        return ','.join([f'{x.dtype_str}' for x in self.tflite_layer.outputs if x is not None])
 
     def get_summary(
         self,
@@ -233,19 +233,19 @@ class ProfilingModelResults:
     @property
     def input_shape_str(self) -> str:
         """Model input shape(s) as a string"""
-        return ','.join([f'{x.shape}' for x in self._model.inputs])
+        return ','.join([f'{x.shape}' for x in self._model.inputs if x is not None])
     @property
     def input_dtype_str(self) -> str:
         """Model input data type(s) as a string"""
-        return ','.join([x.dtype_str for x in self._model.inputs])
+        return ','.join([x.dtype_str for x in self._model.inputs if x is not None])
     @property
     def output_shape_str(self) -> str:
         """Model output shape(s) as a string"""
-        return ','.join([f'{x.shape}' for x in self._model.outputs])
+        return ','.join([f'{x.shape}' for x in self._model.outputs if x is not None])
     @property
     def output_dtype_str(self) -> str:
         """Model output data type(s) as a string"""
-        return ','.join([f'{x.dtype_str}' for x in self._model.outputs])
+        return ','.join([f'{x.dtype_str}' for x in self._model.outputs if x is not None])
     @property
     def ops(self) -> int:
         """The total number of ops to execute one model inference"""

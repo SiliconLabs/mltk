@@ -55,7 +55,16 @@ If omitted, then attempt to automatically determine the serial COM port''',
     ),
     full_summary: bool = typer.Option(False, '--full-summary',
         help='Generate a full summary from the profiling report. This includes any extra info logged by the selected accelerator'
-    )
+    ),
+    app_path: str = typer.Option(None, '--app',
+        help='''\b
+By default, the model_profiler app is automatically downloaded.
+This option allows for overriding with a custom built app.
+Alternatively, if using the --device option, set this option to "none" to NOT program the model_profiler app to the device.
+In this case, ONLY the .tflite will be programmed and the existing model_profiler app will be re-used.
+''',
+        metavar='<path>'
+    ),
 ):
     """Profile a model to determine how efficiently is may run on hardware
 
@@ -104,6 +113,7 @@ If omitted, then attempt to automatically determine the serial COM port''',
     try:
         profiling_report = profile_model(
             model,
+            image_path=app_path,
             accelerator=accelerator,
             use_device=use_device,
             port=port,

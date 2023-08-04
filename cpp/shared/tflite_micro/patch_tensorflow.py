@@ -124,12 +124,19 @@ def process_micro_allocator_cc(lineno: int, line: str, arg: object) -> str:
 
 
 def process_single_arena_buffer_allocator_cc(lineno: int, line: str, arg: object) -> str:
-    if arg['state'] == 0 and  'SingleArenaBufferAllocator::IsAllTempDeallocated()' in line:
+    if arg['state'] == 0 and 'SingleArenaBufferAllocator::IsAllTempDeallocated()' in line:
         arg['state'] = 1
     elif arg['state'] == 1:
         arg['state'] = 2
         if 'MLTK' not in line:
             return '// Patch by MLTK\n  return true;\n' + line
+
+    elif arg['state'] == 2 and 'SingleArenaBufferAllocator::GetAvailableMemory' in line:
+        arg['state'] = 3
+    elif arg['state'] == 3:
+        arg['state'] =  4
+        if 'MLTK' not in line:
+            return '// Patch by MLTK\n  if(temp_ > tail_) return 0;\n' + line
 
     return line
 

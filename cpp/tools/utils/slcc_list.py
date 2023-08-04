@@ -7,7 +7,6 @@ def main():
     parser = argparse.ArgumentParser(description='Utility to list the includes and sources of a directory for populating a .slcc file')
     parser.add_argument('type', choices=['sources', 'headers'])
     parser.add_argument('--recursive', action='store_true')
-    parser.add_argument('dummy')
     parser.add_argument('dir_path')
 
     args = parser.parse_args()

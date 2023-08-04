@@ -155,6 +155,7 @@ static sl_status_t conv1d(const sli_mvp_ml_conv2d_s8_params_t *params, bool exec
   const int input_width_max   = SLI_MVP_MAX_VECTOR_STRIDE / in_channels;
   const int output_width_max  = SLI_MVP_MAX_VECTOR_STRIDE / out_channels;
   int remaining_input_width   = input_width;
+  int remaining_output_width  = out_width;
 
   if (padding) {              // True if "SAME" padding
     // Calculate "left" padding width.
@@ -163,10 +164,11 @@ static sl_status_t conv1d(const sli_mvp_ml_conv2d_s8_params_t *params, bool exec
     column          = 0;
     while ((pad_left > 0) && (status == SL_STATUS_OK)) {
       // Calculate one output column. Compute with host CPU.
-      status      = conv1d_one_column(params, column);
+      status      = execute ? conv1d_one_column(params, column) : SL_STATUS_OK;
       column     += 1;
       pad_left   -= stride_width;
       par.output += out_channels;
+      remaining_output_width -= 1;
     }
 
     // Calculate "right" padding width.
@@ -174,9 +176,10 @@ static sl_status_t conv1d(const sli_mvp_ml_conv2d_s8_params_t *params, bool exec
     column = out_width - 1;
     while ((pad_right > 0) && (status == SL_STATUS_OK)) {
       // Calculate one output column. Compute with host CPU.
-      status     = conv1d_one_column(params, column);
+      status      = execute ? conv1d_one_column(params, column) : SL_STATUS_OK;
       column    -= 1;
       pad_right -= stride_width;
+      remaining_output_width -= 1;
     }
 
     remaining_input_width += pad_left;
@@ -195,7 +198,7 @@ static sl_status_t conv1d(const sli_mvp_ml_conv2d_s8_params_t *params, bool exec
       chunk_output_width = sli_div_floor_int(chunk_input_width - filter_width, stride_width) + 1;
     } else {
       // Calculate max chunk width with output width as limiting factor.
-      chunk_output_width = SL_MIN(par.output_width, output_width_max);
+      chunk_output_width = SL_MIN(remaining_output_width, output_width_max);
       chunk_input_width  = ((chunk_output_width - 1) * stride_width) + filter_width;
     }
     par.input_width  = chunk_input_width;
@@ -207,6 +210,7 @@ static sl_status_t conv1d(const sli_mvp_ml_conv2d_s8_params_t *params, bool exec
     // Advance tensor pointers.
     chunk_input_width      = chunk_input_width - filter_width + stride_width;
     remaining_input_width -= chunk_input_width;
+    remaining_output_width -= chunk_output_width;
     par.input             += chunk_input_width * in_channels;
     par.output            += chunk_output_width * out_channels;
   }

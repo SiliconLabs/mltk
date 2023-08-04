@@ -190,7 +190,7 @@ class MltkModelEvent(str, enum.Enum):
     """
 
     BEFORE_QUANTIZE = enum.auto()
-    """Invoked during :py:class:`~quantize_model` before the ` <https://www.tensorflow.org/lite/convert>`_ is invoked
+    """Invoked during :py:class:`~quantize_model` before the `TfliteConverter <https://www.tensorflow.org/lite/convert>`_ is invoked
 
     This has the additional keyword arguments:
 

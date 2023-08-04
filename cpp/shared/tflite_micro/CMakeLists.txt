@@ -159,7 +159,7 @@ tensorflow/lite/micro/kernels/dequantize.cc
 tensorflow/lite/micro/kernels/dequantize_common.cc
 tensorflow/lite/micro/kernels/detection_postprocess.cc
 tensorflow/lite/micro/kernels/div.cc
-tensorflow/lite/micro/kernels/elementwise.cc
+#tensorflow/lite/micro/kernels/elementwise.cc   # This is overridden
 tensorflow/lite/micro/kernels/elu.cc
 tensorflow/lite/micro/kernels/ethosu.cc
 tensorflow/lite/micro/kernels/exp.cc
@@ -237,6 +237,7 @@ set(tflm_overidden_kernels
   kernels/concatenation.cc
   kernels/conv.cc
   kernels/depthwise_conv.cc
+  kernels/elementwise.cc
   kernels/fully_connected.cc
   kernels/pooling.cc
 )
@@ -251,6 +252,13 @@ if(TFLITE_MICRO_EXCLUDED_REF_KERNELS)
     list(FILTER tflm_sources EXCLUDE REGEX ".*/${pat}\.cc")
     list(FILTER tflm_overidden_kernels EXCLUDE REGEX ".*/${pat}\.cc")
   endforeach()
+
+  if("rsqrt" IN_LIST TFLITE_MICRO_EXCLUDED_REF_KERNELS)
+    target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+      TFLITE_MICRO_RSQRT_DISABLED
+    )
+  endif()
 endif()
 
 

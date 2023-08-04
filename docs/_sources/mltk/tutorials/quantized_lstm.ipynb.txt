@@ -1,0 +1,1024 @@
+{
+
+ "cells": [
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "# Quantized LSTM\n",
+
+    "\n",
+
+    "This tutorial describes how to create a quantized ML model with an [LSTM](https://keras.io/api/layers/recurrent_layers/lstm) layer and run it on an embedded device.\n",
+
+    "\n",
+
+    "In this tutorial, we investigate the [keyword_spotting_numbers](../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.md) model which is based on a custom CNN+LSTM architecture. The model classifies the keywords: \"zero\" through \"nine\". This model has an LSTM layer which analyzes the time-dependencies that are inherent to the input audio samples.\n",
+
+    "\n",
+
+    "This tutorial focuses on how to create an LSTM model that can be properly quantized and run on an embedded device."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Quick Links\n",
+
+    "\n",
+
+    "- [keyword_spotting_numbers](../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.md) - Pre-trained and quantized CNN+LSTM model that classifies the keywords: \"zero\" through \"nine\"\n",
+
+    "- [Model Quantization Tips](../../mltk/tutorials/model_quantization_tips.md) - Tutorial providing tips on how to gain better quantization for your model\n",
+
+    "- [Understanding LSTM Networks](http://colah.github.io/posts/2015-08-Understanding-LSTMs/) - Overview of how LSTM networks work"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Key Takeaways\n",
+
+    "\n",
+
+    "1. `return_sequences=True` in the [tf.keras.layers.LSTM](https://keras.io/api/layers/recurrent_layers/lstm) layer config\n",
+
+    "2. `batch_size=1` when quantizing with the [TfliteConverter](https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter)\n",
+
+    "3. Use the [TF-Lite Quantization Debugger](https://www.tensorflow.org/lite/performance/quantization_debugger) to determine which layers are not quantizing well\n",
+
+    "4. Normalize the model input data so it is centered around 0.0.\n",
+
+    "5. Use the [BatchNormalization](https://keras.io/api/layers/normalization_layers/batch_normalization) and [LayerNormalization](https://keras.io/api/layers/normalization_layers/layer_normalization) layers to center the activations around 0.0\n",
+
+    "6. [LayerNormalization](https://keras.io/api/layers/normalization_layers/layer_normalization) at the input _and_ output of the [LSTM](https://keras.io/api/layers/recurrent_layers/lstm) layer is critical to ensure accurate quantization"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## About LSTMs\n",
+
+    "\n",
+
+    "> An LSTM (Long Short-Term Memory) layer is a recurrent neural network (RNN) layer that learns long-term dependencies between time steps in time series and sequence data. The layer performs additive interactions, which can help improve gradient flow over long sequences during training.\n",
+
+    "> \n",
+
+    "> LSTMs are predominantly used to learn, process, and classify sequential data. Common LSTM applications include sentiment analysis, language modeling, speech recognition, and video analysis.\n",
+
+    "> \n",
+
+    "> An LSTM unit consists of a cell, an input gate, an output gate, and a forget gate. An LSTM unit can be considered as a layer of neurons in a traditional feedforward neural network, with each neuron having a hidden layer and a current state.\n",
+
+    "\n",
+
+    "![](http://colah.github.io/posts/2015-08-Understanding-LSTMs/img/LSTM3-chain.png)\n",
+
+    "\n",
+
+    "For more details, refer to the following document: [Understanding LSTM Networks](http://colah.github.io/posts/2015-08-Understanding-LSTMs)."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Quantizing an LSTM Model\n",
+
+    "\n",
+
+    "There are many examples that demonstrate how to generate a `.tflite` from an [LSTM](https://keras.io/api/layers/recurrent_layers/lstm) model, e.g.:\n",
+
+    "- [Keras LSTM](https://colab.research.google.com/github/tensorflow/tensorflow/blob/master/tensorflow/lite/examples/experimental_new_converter/Keras_LSTM_fusion_Codelab.ipynb)\n",
+
+    "- [Train an LSTM weather forecasting model](https://colab.research.google.com/github/google-coral/tutorials/blob/master/train_lstm_timeseries_ptq_tf2.ipynb)\n",
+
+    "\n",
+
+    "While these models have high accuracy with **float32** weights, many times their accuracies are severely reduced when quantized with **int8** weights.\n",
+
+    "\n",
+
+    "The following sections show how the [keyword_spotting_numbers](../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.md), a CNN+LSTM model, was developed to obtain good **int8** quantization accuracy.\n",
+
+    "\n",
+
+    "__NOTE:__ Also refer to the [Model Quantization Tips](../../mltk/tutorials/model_quantization_tips.md) tutorial for more details on how to create a model that quantizes well."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Model Settings\n",
+
+    "\n",
+
+    "The following settings were used in the [keyword_spotting_numbers](../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.md) to allow for generating a quantized `.tflite` with an **int8** LSTM layer:"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### LSTM Layer Config\n",
+
+    "\n",
+
+    "[Tensorflow-Lite Micro](https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/kernels/unidirectional_sequence_lstm.h) supports an **int8** LSTM kernel. To use this kernel, your model must define the following LSTM layer config:\n",
+
+    "\n",
+
+    "```python\n",
+
+    "x = tf.keras.layers.LSTM(\n",
+
+    "    n_cell,               # The number of LSTM cells to use\n",
+
+    "    activation='tanh',    # TFLM only supports the tanh activation\n",
+
+    "    return_sequences=True # This is required so that the LSTM layer is properly generated in the .tflite\n",
+
+    ")(x)\n",
+
+    "```\n",
+
+    "\n",
+
+    "`return_sequences=True` is required to properly generate the `.tflite`.  \n",
+
+    "This will return an output tensor with the shape: `<batch> x <time steps> x <features>`.  \n",
+
+    "\n",
+
+    "If you only want to use the last time step, add the following _after_ the LSTM layer:\n",
+
+    "\n",
+
+    "```python\n",
+
+    "# Obtain the last time step, new output shape is: <batch> x <features>\n",
+
+    "x = tf.keras.layers.Lambda(lambda x: x[:, -1, :])(x)\n",
+
+    "```"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Tensorflow-Lite Converter Settings\n",
+
+    "\n",
+
+    "The following [TfliteConverter](https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter) settings were used to quantize the model:\n",
+
+    "\n",
+
+    "```python\n",
+
+    "# These are the settings used to quantize the model.\n",
+
+    "# We want all the internal ops to use int8\n",
+
+    "# while the model input/output is float32.\n",
+
+    "# (the TfliteConverter will automatically add the quantize/dequantize layers)\n",
+
+    "my_model.tflite_converter['optimizations'] = [tf.lite.Optimize.DEFAULT]\n",
+
+    "my_model.tflite_converter['supported_ops'] = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8]\n",
+
+    "# We are normalizing the input samples, so the input/output must be float32\n",
+
+    "my_model.tflite_converter['inference_input_type'] = np.float32\n",
+
+    "my_model.tflite_converter['inference_output_type'] = np.float32\n",
+
+    "# Automatically generate a representative dataset from the validation data\n",
+
+    "my_model.tflite_converter['representative_dataset'] = 'generate'\n",
+
+    "# Use 1000 samples from each class to determine the quantization ranges\n",
+
+    "my_model.tflite_converter['representative_dataset_max_samples'] = 10*1000\n",
+
+    "# Generate a quantization report to help with debugging quantization errors\n",
+
+    "my_model.tflite_converter['generate_quantization_report'] = True\n",
+
+    "```\n",
+
+    "\n",
+
+    "__NOTE:__ While the model internally uses **int8** tensors, the input/output layers are **float32**. This is because we \"normalize\" the input data (more details in the following sections)."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Force the batch size=1 during quantization\n",
+
+    "\n",
+
+    "During training, we want the batch size to be larger than 1 (e.g. 32) as this helps to improve the training time.\n",
+
+    "However, during quantization the batch size must be 1 as the [TfliteConverter](https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter) seems to hang if the batch size is not set.\n",
+
+    "\n",
+
+    "To account for this, we add the following to our model script:\n",
+
+    "\n",
+
+    "```python\n",
+
+    "def my_model_builder(model: MyModel, batch_size:int=None) -> tf.keras.Model:\n",
+
+    "    # If specified, force the model input's batch_size to the given value\n",
+
+    "    input_layer = tf.keras.layers.Input(shape=input_shape, batch_size=batch_size)\n",
+
+    "```\n",
+
+    "\n",
+
+    "Additionally, we add the following [event handlers](https://siliconlabs.github.io/mltk/docs/python_api/mltk_model/model_event.html#mltk.core.MltkModelEvent).\n",
+
+    "These are called just before quantization and evaluation so that the batch size can be forced to 1.\n",
+
+    "\n",
+
+    "```python\n",
+
+    "def _before_save_train_model(\n",
+
+    "        mltk_model:mltk_core.MltkModel,\n",
+
+    "        keras_model:mltk_core.KerasModel,\n",
+
+    "        keras_model_dict:dict,\n",
+
+    "        **kwargs\n",
+
+    "    ):\n",
+
+    "    \"\"\"This is called just before the trained moved is saved to a .h5\n",
+
+    "    This forces the batch_size=1 which is necessary when quantizing the model into a .tflite.\n",
+
+    "    \"\"\"\n",
+
+    "    old_weights = keras_model.get_weights()\n",
+
+    "    new_keras_model = my_model_builder(mltk_model, batch_size=1)\n",
+
+    "    new_keras_model.set_weights(old_weights)\n",
+
+    "    keras_model_dict['value'] = new_keras_model\n",
+
+    "\n",
+
+    "my_model.add_event_handler(mltk_core.MltkModelEvent.BEFORE_SAVE_TRAIN_MODEL, _before_save_train_model)\n",
+
+    "\n",
+
+    "\n",
+
+    "def _evaluate_startup(mltk_model:mltk_core.MltkModel, **kwargs):\n",
+
+    "    \"\"\"This is called at the beginning of the model evaluation API.\n",
+
+    "    This forces the batch_size=1 which is necessary as that is how the .h5 and .tflite model files were saved.\n",
+
+    "    \"\"\"\n",
+
+    "    mltk_model.batch_size = 1\n",
+
+    "\n",
+
+    "my_model.add_event_handler(mltk_core.MltkModelEvent.EVALUATE_STARTUP, _evaluate_startup)\n",
+
+    "```"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Debugging Quantization Errors\n",
+
+    "\n",
+
+    "Tensorflow-Lite comes with an experimental [Quantization Debugger](https://www.tensorflow.org/lite/performance/quantization_debugger):\n",
+
+    "\n",
+
+    "> Quantization debugger makes it possible to do quantization quality metric analysis in the existing model. Quantization debugger can automate processes for running model with a debug dataset, and collecting quantization quality metrics for each tensors.\n",
+
+    "\n",
+
+    "While the [Quantization Debugger](https://www.tensorflow.org/lite/performance/quantization_debugger) may be invoked manually, the MLTK will also automatically invoke it by adding the following to your model script:\n",
+
+    "\n",
+
+    "```python\n",
+
+    "my_model.tflite_converter['generate_quantization_report'] = True\n",
+
+    "```\n",
+
+    "\n",
+
+    "During [model quantization](../../docs/guides/model_quantization.md), a `~/.mtlk/models/<model name>/quantization_report.csv` report file will be generated.\n",
+
+    "\n",
+
+    "Refer to the [Model Quantization](https://siliconlabs.github.io/mltk/mltk/tutorials/model_quantization_tips.html#quantization-report) tutorial for more details."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Analyzing the report\n",
+
+    "\n",
+
+    "For each row in the report, the op name and index comes first, followed by quantization parameters and error metrics.\n",
+
+    "The last column of the report contains:\n",
+
+    "- **rmse/scale** - `sqrt(mean_squared_error) / scale`. This value is close to `1 / sqrt(12)` (~ 0.289) when quantized distribution is similar to the original float distribution, indicating a good quantized model. The larger the value is, the more likely the layer is not being quantized well.\n",
+
+    "\n",
+
+    "Layers with a large `rmse/scale` will likely contribute to poor performance of the model at runtime on the embedded device.  \n",
+
+    "Refer to the [Data Normalization](#data-normalization) section for ways to help reduce the `rmse/scale`."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Data Normalization\n",
+
+    "\n",
+
+    "Model quantization is the process of converting the model weights/filters/activations from `float32` (32-bits) to `int8` (8-bits). This tends to work best if the original float32 data is distributed around 0.0 (e.g. -1.0 to 1.0).\n",
+
+    "To help achieve this, data normalization is used. Data normalization involves scaling the data so that it fits within the desired range. The following data normalization techniques were used in the [keyword_spotting_numbers](../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.md) model: "
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Normalize the input data\n",
+
+    "\n",
+
+    "The output of the [AudioFeatureGenerator](../../docs/audio/audio_feature_generator.md) is a `uint16` spectrogram. We use sample-wise normalization to center each `uint16` value about 0.0 using:\n",
+
+    "\n",
+
+    "```python\n",
+
+    "spectrogram_float32 = spectrogram_uint16.astype(float32)\n",
+
+    "normalized_spectrogram_float32 = (spectrogram_float32 - mean(spectrogram_float32)) / std(spectrogram_float32)\n",
+
+    "```\n",
+
+    "\n",
+
+    "To do this, we add the following to our model script:\n",
+
+    "\n",
+
+    "#### Return uint16 from the audio frontend\n",
+
+    "\n",
+
+    "The output data type of the [audio frontend](https://siliconlabs.github.io/mltk/docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.apply_frontend) is uint16:\n",
+
+    "\n",
+
+    "```python\n",
+
+    "spectrogram = audio_utils.apply_frontend(\n",
+
+    "    sample=augmented_sample,\n",
+
+    "    settings=padded_frontend_settings,\n",
+
+    "    dtype=np.uint16 # We just want the raw, uint16 output of the generated spectrogram\n",
+
+    ")\n",
+
+    "```\n",
+
+    "\n",
+
+    "#### Use NumPy to normalize the spectrogram\n",
+
+    "\n",
+
+    "The following [NumPy](https://numpy.org) code is used to normalize the uint16 spectrogram:\n",
+
+    "\n",
+
+    "```python\n",
+
+    "# Normalize the spectrogram input about 0\n",
+
+    "# spectrogram = (spectrogram - mean(spectrogram)) / std(spectrogram)\n",
+
+    "# This is necessary to ensure the model is properly quantized\n",
+
+    "# NOTE: The quantized .tflite will internally converted the float32 input to int8\n",
+
+    "spectrogram = spectrogram.astype(np.float32)\n",
+
+    "spectrogram -= np.mean(spectrogram, dtype=np.float32, keepdims=True)\n",
+
+    "spectrogram /= (np.std(spectrogram, dtype=np.float32, keepdims=True) + 1e-6)\n",
+
+    "```\n",
+
+    "\n",
+
+    "#### Use float32 for the quantized model input\n",
+
+    "\n",
+
+    "The following [TfliteConverter](https://www.tensorflow.org/lite/models/convert) settings are used to ensure the input to the quantized model is `float32`:\n",
+
+    "\n",
+
+    "\n",
+
+    "```python\n",
+
+    "my_model.tflite_converter['inference_input_type'] = np.float32\n",
+
+    "my_model.tflite_converter['inference_output_type'] = np.float32\n",
+
+    "```\n",
+
+    "\n",
+
+    "__NOTE:__ Internally, the float32 input is automatically converted `int8`.\n",
+
+    "\n",
+
+    "\n",
+
+    "#### Normalize the spectrogram at runtime on the embedded device\n",
+
+    "\n",
+
+    "Whatever preprocessing we apply to the data during model training also needs to be done at runtime on the embedded device. We use the following [model parameter](../../docs/guides/model_parameters.md#audiodatasetmixin) which tells the AudioFeatureGenerator on the embedded device to normalize the data:\n",
+
+    "\n",
+
+    "```python\n",
+
+    "# Set the sample-wise normalization setting.\n",
+
+    "# This tells the embedded audio frontend to do:\n",
+
+    "# spectrogram = (spectrogram - mean(spectrogram)) / std(spectrogram)\n",
+
+    "my_model.model_parameters['samplewise_norm.mean_and_std'] = True\n",
+
+    "```"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Use BatchNormalization when possible\n",
+
+    "\n",
+
+    "While input data normalization can help reduce the `rmse/scale` of the model input layer, we also need to normalize the inputs of the intermediate layers of the model. For this, we use:\n",
+
+    "\n",
+
+    "* [Batch Normalization](https://keras.io/api/layers/normalization_layers/batch_normalization)\n",
+
+    "* [Layer Normalization](https://keras.io/api/layers/normalization_layers/layer_normalization)\n",
+
+    "\n",
+
+    "[Batch Normalization](https://keras.io/api/layers/normalization_layers/batch_normalization) is preferred as it can be fused with other layers which reduces the computational overhead of the model.\n",
+
+    "\n",
+
+    "The [TENet](../../docs/python_api/models/common_models.md#tenet) model architecture uses Batch Normalization internally."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Use LayerNormalization\n",
+
+    "\n",
+
+    "Due to the inherent time dependencies of the LSTM layer, Batch Normalization cannot be directly used as it maintains metrics across multiple batch samples. As such, we must use [Layer Normalization](https://keras.io/api/layers/normalization_layers/layer_normalization/) as this normalizes each sample independently. \n",
+
+    "\n",
+
+    "To ensure the data is evenly distributed around 0.0 (and thus allow it to better quantize from float32 to int8), we use Layer Normalization at the input _and_ output of the LSTM layer:\n",
+
+    "\n",
+
+    "\n",
+
+    "```python\n",
+
+    "# It is critical that we normalize the LSTM input, i.e.\n",
+
+    "# lstm_input = (cnn_features - mean(cnn_features)) / std(cnn_features)\n",
+
+    "# This helps to ensure that the LSTM layer is properly quantized.\n",
+
+    "x = tf.keras.layers.LayerNormalization()(x)\n",
+
+    "\n",
+
+    "# We use an LSTM layer to generate features based on the recurrent nature of the spectrogram.\n",
+
+    "# This analyzes the patterns of the <n_frequency_bins> frequency bins along the time axis.\n",
+
+    "x = tf.keras.layers.LSTM(\n",
+
+    "    n_frequency_bins,      # We want 1 LSTM cell for each spectrogram frequency bin\n",
+
+    "    activation='tanh',    # Embedded only supports the tanh activation\n",
+
+    "    return_sequences=True # This is required so that the LSTM layer is properly generated in the .tflite\n",
+
+    "                            # If this is false, the a WHILE layer is used which is not optimal for embedded\n",
+
+    ")(x)\n",
+
+    "\n",
+
+    "# It is critical that we normalize the LSTM output, i.e.\n",
+
+    "# lstm_features = (lstm_features - mean(lstm_features)) / std(lstm_features)\n",
+
+    "# This helps to ensure that the LSTM layer is properly quantized.\n",
+
+    "x = tf.keras.layers.LayerNormalization()(x)\n",
+
+    "\n",
+
+    "# The output of the LSTM is:\n",
+
+    "# <batch_size, cnn_time_steps, n_frequency_bins>\n",
+
+    "# However, only the last row of the LSTM is meaningful,\n",
+
+    "# so we drop the rest of the rows:\n",
+
+    "# <batch_size, last_row_lstm_features>\n",
+
+    "x = tf.keras.layers.Lambda(lambda x: x[:, -1, :])(x)\n",
+
+    "```"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Evaluation Results"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Float32 weights/activations\n",
+
+    "\n",
+
+    "The [keyword_spotting_numbers](../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.md) float32 weights/activations evaluation results are as follows:\n",
+
+    "\n",
+
+    "```\n",
+
+    "mltk evaluate keyword_spotting_numbers\n",
+
+    "\n",
+
+    "Name: keyword_spotting_numbers\n",
+
+    "Model Type: classification\n",
+
+    "Overall accuracy: 93.840%\n",
+
+    "Class accuracies:\n",
+
+    "- seven = 96.723%\n",
+
+    "- eight = 96.404%\n",
+
+    "- nine = 94.746%\n",
+
+    "- six = 94.701%\n",
+
+    "- zero = 94.508%\n",
+
+    "- three = 94.198%\n",
+
+    "- two = 93.915%\n",
+
+    "- one = 93.873%\n",
+
+    "- four = 93.249%\n",
+
+    "- five = 90.882%\n",
+
+    "- _unknown_ = 89.846%\n",
+
+    "Average ROC AUC: 99.241%\n",
+
+    "Class ROC AUC:\n",
+
+    "- seven = 99.723%\n",
+
+    "- eight = 99.715%\n",
+
+    "- four = 99.342%\n",
+
+    "- one = 99.329%\n",
+
+    "- zero = 99.294%\n",
+
+    "- nine = 99.289%\n",
+
+    "- three = 99.260%\n",
+
+    "- six = 99.227%\n",
+
+    "- two = 99.080%\n",
+
+    "- _unknown_ = 98.756%\n",
+
+    "- five = 98.636%\n",
+
+    "```"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### int8 weights/activations\n",
+
+    "\n",
+
+    "The [keyword_spotting_numbers](../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.md) int8 weights/activations evaluation results are as follows:\n",
+
+    "\n",
+
+    "```\n",
+
+    "mltk evaluate keyword_spotting_numbers --tflite\n",
+
+    "\n",
+
+    "Name: keyword_spotting_numbers\n",
+
+    "Model Type: classification\n",
+
+    "Overall accuracy: 90.116%\n",
+
+    "Class accuracies:\n",
+
+    "- seven = 94.478%\n",
+
+    "- six = 94.023%\n",
+
+    "- three = 92.764%\n",
+
+    "- zero = 92.215%\n",
+
+    "- eight = 91.135%\n",
+
+    "- nine = 90.165%\n",
+
+    "- two = 90.043%\n",
+
+    "- one = 88.848%\n",
+
+    "- four = 88.265%\n",
+
+    "- five = 86.836%\n",
+
+    "- _unknown_ = 83.744%\n",
+
+    "Average ROC AUC: 98.535%\n",
+
+    "Class ROC AUC:\n",
+
+    "- seven = 99.258%\n",
+
+    "- three = 98.892%\n",
+
+    "- six = 98.784%\n",
+
+    "- two = 98.709%\n",
+
+    "- zero = 98.701%\n",
+
+    "- nine = 98.615%\n",
+
+    "- eight = 98.611%\n",
+
+    "- four = 98.457%\n",
+
+    "- one = 98.379%\n",
+
+    "- five = 97.937%\n",
+
+    "- _unknown_ = 97.545%\n",
+
+    "```"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "### Remarks\n",
+
+    "\n",
+
+    "So converting this CNN+LSTM model from `float32` to `int8` lost about 3% of model accuracy which is good, not great (typically, quantizing CNN-only models looses 1-2% of accuracy).\n",
+
+    "\n",
+
+    "The key for allowing the quantization of the [LSTM](https://keras.io/api/layers/recurrent_layers/lstm/) layer is to surround it with the [Layer Normalization](https://keras.io/api/layers/normalization_layers/layer_normalization) layer.\n",
+
+    "\n",
+
+    "Ideally, we would use the [LayerNormLSTMCell](https://www.tensorflow.org/addons/api_docs/python/tfa/rnn/LayerNormLSTMCell) which applies additional normalization to the LSTM's internal tensors, however, this layer is not currently supported by [Tensorflow-Lite Micro](https://github.com/tensorflow/tflite-micro).\n",
+
+    "\n",
+
+    "#### Quantization Report\n",
+
+    "\n",
+
+    "The generated [quantization_report.csv](https://siliconlabs.github.io/mltk/mltk/tutorials/model_quantization_tips.html#quantization-report) is in the [keyword_spotting_numbers.mltk.zip](https://github.com/SiliconLabs/mltk/raw/master/mltk/models/siliconlabs/keyword_spotting_numbers.mltk.zip) model archive.\n",
+
+    "\n",
+
+    "A snippet of the report is as follows:"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "|op_name                     |num_elements|stddev       |mean_error     |max_abs_error|mean_squared_error|scale        |zero_point|range              |rmse/scale            |\n",
+
+    "|----------------------------|------------|-------------|---------------|-------------|------------------|-------------|----------|-------------------|----------------------|\n",
+
+    "|CONV_2D                     |3920.0      |0.062017273  |-0.00017696062 |0.23714127   |0.0038493355      |0.18038306   |3         |45.997680300000006 |0.3439514403696602    |\n",
+
+    "|CONV_2D                     |11760.0     |0.03295127   |-0.0004035881  |0.12613823   |0.0010864673      |0.1565376    |-128      |39.917088          |0.21056668442429635   |\n",
+
+    "|DEPTHWISE_CONV_2D           |5880.0      |0.035719264  |0.0008537201   |0.2155346    |0.001277669       |0.16985875   |-128      |43.31398125        |0.2104365896947685    |\n",
+
+    "|CONV_2D                     |1960.0      |0.07850939   |-0.00044384212 |0.18113996   |0.0061679697      |0.26804927   |-4        |68.35256385        |0.2929924888823545    |\n",
+
+    "|CONV_2D                     |1960.0      |0.028141052  |4.167329e-05   |0.09747819   |0.00079393975     |0.123283505  |-128      |31.437293775       |0.2285539861207166    |\n",
+
+    "|UNIDIRECTIONAL_SEQUENCE_LSTM|280.0       |0.061724134  |0.01658498     |0.44125158   |0.0051669613      |0.007843136  |-1        |1.9999996800000002 |9.164902700610854     |\n",
+
+    "|FULLY_CONNECTED             |11.0        |0.38768843   |0.002292617    |0.72559375   |0.16979334        |1.2712529    |18        |324.1694895        |0.3241368214696956    |\n",
+
+    "|SOFTMAX                     |11.0        |0.0008727249 |-0.00027066743 |0.0026643767 |9.2000795e-07     |0.00390625   |-128      |0.99609375         |0.24554763491265805   |\n"
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "As we can see, the `UNIDIRECTIONAL_SEQUENCE_LSTM` layer has a `rmse/scale` of 9.16 (ideally this should be closer to 0.289). This is likely contributing to the quantized model's reduced accuracy. Note that without the [Layer Normalization](https://keras.io/api/layers/normalization_layers/layer_normalization/) around the LSTM the accuracy gets substantially worse."
+
+   ]
+
+  },
+
+  {
+
+   "cell_type": "markdown",
+
+   "metadata": {},
+
+   "source": [
+
+    "## Next Steps\n",
+
+    "\n",
+
+    "The pre-trained model used by this tutorial is available at [keyword_spotting_numbers.mltk.zip](https://github.com/SiliconLabs/mltk/raw/master/mltk/models/siliconlabs/keyword_spotting_numbers.mltk.zip).\n",
+
+    "\n",
+
+    "You can test this model on a [BRD2601](../../docs/other/supported_hardware.md#brd2601) development board by running the command:\n",
+
+    "\n",
+
+    "```\n",
+
+    "mltk classify_audio keyword_spotting_numbers --accelerator mvp --device --verbose\n",
+
+    "```"
+
+   ]
+
+  }
+
+ ],
+
+ "metadata": {
+
+  "language_info": {
+
+   "name": "python"
+
+  },
+
+  "orig_nbformat": 4
+
+ },
+
+ "nbformat": 4,
+
+ "nbformat_minor": 2
+
+}
+

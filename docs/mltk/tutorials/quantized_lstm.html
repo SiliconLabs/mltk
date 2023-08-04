@@ -1,0 +1,1208 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, machine-learning, machinelearning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tensorflow-lite-micro, keras-tensorflow, keras, tflite, embedded, embedded-systems, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HZ5MW943WF"></script>
+<script>
+    window.gTrackingId = 'G-HZ5MW943WF';
+</script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
+  
+  
+    <title>Quantized LSTM &#8212; MLTK 0.18.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/apitoc.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API Examples" href="../../docs/examples.html" />
+    <link rel="prev" title="Model Quantization Tips" href="model_quantization_tips.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/tutorials/quantized_lstm" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.18.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.18.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Quantized LSTM </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/tutorials.html" class="md-tabs__link">Tutorials</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.18.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.18.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line/index.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_on_off.html" class="md-nav__link">Keyword Spotting - On/Off</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_pacman.html" class="md-nav__link">Keyword Spotting - Pac-Man</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_alexa.html" class="md-nav__link">Keyword Spotting - Alexa</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="image_classification.html" class="md-nav__link">Image Classification - Rock, Paper, Scissors</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="cloud_training_with_vast_ai.html" class="md-nav__link">Cloud Training with vast.ai</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="cloud_logging_with_wandb.html" class="md-nav__link">Cloud Logging with Weights & Biases</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_optimization.html" class="md-nav__link">Model Optimization for MVP Hardware Accelerator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="keyword_spotting_with_transfer_learning.html" class="md-nav__link">Keyword Spotting with Transfer Learning</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="fingerprint_authentication.html" class="md-nav__link">Fingerprint Authentication</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="onnx_to_tflite.html" class="md-nav__link">ONNX to TF-Lite Model Conversion</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_debugging.html" class="md-nav__link">Model Debugging</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="add_existing_script_to_mltk.html" class="md-nav__link">Add an Existing Script to the MLTK</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="synthetic_audio_dataset_generation.html" class="md-nav__link">Synthetic Audio Dataset Generation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="model_quantization_tips.html" class="md-nav__link">Model Quantization Tips</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Quantized LSTM </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Quantized LSTM</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#mltk-tutorials-quantized-lstm--page-root" class="md-nav__link">Quantized LSTM</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#quick-links" class="md-nav__link">Quick Links</a>
+        </li>
+        <li class="md-nav__item"><a href="#key-takeaways" class="md-nav__link">Key Takeaways</a>
+        </li>
+        <li class="md-nav__item"><a href="#about-lstms" class="md-nav__link">About LSTMs</a>
+        </li>
+        <li class="md-nav__item"><a href="#quantizing-an-lstm-model" class="md-nav__link">Quantizing an LSTM Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-settings" class="md-nav__link">Model Settings</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#lstm-layer-config" class="md-nav__link">LSTM Layer Config</a>
+        </li>
+        <li class="md-nav__item"><a href="#tensorflow-lite-converter-settings" class="md-nav__link">Tensorflow-Lite Converter Settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#force-the-batch-size-1-during-quantization" class="md-nav__link">Force the batch size=1 during quantization</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#debugging-quantization-errors" class="md-nav__link">Debugging Quantization Errors</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#analyzing-the-report" class="md-nav__link">Analyzing the report</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#data-normalization" class="md-nav__link">Data Normalization</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#normalize-the-input-data" class="md-nav__link">Normalize the input data</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#return-uint16-from-the-audio-frontend" class="md-nav__link">Return uint16 from the audio frontend</a>
+        </li>
+        <li class="md-nav__item"><a href="#use-numpy-to-normalize-the-spectrogram" class="md-nav__link">Use NumPy to normalize the spectrogram</a>
+        </li>
+        <li class="md-nav__item"><a href="#use-float32-for-the-quantized-model-input" class="md-nav__link">Use float32 for the quantized model input</a>
+        </li>
+        <li class="md-nav__item"><a href="#normalize-the-spectrogram-at-runtime-on-the-embedded-device" class="md-nav__link">Normalize the spectrogram at runtime on the embedded device</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#use-batchnormalization-when-possible" class="md-nav__link">Use BatchNormalization when possible</a>
+        </li>
+        <li class="md-nav__item"><a href="#use-layernormalization" class="md-nav__link">Use LayerNormalization</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#evaluation-results" class="md-nav__link">Evaluation Results</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#float32-weights-activations" class="md-nav__link">Float32 weights/activations</a>
+        </li>
+        <li class="md-nav__item"><a href="#int8-weights-activations" class="md-nav__link">int8 weights/activations</a>
+        </li>
+        <li class="md-nav__item"><a href="#remarks" class="md-nav__link">Remarks</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#quantization-report" class="md-nav__link">Quantization Report</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#next-steps" class="md-nav__link">Next Steps</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../_static/js/apitoc.js></script>
+  </ul>
+</nav>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#mltk-tutorials-quantized-lstm--page-root" class="md-nav__link">Quantized LSTM</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#quick-links" class="md-nav__link">Quick Links</a>
+        </li>
+        <li class="md-nav__item"><a href="#key-takeaways" class="md-nav__link">Key Takeaways</a>
+        </li>
+        <li class="md-nav__item"><a href="#about-lstms" class="md-nav__link">About LSTMs</a>
+        </li>
+        <li class="md-nav__item"><a href="#quantizing-an-lstm-model" class="md-nav__link">Quantizing an LSTM Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#model-settings" class="md-nav__link">Model Settings</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#lstm-layer-config" class="md-nav__link">LSTM Layer Config</a>
+        </li>
+        <li class="md-nav__item"><a href="#tensorflow-lite-converter-settings" class="md-nav__link">Tensorflow-Lite Converter Settings</a>
+        </li>
+        <li class="md-nav__item"><a href="#force-the-batch-size-1-during-quantization" class="md-nav__link">Force the batch size=1 during quantization</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#debugging-quantization-errors" class="md-nav__link">Debugging Quantization Errors</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#analyzing-the-report" class="md-nav__link">Analyzing the report</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#data-normalization" class="md-nav__link">Data Normalization</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#normalize-the-input-data" class="md-nav__link">Normalize the input data</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#return-uint16-from-the-audio-frontend" class="md-nav__link">Return uint16 from the audio frontend</a>
+        </li>
+        <li class="md-nav__item"><a href="#use-numpy-to-normalize-the-spectrogram" class="md-nav__link">Use NumPy to normalize the spectrogram</a>
+        </li>
+        <li class="md-nav__item"><a href="#use-float32-for-the-quantized-model-input" class="md-nav__link">Use float32 for the quantized model input</a>
+        </li>
+        <li class="md-nav__item"><a href="#normalize-the-spectrogram-at-runtime-on-the-embedded-device" class="md-nav__link">Normalize the spectrogram at runtime on the embedded device</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#use-batchnormalization-when-possible" class="md-nav__link">Use BatchNormalization when possible</a>
+        </li>
+        <li class="md-nav__item"><a href="#use-layernormalization" class="md-nav__link">Use LayerNormalization</a>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#evaluation-results" class="md-nav__link">Evaluation Results</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#float32-weights-activations" class="md-nav__link">Float32 weights/activations</a>
+        </li>
+        <li class="md-nav__item"><a href="#int8-weights-activations" class="md-nav__link">int8 weights/activations</a>
+        </li>
+        <li class="md-nav__item"><a href="#remarks" class="md-nav__link">Remarks</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#quantization-report" class="md-nav__link">Quantization Report</a>
+        </li></ul>
+            </nav>
+        </li></ul>
+            </nav>
+        </li>
+        <li class="md-nav__item"><a href="#next-steps" class="md-nav__link">Next Steps</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../_static/js/apitoc.js></script>
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li><a href="../../docs/tutorials.html" accesskey="U">Tutorials</a></li>
+
+              <li class="activate"><a>Quantized LSTM</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="quantized-lstm">
+<h1 id="mltk-tutorials-quantized-lstm--page-root">Quantized LSTM<a class="headerlink" href="#mltk-tutorials-quantized-lstm--page-root" title="Permalink to this heading">¶</a></h1>
+<p>This tutorial describes how to create a quantized ML model with an <a class="reference external" href="https://keras.io/api/layers/recurrent_layers/lstm">LSTM</a> layer and run it on an embedded device.</p>
+<p>In this tutorial, we investigate the <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.html"><span class="doc std std-doc">keyword_spotting_numbers</span></a> model which is based on a custom CNN+LSTM architecture. The model classifies the keywords: “zero” through “nine”. This model has an LSTM layer which analyzes the time-dependencies that are inherent to the input audio samples.</p>
+<p>This tutorial focuses on how to create an LSTM model that can be properly quantized and run on an embedded device.</p>
+<section id="quick-links">
+<h2 id="quick-links">Quick Links<a class="headerlink" href="#quick-links" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.html"><span class="doc std std-doc">keyword_spotting_numbers</span></a> - Pre-trained and quantized CNN+LSTM model that classifies the keywords: “zero” through “nine”</p></li>
+<li><p><a class="reference internal" href="model_quantization_tips.html"><span class="doc std std-doc">Model Quantization Tips</span></a> - Tutorial providing tips on how to gain better quantization for your model</p></li>
+<li><p><a class="reference external" href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/">Understanding LSTM Networks</a> - Overview of how LSTM networks work</p></li>
+</ul>
+</section>
+<section id="key-takeaways">
+<h2 id="key-takeaways">Key Takeaways<a class="headerlink" href="#key-takeaways" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">return_sequences=True</span></code> in the <a class="reference external" href="https://keras.io/api/layers/recurrent_layers/lstm">tf.keras.layers.LSTM</a> layer config</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">batch_size=1</span></code> when quantizing with the <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter">TfliteConverter</a></p></li>
+<li><p>Use the <a class="reference external" href="https://www.tensorflow.org/lite/performance/quantization_debugger">TF-Lite Quantization Debugger</a> to determine which layers are not quantizing well</p></li>
+<li><p>Normalize the model input data so it is centered around 0.0.</p></li>
+<li><p>Use the <a class="reference external" href="https://keras.io/api/layers/normalization_layers/batch_normalization">BatchNormalization</a> and <a class="reference external" href="https://keras.io/api/layers/normalization_layers/layer_normalization">LayerNormalization</a> layers to center the activations around 0.0</p></li>
+<li><p><a class="reference external" href="https://keras.io/api/layers/normalization_layers/layer_normalization">LayerNormalization</a> at the input <em>and</em> output of the <a class="reference external" href="https://keras.io/api/layers/recurrent_layers/lstm">LSTM</a> layer is critical to ensure accurate quantization</p></li>
+</ol>
+</section>
+<section id="about-lstms">
+<h2 id="about-lstms">About LSTMs<a class="headerlink" href="#about-lstms" title="Permalink to this heading">¶</a></h2>
+<blockquote>
+<div><p>An LSTM (Long Short-Term Memory) layer is a recurrent neural network (RNN) layer that learns long-term dependencies between time steps in time series and sequence data. The layer performs additive interactions, which can help improve gradient flow over long sequences during training.</p>
+<p>LSTMs are predominantly used to learn, process, and classify sequential data. Common LSTM applications include sentiment analysis, language modeling, speech recognition, and video analysis.</p>
+<p>An LSTM unit consists of a cell, an input gate, an output gate, and a forget gate. An LSTM unit can be considered as a layer of neurons in a traditional feedforward neural network, with each neuron having a hidden layer and a current state.</p>
+</div></blockquote>
+<p><img alt="" src="http://colah.github.io/posts/2015-08-Understanding-LSTMs/img/LSTM3-chain.png"/></p>
+<p>For more details, refer to the following document: <a class="reference external" href="http://colah.github.io/posts/2015-08-Understanding-LSTMs">Understanding LSTM Networks</a>.</p>
+</section>
+<section id="quantizing-an-lstm-model">
+<h2 id="quantizing-an-lstm-model">Quantizing an LSTM Model<a class="headerlink" href="#quantizing-an-lstm-model" title="Permalink to this heading">¶</a></h2>
+<p>There are many examples that demonstrate how to generate a <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> from an <a class="reference external" href="https://keras.io/api/layers/recurrent_layers/lstm">LSTM</a> model, e.g.:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://colab.research.google.com/github/tensorflow/tensorflow/blob/master/tensorflow/lite/examples/experimental_new_converter/Keras_LSTM_fusion_Codelab.ipynb">Keras LSTM</a></p></li>
+<li><p><a class="reference external" href="https://colab.research.google.com/github/google-coral/tutorials/blob/master/train_lstm_timeseries_ptq_tf2.ipynb">Train an LSTM weather forecasting model</a></p></li>
+</ul>
+<p>While these models have high accuracy with <strong>float32</strong> weights, many times their accuracies are severely reduced when quantized with <strong>int8</strong> weights.</p>
+<p>The following sections show how the <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.html"><span class="doc std std-doc">keyword_spotting_numbers</span></a>, a CNN+LSTM model, was developed to obtain good <strong>int8</strong> quantization accuracy.</p>
+<p><strong>NOTE:</strong> Also refer to the <a class="reference internal" href="model_quantization_tips.html"><span class="doc std std-doc">Model Quantization Tips</span></a> tutorial for more details on how to create a model that quantizes well.</p>
+</section>
+<section id="model-settings">
+<h2 id="model-settings">Model Settings<a class="headerlink" href="#model-settings" title="Permalink to this heading">¶</a></h2>
+<p>The following settings were used in the <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.html"><span class="doc std std-doc">keyword_spotting_numbers</span></a> to allow for generating a quantized <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> with an <strong>int8</strong> LSTM layer:</p>
+<section id="lstm-layer-config">
+<h3 id="lstm-layer-config">LSTM Layer Config<a class="headerlink" href="#lstm-layer-config" title="Permalink to this heading">¶</a></h3>
+<p><a class="reference external" href="https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/kernels/unidirectional_sequence_lstm.h">Tensorflow-Lite Micro</a> supports an <strong>int8</strong> LSTM kernel. To use this kernel, your model must define the following LSTM layer config:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span>
+    <span class="n">n_cell</span><span class="p">,</span>               <span class="c1"># The number of LSTM cells to use</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s1">'tanh'</span><span class="p">,</span>    <span class="c1"># TFLM only supports the tanh activation</span>
+    <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span> <span class="c1"># This is required so that the LSTM layer is properly generated in the .tflite</span>
+<span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">return_sequences=True</span></code> is required to properly generate the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code>.<br/>
+This will return an output tensor with the shape: <code class="docutils literal notranslate"><span class="pre">&lt;batch&gt;</span> <span class="pre">x</span> <span class="pre">&lt;time</span> <span class="pre">steps&gt;</span> <span class="pre">x</span> <span class="pre">&lt;features&gt;</span></code>.</p>
+<p>If you only want to use the last time step, add the following <em>after</em> the LSTM layer:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Obtain the last time step, new output shape is: &lt;batch&gt; x &lt;features&gt;</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Lambda</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="tensorflow-lite-converter-settings">
+<h3 id="tensorflow-lite-converter-settings">Tensorflow-Lite Converter Settings<a class="headerlink" href="#tensorflow-lite-converter-settings" title="Permalink to this heading">¶</a></h3>
+<p>The following <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter">TfliteConverter</a> settings were used to quantize the model:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># These are the settings used to quantize the model.</span>
+<span class="c1"># We want all the internal ops to use int8</span>
+<span class="c1"># while the model input/output is float32.</span>
+<span class="c1"># (the TfliteConverter will automatically add the quantize/dequantize layers)</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'optimizations'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">Optimize</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">]</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'supported_ops'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">OpsSet</span><span class="o">.</span><span class="n">TFLITE_BUILTINS_INT8</span><span class="p">]</span>
+<span class="c1"># We are normalizing the input samples, so the input/output must be float32</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_input_type'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_output_type'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+<span class="c1"># Automatically generate a representative dataset from the validation data</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'representative_dataset'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'generate'</span>
+<span class="c1"># Use 1000 samples from each class to determine the quantization ranges</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'representative_dataset_max_samples'</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span><span class="o">*</span><span class="mi">1000</span>
+<span class="c1"># Generate a quantization report to help with debugging quantization errors</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'generate_quantization_report'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p><strong>NOTE:</strong> While the model internally uses <strong>int8</strong> tensors, the input/output layers are <strong>float32</strong>. This is because we “normalize” the input data (more details in the following sections).</p>
+</section>
+<section id="force-the-batch-size-1-during-quantization">
+<h3 id="force-the-batch-size-1-during-quantization">Force the batch size=1 during quantization<a class="headerlink" href="#force-the-batch-size-1-during-quantization" title="Permalink to this heading">¶</a></h3>
+<p>During training, we want the batch size to be larger than 1 (e.g. 32) as this helps to improve the training time.
+However, during quantization the batch size must be 1 as the <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter">TfliteConverter</a> seems to hang if the batch size is not set.</p>
+<p>To account for this, we add the following to our model script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+    <span class="c1"># If specified, force the model input's batch_size to the given value</span>
+    <span class="n">input_layer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Additionally, we add the following <a class="reference external" href="../../docs/python_api/mltk_model/model_event.html#mltk.core.MltkModelEvent">event handlers</a>.
+These are called just before quantization and evaluation so that the batch size can be forced to 1.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_before_save_train_model</span><span class="p">(</span>
+        <span class="n">mltk_model</span><span class="p">:</span><span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">,</span>
+        <span class="n">keras_model</span><span class="p">:</span><span class="n">mltk_core</span><span class="o">.</span><span class="n">KerasModel</span><span class="p">,</span>
+        <span class="n">keras_model_dict</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">"""This is called just before the trained moved is saved to a .h5</span>
+<span class="sd">    This forces the batch_size=1 which is necessary when quantizing the model into a .tflite.</span>
+<span class="sd">    """</span>
+    <span class="n">old_weights</span> <span class="o">=</span> <span class="n">keras_model</span><span class="o">.</span><span class="n">get_weights</span><span class="p">()</span>
+    <span class="n">new_keras_model</span> <span class="o">=</span> <span class="n">my_model_builder</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">new_keras_model</span><span class="o">.</span><span class="n">set_weights</span><span class="p">(</span><span class="n">old_weights</span><span class="p">)</span>
+    <span class="n">keras_model_dict</span><span class="p">[</span><span class="s1">'value'</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_keras_model</span>
+
+<span class="n">my_model</span><span class="o">.</span><span class="n">add_event_handler</span><span class="p">(</span><span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">BEFORE_SAVE_TRAIN_MODEL</span><span class="p">,</span> <span class="n">_before_save_train_model</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_evaluate_startup</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">:</span><span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""This is called at the beginning of the model evaluation API.</span>
+<span class="sd">    This forces the batch_size=1 which is necessary as that is how the .h5 and .tflite model files were saved.</span>
+<span class="sd">    """</span>
+    <span class="n">mltk_model</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">my_model</span><span class="o">.</span><span class="n">add_event_handler</span><span class="p">(</span><span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">EVALUATE_STARTUP</span><span class="p">,</span> <span class="n">_evaluate_startup</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="debugging-quantization-errors">
+<h2 id="debugging-quantization-errors">Debugging Quantization Errors<a class="headerlink" href="#debugging-quantization-errors" title="Permalink to this heading">¶</a></h2>
+<p>Tensorflow-Lite comes with an experimental <a class="reference external" href="https://www.tensorflow.org/lite/performance/quantization_debugger">Quantization Debugger</a>:</p>
+<blockquote>
+<div><p>Quantization debugger makes it possible to do quantization quality metric analysis in the existing model. Quantization debugger can automate processes for running model with a debug dataset, and collecting quantization quality metrics for each tensors.</p>
+</div></blockquote>
+<p>While the <a class="reference external" href="https://www.tensorflow.org/lite/performance/quantization_debugger">Quantization Debugger</a> may be invoked manually, the MLTK will also automatically invoke it by adding the following to your model script:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'generate_quantization_report'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>During <a class="reference internal" href="../../docs/guides/model_quantization.html"><span class="doc std std-doc">model quantization</span></a>, a <code class="docutils literal notranslate"><span class="pre">~/.mtlk/models/&lt;model</span> <span class="pre">name&gt;/quantization_report.csv</span></code> report file will be generated.</p>
+<p>Refer to the <a class="reference external" href="../../mltk/tutorials/model_quantization_tips.html#quantization-report">Model Quantization</a> tutorial for more details.</p>
+<section id="analyzing-the-report">
+<h3 id="analyzing-the-report">Analyzing the report<a class="headerlink" href="#analyzing-the-report" title="Permalink to this heading">¶</a></h3>
+<p>For each row in the report, the op name and index comes first, followed by quantization parameters and error metrics.
+The last column of the report contains:</p>
+<ul class="simple">
+<li><p><strong>rmse/scale</strong> - <code class="docutils literal notranslate"><span class="pre">sqrt(mean_squared_error)</span> <span class="pre">/</span> <span class="pre">scale</span></code>. This value is close to <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">sqrt(12)</span></code> (~ 0.289) when quantized distribution is similar to the original float distribution, indicating a good quantized model. The larger the value is, the more likely the layer is not being quantized well.</p></li>
+</ul>
+<p>Layers with a large <code class="docutils literal notranslate"><span class="pre">rmse/scale</span></code> will likely contribute to poor performance of the model at runtime on the embedded device.<br/>
+Refer to the <a class="reference internal" href="#data-normalization"><span class="std std-doc">Data Normalization</span></a> section for ways to help reduce the <code class="docutils literal notranslate"><span class="pre">rmse/scale</span></code>.</p>
+</section>
+</section>
+<section id="data-normalization">
+<h2 id="data-normalization">Data Normalization<a class="headerlink" href="#data-normalization" title="Permalink to this heading">¶</a></h2>
+<p>Model quantization is the process of converting the model weights/filters/activations from <code class="docutils literal notranslate"><span class="pre">float32</span></code> (32-bits) to <code class="docutils literal notranslate"><span class="pre">int8</span></code> (8-bits). This tends to work best if the original float32 data is distributed around 0.0 (e.g. -1.0 to 1.0).
+To help achieve this, data normalization is used. Data normalization involves scaling the data so that it fits within the desired range. The following data normalization techniques were used in the <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.html"><span class="doc std std-doc">keyword_spotting_numbers</span></a> model:</p>
+<section id="normalize-the-input-data">
+<h3 id="normalize-the-input-data">Normalize the input data<a class="headerlink" href="#normalize-the-input-data" title="Permalink to this heading">¶</a></h3>
+<p>The output of the <a class="reference internal" href="../../docs/audio/audio_feature_generator.html"><span class="doc std std-doc">AudioFeatureGenerator</span></a> is a <code class="docutils literal notranslate"><span class="pre">uint16</span></code> spectrogram. We use sample-wise normalization to center each <code class="docutils literal notranslate"><span class="pre">uint16</span></code> value about 0.0 using:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spectrogram_float32</span> <span class="o">=</span> <span class="n">spectrogram_uint16</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">normalized_spectrogram_float32</span> <span class="o">=</span> <span class="p">(</span><span class="n">spectrogram_float32</span> <span class="o">-</span> <span class="n">mean</span><span class="p">(</span><span class="n">spectrogram_float32</span><span class="p">))</span> <span class="o">/</span> <span class="n">std</span><span class="p">(</span><span class="n">spectrogram_float32</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To do this, we add the following to our model script:</p>
+<section id="return-uint16-from-the-audio-frontend">
+<h4 id="return-uint16-from-the-audio-frontend">Return uint16 from the audio frontend<a class="headerlink" href="#return-uint16-from-the-audio-frontend" title="Permalink to this heading">¶</a></h4>
+<p>The output data type of the <a class="reference external" href="../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.apply_frontend">audio frontend</a> is uint16:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">spectrogram</span> <span class="o">=</span> <span class="n">audio_utils</span><span class="o">.</span><span class="n">apply_frontend</span><span class="p">(</span>
+    <span class="n">sample</span><span class="o">=</span><span class="n">augmented_sample</span><span class="p">,</span>
+    <span class="n">settings</span><span class="o">=</span><span class="n">padded_frontend_settings</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span> <span class="c1"># We just want the raw, uint16 output of the generated spectrogram</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="use-numpy-to-normalize-the-spectrogram">
+<h4 id="use-numpy-to-normalize-the-spectrogram">Use NumPy to normalize the spectrogram<a class="headerlink" href="#use-numpy-to-normalize-the-spectrogram" title="Permalink to this heading">¶</a></h4>
+<p>The following <a class="reference external" href="https://numpy.org">NumPy</a> code is used to normalize the uint16 spectrogram:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Normalize the spectrogram input about 0</span>
+<span class="c1"># spectrogram = (spectrogram - mean(spectrogram)) / std(spectrogram)</span>
+<span class="c1"># This is necessary to ensure the model is properly quantized</span>
+<span class="c1"># NOTE: The quantized .tflite will internally converted the float32 input to int8</span>
+<span class="n">spectrogram</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">spectrogram</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">spectrogram</span> <span class="o">/=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">spectrogram</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="use-float32-for-the-quantized-model-input">
+<h4 id="use-float32-for-the-quantized-model-input">Use float32 for the quantized model input<a class="headerlink" href="#use-float32-for-the-quantized-model-input" title="Permalink to this heading">¶</a></h4>
+<p>The following <a class="reference external" href="https://www.tensorflow.org/lite/models/convert">TfliteConverter</a> settings are used to ensure the input to the quantized model is <code class="docutils literal notranslate"><span class="pre">float32</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_input_type'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_output_type'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+</pre></div>
+</div>
+<p><strong>NOTE:</strong> Internally, the float32 input is automatically converted <code class="docutils literal notranslate"><span class="pre">int8</span></code>.</p>
+</section>
+<section id="normalize-the-spectrogram-at-runtime-on-the-embedded-device">
+<h4 id="normalize-the-spectrogram-at-runtime-on-the-embedded-device">Normalize the spectrogram at runtime on the embedded device<a class="headerlink" href="#normalize-the-spectrogram-at-runtime-on-the-embedded-device" title="Permalink to this heading">¶</a></h4>
+<p>Whatever preprocessing we apply to the data during model training also needs to be done at runtime on the embedded device. We use the following <a class="reference internal" href="../../docs/guides/model_parameters.html#audiodatasetmixin"><span class="std std-doc">model parameter</span></a> which tells the AudioFeatureGenerator on the embedded device to normalize the data:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Set the sample-wise normalization setting.</span>
+<span class="c1"># This tells the embedded audio frontend to do:</span>
+<span class="c1"># spectrogram = (spectrogram - mean(spectrogram)) / std(spectrogram)</span>
+<span class="n">my_model</span><span class="o">.</span><span class="n">model_parameters</span><span class="p">[</span><span class="s1">'samplewise_norm.mean_and_std'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="use-batchnormalization-when-possible">
+<h3 id="use-batchnormalization-when-possible">Use BatchNormalization when possible<a class="headerlink" href="#use-batchnormalization-when-possible" title="Permalink to this heading">¶</a></h3>
+<p>While input data normalization can help reduce the <code class="docutils literal notranslate"><span class="pre">rmse/scale</span></code> of the model input layer, we also need to normalize the inputs of the intermediate layers of the model. For this, we use:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://keras.io/api/layers/normalization_layers/batch_normalization">Batch Normalization</a></p></li>
+<li><p><a class="reference external" href="https://keras.io/api/layers/normalization_layers/layer_normalization">Layer Normalization</a></p></li>
+</ul>
+<p><a class="reference external" href="https://keras.io/api/layers/normalization_layers/batch_normalization">Batch Normalization</a> is preferred as it can be fused with other layers which reduces the computational overhead of the model.</p>
+<p>The <a class="reference internal" href="../../docs/python_api/models/common_models.html#tenet"><span class="std std-doc">TENet</span></a> model architecture uses Batch Normalization internally.</p>
+</section>
+<section id="use-layernormalization">
+<h3 id="use-layernormalization">Use LayerNormalization<a class="headerlink" href="#use-layernormalization" title="Permalink to this heading">¶</a></h3>
+<p>Due to the inherent time dependencies of the LSTM layer, Batch Normalization cannot be directly used as it maintains metrics across multiple batch samples. As such, we must use <a class="reference external" href="https://keras.io/api/layers/normalization_layers/layer_normalization/">Layer Normalization</a> as this normalizes each sample independently.</p>
+<p>To ensure the data is evenly distributed around 0.0 (and thus allow it to better quantize from float32 to int8), we use Layer Normalization at the input <em>and</em> output of the LSTM layer:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># It is critical that we normalize the LSTM input, i.e.</span>
+<span class="c1"># lstm_input = (cnn_features - mean(cnn_features)) / std(cnn_features)</span>
+<span class="c1"># This helps to ensure that the LSTM layer is properly quantized.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">LayerNormalization</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># We use an LSTM layer to generate features based on the recurrent nature of the spectrogram.</span>
+<span class="c1"># This analyzes the patterns of the &lt;n_frequency_bins&gt; frequency bins along the time axis.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span>
+    <span class="n">n_frequency_bins</span><span class="p">,</span>      <span class="c1"># We want 1 LSTM cell for each spectrogram frequency bin</span>
+    <span class="n">activation</span><span class="o">=</span><span class="s1">'tanh'</span><span class="p">,</span>    <span class="c1"># Embedded only supports the tanh activation</span>
+    <span class="n">return_sequences</span><span class="o">=</span><span class="kc">True</span> <span class="c1"># This is required so that the LSTM layer is properly generated in the .tflite</span>
+                            <span class="c1"># If this is false, the a WHILE layer is used which is not optimal for embedded</span>
+<span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># It is critical that we normalize the LSTM output, i.e.</span>
+<span class="c1"># lstm_features = (lstm_features - mean(lstm_features)) / std(lstm_features)</span>
+<span class="c1"># This helps to ensure that the LSTM layer is properly quantized.</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">LayerNormalization</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="c1"># The output of the LSTM is:</span>
+<span class="c1"># &lt;batch_size, cnn_time_steps, n_frequency_bins&gt;</span>
+<span class="c1"># However, only the last row of the LSTM is meaningful,</span>
+<span class="c1"># so we drop the rest of the rows:</span>
+<span class="c1"># &lt;batch_size, last_row_lstm_features&gt;</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Lambda</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:])(</span><span class="n">x</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="evaluation-results">
+<h2 id="evaluation-results">Evaluation Results<a class="headerlink" href="#evaluation-results" title="Permalink to this heading">¶</a></h2>
+<section id="float32-weights-activations">
+<h3 id="float32-weights-activations">Float32 weights/activations<a class="headerlink" href="#float32-weights-activations" title="Permalink to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.html"><span class="doc std std-doc">keyword_spotting_numbers</span></a> float32 weights/activations evaluation results are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mltk</span> <span class="n">evaluate</span> <span class="n">keyword_spotting_numbers</span>
+
+<span class="n">Name</span><span class="p">:</span> <span class="n">keyword_spotting_numbers</span>
+<span class="n">Model</span> <span class="n">Type</span><span class="p">:</span> <span class="n">classification</span>
+<span class="n">Overall</span> <span class="n">accuracy</span><span class="p">:</span> <span class="mf">93.840</span><span class="o">%</span>
+<span class="n">Class</span> <span class="n">accuracies</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">seven</span> <span class="o">=</span> <span class="mf">96.723</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">eight</span> <span class="o">=</span> <span class="mf">96.404</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">nine</span> <span class="o">=</span> <span class="mf">94.746</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">six</span> <span class="o">=</span> <span class="mf">94.701</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">zero</span> <span class="o">=</span> <span class="mf">94.508</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">three</span> <span class="o">=</span> <span class="mf">94.198</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">two</span> <span class="o">=</span> <span class="mf">93.915</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">one</span> <span class="o">=</span> <span class="mf">93.873</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">four</span> <span class="o">=</span> <span class="mf">93.249</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">five</span> <span class="o">=</span> <span class="mf">90.882</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">_unknown_</span> <span class="o">=</span> <span class="mf">89.846</span><span class="o">%</span>
+<span class="n">Average</span> <span class="n">ROC</span> <span class="n">AUC</span><span class="p">:</span> <span class="mf">99.241</span><span class="o">%</span>
+<span class="n">Class</span> <span class="n">ROC</span> <span class="n">AUC</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">seven</span> <span class="o">=</span> <span class="mf">99.723</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">eight</span> <span class="o">=</span> <span class="mf">99.715</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">four</span> <span class="o">=</span> <span class="mf">99.342</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">one</span> <span class="o">=</span> <span class="mf">99.329</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">zero</span> <span class="o">=</span> <span class="mf">99.294</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">nine</span> <span class="o">=</span> <span class="mf">99.289</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">three</span> <span class="o">=</span> <span class="mf">99.260</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">six</span> <span class="o">=</span> <span class="mf">99.227</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">two</span> <span class="o">=</span> <span class="mf">99.080</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">_unknown_</span> <span class="o">=</span> <span class="mf">98.756</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">five</span> <span class="o">=</span> <span class="mf">98.636</span><span class="o">%</span>
+</pre></div>
+</div>
+</section>
+<section id="int8-weights-activations">
+<h3 id="int8-weights-activations">int8 weights/activations<a class="headerlink" href="#int8-weights-activations" title="Permalink to this heading">¶</a></h3>
+<p>The <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.html"><span class="doc std std-doc">keyword_spotting_numbers</span></a> int8 weights/activations evaluation results are as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mltk</span> <span class="n">evaluate</span> <span class="n">keyword_spotting_numbers</span> <span class="o">--</span><span class="n">tflite</span>
+
+<span class="n">Name</span><span class="p">:</span> <span class="n">keyword_spotting_numbers</span>
+<span class="n">Model</span> <span class="n">Type</span><span class="p">:</span> <span class="n">classification</span>
+<span class="n">Overall</span> <span class="n">accuracy</span><span class="p">:</span> <span class="mf">90.116</span><span class="o">%</span>
+<span class="n">Class</span> <span class="n">accuracies</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">seven</span> <span class="o">=</span> <span class="mf">94.478</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">six</span> <span class="o">=</span> <span class="mf">94.023</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">three</span> <span class="o">=</span> <span class="mf">92.764</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">zero</span> <span class="o">=</span> <span class="mf">92.215</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">eight</span> <span class="o">=</span> <span class="mf">91.135</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">nine</span> <span class="o">=</span> <span class="mf">90.165</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">two</span> <span class="o">=</span> <span class="mf">90.043</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">one</span> <span class="o">=</span> <span class="mf">88.848</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">four</span> <span class="o">=</span> <span class="mf">88.265</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">five</span> <span class="o">=</span> <span class="mf">86.836</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">_unknown_</span> <span class="o">=</span> <span class="mf">83.744</span><span class="o">%</span>
+<span class="n">Average</span> <span class="n">ROC</span> <span class="n">AUC</span><span class="p">:</span> <span class="mf">98.535</span><span class="o">%</span>
+<span class="n">Class</span> <span class="n">ROC</span> <span class="n">AUC</span><span class="p">:</span>
+<span class="o">-</span> <span class="n">seven</span> <span class="o">=</span> <span class="mf">99.258</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">three</span> <span class="o">=</span> <span class="mf">98.892</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">six</span> <span class="o">=</span> <span class="mf">98.784</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">two</span> <span class="o">=</span> <span class="mf">98.709</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">zero</span> <span class="o">=</span> <span class="mf">98.701</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">nine</span> <span class="o">=</span> <span class="mf">98.615</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">eight</span> <span class="o">=</span> <span class="mf">98.611</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">four</span> <span class="o">=</span> <span class="mf">98.457</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">one</span> <span class="o">=</span> <span class="mf">98.379</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">five</span> <span class="o">=</span> <span class="mf">97.937</span><span class="o">%</span>
+<span class="o">-</span> <span class="n">_unknown_</span> <span class="o">=</span> <span class="mf">97.545</span><span class="o">%</span>
+</pre></div>
+</div>
+</section>
+<section id="remarks">
+<h3 id="remarks">Remarks<a class="headerlink" href="#remarks" title="Permalink to this heading">¶</a></h3>
+<p>So converting this CNN+LSTM model from <code class="docutils literal notranslate"><span class="pre">float32</span></code> to <code class="docutils literal notranslate"><span class="pre">int8</span></code> lost about 3% of model accuracy which is good, not great (typically, quantizing CNN-only models looses 1-2% of accuracy).</p>
+<p>The key for allowing the quantization of the <a class="reference external" href="https://keras.io/api/layers/recurrent_layers/lstm/">LSTM</a> layer is to surround it with the <a class="reference external" href="https://keras.io/api/layers/normalization_layers/layer_normalization">Layer Normalization</a> layer.</p>
+<p>Ideally, we would use the <a class="reference external" href="https://www.tensorflow.org/addons/api_docs/python/tfa/rnn/LayerNormLSTMCell">LayerNormLSTMCell</a> which applies additional normalization to the LSTM’s internal tensors, however, this layer is not currently supported by <a class="reference external" href="https://github.com/tensorflow/tflite-micro">Tensorflow-Lite Micro</a>.</p>
+<section id="quantization-report">
+<h4 id="quantization-report">Quantization Report<a class="headerlink" href="#quantization-report" title="Permalink to this heading">¶</a></h4>
+<p>The generated <a class="reference external" href="../../mltk/tutorials/model_quantization_tips.html#quantization-report">quantization_report.csv</a> is in the <a class="reference external" href="https://github.com/SiliconLabs/mltk/raw/master/mltk/models/siliconlabs/keyword_spotting_numbers.mltk.zip">keyword_spotting_numbers.mltk.zip</a> model archive.</p>
+<p>A snippet of the report is as follows:</p>
+<table>
+<thead>
+<tr class="row-odd"><th class="head"><p>op_name</p></th>
+<th class="head"><p>num_elements</p></th>
+<th class="head"><p>stddev</p></th>
+<th class="head"><p>mean_error</p></th>
+<th class="head"><p>max_abs_error</p></th>
+<th class="head"><p>mean_squared_error</p></th>
+<th class="head"><p>scale</p></th>
+<th class="head"><p>zero_point</p></th>
+<th class="head"><p>range</p></th>
+<th class="head"><p>rmse/scale</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>CONV_2D</p></td>
+<td><p>3920.0</p></td>
+<td><p>0.062017273</p></td>
+<td><p>-0.00017696062</p></td>
+<td><p>0.23714127</p></td>
+<td><p>0.0038493355</p></td>
+<td><p>0.18038306</p></td>
+<td><p>3</p></td>
+<td><p>45.997680300000006</p></td>
+<td><p>0.3439514403696602</p></td>
+</tr>
+<tr class="row-odd"><td><p>CONV_2D</p></td>
+<td><p>11760.0</p></td>
+<td><p>0.03295127</p></td>
+<td><p>-0.0004035881</p></td>
+<td><p>0.12613823</p></td>
+<td><p>0.0010864673</p></td>
+<td><p>0.1565376</p></td>
+<td><p>-128</p></td>
+<td><p>39.917088</p></td>
+<td><p>0.21056668442429635</p></td>
+</tr>
+<tr class="row-even"><td><p>DEPTHWISE_CONV_2D</p></td>
+<td><p>5880.0</p></td>
+<td><p>0.035719264</p></td>
+<td><p>0.0008537201</p></td>
+<td><p>0.2155346</p></td>
+<td><p>0.001277669</p></td>
+<td><p>0.16985875</p></td>
+<td><p>-128</p></td>
+<td><p>43.31398125</p></td>
+<td><p>0.2104365896947685</p></td>
+</tr>
+<tr class="row-odd"><td><p>CONV_2D</p></td>
+<td><p>1960.0</p></td>
+<td><p>0.07850939</p></td>
+<td><p>-0.00044384212</p></td>
+<td><p>0.18113996</p></td>
+<td><p>0.0061679697</p></td>
+<td><p>0.26804927</p></td>
+<td><p>-4</p></td>
+<td><p>68.35256385</p></td>
+<td><p>0.2929924888823545</p></td>
+</tr>
+<tr class="row-even"><td><p>CONV_2D</p></td>
+<td><p>1960.0</p></td>
+<td><p>0.028141052</p></td>
+<td><p>4.167329e-05</p></td>
+<td><p>0.09747819</p></td>
+<td><p>0.00079393975</p></td>
+<td><p>0.123283505</p></td>
+<td><p>-128</p></td>
+<td><p>31.437293775</p></td>
+<td><p>0.2285539861207166</p></td>
+</tr>
+<tr class="row-odd"><td><p>UNIDIRECTIONAL_SEQUENCE_LSTM</p></td>
+<td><p>280.0</p></td>
+<td><p>0.061724134</p></td>
+<td><p>0.01658498</p></td>
+<td><p>0.44125158</p></td>
+<td><p>0.0051669613</p></td>
+<td><p>0.007843136</p></td>
+<td><p>-1</p></td>
+<td><p>1.9999996800000002</p></td>
+<td><p>9.164902700610854</p></td>
+</tr>
+<tr class="row-even"><td><p>FULLY_CONNECTED</p></td>
+<td><p>11.0</p></td>
+<td><p>0.38768843</p></td>
+<td><p>0.002292617</p></td>
+<td><p>0.72559375</p></td>
+<td><p>0.16979334</p></td>
+<td><p>1.2712529</p></td>
+<td><p>18</p></td>
+<td><p>324.1694895</p></td>
+<td><p>0.3241368214696956</p></td>
+</tr>
+<tr class="row-odd"><td><p>SOFTMAX</p></td>
+<td><p>11.0</p></td>
+<td><p>0.0008727249</p></td>
+<td><p>-0.00027066743</p></td>
+<td><p>0.0026643767</p></td>
+<td><p>9.2000795e-07</p></td>
+<td><p>0.00390625</p></td>
+<td><p>-128</p></td>
+<td><p>0.99609375</p></td>
+<td><p>0.24554763491265805</p></td>
+</tr>
+</tbody>
+</table>
+<p>As we can see, the <code class="docutils literal notranslate"><span class="pre">UNIDIRECTIONAL_SEQUENCE_LSTM</span></code> layer has a <code class="docutils literal notranslate"><span class="pre">rmse/scale</span></code> of 9.16 (ideally this should be closer to 0.289). This is likely contributing to the quantized model’s reduced accuracy. Note that without the <a class="reference external" href="https://keras.io/api/layers/normalization_layers/layer_normalization/">Layer Normalization</a> around the LSTM the accuracy gets substantially worse.</p>
+</section>
+</section>
+</section>
+<section id="next-steps">
+<h2 id="next-steps">Next Steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">¶</a></h2>
+<p>The pre-trained model used by this tutorial is available at <a class="reference external" href="https://github.com/SiliconLabs/mltk/raw/master/mltk/models/siliconlabs/keyword_spotting_numbers.mltk.zip">keyword_spotting_numbers.mltk.zip</a>.</p>
+<p>You can test this model on a <a class="reference internal" href="../../docs/other/supported_hardware.html#brd2601"><span class="std std-doc">BRD2601</span></a> development board by running the command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">mltk</span> <span class="n">classify_audio</span> <span class="n">keyword_spotting_numbers</span> <span class="o">--</span><span class="n">accelerator</span> <span class="n">mvp</span> <span class="o">--</span><span class="n">device</span> <span class="o">--</span><span class="n">verbose</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="model_quantization_tips.html" title="Model Quantization Tips"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> Model Quantization Tips </span>
+              </div>
+            </a>
+          
+          
+            <a href="../../docs/examples.html" title="API Examples"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> API Examples </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2023, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Aug 04, 2023.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <button id="survey-link" class="feedback-button">Feedback</button>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> We use cookies only for functional and traffic analytics. <br />
+        We DO NOT use cookies for any marketing purposes. By using our site you acknowledge you have read and understood our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>.
+      </p>
+      <a class="privacy-banner-accept" href="#">Got it</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

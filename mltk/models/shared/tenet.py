@@ -18,14 +18,18 @@ def TENet(
     block_depth: int = 4,
     scales: List[int] = [9],
     channel_increase: float = 0.0,
+    include_head=True,
+    return_model=True,
+    input_layer:tf.keras.layers.Input=None,
+    dropout:float=0.1,
     *args,
     **kwargs,
-) -> tf.keras.Model:
+) -> Union[tf.keras.Model, tf.keras.layers.Layer]:
     """Temporal efficient neural network (TENet)
-    
+
     A network for processing spectrogram data using temporal and depthwise convolutions.
     The network treats the [T, F] spectrogram as a timeseries shaped [T, 1, F].
-    
+
     .. note:: When building the model, make sure that the input shape is concrete,
         i.e. explicitly reshape the samples to [T, 1, F] in the preprocessing pipeline.
 
@@ -40,27 +44,32 @@ def TENet(
         scales: The multitemporal convolution filter widths. Should be odd numbers >= 3.
         channel_increase: If nonzero, the network increases the channel size each time there is a strided IBB block.
                             The increase (each time) is given by `channels * channel_increase`.
+        include_head: If true, add a classifier head to the model
+        return_model: If true, return a Keras model
+        input_layer: Use the given layer as the input to the model. If None, the create a layer using the given input shape
+        dropout: The dropout to use when include_head=True
 """
     count_layers = blocks * block_depth
 
-    if isinstance(input_shape, (tuple, list)):
-        input_shape = tf.TensorShape(input_shape)
-    if not isinstance(input_shape, tf.TensorShape):
-        raise ValueError("Invalid input_shape: Expected only one input")
-    if not input_shape.is_compatible_with((None, 1, None)):
-        raise ValueError(
-            f"Invalid input_shape: Expected (T, 1, C) but received {input_shape}"
-        )
+    if input_layer is None:
+        if isinstance(input_shape, (tuple, list)):
+            input_shape = tf.TensorShape(input_shape)
+        if not isinstance(input_shape, tf.TensorShape):
+            raise ValueError("Invalid input_shape: Expected only one input")
+        if not input_shape.is_compatible_with((None, 1, None)):
+            raise ValueError(
+                f"Invalid input_shape: Expected (T, 1, C) but received {input_shape}"
+            )
+        input_layer = tf.keras.layers.Input(shape=input_shape)
 
-    model_input = tf.keras.layers.Input(shape=input_shape)
-    x = model_input
+    x = input_layer
     x = tf.keras.layers.Conv2D(
         channels,
         (3, 1),
         padding="same",
         use_bias=True,
     )(x)
-
+    x = tf.keras.layers.BatchNormalization()(x)
 
     for layer in range(count_layers):
         x = InvertedBottleneckBlock(
@@ -73,25 +82,26 @@ def TENet(
             scales=scales,
         )
 
-    #x = tf.keras.layers.GlobalAveragePooling2D()(x)
-    x = tf.keras.layers.AveragePooling2D(pool_size=(x.shape[1], 1))(x)
-    x = tf.keras.layers.Flatten()(x)
-    x = tf.keras.layers.Dropout(0.1)(x)
+    if include_head:
+        #x = tf.keras.layers.GlobalAveragePooling2D()(x)
+        x = tf.keras.layers.AveragePooling2D(pool_size=(x.shape[1], 1))(x)
+        x = tf.keras.layers.Flatten()(x)
+        x = tf.keras.layers.Dropout(dropout)(x)
 
-    x = tf.keras.layers.Dense(
-        classes, activation=tf.keras.activations.softmax
-    )(x)
+        x = tf.keras.layers.Dense(
+            classes, activation=tf.keras.activations.softmax
+        )(x)
 
-    model = tf.keras.models.Model(model_input, x, name="TENet")
-
-    return model
-
+    if return_model:
+        return tf.keras.models.Model(input_layer, x, name="TENet")
+    else:
+        return x
 
 
 def TENet12(
     input_shape,
-    classes: int, 
-    mtconv: bool = False, 
+    classes: int,
+    mtconv: bool = False,
     **kwargs
 ) -> tf.keras.Model:
     return TENet(
@@ -108,7 +118,7 @@ def TENet12(
 def TENet6(
     input_shape,
     classes: int,
-    mtconv: bool = False, 
+    mtconv: bool = False,
     **kwargs
 ) -> tf.keras.Model:
     return TENet(
@@ -123,8 +133,8 @@ def TENet6(
 
 def TENet12Narrow(
     input_shape,
-    classes: int, 
-    mtconv: bool = False, 
+    classes: int,
+    mtconv: bool = False,
     **kwargs
 ) -> tf.keras.Model:
     return TENet(
@@ -139,8 +149,8 @@ def TENet12Narrow(
 
 def TENet6Narrow(
     input_shape,
-    classes: int, 
-    mtconv: bool = False, 
+    classes: int,
+    mtconv: bool = False,
     **kwargs
 ) -> tf.keras.Model:
     return TENet(
@@ -152,11 +162,11 @@ def TENet6Narrow(
         scales= kwargs.pop('scales', [9, 7, 5, 3] if mtconv else [9]),
         **kwargs,
     )
-    
+
 def HFTENet12(
     input_shape,
-    classes: int, 
-    mtconv: bool = False, 
+    classes: int,
+    mtconv: bool = False,
     **kwargs
 ) -> tf.keras.Model:
     "Custom TENet variant with channels that increase as the time axis shrinks."
@@ -207,7 +217,7 @@ class MultiScaleTemporalConvolution(tf.keras.layers.Layer):
         self.temporal_convolutions: List[tf.keras.layers.DepthwiseConv2D] = []
         self._input_shape = None
         super().__init__(**kwargs)
-    
+
     def get_config(self):
         config = super(MultiScaleTemporalConvolution, self).get_config()
         config.update({"stride": self.stride})
@@ -233,7 +243,7 @@ class MultiScaleTemporalConvolution(tf.keras.layers.Layer):
 
         for branch in self.temporal_convolutions:
             branch.build(input_shape)
-        
+
         return super().build(input_shape)
 
     def fuse(self):
@@ -363,4 +373,4 @@ def InvertedBottleneckBlock(
 
     x = tf.keras.layers.ReLU()(x)
 
-    return x 
+    return x

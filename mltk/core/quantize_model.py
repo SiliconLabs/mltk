@@ -1,6 +1,8 @@
 
 import pprint
 import logging
+import csv
+import copy
 from typing import Union, Tuple
 
 import numpy as np
@@ -13,6 +15,7 @@ from mltk.utils.python import (
     prepend_exception_msg,
     append_exception_msg
 )
+from mltk.utils.logger import DummyLogger
 from .model import (
     MltkModel,
     MltkModelEvent,
@@ -166,6 +169,7 @@ def quantize_model(
 
     # If we should generate an unquantized/float32 .tflite model
     # NOTE: Run this IF a "representative_dataset" converter setting was provided
+    quantization_report_path = None
     float32_tflite_path = None
     if output is None and tflite_converter_settings['generate_unquantized'] and tflite_converter_settings['representative_dataset'] is not None:
         float32_tflite_path = mltk_model.unquantized_tflite_log_dir_path
@@ -173,11 +177,11 @@ def quantize_model(
 
         try:
             float32_converter = tf.lite.TFLiteConverter.from_keras_model(keras_model)
+            float32_converter.optimizations = [tf.lite.Optimize.DEFAULT]
             float32_tflite_flatbuffer = float32_converter.convert()
         except Exception as e:
-            logger.debug(f'Failed to generated unquantized tflite model, err: {e}', exc_info=e)
-            prepend_exception_msg(e, 'Failed to generated unquantized tflite model')
-            raise
+            logger.error(f'Failed to generated unquantized (i.e. float32) tflite model, err: {e}', exc_info=e)
+
         finally:
             # The TfLiteConverter adds a StreamHandler to the root logger,
             # remove it so we don't double print everything to the console
@@ -201,16 +205,18 @@ def quantize_model(
         prepend_exception_msg(e, 'Failed to load validation dataset')
         raise
 
+
     if tflite_converter_settings['representative_dataset'] == 'generate':
         converter.representative_dataset = create_representative_dataset_generator(
             mltk_model,
-            max_samples=3 if mltk_model.test_mode_enabled else 1000,
+            max_samples=3 if mltk_model.test_mode_enabled else tflite_converter_settings.get('representative_dataset_max_samples', 1000),
             logger=logger
         )
     else:
         converter.representative_dataset = tflite_converter_settings['representative_dataset']
 
-    logger.info(f'Generating {retval}')
+
+
     converter_dict = dict(value=converter)
     mltk_model.trigger_event(
         MltkModelEvent.BEFORE_QUANTIZE,
@@ -221,7 +227,34 @@ def quantize_model(
     converter = converter_dict['value']
 
     try:
+        if tflite_converter_settings.get('generate_quantization_report', False) and not mltk_model.test_mode_enabled:
+            ds = []
+            for x in converter.representative_dataset():
+                ds.append(x)
+
+            def _dataset_gen():
+                for x in ds:
+                    yield x
+
+            converter.representative_dataset = _dataset_gen
+
+            try:
+                report_converter = tf.lite.TFLiteConverter.from_keras_model(keras_model)
+                populate_converter_options(report_converter, tflite_converter_settings)
+                report_converter.representative_dataset = _dataset_gen
+                quantization_report_path = generate_quantization_report(
+                    logger=logger,
+                    out_dir=mltk_model.log_dir,
+                    converter=report_converter,
+                    debug_dataset=_dataset_gen,
+                    float_model_path=float32_tflite_path,
+                )
+            except Exception as e:
+                logger.error('Failed to generate quantization report', exc_info=e)
+
+        logger.info(f'Generating {retval}')
         tflite_flatbuffer = converter.convert()
+
     except Exception as e:
         prepend_exception_msg(e, 'Failed to quantize model')
         if tflite_converter_settings['representative_dataset'] == 'generate':
@@ -236,6 +269,7 @@ def quantize_model(
         # remove it so we don't double print everything to the console
         logger.root.handlers.clear()
         mltk_model.unload_dataset()
+
 
     tflite_flatbuffer_dict = dict(value=tflite_flatbuffer)
     mltk_model.trigger_event(
@@ -271,6 +305,8 @@ def quantize_model(
         mltk_model.add_archive_file(retval)
         if float32_tflite_path:
             mltk_model.add_archive_file(float32_tflite_path)
+        if quantization_report_path:
+            mltk_model.add_archive_file(quantization_report_path)
 
 
     mltk_model.trigger_event(
@@ -287,16 +323,13 @@ def quantize_model(
 
 def create_representative_dataset_generator(
     mltk_model: MltkModel,
-    logger: logging.Logger,
-    test:bool=False,
-    max_samples:int=1000
+    max_samples:int=1000,
+    **kwargs
 ):
     """Return a data generator function
 
     See https://www.tensorflow.org/lite/performance/post_training_quantization
     """
-    logger.debug('Generating representative dataset using validation data')
-
     # Try to use the validation data if available, otherwise use the training data
     validation_data = mltk_model.validation_data
     if validation_data is None:
@@ -425,6 +458,44 @@ def populate_converter_options(
 
         if hasattr(converter, key):
             setattr(converter, key, value)
+
+
+
+def generate_quantization_report(
+    logger:logging.Logger=None,
+    out_dir:str=None,
+    **kwargs
+) -> str:
+    """https://www.tensorflow.org/lite/performance/quantization_debugger"""
+    logger = logger or DummyLogger()
+    out_dir = out_dir or '.'
+    out_path = f'{out_dir}/quantization_report.csv'
+
+    logger.info(f'Generating {out_path}')
+    debugger = tf.lite.experimental.QuantizationDebugger(**kwargs)
+    debugger.run()
+
+    with open(out_path, 'w') as f:
+        debugger.layer_statistics_dump(f)
+
+
+    with open(out_path, 'r') as f:
+        data = []
+        reader = csv.DictReader(f)
+        for row in reader:
+            rang = 255.0 * float(row['scale'])
+            rmse_scale = np.sqrt(float(row['mean_squared_error'])) / float(row['scale'])
+            row['range'] = f'{rang}'
+            row['rmse/scale'] = f'{rmse_scale}'
+            data.append(row)
+
+    with open(out_path, 'w', newline='') as f:
+        headers = list(list(reader.fieldnames) + ['range', 'rmse/scale'])
+        writer = csv.DictWriter(f, delimiter=',', fieldnames=headers)
+        writer.writerow(dict((heads, heads) for heads in headers))
+        writer.writerows(data)
+
+    return out_path
 
 
 def _convert_dtype(dtype):

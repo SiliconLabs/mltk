@@ -194,7 +194,7 @@ void audio_classifier_init(void)
       ;
   }
 
-  if (!(output->type == kTfLiteInt8 || output->type != kTfLiteFloat32)) {
+  if (!(output->type == kTfLiteInt8 || output->type == kTfLiteFloat32)) {
     printf("ERROR: Invalid output tensor type.\n"
            "Application requires input and output tensors to be of type int8 or float32.\n");
     while (1)
@@ -344,6 +344,7 @@ static sl_status_t run_inference()
   if (status != SL_STATUS_OK){
     return SL_STATUS_FAIL;
   }
+
   // Run the model on the spectrogram input and make sure it succeeds.
   if (!model.invoke()) {
     return SL_STATUS_FAIL;

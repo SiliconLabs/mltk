@@ -3,7 +3,7 @@ import sys
 import os
 from typing import TYPE_CHECKING
 
-__version__ = '0.17.0'
+__version__ = '0.18.0'
 
 MLTK_DIR = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
 MLTK_ROOT_DIR = os.path.dirname(MLTK_DIR).replace('\\', '/')

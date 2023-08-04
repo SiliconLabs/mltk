@@ -18,7 +18,7 @@ from mltk.utils.system import is_linux
 
 @cli.build_cli.command('python_package')
 def build_python_package_command(
-    python_exe: str = typer.Option(None, '--python', '-p', 
+    python_exe: str = typer.Option(None, '--python', '-p',
         help='Path to Python executable or Python command found on PATH. If omitted, use current Python'
     ),
     install: bool = typer.Option(True,
@@ -29,8 +29,8 @@ def build_python_package_command(
     ),
     utests: str = typer.Option('api',
         help='''\b
-Run the MLTK unit tests against the built Python wheel in a new venv, BEFORE releasing to pypi.org. 
-This should be a comma-separated list of unit tests to run. See "mltk utest --help" for more details. 
+Run the MLTK unit tests against the built Python wheel in a new venv, BEFORE releasing to pypi.org.
+This should be a comma-separated list of unit tests to run. See "mltk utest --help" for more details.
 Set as "none" to skip tests'''
     ),
     release_test: bool = typer.Option(False,
@@ -42,7 +42,7 @@ Set as "none" to skip tests'''
     release_utests: str = typer.Option('api',
         help='''\b
 Run the MLTK unit tests against the released package on pypi.org.
-This should be a comma-separated list of unit tests to run. See "mltk utest --help" for more details. 
+This should be a comma-separated list of unit tests to run. See "mltk utest --help" for more details.
 Set as "none" to skip tests'''
     ),
     release_all: bool = typer.Option(False, '--all',
@@ -67,7 +67,7 @@ Release for all supported Python versions.
     \b
     To release the built wheel to https://test.pypi.org, add the --release-test option.
     To use this option, first update/create the file ~/.mltk/user_settings.yaml,
-    and add: 
+    and add:
         test_pypi_token: <token>
     where <token> is your test.pypi.org "API Token"
     \b
@@ -121,10 +121,10 @@ Release for all supported Python versions.
 
     if release_all or release_test or release_public:
         try:
-            import twine 
+            import twine
         except:
             raise RuntimeError('Failed to import python package: twine, try running: pip install twine OR python ./install_mltk.py --extras dev')
-            
+
         retcode, dst_mltk_origin_url = run_shell_cmd(['git', 'config', '--get', 'remote.origin.url'], cwd=MLTK_ROOT_DIR)
         if retcode != 0:
             cli.abort(msg=f'Failed to get remote.origin.url from {MLTK_ROOT_DIR}, err: {dst_mltk_origin_url}')
@@ -160,6 +160,8 @@ Release for all supported Python versions.
             retcode, _ = run_shell_cmd(cmd, outfile=logger, logger=logger)
             if retcode != 0:
                 cli.abort(code=retcode, msg=f'Failed to release wheel for {python_path}')
+
+        return
 
 
     #######################################
@@ -210,10 +212,10 @@ Release for all supported Python versions.
         env['PATH'] = os.path.dirname(python_exe) + os.pathsep + env['PATH']
 
         retcode, retmsg = run_shell_cmd(
-            [python_exe, f'./install_mltk.py'], 
+            [python_exe, f'./install_mltk.py'],
             env=env,
-            cwd=mltk_release_dir, 
-            outfile=logger, 
+            cwd=mltk_release_dir,
+            outfile=logger,
             logger=logger,
         )
         if retcode != 0:
@@ -221,7 +223,7 @@ Release for all supported Python versions.
 
 
     if os.name == 'nt':
-        python_venv_exe = f'{python_venv_dir}/Scripts/python.exe'  
+        python_venv_exe = f'{python_venv_dir}/Scripts/python.exe'
     else:
         python_venv_exe = f'{python_venv_dir}/bin/python3'
 
@@ -234,7 +236,7 @@ Release for all supported Python versions.
                 'which points the the test.pypi.org API token'
             )
         _check_pip_version(python_venv_exe, python_version, use_test_pypi=True, logger=logger)
-    
+
     if release_public:
         pypi_token = get_user_setting('pypi_token')
         if pypi_token is None:
@@ -259,8 +261,8 @@ Release for all supported Python versions.
         env = os.environ.copy()
         env['MLTK_NO_BUILD_WRAPPERS'] = '1'
         retcode, retmsg = run_shell_cmd(
-            [python_venv_exe, f'{mltk_release_dir}/setup.py', 'bdist_wheel'], 
-            outfile=logger, 
+            [python_venv_exe, f'{mltk_release_dir}/setup.py', 'bdist_wheel'],
+            outfile=logger,
             cwd=mltk_release_dir,
             logger=logger,
             env=env
@@ -306,7 +308,7 @@ Release for all supported Python versions.
 
     ##########################################
     # Run the MLTK unit tests
-    _run_unit_tests( 
+    _run_unit_tests(
         utests=utests,
         pip_args=[wheel_path],
         logger=logger,
@@ -322,14 +324,14 @@ Release for all supported Python versions.
         logger.info('#' * 100)
         logger.info(f'Uploading {wheel_path} to https://test.pypi.org ...')
         retcode, retmsg = run_shell_cmd(
-            [sys.executable, '-m', 'twine', 'upload', '--repository', 'testpypi', '-u', '__token__', '-p', test_pypi_token, wheel_path], 
-            outfile=logger, 
+            [sys.executable, '-m', 'twine', 'upload', '--repository', 'testpypi', '-u', '__token__', '-p', test_pypi_token, wheel_path],
+            outfile=logger,
             logger=logger
         )
         if retcode != 0:
             cli.abort(msg=f'Failed to run upload to https://test.pypi.org, err: {retmsg}')
 
-        _run_unit_tests( 
+        _run_unit_tests(
             pip_args=['--extra-index-url', 'https://test.pypi.org/simple/', f'silabs-mltk=={mltk_version}'],
             logger=logger,
             python_exe=python_exe,
@@ -345,14 +347,14 @@ Release for all supported Python versions.
         logger.info('#' * 100)
         logger.info(f'Uploading {wheel_path} to https://pypi.org ...')
         retcode, retmsg = run_shell_cmd(
-            [sys.executable, '-m', 'twine', 'upload', '-u', '__token__', '-p', pypi_token, wheel_path], 
-            outfile=logger, 
+            [sys.executable, '-m', 'twine', 'upload', '-u', '__token__', '-p', pypi_token, wheel_path],
+            outfile=logger,
             logger=logger
         )
         if retcode != 0:
             cli.abort(msg=f'Failed to run upload to https://pypi.org, err: {retmsg}')
-        
-        _run_unit_tests( 
+
+        _run_unit_tests(
             pip_args=[f'silabs-mltk=={mltk_version}'],
             logger=logger,
             python_exe=python_exe,
@@ -368,7 +370,7 @@ Release for all supported Python versions.
 
 def _run_unit_tests(
     utests:str,
-    logger:logging.Logger, 
+    logger:logging.Logger,
     python_version:str,
     python_exe:str,
     pip_args:List[str],
@@ -384,7 +386,7 @@ def _run_unit_tests(
     logger.info(f'Cleaning {python_test_venv_dir} ...')
     remove_directory(python_test_venv_dir)
     os.makedirs(python_test_venv_dir, exist_ok=True)
-   
+
     logger.info(f'Creating Python v{python_version} virtual environment at {python_test_venv_dir}')
     retcode, retmsg = run_shell_cmd([python_exe, '-m', 'venv', python_test_venv_dir], outfile=logger, logger=logger)
     if retcode != 0:
@@ -451,14 +453,14 @@ def _check_pip_version(venv_python_exe, python_version, use_test_pypi, logger):
     cmd.append('silabs-mltk==')
 
     _, retmsg = run_shell_cmd(cmd, logger=logger)
-   
+
     start_index = retmsg.find('(from versions:')
     if start_index == -1:
-        return 
+        return
     retmsg = retmsg[start_index + len('(from versions:'):].strip()
     end_index = retmsg.find(')')
     if end_index == -1:
-        return 
+        return
     retmsg = retmsg[:end_index]
 
     server_name = 'https://test.pypi.org' if use_test_pypi else 'https://pypi.org'

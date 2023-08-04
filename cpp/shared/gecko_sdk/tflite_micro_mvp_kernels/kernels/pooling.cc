@@ -6,7 +6,7 @@
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/kernels/padding.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
-#include "CMSIS/NN/Include/arm_nnfunctions.h"
+#include "Include/arm_nnfunctions.h"
 
 
 #include "sl_mvp_ml_pooling.h"

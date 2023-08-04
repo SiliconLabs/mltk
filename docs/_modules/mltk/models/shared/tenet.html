@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.models.shared.tenet &#8212; MLTK 0.17.0 documentation</title>
+    <title>mltk.models.shared.tenet &#8212; MLTK 0.18.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.17.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.18.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.17.0 documentation logo">
+                   alt="MLTK 0.18.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.17.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.18.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.17.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.18.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -446,14 +446,18 @@
     <span class="n">block_depth</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
     <span class="n">scales</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">],</span>
     <span class="n">channel_increase</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+    <span class="n">include_head</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">return_model</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">input_layer</span><span class="p">:</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dropout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
     <span class="o">*</span><span class="n">args</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Layer</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Temporal efficient neural network (TENet)</span>
-<span class="sd">    </span>
+
 <span class="sd">    A network for processing spectrogram data using temporal and depthwise convolutions.</span>
 <span class="sd">    The network treats the [T, F] spectrogram as a timeseries shaped [T, 1, F].</span>
-<span class="sd">    </span>
+
 <span class="sd">    .. note:: When building the model, make sure that the input shape is concrete,</span>
 <span class="sd">        i.e. explicitly reshape the samples to [T, 1, F] in the preprocessing pipeline.</span>
 
@@ -468,27 +472,32 @@
 <span class="sd">        scales: The multitemporal convolution filter widths. Should be odd numbers &gt;= 3.</span>
 <span class="sd">        channel_increase: If nonzero, the network increases the channel size each time there is a strided IBB block.</span>
 <span class="sd">                            The increase (each time) is given by `channels * channel_increase`.</span>
+<span class="sd">        include_head: If true, add a classifier head to the model</span>
+<span class="sd">        return_model: If true, return a Keras model</span>
+<span class="sd">        input_layer: Use the given layer as the input to the model. If None, the create a layer using the given input shape</span>
+<span class="sd">        dropout: The dropout to use when include_head=True</span>
 <span class="sd">"""</span>
     <span class="n">count_layers</span> <span class="o">=</span> <span class="n">blocks</span> <span class="o">*</span> <span class="n">block_depth</span>
 
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_shape</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-        <span class="n">input_shape</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">TensorShape</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_shape</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">TensorShape</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid input_shape: Expected only one input"</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">input_shape</span><span class="o">.</span><span class="n">is_compatible_with</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">"Invalid input_shape: Expected (T, 1, C) but received </span><span class="si">{</span><span class="n">input_shape</span><span class="si">}</span><span class="s2">"</span>
-        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">input_layer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_shape</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+            <span class="n">input_shape</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">TensorShape</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_shape</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">TensorShape</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid input_shape: Expected only one input"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">input_shape</span><span class="o">.</span><span class="n">is_compatible_with</span><span class="p">((</span><span class="kc">None</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Invalid input_shape: Expected (T, 1, C) but received </span><span class="si">{</span><span class="n">input_shape</span><span class="si">}</span><span class="s2">"</span>
+            <span class="p">)</span>
+        <span class="n">input_layer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">)</span>
 
-    <span class="n">model_input</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">)</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">model_input</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">input_layer</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
         <span class="n">channels</span><span class="p">,</span>
         <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
         <span class="n">padding</span><span class="o">=</span><span class="s2">"same"</span><span class="p">,</span>
         <span class="n">use_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="p">)(</span><span class="n">x</span><span class="p">)</span>
-
+    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count_layers</span><span class="p">):</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">InvertedBottleneckBlock</span><span class="p">(</span>
@@ -501,25 +510,26 @@
             <span class="n">scales</span><span class="o">=</span><span class="n">scales</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="c1">#x = tf.keras.layers.GlobalAveragePooling2D()(x)</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">AveragePooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">include_head</span><span class="p">:</span>
+        <span class="c1">#x = tf.keras.layers.GlobalAveragePooling2D()(x)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">AveragePooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">dropout</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span>
-        <span class="n">classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">softmax</span>
-    <span class="p">)(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span>
+            <span class="n">classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">activations</span><span class="o">.</span><span class="n">softmax</span>
+        <span class="p">)(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">model_input</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"TENet"</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">model</span></div>
-
+    <span class="k">if</span> <span class="n">return_model</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">input_layer</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"TENet"</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">x</span></div>
 
 
 <span class="k">def</span> <span class="nf">TENet12</span><span class="p">(</span>
     <span class="n">input_shape</span><span class="p">,</span>
-    <span class="n">classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
-    <span class="n">mtconv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+    <span class="n">classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mtconv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">TENet</span><span class="p">(</span>
@@ -536,7 +546,7 @@
 <span class="k">def</span> <span class="nf">TENet6</span><span class="p">(</span>
     <span class="n">input_shape</span><span class="p">,</span>
     <span class="n">classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-    <span class="n">mtconv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+    <span class="n">mtconv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">TENet</span><span class="p">(</span>
@@ -551,8 +561,8 @@
 
 <span class="k">def</span> <span class="nf">TENet12Narrow</span><span class="p">(</span>
     <span class="n">input_shape</span><span class="p">,</span>
-    <span class="n">classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
-    <span class="n">mtconv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+    <span class="n">classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mtconv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">TENet</span><span class="p">(</span>
@@ -567,8 +577,8 @@
 
 <span class="k">def</span> <span class="nf">TENet6Narrow</span><span class="p">(</span>
     <span class="n">input_shape</span><span class="p">,</span>
-    <span class="n">classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
-    <span class="n">mtconv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+    <span class="n">classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mtconv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">TENet</span><span class="p">(</span>
@@ -580,11 +590,11 @@
         <span class="n">scales</span><span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'scales'</span><span class="p">,</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="k">if</span> <span class="n">mtconv</span> <span class="k">else</span> <span class="p">[</span><span class="mi">9</span><span class="p">]),</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">)</span>
-    
+
 <span class="k">def</span> <span class="nf">HFTENet12</span><span class="p">(</span>
     <span class="n">input_shape</span><span class="p">,</span>
-    <span class="n">classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
-    <span class="n">mtconv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+    <span class="n">classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="n">mtconv</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
     <span class="s2">"Custom TENet variant with channels that increase as the time axis shrinks."</span>
@@ -635,7 +645,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">temporal_convolutions</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">DepthwiseConv2D</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_input_shape</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    
+
     <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">config</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">MultiScaleTemporalConvolution</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">get_config</span><span class="p">()</span>
         <span class="n">config</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s2">"stride"</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">stride</span><span class="p">})</span>
@@ -661,7 +671,7 @@
 
         <span class="k">for</span> <span class="n">branch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">temporal_convolutions</span><span class="p">:</span>
             <span class="n">branch</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
-        
+
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">fuse</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -791,7 +801,7 @@
 
     <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">ReLU</span><span class="p">()(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">x</span> 
+    <span class="k">return</span> <span class="n">x</span>
 </pre></div>
 
           </article>
@@ -817,7 +827,7 @@
               
           </div>
             Last updated on
-              Jun 21, 2023.
+              Aug 04, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

@@ -179,3 +179,7 @@ def generate_dataset(out_dir:str=None):
                             on_finished=lambda _: (pb_inner.update(1), pb_outer.update(1))
                         )
                     generator.join() # Wait for the current keyword to finish before continuing to the next
+
+
+if __name__ == '__main__':
+    generate_dataset()

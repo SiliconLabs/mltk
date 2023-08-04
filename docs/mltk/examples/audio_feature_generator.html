@@ -1,0 +1,1282 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="title" content="Machine Learning Toolkit">
+<meta name="description" content="A Python package with command-line utilities and scripts to aid the development of machine learning models for Silicon Lab's embedded platforms">
+<meta name="keywords" content="machine learning, machine-learning, machinelearning, ml, ai, iot, Internet of things, aiot, tinyml, tensorflow, tensorflow-lite, tensorflow-lite-micro, keras-tensorflow, keras, tflite, embedded, embedded-systems, mcu, Microcontrollers, hardware, python, c++, cmake, keras, numpy, silabs, silicon labs">
+<meta name="robots" content="index, follow">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="language" content="English">
+<meta name="author" content="Silicon Labs">
+  <meta name="lang:clipboard.copy" content="Copy to clipboard">
+  <meta name="lang:clipboard.copied" content="Copied to clipboard">
+  <meta name="lang:search.language" content="en">
+  <meta name="lang:search.pipeline.stopwords" content="True">
+  <meta name="lang:search.pipeline.trimmer" content="True">
+  <meta name="lang:search.result.none" content="No matching documents">
+  <meta name="lang:search.result.one" content="1 matching document">
+  <meta name="lang:search.result.other" content="# matching documents">
+  <meta name="lang:search.tokenizer" content="[\s\-]+">
+
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,500,700|Roboto:300,400,400i,700&display=fallback" rel="stylesheet">
+
+    <style>
+      body,
+      input {
+        font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif
+      }
+
+      code,
+      kbd,
+      pre {
+        font-family: "Roboto Mono", "Courier New", Courier, monospace
+      }
+    </style>
+  
+
+  <link rel="stylesheet" href="../../_static/stylesheets/application.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-palette.css"/>
+  <link rel="stylesheet" href="../../_static/stylesheets/application-fixes.css"/>
+  
+  <link rel="stylesheet" href="../../_static/fonts/material-icons.css"/>
+  
+  <meta name="theme-color" content="#3f51b5">
+  <script src="../../_static/javascripts/modernizr.js"></script>
+  
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-HZ5MW943WF"></script>
+<script>
+    window.gTrackingId = 'G-HZ5MW943WF';
+</script>
+<meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
+  
+  
+    <title>Audio Feature Generator Example &#8212; MLTK 0.18.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/material.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
+    <script src="../../_static/js/custom.js"></script>
+    <script src="../../_static/js/apitoc.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="API Reference" href="../../docs/python_api/index.html" />
+    <link rel="prev" title="UART Stream Data Test" href="../../cpp/shared/uart_stream/examples/data_test/README.html" />
+  
+   
+
+  </head>
+  <body dir=ltr
+        data-md-color-primary=red data-md-color-accent=light-blue>
+  
+  <svg class="md-svg">
+    <defs data-children-count="0">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="__github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+      
+    </defs>
+  </svg>
+  
+  <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer">
+  <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search">
+  <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+  <a href="#mltk/examples/audio_feature_generator" tabindex="1" class="md-skip"> Skip to content </a>
+  <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex navheader">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="../../index.html" title="MLTK 0.18.0 documentation"
+           class="md-header-nav__button md-logo">
+          
+              <img src="../../_static/logo.png"
+                   alt="MLTK 0.18.0 documentation logo">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          <span class="md-header-nav__topic">Machine Learning Toolkit</span>
+          <span class="md-header-nav__topic"> Audio Feature Generator Example </span>
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+        
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" action="../../search.html" method="get" name="search">
+      <input type="text" class="md-search__input" name="q" placeholder=""Search""
+             autocapitalize="off" autocomplete="off" spellcheck="false"
+             data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+          </div>
+        </div>
+      
+      
+    </div>
+  </nav>
+</header>
+
+  
+  <div class="md-container">
+    
+    
+    
+  <nav class="md-tabs" data-md-component="tabs">
+    <div class="md-tabs__inner md-grid">
+      <ul class="md-tabs__list">
+            
+            <li class="md-tabs__item"><a href="https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/overview" class="md-tabs__link">Gecko SDK Documentation</a></li>
+            
+            <li class="md-tabs__item"><a href="https://github.com/tensorflow/tflite-micro" class="md-tabs__link">Tensorflow-Lite Micro Repository</a></li>
+            
+            <li class="md-tabs__item"><a href="https://www.tensorflow.org/learn" class="md-tabs__link">Tensorflow Documentation</a></li>
+          <li class="md-tabs__item"><a href="../../docs/examples.html" class="md-tabs__link">API Examples</a></li>
+      </ul>
+    </div>
+  </nav>
+    <main class="md-main">
+      <div class="md-main__inner md-grid" data-md-component="container">
+        
+          <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href="../../index.html" title="MLTK 0.18.0 documentation" class="md-nav__button md-logo">
+      
+        <img src="../../_static/logo.png" alt=" logo" width="48" height="48">
+      
+    </a>
+    <a href="../../index.html"
+       title="MLTK 0.18.0 documentation">Machine Learning Toolkit</a>
+  </label>
+    <div class="md-nav__source">
+      <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
+
+    <div class="md-source__icon">
+      <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 24 24" width="28" height="28">
+        <use xlink:href="#__github" width="24" height="24"></use>
+      </svg>
+    </div>
+  
+  <div class="md-source__repository">
+    MLTK Github Repository
+  </div>
+</a>
+    </div>
+  
+  
+
+  
+  <ul class="md-nav__list">
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Basics</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/overview.html" class="md-nav__link">Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/why_mltk.html" class="md-nav__link">Why MLTK?</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/installation.html" class="md-nav__link">Installation</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/command_line/index.html" class="md-nav__link">Command-Line</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/index.html" class="md-nav__link">Modeling Guides</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Usage</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/tutorials.html" class="md-nav__link">Tutorials</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/examples.html" class="md-nav__link">API Examples</a>
+      <ul class="md-nav__list"> 
+    <li class="md-nav__item">
+    
+    
+      <a href="profile_model.html" class="md-nav__link">Model Profiler API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="train_model.html" class="md-nav__link">Model Training API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="evaluate_model.html" class="md-nav__link">Model Evaluation API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="summarize_model.html" class="md-nav__link">Model Summary API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="view_model.html" class="md-nav__link">Model Visualizer API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="update_params.html" class="md-nav__link">Update Model Parameters API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="quantize_model.html" class="md-nav__link">Model Quantization API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="tflite_model.html" class="md-nav__link">TF-Lite Model API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="tflite_micro_model.html" class="md-nav__link">TF-Lite Micro Model API Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../cpp/shared/uart_stream/examples/data_test/README.html" class="md-nav__link">UART Stream Data Test</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    <label class="md-nav__link md-nav__link--active" for="__toc"> Audio Feature Generator Example </label>
+    
+      <a href="#" class="md-nav__link md-nav__link--active">Audio Feature Generator Example</a>
+      
+        
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#mltk-examples-audio-feature-generator--page-root" class="md-nav__link">Audio Feature Generator Example</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#install-the-mltk-python-package" class="md-nav__link">Install the MLTK python package</a>
+        </li>
+        <li class="md-nav__item"><a href="#import-the-python-packages" class="md-nav__link">Import the Python packages</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-audio-sample" class="md-nav__link">Load Audio Sample</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-the-mltk-model" class="md-nav__link">Load the MLTK Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-the-tflite-model" class="md-nav__link">Load the .tflite model</a>
+        </li>
+        <li class="md-nav__item"><a href="#process-the-audio-sample-in-the-audiofeaturegenerator" class="md-nav__link">Process the audio sample in the AudioFeatureGenerator</a>
+        </li>
+        <li class="md-nav__item"><a href="#classify-the-audio-sample-using-tf-lite" class="md-nav__link">Classify the audio sample using TF-Lite</a>
+        </li>
+        <li class="md-nav__item"><a href="#classify-the-audio-using-tf-lite-micro" class="md-nav__link">Classify the audio using TF-Lite Micro</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../_static/js/apitoc.js></script>
+  </ul>
+</nav>
+      
+    
+    </li></ul>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/index.html" class="md-nav__link">API Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/models/index.html" class="md-nav__link">Reference Models</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/python_api/datasets/index.html" class="md-nav__link">Reference Datasets</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/index.html" class="md-nav__link">C++ Development</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/cpp_development/examples/index.html" class="md-nav__link">C++ Examples</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Audio Related</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/keyword_spotting_overview.html" class="md-nav__link">Keyword Spotting Overview</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_feature_generator.html" class="md-nav__link">Audio Feature Generator</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/audio/audio_utilities.html" class="md-nav__link">Audio Utilities</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+      <span class="md-nav__link caption"><span class="caption-text">Other Information</span></span>
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/faq/index.html" class="md-nav__link">Frequently Asked Questions</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/quick_reference.html" class="md-nav__link">Quick Reference</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/supported_hardware.html" class="md-nav__link">Supported Hardware</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/guides/notebook_examples_guide.html" class="md-nav__link">Notebook Examples Guide</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/settings_file.html" class="md-nav__link">Settings File</a>
+      
+    
+    </li>
+    <li class="md-nav__item">
+    
+    
+      <a href="../../docs/other/environment_variables.html" class="md-nav__link">Environment Variables</a>
+      
+    
+    </li>
+  </ul>
+  
+
+</nav>
+              </div>
+            </div>
+          </div>
+          <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+            <div class="md-sidebar__scrollwrap">
+              <div class="md-sidebar__inner">
+                
+<nav class="md-nav md-nav--secondary">
+    <label class="md-nav__title" for="__toc">Contents</label>
+  <ul class="md-nav__list" data-md-scrollfix="" id="localtoc">
+        <li class="md-nav__item"><a href="#mltk-examples-audio-feature-generator--page-root" class="md-nav__link">Audio Feature Generator Example</a><nav class="md-nav">
+              <ul class="md-nav__list">
+        <li class="md-nav__item"><a href="#install-the-mltk-python-package" class="md-nav__link">Install the MLTK python package</a>
+        </li>
+        <li class="md-nav__item"><a href="#import-the-python-packages" class="md-nav__link">Import the Python packages</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-audio-sample" class="md-nav__link">Load Audio Sample</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-the-mltk-model" class="md-nav__link">Load the MLTK Model</a>
+        </li>
+        <li class="md-nav__item"><a href="#load-the-tflite-model" class="md-nav__link">Load the .tflite model</a>
+        </li>
+        <li class="md-nav__item"><a href="#process-the-audio-sample-in-the-audiofeaturegenerator" class="md-nav__link">Process the audio sample in the AudioFeatureGenerator</a>
+        </li>
+        <li class="md-nav__item"><a href="#classify-the-audio-sample-using-tf-lite" class="md-nav__link">Classify the audio sample using TF-Lite</a>
+        </li>
+        <li class="md-nav__item"><a href="#classify-the-audio-using-tf-lite-micro" class="md-nav__link">Classify the audio using TF-Lite Micro</a>
+        </li></ul>
+            </nav>
+        </li>
+      <script type="text/javascript" src=../../_static/js/apitoc.js></script>
+  </ul>
+</nav>
+              </div>
+            </div>
+          </div>
+        
+        <div class="md-content">
+
+          
+          <div class="breadcrumbs md-typeset">
+            <ul class="breadcrumb">
+              <li></li>
+              <li><a href="../../index.html"><i class="md-icon">home</i></a></li>
+                <li><a href="../../docs/examples.html" accesskey="U">API Examples</a></li>
+
+              <li class="activate"><a>Audio Feature Generator Example</a></li>
+            </ul>
+          </div>
+          
+
+          <article class="md-content__inner md-typeset" role="main">
+            
+  <section id="audio-feature-generator-example">
+<h1 id="mltk-examples-audio-feature-generator--page-root">Audio Feature Generator Example<a class="headerlink" href="#mltk-examples-audio-feature-generator--page-root" title="Permalink to this heading">¶</a></h1>
+<p>This demonstrates how to:</p>
+<ol class="arabic simple">
+<li><p>Load a quantized keyword spotting model</p></li>
+<li><p>Manually invoke the <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html"><span class="doc std std-doc">Audio Feature Generator</span></a> APIs to generate a spectrogram from an audio file</p></li>
+<li><p>Run inference with the manually processed audio sample using Tensorflow-Lite and Tensorflow-Lite Micro</p></li>
+</ol>
+<p>In this example, we use the <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.html"><span class="doc std std-doc">keyword_spotting_numbers</span></a> ML model.</p>
+<p><strong>NOTES:</strong></p>
+<ul class="simple">
+<li><p>Click here: <a class="reference external" href="https://colab.research.google.com/github/siliconlabs/mltk/blob/master/mltk/examples/audio_feature_generator.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg"/></a> to run this example interactively in your browser</p></li>
+<li><p>Refer to the <a class="reference internal" href="../../docs/guides/notebook_examples_guide.html"><span class="doc std std-doc">Notebook Examples Guide</span></a> for how to run this example locally in VSCode</p></li>
+</ul>
+<section id="install-the-mltk-python-package">
+<h2 id="install-the-mltk-python-package">Install the MLTK python package<a class="headerlink" href="#install-the-mltk-python-package" title="Permalink to this heading">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the MLTK Python package (if necessary)</span>
+<span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>silabs-mltk
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="import-the-python-packages">
+<h2 id="import-the-python-packages">Import the Python packages<a class="headerlink" href="#import-the-python-packages" title="Permalink to this heading">¶</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mltk.datasets</span> <span class="kn">import</span> <span class="n">audio</span> <span class="k">as</span> <span class="n">audio_datasets</span>
+<span class="kn">from</span> <span class="nn">mltk.core.preprocess.utils</span> <span class="kn">import</span> <span class="n">audio</span> <span class="k">as</span> <span class="n">audio_utils</span>
+<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
+<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">load_mltk_model</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">,</span> <span class="n">TfliteModelParameters</span>
+<span class="kn">from</span> <span class="nn">mltk.core.tflite_micro</span> <span class="kn">import</span> <span class="n">TfliteMicro</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="load-audio-sample">
+<h2 id="load-audio-sample">Load Audio Sample<a class="headerlink" href="#load-audio-sample" title="Permalink to this heading">¶</a></h2>
+<p>First we need to obtain an audio sample. In this example, we load a random sample from the <a class="reference internal" href="../../docs/python_api/datasets/audio/ten_digits.html"><span class="doc std std-doc">ten_digits</span></a> dataset which was used to train the <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.html"><span class="doc std std-doc">keyword_spotting_numbers</span></a> ML model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download the "ten digits" dataset (if necessary)</span>
+<span class="n">dataset_dir</span> <span class="o">=</span> <span class="n">audio_datasets</span><span class="o">.</span><span class="n">ten_digits</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+
+<span class="c1"># And grab the first sample in the 'seven' directory</span>
+<span class="n">audio_sample_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">dataset_dir</span><span class="si">}</span><span class="s1">/seven'</span>
+<span class="n">audio_sample_fn</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">audio_sample_dir</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">audio_sample_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">audio_sample_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">audio_sample_fn</span><span class="si">}</span><span class="s1">'</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Using audio sample: </span><span class="si">{</span><span class="n">audio_sample_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="c1"># Load the audio file into memory</span>
+<span class="n">audio_sample_data</span><span class="p">,</span> <span class="n">audio_sample_rate_hz</span> <span class="o">=</span> <span class="n">audio_utils</span><span class="o">.</span><span class="n">read_audio_file</span><span class="p">(</span><span class="n">audio_sample_path</span><span class="p">,</span> <span class="n">return_numpy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">return_sample_rate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">audio_sample_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">audio_sample_data</span><span class="p">)</span>
+<span class="n">audio_sample_length_seconds</span> <span class="o">=</span> <span class="n">audio_sample_length</span><span class="o">/</span><span class="n">audio_sample_rate_hz</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Sample length: </span><span class="si">{</span><span class="n">audio_sample_length_seconds</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">s, rate: </span><span class="si">{</span><span class="n">audio_sample_rate_hz</span><span class="o">/</span><span class="mi">1000</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">kHz'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Using audio sample: C:/Users/dried/.mltk/datasets/ten_digits/seven/aws_ar-AE+Hala+seven+medium+medium+1209d48a.wav
+Sample length: 0.7s, rate: 16.0kHz
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="load-the-mltk-model">
+<h2 id="load-the-mltk-model">Load the MLTK Model<a class="headerlink" href="#load-the-mltk-model" title="Permalink to this heading">¶</a></h2>
+<p>Next, we load the MLTK model. We also print a list of the “classes” supported by the model with their corresponding list indices.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the MLTK model</span>
+<span class="n">mltk_model</span> <span class="o">=</span> <span class="n">load_mltk_model</span><span class="p">(</span><span class="s1">'keyword_spotting_numbers'</span><span class="p">)</span>
+
+<span class="c1"># Retrieve the classes used by the model</span>
+<span class="n">classes</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">classes</span>
+
+<span class="c1"># Print classes and their corresponding indices</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Model: </span><span class="si">{</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> classifies </span><span class="si">{</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">n_classes</span><span class="si">}</span><span class="s1"> classes with the following mapping:'</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">class_index</span><span class="p">,</span> <span class="n">class_label</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">classes</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">class_index</span><span class="si">:</span><span class="s1">2d</span><span class="si">}</span><span class="s1"> -&gt; </span><span class="si">{</span><span class="n">class_label</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Model: keyword_spotting_numbers classifies 11 classes with the following mapping:
+ 0 -&gt; zero
+ 1 -&gt; one
+ 2 -&gt; two
+ 3 -&gt; three
+ 4 -&gt; four
+ 5 -&gt; five
+ 6 -&gt; six
+ 7 -&gt; seven
+ 8 -&gt; eight
+ 9 -&gt; nine
+10 -&gt; _unknown_
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="load-the-tflite-model">
+<h2 id="load-the-tflite-model">Load the .tflite model<a class="headerlink" href="#load-the-tflite-model" title="Permalink to this heading">¶</a></h2>
+<p>Next, we load the trained and quantized <a class="reference internal" href="../../docs/python_api/models/siliconlabs/keyword_spotting_numbers.html"><span class="doc std std-doc">keyword_spotting_numbers</span></a> <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model. We do this by extracting the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> from the <code class="docutils literal notranslate"><span class="pre">keyword_spotting_numbers.mltk.zip</span></code> model archive and loading it into a <a class="reference internal" href="../../docs/python_api/tflite_model/index.html"><span class="doc std std-doc">TfliteModel</span></a> instance.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the file path to the .tflite in the keyword_spotting_numbers.mltk.zip model archive</span>
+<span class="n">tflite_path</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">get_archive_file</span><span class="p">(</span><span class="s1">'keyword_spotting_numbers.tflite'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'.tflite path: </span><span class="si">{</span><span class="n">tflite_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="c1"># Load the .tflite file into a TfliteModel instance</span>
+<span class="n">tflite_model</span> <span class="o">=</span> <span class="n">TfliteModel</span><span class="o">.</span><span class="n">load_flatbuffer_file</span><span class="p">(</span><span class="n">tflite_path</span><span class="p">)</span>
+
+<span class="c1"># Generate a summary of the model</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>.tflite path: E:/dried/mltk/models/keyword_spotting_numbers/extracted_archive/keyword_spotting_numbers.tflite
++-------+------------------------------+-------------------+-----------------+------------------------------------------------------+
+| Index | OpCode                       | Input(s)          | Output(s)       | Config                                               |
++-------+------------------------------+-------------------+-----------------+------------------------------------------------------+
+| 0     | quantize                     | 98x1x40 (float32) | 98x1x40 (int8)  | Type=none                                            |
+| 1     | conv_2d                      | 98x1x40 (int8)    | 98x1x40 (int8)  | Padding:Same stride:1x1 activation:None              |
+|       |                              | 3x1x40 (int8)     |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 2     | conv_2d                      | 98x1x40 (int8)    | 98x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 3     | depthwise_conv_2d            | 98x1x120 (int8)   | 49x1x120 (int8) | Multiplier:1 padding:Same stride:2x2 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 4     | conv_2d                      | 49x1x120 (int8)   | 49x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 5     | conv_2d                      | 98x1x40 (int8)    | 49x1x40 (int8)  | Padding:Same stride:2x2 activation:Relu              |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 6     | add                          | 49x1x40 (int8)    | 49x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 49x1x40 (int8)    |                 |                                                      |
+| 7     | conv_2d                      | 49x1x40 (int8)    | 49x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 8     | depthwise_conv_2d            | 49x1x120 (int8)   | 49x1x120 (int8) | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 9     | conv_2d                      | 49x1x120 (int8)   | 49x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 10    | add                          | 49x1x40 (int8)    | 49x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 49x1x40 (int8)    |                 |                                                      |
+| 11    | conv_2d                      | 49x1x40 (int8)    | 49x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 12    | depthwise_conv_2d            | 49x1x120 (int8)   | 49x1x120 (int8) | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 13    | conv_2d                      | 49x1x120 (int8)   | 49x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 14    | add                          | 49x1x40 (int8)    | 49x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 49x1x40 (int8)    |                 |                                                      |
+| 15    | conv_2d                      | 49x1x40 (int8)    | 49x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 16    | depthwise_conv_2d            | 49x1x120 (int8)   | 49x1x120 (int8) | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 17    | conv_2d                      | 49x1x120 (int8)   | 49x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 18    | add                          | 49x1x40 (int8)    | 49x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 49x1x40 (int8)    |                 |                                                      |
+| 19    | conv_2d                      | 49x1x40 (int8)    | 49x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 20    | depthwise_conv_2d            | 49x1x120 (int8)   | 25x1x120 (int8) | Multiplier:1 padding:Same stride:2x2 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 21    | conv_2d                      | 25x1x120 (int8)   | 25x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 22    | conv_2d                      | 49x1x40 (int8)    | 25x1x40 (int8)  | Padding:Same stride:2x2 activation:Relu              |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 23    | add                          | 25x1x40 (int8)    | 25x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 25x1x40 (int8)    |                 |                                                      |
+| 24    | conv_2d                      | 25x1x40 (int8)    | 25x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 25    | depthwise_conv_2d            | 25x1x120 (int8)   | 25x1x120 (int8) | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 26    | conv_2d                      | 25x1x120 (int8)   | 25x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 27    | add                          | 25x1x40 (int8)    | 25x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 25x1x40 (int8)    |                 |                                                      |
+| 28    | conv_2d                      | 25x1x40 (int8)    | 25x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 29    | depthwise_conv_2d            | 25x1x120 (int8)   | 25x1x120 (int8) | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 30    | conv_2d                      | 25x1x120 (int8)   | 25x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 31    | add                          | 25x1x40 (int8)    | 25x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 25x1x40 (int8)    |                 |                                                      |
+| 32    | conv_2d                      | 25x1x40 (int8)    | 25x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 33    | depthwise_conv_2d            | 25x1x120 (int8)   | 25x1x120 (int8) | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 34    | conv_2d                      | 25x1x120 (int8)   | 25x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 35    | add                          | 25x1x40 (int8)    | 25x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 25x1x40 (int8)    |                 |                                                      |
+| 36    | conv_2d                      | 25x1x40 (int8)    | 25x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 37    | depthwise_conv_2d            | 25x1x120 (int8)   | 13x1x120 (int8) | Multiplier:1 padding:Same stride:2x2 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 38    | conv_2d                      | 13x1x120 (int8)   | 13x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 39    | conv_2d                      | 25x1x40 (int8)    | 13x1x40 (int8)  | Padding:Same stride:2x2 activation:Relu              |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 40    | add                          | 13x1x40 (int8)    | 13x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 13x1x40 (int8)    |                 |                                                      |
+| 41    | conv_2d                      | 13x1x40 (int8)    | 13x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 42    | depthwise_conv_2d            | 13x1x120 (int8)   | 13x1x120 (int8) | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 43    | conv_2d                      | 13x1x120 (int8)   | 13x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 44    | add                          | 13x1x40 (int8)    | 13x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 13x1x40 (int8)    |                 |                                                      |
+| 45    | conv_2d                      | 13x1x40 (int8)    | 13x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 46    | depthwise_conv_2d            | 13x1x120 (int8)   | 13x1x120 (int8) | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 47    | conv_2d                      | 13x1x120 (int8)   | 13x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 48    | add                          | 13x1x40 (int8)    | 13x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 13x1x40 (int8)    |                 |                                                      |
+| 49    | conv_2d                      | 13x1x40 (int8)    | 13x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 50    | depthwise_conv_2d            | 13x1x120 (int8)   | 13x1x120 (int8) | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 51    | conv_2d                      | 13x1x120 (int8)   | 13x1x40 (int8)  | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 52    | add                          | 13x1x40 (int8)    | 13x1x40 (int8)  | Activation:Relu                                      |
+|       |                              | 13x1x40 (int8)    |                 |                                                      |
+| 53    | conv_2d                      | 13x1x40 (int8)    | 13x1x120 (int8) | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 54    | depthwise_conv_2d            | 13x1x120 (int8)   | 7x1x120 (int8)  | Multiplier:1 padding:Same stride:2x2 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 55    | conv_2d                      | 7x1x120 (int8)    | 7x1x40 (int8)   | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 56    | conv_2d                      | 13x1x40 (int8)    | 7x1x40 (int8)   | Padding:Same stride:2x2 activation:Relu              |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 57    | add                          | 7x1x40 (int8)     | 7x1x40 (int8)   | Activation:Relu                                      |
+|       |                              | 7x1x40 (int8)     |                 |                                                      |
+| 58    | conv_2d                      | 7x1x40 (int8)     | 7x1x120 (int8)  | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 59    | depthwise_conv_2d            | 7x1x120 (int8)    | 7x1x120 (int8)  | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 60    | conv_2d                      | 7x1x120 (int8)    | 7x1x40 (int8)   | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 61    | add                          | 7x1x40 (int8)     | 7x1x40 (int8)   | Activation:Relu                                      |
+|       |                              | 7x1x40 (int8)     |                 |                                                      |
+| 62    | conv_2d                      | 7x1x40 (int8)     | 7x1x120 (int8)  | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 63    | depthwise_conv_2d            | 7x1x120 (int8)    | 7x1x120 (int8)  | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 64    | conv_2d                      | 7x1x120 (int8)    | 7x1x40 (int8)   | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 65    | add                          | 7x1x40 (int8)     | 7x1x40 (int8)   | Activation:Relu                                      |
+|       |                              | 7x1x40 (int8)     |                 |                                                      |
+| 66    | conv_2d                      | 7x1x40 (int8)     | 7x1x120 (int8)  | Padding:Valid stride:1x1 activation:Relu             |
+|       |                              | 1x1x40 (int8)     |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 67    | depthwise_conv_2d            | 7x1x120 (int8)    | 7x1x120 (int8)  | Multiplier:1 padding:Same stride:1x1 activation:Relu |
+|       |                              | 9x1x120 (int8)    |                 |                                                      |
+|       |                              | 120 (int32)       |                 |                                                      |
+| 68    | conv_2d                      | 7x1x120 (int8)    | 7x1x40 (int8)   | Padding:Valid stride:1x1 activation:None             |
+|       |                              | 1x1x120 (int8)    |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 69    | add                          | 7x1x40 (int8)     | 7x1x40 (int8)   | Activation:Relu                                      |
+|       |                              | 7x1x40 (int8)     |                 |                                                      |
+| 70    | average_pool_2d              | 7x1x40 (int8)     | 1x1x40 (int8)   | Padding:Valid stride:1x7 filter:1x7 activation:None  |
+| 71    | reshape                      | 1x1x40 (int8)     | 1x40 (int8)     | Type=none                                            |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 72    | reshape                      | 7x1x40 (int8)     | 7x40x1 (int8)   | Type=none                                            |
+|       |                              | 4 (int32)         |                 |                                                      |
+| 73    | transpose                    | 7x40x1 (int8)     | 40x1x7 (int8)   | Type=none                                            |
+|       |                              | 4 (int32)         |                 |                                                      |
+| 74    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 75    | squared_difference           | 40x1x7 (int8)     | 40x1x7 (int8)   | Type=none                                            |
+|       |                              | 7 (int8)          |                 |                                                      |
+| 76    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 77    | add                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |
+|       |                              |  (int8)           |                 |                                                      |
+| 78    | rsqrt                        | 7 (int8)          | 7 (int8)        | Type=none                                            |
+| 79    | mul                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |
+|       |                              | 7 (int8)          |                 |                                                      |
+| 80    | mul                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |
+|       |                              | 7 (int8)          |                 |                                                      |
+| 81    | sub                          | 7 (int8)          | 7 (int8)        | Type=suboptions                                      |
+|       |                              | 7 (int8)          |                 |                                                      |
+| 82    | add                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |
+|       |                              | 7 (int8)          |                 |                                                      |
+| 83    | transpose                    | 40x1x7 (int8)     | 7x40x1 (int8)   | Type=none                                            |
+|       |                              | 4 (int32)         |                 |                                                      |
+| 84    | reshape                      | 7x40x1 (int8)     | 7x40 (int8)     | Type=none                                            |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 85    | mul                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+| 86    | add                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+| 87    | unidirectional_sequence_lstm | 7x40 (int8)       | 7x40 (int8)     | Time major:False, Activation:Tanh, Cell clip:10.0    |
+|       |                              | 40 (int8)         |                 |                                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+|       |                              | 40 (int16)        |                 |                                                      |
+| 88    | strided_slice                | 7x40 (int8)       | 40 (int8)       | Type=stridedsliceoptions                             |
+|       |                              | 3 (int32)         |                 |                                                      |
+|       |                              | 3 (int32)         |                 |                                                      |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 89    | reshape                      | 40 (int8)         | 40x1x1 (int8)   | Type=none                                            |
+|       |                              | 4 (int32)         |                 |                                                      |
+| 90    | mean                         | 40x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 91    | squared_difference           | 40x1x1 (int8)     | 40x1x1 (int8)   | Type=none                                            |
+|       |                              | 1 (int8)          |                 |                                                      |
+| 92    | mean                         | 40x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 93    | add                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |
+|       |                              |  (int8)           |                 |                                                      |
+| 94    | rsqrt                        | 1 (int8)          | 1 (int8)        | Type=none                                            |
+| 95    | mul                          | 40x1x1 (int8)     | 40x1x1 (int8)   | Activation:None                                      |
+|       |                              | 1 (int8)          |                 |                                                      |
+| 96    | mul                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |
+|       |                              | 1 (int8)          |                 |                                                      |
+| 97    | sub                          | 1 (int8)          | 1 (int8)        | Type=suboptions                                      |
+|       |                              | 1 (int8)          |                 |                                                      |
+| 98    | add                          | 40x1x1 (int8)     | 40x1x1 (int8)   | Activation:None                                      |
+|       |                              | 1 (int8)          |                 |                                                      |
+| 99    | reshape                      | 40x1x1 (int8)     | 1x40 (int8)     | Type=none                                            |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 100   | mul                          | 1x40 (int8)       | 1x40 (int8)     | Activation:None                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+| 101   | add                          | 1x40 (int8)       | 1x40 (int8)     | Activation:None                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+| 102   | concatenation                | 1x40 (int8)       | 2x40 (int8)     | Type=concatenationoptions                            |
+|       |                              | 1x40 (int8)       |                 |                                                      |
+| 103   | fully_connected              | 2x40 (int8)       | 2x40 (int8)     | Activation:Relu                                      |
+|       |                              | 40 (int8)         |                 |                                                      |
+|       |                              | 40 (int32)        |                 |                                                      |
+| 104   | reshape                      | 2x40 (int8)       | 80 (int8)       | Type=none                                            |
+|       |                              | 2 (int32)         |                 |                                                      |
+| 105   | fully_connected              | 80 (int8)         | 11 (int8)       | Activation:None                                      |
+|       |                              | 80 (int8)         |                 |                                                      |
+|       |                              | 11 (int32)        |                 |                                                      |
+| 106   | reshape                      | 11 (int8)         | 11x1x1 (int8)   | Type=none                                            |
+|       |                              | 4 (int32)         |                 |                                                      |
+| 107   | mean                         | 11x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 108   | squared_difference           | 11x1x1 (int8)     | 11x1x1 (int8)   | Type=none                                            |
+|       |                              | 1 (int8)          |                 |                                                      |
+| 109   | mean                         | 11x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 110   | add                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |
+|       |                              |  (int8)           |                 |                                                      |
+| 111   | rsqrt                        | 1 (int8)          | 1 (int8)        | Type=none                                            |
+| 112   | mul                          | 11x1x1 (int8)     | 11x1x1 (int8)   | Activation:None                                      |
+|       |                              | 1 (int8)          |                 |                                                      |
+| 113   | mul                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |
+|       |                              | 1 (int8)          |                 |                                                      |
+| 114   | sub                          | 1 (int8)          | 1 (int8)        | Type=suboptions                                      |
+|       |                              | 1 (int8)          |                 |                                                      |
+| 115   | add                          | 11x1x1 (int8)     | 11x1x1 (int8)   | Activation:None                                      |
+|       |                              | 1 (int8)          |                 |                                                      |
+| 116   | reshape                      | 11x1x1 (int8)     | 11 (int8)       | Type=none                                            |
+|       |                              | 2 (int32)         |                 |                                                      |
+| 117   | mul                          | 11 (int8)         | 11 (int8)       | Activation:None                                      |
+|       |                              | 11 (int8)         |                 |                                                      |
+| 118   | add                          | 11 (int8)         | 11 (int8)       | Activation:None                                      |
+|       |                              | 11 (int8)         |                 |                                                      |
+| 119   | softmax                      | 11 (int8)         | 11 (int8)       | Type=softmaxoptions                                  |
+| 120   | dequantize                   | 11 (int8)         | 11 (float32)    | Type=none                                            |
++-------+------------------------------+-------------------+-----------------+------------------------------------------------------+
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="process-the-audio-sample-in-the-audiofeaturegenerator">
+<h2 id="process-the-audio-sample-in-the-audiofeaturegenerator">Process the audio sample in the AudioFeatureGenerator<a class="headerlink" href="#process-the-audio-sample-in-the-audiofeaturegenerator" title="Permalink to this heading">¶</a></h2>
+<p>Next, we process the audio sample in the <a class="reference internal" href="../../docs/python_api/data_preprocessing/audio_feature_generator.html"><span class="doc std std-doc">Audio Feature Generator</span></a>. This will convert the raw audio into a spectrogram image which can be given to the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model for classification.</p>
+<p>To process the audio sample, we must use the AudioFeatureGenerator <a class="reference internal" href="../../docs/guides/model_parameters.html#audiodatasetmixin"><span class="std std-doc">settings</span></a> embedded into the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code>. These are the settings that were used to train the model and also the settings used by the embedded device at runtime.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Retrieve the AudioFeatureGenerator settings from the .tflite</span>
+<span class="n">tflite_params</span> <span class="o">=</span> <span class="n">TfliteModelParameters</span><span class="o">.</span><span class="n">load_from_tflite_file</span><span class="p">(</span><span class="n">tflite_path</span><span class="p">)</span>
+
+<span class="c1"># Load the .tflite parameters into a AudioFeatureGeneratorSettings instance </span>
+<span class="n">tflite_frontend_settings</span> <span class="o">=</span> <span class="n">AudioFeatureGeneratorSettings</span><span class="p">(</span><span class="o">**</span><span class="n">tflite_params</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Audio frontend settings:</span><span class="se">\n</span><span class="si">{</span><span class="n">pprint</span><span class="o">.</span><span class="n">pformat</span><span class="p">(</span><span class="n">tflite_frontend_settings</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="c1"># Adjust the audio sample so that it is the correct length expected by the audio frontend settings</span>
+<span class="n">frontend_sample_length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">audio_sample_rate_hz</span> <span class="o">*</span> <span class="n">tflite_frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
+<span class="n">adjusted_audio_sample_data</span> <span class="o">=</span> <span class="n">audio_utils</span><span class="o">.</span><span class="n">adjust_length</span><span class="p">(</span>
+    <span class="n">audio_sample_data</span><span class="p">,</span>
+    <span class="n">out_length</span><span class="o">=</span><span class="n">frontend_sample_length</span><span class="p">,</span>
+    <span class="n">trim_threshold_db</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+    <span class="n">offset</span><span class="o">=</span><span class="mi">0</span>
+<span class="p">)</span>
+
+<span class="c1"># Process the length-adjusted audio in the audio frontend (aka AudioFeatureGenerator).</span>
+<span class="c1"># This will generate a spectrogram from the raw audio using the settings embedded into the .tflite</span>
+<span class="n">spectrogram</span> <span class="o">=</span> <span class="n">audio_utils</span><span class="o">.</span><span class="n">apply_frontend</span><span class="p">(</span>
+    <span class="n">sample</span><span class="o">=</span><span class="n">adjusted_audio_sample_data</span><span class="p">,</span>
+    <span class="n">settings</span><span class="o">=</span><span class="n">tflite_frontend_settings</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint16</span> <span class="c1"># We just want the raw, uint16 output of the generated spectrogram</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generated spectrogram shape: </span><span class="si">{</span><span class="s2">"x"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">spectrogram</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">spectrogram</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
+
+<span class="c1"># The generated spectrogram is uint16.</span>
+<span class="c1"># However, the keyword_spotting_numbers model expects a normalized, float32 input.</span>
+<span class="c1"># So, we use numpy to normalize the input sample</span>
+<span class="c1"># norm_spectrogram = (spectrogram - mean(spectrogram)) / std(spectrogram)</span>
+<span class="n">norm_spectrogram</span> <span class="o">=</span> <span class="n">spectrogram</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">norm_spectrogram</span> <span class="o">-=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">norm_spectrogram</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">norm_spectrogram</span> <span class="o">/=</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">norm_spectrogram</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">+</span> <span class="mf">1e-6</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Normalized spectrogram shape: </span><span class="si">{</span><span class="s2">"x"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">norm_spectrogram</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">norm_spectrogram</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
+
+<span class="c1"># The keyword_spotting_numbers model also expects the input shape to be:</span>
+<span class="c1"># &lt;time, 1, features&gt;</span>
+<span class="c1"># So, we insert an extra dimension:</span>
+<span class="n">tflite_input_spectrogram</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">norm_spectrogram</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'.tflite input spectrogram shape: </span><span class="si">{</span><span class="s2">"x"</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="w"> </span><span class="n">tflite_input_spectrogram</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span><span class="si">}</span><span class="s1"> (</span><span class="si">{</span><span class="n">tflite_input_spectrogram</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Audio frontend settings:
+{'average_window_duration_ms': 450,
+ 'classes': ['zero',
+             'one',
+             'two',
+             'three',
+             'four',
+             'five',
+             'six',
+             'seven',
+             'eight',
+             'nine',
+             '_unknown_'],
+ 'date': '2023-07-18T17:50:46.438Z',
+ 'detection_threshold': 242,
+ 'fe.activity_detection_alpha_a': 0.5,
+ 'fe.activity_detection_alpha_b': 0.800000011920929,
+ 'fe.activity_detection_arm_threshold': 0.75,
+ 'fe.activity_detection_enable': False,
+ 'fe.activity_detection_trip_threshold': 0.800000011920929,
+ 'fe.dc_notch_filter_coefficient': 0.949999988079071,
+ 'fe.dc_notch_filter_enable': True,
+ 'fe.fft_length': 512,
+ 'fe.filterbank_lower_band_limit': 125.0,
+ 'fe.filterbank_n_channels': 40,
+ 'fe.filterbank_upper_band_limit': 7500.0,
+ 'fe.log_scale_enable': True,
+ 'fe.log_scale_shift': 6,
+ 'fe.noise_reduction_enable': True,
+ 'fe.noise_reduction_even_smoothing': 0.02500000037252903,
+ 'fe.noise_reduction_min_signal_remaining': 0.4000000059604645,
+ 'fe.noise_reduction_odd_smoothing': 0.05999999865889549,
+ 'fe.noise_reduction_smoothing_bits': 10,
+ 'fe.pcan_enable': False,
+ 'fe.pcan_gain_bits': 21,
+ 'fe.pcan_offset': 80.0,
+ 'fe.pcan_strength': 0.949999988079071,
+ 'fe.quantize_dynamic_scale_enable': False,
+ 'fe.quantize_dynamic_scale_range_db': 40.0,
+ 'fe.sample_length_ms': 1000,
+ 'fe.sample_rate_hz': 16000,
+ 'fe.window_size_ms': 30,
+ 'fe.window_step_ms': 10,
+ 'hash': 'fb177254686232d6bb8e89d2b721ed00',
+ 'latency_ms': 10,
+ 'minimum_count': 2,
+ 'name': 'keyword_spotting_numbers',
+ 'runtime_memory_size': 80940,
+ 'samplewise_norm.mean_and_std': True,
+ 'suppression_ms': 700,
+ 'verbose_model_output_logs': False,
+ 'version': 2,
+ 'volume_gain': 0.0}
+Generated spectrogram shape: 98x40 (uint16)
+Normalized spectrogram shape: 98x40 (float32)
+.tflite input spectrogram shape: 98x1x40 (float32)
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="classify-the-audio-sample-using-tf-lite">
+<h2 id="classify-the-audio-sample-using-tf-lite">Classify the audio sample using TF-Lite<a class="headerlink" href="#classify-the-audio-sample-using-tf-lite" title="Permalink to this heading">¶</a></h2>
+<p>Next, we give the processed audio sample to the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model instance which will classify the audio.
+The model output is a list of probabilities. The list entry with the largest probability is the “class” to which the model thinks the audio sample belongs.</p>
+<p><strong>NOTE:</strong> This uses the default <code class="docutils literal notranslate"><span class="pre">int8</span></code> “kernels” that come with <a class="reference external" href="https://www.tensorflow.org/lite/performance/quantization_spec">TF-Lite</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Give the processed audio sample (which is now a normalized spectrogram)</span>
+<span class="c1"># to the trained and quantized keyword_spotting_numbers.tflite model,</span>
+<span class="c1"># which will classify the sample and return the classification results</span>
+<span class="n">classification_results</span> <span class="o">=</span> <span class="n">tflite_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">tflite_input_spectrogram</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Raw classification results: </span><span class="si">{</span><span class="n">classification_results</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="c1"># Find the index of the largest entry in the list</span>
+<span class="n">predicted_class_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">classification_results</span><span class="p">)</span>
+<span class="n">prediction_confidence</span> <span class="o">=</span> <span class="n">classification_results</span><span class="p">[</span><span class="n">predicted_class_index</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'The model "</span><span class="si">{</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">" using the reference int8 Tensorflow-Lite kernels predict that the audio sample file:</span><span class="se">\n</span><span class="si">{</span><span class="n">audio_sample_path</span><span class="si">}</span><span class="se">\n</span><span class="s1">belongs to the class: "</span><span class="si">{</span><span class="n">classes</span><span class="p">[</span><span class="n">predicted_class_index</span><span class="p">]</span><span class="si">}</span><span class="s1">" with a confidence of </span><span class="si">{</span><span class="n">prediction_confidence</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">%'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Raw classification results: [0.         0.         0.         0.         0.         0.
+ 0.         0.99609375 0.         0.         0.        ]
+The model "keyword_spotting_numbers" using the reference int8 Tensorflow-Lite kernels predict that the audio sample file:
+C:/Users/dried/.mltk/datasets/ten_digits/seven/aws_ar-AE+Hala+seven+medium+medium+1209d48a.wav
+belongs to the class: "seven" with a confidence of 99.6%
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="classify-the-audio-using-tf-lite-micro">
+<h2 id="classify-the-audio-using-tf-lite-micro">Classify the audio using TF-Lite Micro<a class="headerlink" href="#classify-the-audio-using-tf-lite-micro" title="Permalink to this heading">¶</a></h2>
+<p>Before, we used the <code class="docutils literal notranslate"><span class="pre">int8</span></code> Tensorflow-Lite kernels that come with the <a class="reference external" href="https://pypi.org/project/tensorflow/">Tensorflow</a> Python package.</p>
+<p>Now, let’s use the <code class="docutils literal notranslate"><span class="pre">int8</span></code> kernels that come with <a class="reference external" href="https://github.com/tensorflow/tflite-micro">Tensorflow-Lite Micro</a>. We do this by using the <a class="reference internal" href="../../docs/cpp_development/wrappers/tflite_micro_wrapper.html"><span class="doc std std-doc">Tensorflow-Lite Micro Python Wrapper</span></a> that comes with the MLTK. We use the <a class="reference internal" href="../../docs/python_api/tflite_micro_model/index.html"><span class="doc std std-doc">TfliteMicro API</span></a> to do this.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the TfliteMicroModel instance</span>
+<span class="n">tflm_model</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">load_tflite_model</span><span class="p">(</span><span class="n">tflite_path</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Tensorflow-Lite Micro model details:</span><span class="se">\n</span><span class="si">{</span><span class="n">tflm_model</span><span class="o">.</span><span class="n">details</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="c1"># Load the audio sample into the TFLM model instance's input tensor</span>
+    <span class="n">tflm_model</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">tflite_input_spectrogram</span><span class="p">)</span>
+
+    <span class="c1"># Run inference (which will use the TFLM int8 SW reference kernels)</span>
+    <span class="n">tflm_model</span><span class="o">.</span><span class="n">invoke</span><span class="p">()</span>
+
+    <span class="c1"># Retrieve the classification results:</span>
+    <span class="c1"># NOTE: The results has the shape 1x11, hence the [0]</span>
+    <span class="n">classification_results</span> <span class="o">=</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">output</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Raw classification results: </span><span class="si">{</span><span class="n">classification_results</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+    <span class="c1"># Find the index of the largest entry in the list</span>
+    <span class="n">predicted_class_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">classification_results</span><span class="p">)</span>
+    <span class="n">prediction_confidence</span> <span class="o">=</span> <span class="n">classification_results</span><span class="p">[</span><span class="n">predicted_class_index</span><span class="p">]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'The model "</span><span class="si">{</span><span class="n">mltk_model</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">" using the reference int8 Tensorflow-Lite Micro kernels predict that the audio sample file:</span><span class="se">\n</span><span class="si">{</span><span class="n">audio_sample_path</span><span class="si">}</span><span class="se">\n</span><span class="s1">belongs to the class: "</span><span class="si">{</span><span class="n">classes</span><span class="p">[</span><span class="n">predicted_class_index</span><span class="p">]</span><span class="si">}</span><span class="s1">" with a confidence of </span><span class="si">{</span><span class="n">prediction_confidence</span><span class="o">*</span><span class="mi">100</span><span class="si">:</span><span class="s1">.1f</span><span class="si">}</span><span class="s1">%'</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="c1"># We MUST unload the model after we're done with it</span>
+    <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">unload_model</span><span class="p">(</span><span class="n">tflm_model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tensorflow-Lite Micro model details:
+Name: keyword_spotting_numbers
+Version: 2
+Date: 2023-07-18T17:50:46.438Z
+Description: 
+Hash: fb177254686232d6bb8e89d2b721ed00
+Accelerator: none
+Classes: zero, one, two, three, four, five, six, seven, eight, nine, _unknown_
+Total runtime memory: 73.432 kBytes
+
+Raw classification results: [0.         0.         0.         0.         0.         0.
+ 0.         0.99609375 0.         0.         0.        ]
+The model "keyword_spotting_numbers" using the reference int8 Tensorflow-Lite Micro kernels predict that the audio sample file:
+C:/Users/dried/.mltk/datasets/ten_digits/seven/aws_ar-AE+Hala+seven+medium+medium+1209d48a.wav
+belongs to the class: "seven" with a confidence of 99.6%
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+          </article>
+        </div>
+      </div>
+      <a href="#" class="go-top"><i class="md-icon">arrow_upward</i>Back to Top</a>
+    </main>
+  </div>
+  <footer class="md-footer">
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+          
+            <a href="../../cpp/shared/uart_stream/examples/data_test/README.html" title="UART Stream Data Test"
+               class="md-flex md-footer-nav__link md-footer-nav__link--prev"
+               rel="prev">
+              <div class="md-flex__cell md-flex__cell--shrink">
+                <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+              </div>
+              <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+                <span class="md-flex__ellipsis">
+                  <span
+                      class="md-footer-nav__direction"> Previous </span> UART Stream Data Test </span>
+              </div>
+            </a>
+          
+          
+            <a href="../../docs/python_api/index.html" title="API Reference"
+               class="md-flex md-footer-nav__link md-footer-nav__link--next"
+               rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title"><span
+                class="md-flex__ellipsis"> <span
+                class="md-footer-nav__direction"> Next </span> API Reference </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink"><i
+                class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          
+        </a>
+        
+      </nav>
+    </div>
+    <div class="md-footer-meta md-typeset">
+      <div class="md-footer-meta__inner md-grid">
+        <div class="md-footer-copyright">
+          <div class="md-footer-copyright__highlight">
+              &#169; Copyright 2023, Silicon Labs.
+              
+          </div>
+            Last updated on
+              Aug 04, 2023.
+            <br/>
+            Created using
+            <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
+             and
+            <a href="https://github.com/bashtage/sphinx-material/">Material for
+              Sphinx</a>
+        </div>
+        <button id="survey-link" class="feedback-button">Feedback</button>
+      </div>
+    </div>
+  </footer>
+  <div class="privacy-banner">
+    <div class="privacy-banner-wrapper">
+      <p>
+        <b>Important:</b> We use cookies only for functional and traffic analytics. <br />
+        We DO NOT use cookies for any marketing purposes. By using our site you acknowledge you have read and understood our <a class="privacy-policy" href="https://www.silabs.com/about-us/legal/cookie-policy" target="_blank">Cookie Policy</a>.
+      </p>
+      <a class="privacy-banner-accept" href="#">Got it</a>
+    </div>
+</div>
+  
+<div class="survey-container" id="dlg-survey"> 
+    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
+    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
+    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
+</div>
+  
+  <script src="../../_static/javascripts/application.js"></script>
+  <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
+  </body>
+</html>

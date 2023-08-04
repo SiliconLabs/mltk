@@ -21,6 +21,7 @@ set(tflm_cmsis_kernel_sources
   tensorflow/lite/micro/kernels/cmsis_nn/pooling.cc
   tensorflow/lite/micro/kernels/cmsis_nn/softmax.cc
   tensorflow/lite/micro/kernels/cmsis_nn/svdf.cc
+  #tensorflow/lite/micro/kernels/cmsis_nn/unidirectional_sequence_lstm.cc
 )
 
 # If an accelerator was previously included
@@ -42,6 +43,7 @@ mltk_append(TFLITE_MICRO_EXCLUDED_REF_KERNELS
     pooling
     softmax
     svdf
+    # unidirectional_sequence_lstm     # The CMSIS-NN LSTM kernel seems to be slower than the TFLM reference kernel :(
 )
 list(TRANSFORM tflm_cmsis_kernel_sources PREPEND ${Tensorflow_SOURCE_BASE_DIR}/)
 target_sources(mltk_tflite_micro_cmsis_kernels

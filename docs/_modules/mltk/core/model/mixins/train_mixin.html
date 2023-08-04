@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.model.mixins.train_mixin &#8212; MLTK 0.17.0 documentation</title>
+    <title>mltk.core.model.mixins.train_mixin &#8212; MLTK 0.18.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../../index.html" title="MLTK 0.17.0 documentation"
+        <a href="../../../../../index.html" title="MLTK 0.18.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../../_static/logo.png"
-                   alt="MLTK 0.17.0 documentation logo">
+                   alt="MLTK 0.18.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../../index.html" title="MLTK 0.17.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../../index.html" title="MLTK 0.18.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../../index.html"
-       title="MLTK 0.17.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.18.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -443,7 +443,7 @@
 <div class="viewcode-block" id="TrainMixin"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
 <span class="k">class</span> <span class="nc">TrainMixin</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Provides training properties and methods to the base :py:class:`~MltkModel`</span>
-<span class="sd">    </span>
+
 <span class="sd">    Refer to the `Model Training &lt;https://siliconlabs.github.io/mltk/docs/guides/model_training.html&gt;`_ guide for more details.</span>
 <span class="sd">    """</span>
 
@@ -451,16 +451,16 @@
     <span class="k">def</span> <span class="nf">build_model_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Function that builds and returns a compiled :py:attr:`mltk.core.KerasModel` instance</span>
 
-<span class="sd">        Your model definition MUST provide this setting. </span>
+<span class="sd">        Your model definition MUST provide this setting.</span>
 
 <span class="sd">        .. highlight:: python</span>
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">           # Create a MltkModel instance with the 'train' mixin</span>
 <span class="sd">           class MyModel(</span>
-<span class="sd">               MltkModel, </span>
-<span class="sd">               TrainMixin, </span>
-<span class="sd">               ImageDatasetMixin, </span>
+<span class="sd">               MltkModel,</span>
+<span class="sd">               TrainMixin,</span>
+<span class="sd">               ImageDatasetMixin,</span>
 <span class="sd">               EvaluateClassifierMixin</span>
 <span class="sd">           ):</span>
 <span class="sd">               pass</span>
@@ -483,7 +483,7 @@
 
 <span class="sd">        .. seealso::</span>
 <span class="sd">           * `Keras Model compile() &lt;https://www.tensorflow.org/api_docs/python/tf/keras/Model#compile&gt;`_</span>
-<span class="sd">        </span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.build_model_function'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">_build_model_placeholder</span><span class="p">)</span>
     <span class="nd">@build_model_function</span><span class="o">.</span><span class="n">setter</span>
@@ -497,10 +497,10 @@
 
 <span class="sd">        .. highlight:: python</span>
 <span class="sd">        .. code-block:: python</span>
-<span class="sd">           </span>
+
 <span class="sd">           def _on_training_completed(results:TrainingResults):</span>
 <span class="sd">               ...</span>
-<span class="sd">        </span>
+
 <span class="sd">           my_model.on_training_complete = _on_training_completed</span>
 
 <span class="sd">        .. note:: This is invoked after the Keras and .tflite model files are saved</span>
@@ -514,18 +514,18 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">on_save_keras_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">object</span><span class="p">,</span><span class="n">KerasModel</span><span class="p">,</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">],</span><span class="n">KerasModel</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Callback to be invoked after the model has been trained to</span>
-<span class="sd">        save the KerasModel. </span>
+<span class="sd">        save the KerasModel.</span>
 
 <span class="sd">        This callback may be used to modified the KerasModel that gets saved,</span>
 <span class="sd">        e.g. Remove layers of the model that were used for training.</span>
 
 <span class="sd">        .. highlight:: python</span>
 <span class="sd">        .. code-block:: python</span>
-<span class="sd">           </span>
+
 <span class="sd">           def _on_save_keras_model(mltk_model:MltkModel, keras_model:KerasModel, logger:logging.Logger) -&gt; KerasModel:</span>
 <span class="sd">               ...</span>
 <span class="sd">               return keras_model</span>
-<span class="sd">        </span>
+
 <span class="sd">           my_model.on_save_keras_model = _on_save_keras_model</span>
 
 <span class="sd">        .. note:: This is invoked before the model is quantized. Quantization will use the KerasModel returned by this callback.</span>
@@ -538,11 +538,11 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Number of epochs to train the model.  </span>
+<span class="w">        </span><span class="sd">"""Number of epochs to train the model.</span>
 
 <span class="sd">        Default: ``100``</span>
 
-<span class="sd">        An epoch is an iteration over the entire x and y data provided. Note that  epochs is to be understood as "final epoch". </span>
+<span class="sd">        An epoch is an iteration over the entire x and y data provided. Note that  epochs is to be understood as "final epoch".</span>
 <span class="sd">        The model is not trained for a number of iterations given by epochs, but merely until the epoch of index epochs is reached.</span>
 
 <span class="sd">        If this is set to ``-1`` then the epochs will be set to an arbitrarily large value.</span>
@@ -563,7 +563,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">batch_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Number of samples per gradient update  </span>
+<span class="w">        </span><span class="sd">"""Number of samples per gradient update</span>
 
 <span class="sd">        Default: ``32``</span>
 
@@ -584,12 +584,12 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        String (name of optimizer) or optimizer instance  </span>
+<span class="sd">        String (name of optimizer) or optimizer instance</span>
 
 <span class="sd">        Default: ``adam``</span>
 
 <span class="sd">        .. seealso::</span>
-<span class="sd">        </span>
+
 <span class="sd">           * `Keras Optimizers &lt;https://www.tensorflow.org/api_docs/python/tf/keras/optimizers&gt;`_</span>
 <span class="sd">           * `Keras Model compile() &lt;https://www.tensorflow.org/api_docs/python/tf/keras/Model#compile&gt;`_</span>
 
@@ -599,15 +599,15 @@
     <span class="k">def</span> <span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.optimizer'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">"""List of metrics to be evaluated by the model during training and testing  </span>
+<span class="w">        </span><span class="sd">"""List of metrics to be evaluated by the model during training and testing</span>
 
 <span class="sd">        Default: ``['accuracy']``</span>
 
 <span class="sd">        .. seealso::</span>
-<span class="sd">        </span>
+
 <span class="sd">           * `Keras Metrics &lt;https://www.tensorflow.org/api_docs/python/tf/keras/metrics/Metric&gt;`_</span>
 <span class="sd">           * `Keras Model compile() &lt;https://www.tensorflow.org/api_docs/python/tf/keras/Model#compile&gt;`_</span>
 <span class="sd">        """</span>
@@ -619,12 +619,12 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""String (name of objective function), objective function  </span>
-<span class="sd">    </span>
+<span class="w">        </span><span class="sd">"""String (name of objective function), objective function</span>
+
 <span class="sd">        Default: ``categorical_crossentropy``</span>
 
 <span class="sd">        .. seealso::</span>
-<span class="sd">        </span>
+
 <span class="sd">           * `Keras Loss Functions &lt;https://www.tensorflow.org/api_docs/python/tf/keras/losses&gt;`_</span>
 <span class="sd">           * `Keras Model compile() &lt;https://www.tensorflow.org/api_docs/python/tf/keras/Model#compile&gt;`_</span>
 
@@ -644,11 +644,11 @@
 <span class="sd">        This is useful as it allows for resuming training sessions with the ``--resume``</span>
 <span class="sd">        argument to the ``train`` command.</span>
 
-<span class="sd">        .. note:: </span>
-<span class="sd">           This is independent of :py:attr:`~checkpoint`. </span>
+<span class="sd">        .. note::</span>
+<span class="sd">           This is independent of :py:attr:`~checkpoint`.</span>
 <span class="sd">           This saves each epoch's weights to the logdir/train/checkpoints directory regardless</span>
 <span class="sd">           of the what's configured in :py:attr:`~checkpoint`</span>
-<span class="sd">        </span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.checkpoints_enabled'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="nd">@checkpoints_enabled</span><span class="o">.</span><span class="n">setter</span>
@@ -658,14 +658,14 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">train_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""List of keras.callbacks.Callback instances.   </span>
+<span class="w">        </span><span class="sd">"""List of keras.callbacks.Callback instances.</span>
 
 <span class="sd">        Default: ``[]``</span>
-<span class="sd">        </span>
-<span class="sd">        List of callbacks to apply during training.  </span>
 
-<span class="sd">        .. note:: </span>
-<span class="sd">           If a callback is found in this list, then the corresponding callback setting is ignore.  </span>
+<span class="sd">        List of callbacks to apply during training.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">           If a callback is found in this list, then the corresponding callback setting is ignore.</span>
 <span class="sd">           e.g.: If `LearningRateScheduler Callback &lt;https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/LearningRateScheduler&gt;`_</span>
 <span class="sd">           is found in this list, then :py:attr:`~lr_schedule` is ignored.</span>
 
@@ -675,14 +675,14 @@
 
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.callbacks'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
-    <span class="nd">@train_callbacks</span><span class="o">.</span><span class="n">setter</span> 
+    <span class="nd">@train_callbacks</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">train_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.callbacks'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">lr_schedule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Learning rate scheduler  </span>
+<span class="w">        </span><span class="sd">"""Learning rate scheduler</span>
 
 <span class="sd">        Default: ``None``</span>
 
@@ -690,15 +690,15 @@
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">           dict(</span>
-<span class="sd">               schedule, # a function that takes an epoch index (integer, indexed from 0) </span>
+<span class="sd">               schedule, # a function that takes an epoch index (integer, indexed from 0)</span>
 <span class="sd">                         # and current learning rate (float) as inputs and returns a new learning rate as output (float).</span>
 
 <span class="sd">               verbose=0 # int. 0: quiet, 1: update messages.</span>
 <span class="sd">           )</span>
-<span class="sd">        </span>
+
 <span class="sd">        .. note:: Set to ``None`` to disable</span>
 
-<span class="sd">        At the beginning of every epoch, the this callback gets the updated learning rate value from ``schedule`` function provided, </span>
+<span class="sd">        At the beginning of every epoch, the this callback gets the updated learning rate value from ``schedule`` function provided,</span>
 <span class="sd">        with the current epoch and current learning rate, and applies the updated learning rate on the optimizer.</span>
 
 
@@ -707,7 +707,7 @@
 <span class="sd">           * Set to `None` to disable this callback</span>
 <span class="sd">           * By default, this is disabled in favor of the :py:attr:`~reduce_lr_on_plateau` callback</span>
 <span class="sd">           * If this callback is enabled, then :py:attr:`~reduce_lr_on_plateau` is automatically disabled</span>
-<span class="sd">        </span>
+
 
 <span class="sd">        .. seealso::</span>
 <span class="sd">            * `LearningRateScheduler Callback &lt;https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/LearningRateScheduler&gt;`_</span>
@@ -722,7 +722,7 @@
                 <span class="n">schedule</span><span class="o">=</span><span class="n">v</span><span class="p">,</span>
                 <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span>
             <span class="p">)</span>
-    
+
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">reduce_lr_on_plateau</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -737,37 +737,37 @@
 
 <span class="sd">           dict(</span>
 <span class="sd">               monitor="val_loss",   # quantity to be monitored.</span>
-<span class="sd">               </span>
+
 <span class="sd">               factor=0.1,           # factor by which the learning rate will be reduced. new_lr = lr * factor.</span>
-<span class="sd">               </span>
+
 <span class="sd">               patience=10,          # number of epochs with no improvement after which learning rate will be reduced.</span>
-<span class="sd">               </span>
-<span class="sd">               mode="auto",          # one of {'auto', 'min', 'max'}. In 'min' mode, the learning rate will be reduced </span>
+
+<span class="sd">               mode="auto",          # one of {'auto', 'min', 'max'}. In 'min' mode, the learning rate will be reduced</span>
 <span class="sd">                                     # when the quantity monitored has stopped decreasing; in 'max' mode it will be reduced</span>
-<span class="sd">                                     # when the quantity monitored has stopped increasing; in 'auto' mode, the direction is </span>
+<span class="sd">                                     # when the quantity monitored has stopped increasing; in 'auto' mode, the direction is</span>
 <span class="sd">                                     # automatically inferred from the name of the monitored quantity.</span>
-<span class="sd">               </span>
+
 <span class="sd">               min_delta=0.0001,     # threshold for measuring the new optimum, to only focus on significant changes.</span>
-<span class="sd">               </span>
+
 <span class="sd">               cooldown=0,           # number of epochs to wait before resuming normal operation after lr has been reduced.</span>
-<span class="sd">               </span>
+
 <span class="sd">               min_lr=0,             # lower bound on the learning rate.</span>
-<span class="sd">               </span>
+
 <span class="sd">               verbose=1,            # int. 0: quiet, 1: update messages.</span>
 <span class="sd">           )</span>
 
-<span class="sd">        Models often benefit from reducing the learning rate by a factor of 2-10 once learning stagnates. </span>
+<span class="sd">        Models often benefit from reducing the learning rate by a factor of 2-10 once learning stagnates.</span>
 <span class="sd">        This callback monitors a quantity and if no improvement is seen for a 'patience' number of epochs, the learning rate is reduced.</span>
 
 <span class="sd">        .. note::</span>
 
 <span class="sd">           * Set to ``None`` to disable this callback</span>
 <span class="sd">           * If :py:attr:`~lr_schedule` is enabled then this callback is automatically disabled</span>
-<span class="sd">        </span>
+
 
 <span class="sd">        .. seealso::</span>
 <span class="sd">           * `ReduceLROnPlateau Callback &lt;https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ReduceLROnPlateau&gt;`_</span>
-<span class="sd">        </span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.reduce_lr_on_plateau'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@reduce_lr_on_plateau</span><span class="o">.</span><span class="n">setter</span>
@@ -787,25 +787,25 @@
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">          dict(</span>
-<span class="sd">               histogram_freq=1,       # frequency (in epochs) at which to compute activation and weight histograms </span>
-<span class="sd">                                       # for the layers of the model. If set to 0, histograms won't be computed. </span>
+<span class="sd">               histogram_freq=1,       # frequency (in epochs) at which to compute activation and weight histograms</span>
+<span class="sd">                                       # for the layers of the model. If set to 0, histograms won't be computed.</span>
 <span class="sd">                                       # Validation data (or split) must be specified for histogram visualizations.</span>
-<span class="sd">   </span>
+
 <span class="sd">               write_graph=True,       # whether to visualize the graph in TensorBoard. The log file can become quite large when write_graph is set to True.</span>
-<span class="sd">   </span>
+
 <span class="sd">               write_images=False,     # whether to write model weights to visualize as image in TensorBoard.</span>
 
-<span class="sd">               update_freq="epoch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics </span>
-<span class="sd">                                       # to TensorBoard after each batch. The same applies for 'epoch'. </span>
-<span class="sd">                                       # If using an integer, let's say 1000, the callback will write the metrics and losses </span>
-<span class="sd">                                       # to TensorBoard every 1000 batches. Note that writing too frequently to </span>
+<span class="sd">               update_freq="epoch",    # 'batch' or 'epoch' or integer. When using 'batch', writes the losses and metrics</span>
+<span class="sd">                                       # to TensorBoard after each batch. The same applies for 'epoch'.</span>
+<span class="sd">                                       # If using an integer, let's say 1000, the callback will write the metrics and losses</span>
+<span class="sd">                                       # to TensorBoard every 1000 batches. Note that writing too frequently to</span>
 <span class="sd">                                       # TensorBoard can slow down your training.</span>
 
-<span class="sd">               profile_batch=2,        # Profile the batch(es) to sample compute characteristics. </span>
-<span class="sd">                                       # profile_batch must be a non-negative integer or a tuple of integers. </span>
-<span class="sd">                                       # A pair of positive integers signify a range of batches to profile. </span>
+<span class="sd">               profile_batch=2,        # Profile the batch(es) to sample compute characteristics.</span>
+<span class="sd">                                       # profile_batch must be a non-negative integer or a tuple of integers.</span>
+<span class="sd">                                       # A pair of positive integers signify a range of batches to profile.</span>
 <span class="sd">                                       # By default, it will profile the second batch. Set profile_batch=0 to disable profiling.</span>
-<span class="sd">           ) </span>
+<span class="sd">           )</span>
 
 <span class="sd">        This callback logs events for `TensorBoard &lt;https://www.tensorflow.org/tensorboard/get_started&gt;`_, including:</span>
 
@@ -834,13 +834,13 @@
     <span class="k">def</span> <span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Callback to save the Keras model or model weights at some frequency</span>
 
-<span class="sd">        Default:  </span>
+<span class="sd">        Default:</span>
 
 <span class="sd">        .. highlight:: python</span>
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">          dict(</span>
-<span class="sd">               monitor="val_accuracy",   # The metric name to monitor. Typically the metrics are set by the Model.compile method. </span>
+<span class="sd">               monitor="val_accuracy",   # The metric name to monitor. Typically the metrics are set by the Model.compile method.</span>
 <span class="sd">                                         # Note:</span>
 <span class="sd">                                         # - Prefix the name with "val_" to monitor validation metrics.</span>
 <span class="sd">                                         # - Use "loss" or "val_loss" to monitor the model's total loss.</span>
@@ -849,44 +849,44 @@
 <span class="sd">                                         # - If you're not sure about the metric names you can check the contents of the history.history dictionary returned by history = model.fit()</span>
 <span class="sd">                                         # - Multi-output models set additional prefixes on the metric names.</span>
 
-<span class="sd">               save_best_only=True,      # if save_best_only=True, it only saves when the model is considered the "best" </span>
-<span class="sd">                                         # and the latest best model according to the quantity monitored will not be overwritten. </span>
+<span class="sd">               save_best_only=True,      # if save_best_only=True, it only saves when the model is considered the "best"</span>
+<span class="sd">                                         # and the latest best model according to the quantity monitored will not be overwritten.</span>
 <span class="sd">                                         # If filepath doesn't contain formatting options like {epoch} then filepath will be overwritten by each new better model.</span>
 
-<span class="sd">               save_weights_only=True,   # if True, then only the model's weights will be saved (model.save_weights(filepath)), </span>
+<span class="sd">               save_weights_only=True,   # if True, then only the model's weights will be saved (model.save_weights(filepath)),</span>
 <span class="sd">                                         # else the full model is saved (model.save(filepath)).</span>
 
-<span class="sd">               mode="auto",              # one of {'auto', 'min', 'max'}. If save_best_only=True, the decision to overwrite </span>
-<span class="sd">                                         # the current save file is made based on either the maximization or the minimization of the </span>
-<span class="sd">                                         # monitored quantity. For val_acc, this should be max, for val_loss this should be min, etc. </span>
+<span class="sd">               mode="auto",              # one of {'auto', 'min', 'max'}. If save_best_only=True, the decision to overwrite</span>
+<span class="sd">                                         # the current save file is made based on either the maximization or the minimization of the</span>
+<span class="sd">                                         # monitored quantity. For val_acc, this should be max, for val_loss this should be min, etc.</span>
 <span class="sd">                                         # In auto mode, the direction is automatically inferred from the name of the monitored quantity.</span>
 
-<span class="sd">               save_freq="epoch",        # 'epoch' or integer. When using 'epoch', the callback saves the model after each epoch. </span>
-<span class="sd">                                         # When using integer, the callback saves the model at end of this many batches. </span>
-<span class="sd">                                         # If the Model is compiled with steps_per_execution=N, then the saving criteria will be </span>
-<span class="sd">                                         # checked every Nth batch. Note that if the saving isn't aligned to epochs, </span>
-<span class="sd">                                         # the monitored metric may potentially be less reliable (it could reflect as little </span>
+<span class="sd">               save_freq="epoch",        # 'epoch' or integer. When using 'epoch', the callback saves the model after each epoch.</span>
+<span class="sd">                                         # When using integer, the callback saves the model at end of this many batches.</span>
+<span class="sd">                                         # If the Model is compiled with steps_per_execution=N, then the saving criteria will be</span>
+<span class="sd">                                         # checked every Nth batch. Note that if the saving isn't aligned to epochs,</span>
+<span class="sd">                                         # the monitored metric may potentially be less reliable (it could reflect as little</span>
 <span class="sd">                                         # as 1 batch, since the metrics get reset every epoch). Defaults to 'epoch'.</span>
 
-<span class="sd">               options=None,             # Optional tf.train.CheckpointOptions object if save_weights_only is true or optional </span>
+<span class="sd">               options=None,             # Optional tf.train.CheckpointOptions object if save_weights_only is true or optional</span>
 <span class="sd">                                         # tf.saved_model.SaveOptions object if save_weights_only is false.</span>
 
 <span class="sd">               verbose=0,                # verbosity mode, 0 or 1.</span>
 <span class="sd">           )</span>
 
-<span class="sd">        ModelCheckpoint callback is used in conjunction with training using model.fit() </span>
-<span class="sd">        to save a model or weights (in a checkpoint file) at some interval, </span>
+<span class="sd">        ModelCheckpoint callback is used in conjunction with training using model.fit()</span>
+<span class="sd">        to save a model or weights (in a checkpoint file) at some interval,</span>
 <span class="sd">        so the model or weights can be loaded later to continue the training from the state saved.</span>
 
 <span class="sd">        .. note::</span>
 
 <span class="sd">           * Set to ``None`` to disable this callback</span>
 <span class="sd">           * Tensorboard logs are saved to `MltkModel.log_dir`/train/weights</span>
-<span class="sd">           * This is independent of :py:attr:`~checkpoints_enabled`. </span>
+<span class="sd">           * This is independent of :py:attr:`~checkpoints_enabled`.</span>
 
 <span class="sd">        .. seealso::</span>
 <span class="sd">           * `ModelCheckpoint Callback &lt;https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/ModelCheckpoint&gt;`_</span>
-<span class="sd">        </span>
+
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.checkpoint'</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span> <span class="n">DefaultDict</span><span class="p">(</span>
@@ -917,28 +917,28 @@
 <span class="sd">           dict(</span>
 <span class="sd">               monitor="val_accuracy",     # Quantity to be monitored.</span>
 
-<span class="sd">               min_delta=0,                # Minimum change in the monitored quantity to qualify as an improvement, </span>
+<span class="sd">               min_delta=0,                # Minimum change in the monitored quantity to qualify as an improvement,</span>
 <span class="sd">                                           # i.e. an absolute change of less than min_delta, will count as no improvement.</span>
-<span class="sd">  </span>
+
 <span class="sd">               patience=25,                # Number of epochs with no improvement after which training will be stopped.</span>
 
-<span class="sd">               mode="auto",                # One of {"auto", "min", "max"}. In min mode, training will stop when the quantity </span>
-<span class="sd">                                           # monitored has stopped decreasing; in "max" mode it will stop when the quantity monitored </span>
-<span class="sd">                                           # has stopped increasing; in "auto" mode, the direction is automatically inferred from </span>
+<span class="sd">               mode="auto",                # One of {"auto", "min", "max"}. In min mode, training will stop when the quantity</span>
+<span class="sd">                                           # monitored has stopped decreasing; in "max" mode it will stop when the quantity monitored</span>
+<span class="sd">                                           # has stopped increasing; in "auto" mode, the direction is automatically inferred from</span>
 <span class="sd">                                           # the name of the monitored quantity.</span>
 
-<span class="sd">               baseline=None,              # Baseline value for the monitored quantity. Training will stop if </span>
+<span class="sd">               baseline=None,              # Baseline value for the monitored quantity. Training will stop if</span>
 <span class="sd">                                           # the model doesn't show improvement over the baseline.</span>
 
-<span class="sd">               restore_best_weights=True,  # Whether to restore model weights from the epoch with the best value of the monitored quantity. </span>
+<span class="sd">               restore_best_weights=True,  # Whether to restore model weights from the epoch with the best value of the monitored quantity.</span>
 <span class="sd">                                           # If False, the model weights obtained at the last step of training are used.</span>
 
 <span class="sd">               verbose=1,                  # verbosity mode.</span>
 <span class="sd">           )</span>
 
-<span class="sd">        Assuming the goal of a training is to minimize the loss. With this, the metric to be monitored would be 'loss', </span>
-<span class="sd">        and mode would be 'min'. A model.fit() training loop will check at end of every epoch whether the loss is </span>
-<span class="sd">        no longer decreasing, considering the min_delta and patience if applicable. Once it's found no longer decreasing, </span>
+<span class="sd">        Assuming the goal of a training is to minimize the loss. With this, the metric to be monitored would be 'loss',</span>
+<span class="sd">        and mode would be 'min'. A model.fit() training loop will check at end of every epoch whether the loss is</span>
+<span class="sd">        no longer decreasing, considering the min_delta and patience if applicable. Once it's found no longer decreasing,</span>
 <span class="sd">        model.stop_training is marked True and the training terminates.</span>
 
 <span class="sd">        .. note::</span>
@@ -957,7 +957,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">tflite_converter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Converts a TensorFlow model into TensorFlow Lite model  </span>
+<span class="w">        </span><span class="sd">"""Converts a TensorFlow model into TensorFlow Lite model</span>
 
 <span class="sd">        Default:</span>
 
@@ -965,40 +965,47 @@
 <span class="sd">        .. code-block:: python</span>
 
 <span class="sd">           dict(</span>
-<span class="sd">               optimizations = [tf.lite.Optimize.DEFAULT],             # Experimental flag, subject to change. </span>
+<span class="sd">               optimizations = [tf.lite.Optimize.DEFAULT],             # Experimental flag, subject to change.</span>
 <span class="sd">                                                                       # A list of optimizations to apply when converting the model. E.g. [Optimize.DEFAULT]</span>
-<span class="sd">   </span>
-<span class="sd">               supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8],  # Experimental flag, subject to change. Set of OpsSet options supported by the device. </span>
+
+<span class="sd">               supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS_INT8],  # Experimental flag, subject to change. Set of OpsSet options supported by the device.</span>
 <span class="sd">                                                                       # Add to the 'target_spec' option</span>
 <span class="sd">                                                                       # https://www.tensorflow.org/api_docs/python/tf/lite/TargetSpec</span>
 
-<span class="sd">               inference_input_type = tf.float32,                      # Data type of the input layer. Note that integer types (tf.int8 and tf.uint8) are </span>
-<span class="sd">                                                                       # currently only supported for post training integer quantization and quantization aware training. </span>
+<span class="sd">               inference_input_type = tf.float32,                      # Data type of the input layer. Note that integer types (tf.int8 and tf.uint8) are</span>
+<span class="sd">                                                                       # currently only supported for post training integer quantization and quantization aware training.</span>
 <span class="sd">                                                                       # (default tf.float32, must be in {tf.float32, tf.int8, tf.uint8})</span>
 
-<span class="sd">               inference_output_type = tf.float32,                     # Data type of the output layer. Note that integer types (tf.int8 and tf.uint8) are currently only </span>
+<span class="sd">               inference_output_type = tf.float32,                     # Data type of the output layer. Note that integer types (tf.int8 and tf.uint8) are currently only</span>
 <span class="sd">                                                                       # supported for post training integer quantization and quantization aware training.</span>
 <span class="sd">                                                                       # (default tf.float32, must be in {tf.float32, tf.int8, tf.uint8})</span>
 
-<span class="sd">               representative_dataset = 'generate',                    # A representative dataset that can be used to generate input and output samples </span>
-<span class="sd">                                                                       # for the model. The converter can use the dataset to evaluate different optimizations. </span>
-<span class="sd">                                                                       # Note that this is an optional attribute but it is necessary if INT8 is the only </span>
+<span class="sd">               representative_dataset = 'generate',                    # A representative dataset that can be used to generate input and output samples</span>
+<span class="sd">                                                                       # for the model. The converter can use the dataset to evaluate different optimizations.</span>
+<span class="sd">                                                                       # Note that this is an optional attribute but it is necessary if INT8 is the only</span>
 <span class="sd">                                                                       # support builtin ops in target ops.</span>
-<span class="sd">                                                                       # If the keyword 'generate' is used, then use update to 1000 samples from the model's</span>
+<span class="sd">                                                                       # If the keyword 'generate' is used, then use update to "representative_dataset_max_samples" samples from the model's</span>
 <span class="sd">                                                                       # validation dataset as the representative dataset</span>
 
-<span class="sd">               allow_custom_ops = False,                               # Boolean indicating whether to allow custom operations. When False, any unknown operation is an error. </span>
-<span class="sd">                                                                       # When True, custom ops are created for any op that is unknown. The developer needs to provide these to the </span>
+<span class="sd">               representative_dataset_max_samples = 1000               # The maximum number of samples to use when representative_dataset == 'generate'</span>
+
+<span class="sd">               allow_custom_ops = False,                               # Boolean indicating whether to allow custom operations. When False, any unknown operation is an error.</span>
+<span class="sd">                                                                       # When True, custom ops are created for any op that is unknown. The developer needs to provide these to the</span>
 <span class="sd">                                                                       # TensorFlow Lite runtime with a custom resolver. (default False)</span>
 
 <span class="sd">               experimental_new_converter = True,                      # Experimental flag, subject to change. Enables MLIR-based conversion instead of TOCO conversion. (default True)</span>
 
 <span class="sd">               experimental_new_quantizer = True,                      # Experimental flag, subject to change. Enables MLIR-based quantization conversion instead of Flatbuffer-based conversion. (default True)</span>
 
-<span class="sd">               experimental_enable_resource_variables = False,         # Experimental flag, subject to change. Enables resource variables to be converted by this converter. </span>
+<span class="sd">               experimental_enable_resource_variables = False,         # Experimental flag, subject to change. Enables resource variables to be converted by this converter.</span>
 <span class="sd">                                                                       # This is only allowed if from_saved_model interface is used. (default False)</span>
 
 <span class="sd">               generate_unquantized = True                             # Also generate a float32/unquantized .tflite model in addition to the quantized .tflite model</span>
+
+<span class="sd">               generate_quantization_report = False                    # Generate a quantization report. This can help determine if layers have quantization errors compared to the float32 model</span>
+<span class="sd">                                                                       # See:</span>
+<span class="sd">                                                                       # https://www.tensorflow.org/lite/performance/quantization_debugger</span>
+<span class="sd">                                                                       # https://siliconlabs.github.io/mltk/mltk/tutorials/model_quantization_tips.html</span>
 <span class="sd">           )</span>
 
 <span class="sd">        This is used after the model finishes training.</span>
@@ -1008,7 +1015,7 @@
 <span class="sd">        If ``generate_unquantized=True`` then a quantized .tflite AND an unquantized .tflite model files with be generated.</span>
 <span class="sd">        If you ONLY want to generate an unquantized model, then  ``supported_ops = TFLITE_BUILTINS``</span>
 
-<span class="sd">        .. note:: </span>
+<span class="sd">        .. note::</span>
 <span class="sd">           See :py:attr:`~on_training_complete` to invoke a custom callback which may be</span>
 <span class="sd">           used to perform custom quantization</span>
 
@@ -1016,26 +1023,29 @@
 <span class="sd">           * `Model Quantization &lt;https://siliconlabs.github.io/mltk/docs/guides/model_quantization.html&gt;`_ guide</span>
 <span class="sd">           * `tf.lite.TFLiteConverter &lt;https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter&gt;`_</span>
 <span class="sd">           * `Post-training integer quantization &lt;https://www.tensorflow.org/lite/performance/post_training_integer_quant&gt;`_</span>
+<span class="sd">           * `Model Quantization Tips &lt;https://siliconlabs.github.io/mltk/mltk/tutorials/model_quantization_tips.html&gt;`_</span>
 <span class="sd">        """</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.tflite_converter'</span><span class="p">,</span> 
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.tflite_converter'</span><span class="p">,</span>
             <span class="n">default</span><span class="o">=</span><span class="n">DefaultDict</span><span class="p">(</span>
                 <span class="n">optimizations</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'DEFAULT'</span><span class="p">],</span>
                 <span class="n">supported_ops</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'TFLITE_BUILTINS_INT8'</span><span class="p">],</span>
                 <span class="n">inference_input_type</span> <span class="o">=</span> <span class="s1">'float32'</span><span class="p">,</span>
                 <span class="n">inference_output_type</span> <span class="o">=</span> <span class="s1">'float32'</span><span class="p">,</span>
                 <span class="n">representative_dataset</span> <span class="o">=</span> <span class="s1">'generate'</span><span class="p">,</span>
-                <span class="n">allow_custom_ops</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-                <span class="n">experimental_new_converter</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
-                <span class="n">experimental_new_quantizer</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+                <span class="n">representative_dataset_max_samples</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+                <span class="n">allow_custom_ops</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                <span class="n">experimental_new_converter</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">experimental_new_quantizer</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                 <span class="n">experimental_enable_resource_variables</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-                <span class="n">generate_unquantized</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">generate_unquantized</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="n">generate_quantization_report</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="p">))</span>
     <span class="nd">@tflite_converter</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span> <span class="nf">tflite_converter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.tflite_converter'</span><span class="p">]</span> <span class="o">=</span> <span class="n">DefaultDict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
 
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">checkpoints_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return path to directory containing training checkpoints"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_log_dir</span><span class="p">(</span><span class="s1">'train/checkpoints'</span><span class="p">)</span>
@@ -1053,27 +1063,27 @@
         <span class="c1"># If not epoch is specified,</span>
         <span class="c1"># then find the last checkpoint generated</span>
         <span class="k">if</span> <span class="n">epoch</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">epoch</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> 
+            <span class="n">epoch</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
         <span class="n">checkpoints_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkpoints_dir</span>
-        
+
         <span class="n">name_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'^weights-(\d+)\.h5$'</span><span class="p">)</span>
-        <span class="n">found_checkpoint_name</span> <span class="o">=</span> <span class="kc">None</span> 
-        <span class="n">found_checkpoint_epoch</span> <span class="o">=</span> <span class="mi">0</span> 
+        <span class="n">found_checkpoint_name</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">found_checkpoint_epoch</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">checkpoints_dir</span><span class="p">):</span>
             <span class="n">match</span> <span class="o">=</span> <span class="n">name_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">continue</span> 
+                <span class="k">continue</span>
             <span class="n">checkpoint_epoch</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 
             <span class="k">if</span> <span class="n">epoch</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">checkpoint_epoch</span> <span class="o">&gt;</span> <span class="n">found_checkpoint_epoch</span><span class="p">:</span>
-                    <span class="n">found_checkpoint_name</span> <span class="o">=</span> <span class="n">fn</span> 
+                    <span class="n">found_checkpoint_name</span> <span class="o">=</span> <span class="n">fn</span>
                     <span class="n">found_checkpoint_epoch</span> <span class="o">=</span> <span class="n">checkpoint_epoch</span>
-                    
+
             <span class="k">elif</span> <span class="n">checkpoint_epoch</span> <span class="o">==</span> <span class="n">epoch</span><span class="p">:</span>
-                <span class="n">found_checkpoint_name</span> <span class="o">=</span> <span class="n">fn</span> 
+                <span class="n">found_checkpoint_name</span> <span class="o">=</span> <span class="n">fn</span>
                 <span class="n">found_checkpoint_epoch</span> <span class="o">=</span> <span class="n">checkpoint_epoch</span>
                 <span class="k">break</span>
 
@@ -1083,7 +1093,7 @@
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">checkpoints_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">found_checkpoint_name</span><span class="si">}</span><span class="s1">'</span></div>
 
 
-    <span class="nd">@property</span> 
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">weights_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return path to directory contianing training weights"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_log_dir</span><span class="p">(</span><span class="s1">'train/weights'</span><span class="p">)</span>
@@ -1103,7 +1113,7 @@
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
-                <span class="k">return</span> <span class="n">filename</span> 
+                <span class="k">return</span> <span class="n">filename</span>
 
         <span class="n">weights_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights_dir</span>
 
@@ -1114,21 +1124,21 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">filename</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">filename</span> <span class="o">==</span> <span class="s1">'best'</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Weights file not found: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
-        <span class="n">best_weights_path</span> <span class="o">=</span> <span class="kc">None</span> 
+        <span class="n">best_weights_path</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">best_weights</span> <span class="o">=</span> <span class="mf">0.0</span>
         <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">weights_dir</span><span class="p">):</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">fn</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.h5'</span><span class="p">):</span>
                 <span class="k">continue</span>
             <span class="n">toks</span> <span class="o">=</span> <span class="n">fn</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'-'</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">toks</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
-                <span class="k">continue</span> 
+                <span class="k">continue</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">weights</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">toks</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
                 <span class="k">if</span> <span class="n">weights</span> <span class="o">&gt;</span> <span class="n">best_weights</span><span class="p">:</span>
                     <span class="n">best_weights</span> <span class="o">=</span> <span class="n">weights</span>
                     <span class="n">best_weights_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">weights_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1">'</span>
             <span class="k">except</span><span class="p">:</span>
-                <span class="k">pass</span> 
+                <span class="k">pass</span>
 
         <span class="k">if</span> <span class="n">best_weights_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'Best training weights not found'</span><span class="p">)</span>
@@ -1196,7 +1206,7 @@
               
           </div>
             Last updated on
-              Jun 21, 2023.
+              Aug 04, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

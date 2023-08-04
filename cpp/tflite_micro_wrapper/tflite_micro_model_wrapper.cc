@@ -65,6 +65,7 @@ bool TfliteMicroModelWrapper::load(
     {
         _runtime_memory.reserve(runtime_memory_size);
         runtime_buffer = (uint8_t*)_runtime_memory.c_str();
+        memset(runtime_buffer, 0, runtime_memory_size);
     }
 
     bool retval = TfliteMicroModel::load(

@@ -25,3 +25,8 @@ def test_fingerprint_signature_generator(op, tflite, build):
 @pytest.mark.parametrize(*generate_run_model_params())
 def test_keyword_spotting_pacman_v3(op, tflite, build):
     run_model_operation('keyword_spotting_pacman_v3', op, tflite, build)
+
+
+@pytest.mark.parametrize(*generate_run_model_params())
+def test_keyword_spotting_numbers(op, tflite, build):
+    run_model_operation('keyword_spotting_numbers', op, tflite, build)

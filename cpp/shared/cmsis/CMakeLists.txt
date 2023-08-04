@@ -17,10 +17,10 @@ mltk_get(MLTK_PLATFORM_IS_EMBEDDED)
 
 CPMAddPackage(
     NAME cmsis
-    URL  https://github.com/ARM-software/CMSIS_5/archive/ed78d6b78766d71cfe0431149f2f261d1c7277a1.zip
-    URL_HASH SHA1=7f3cebce5149c191e2144af5d78498777a0f9545
+    URL  https://github.com/ARM-software/CMSIS_5/archive/a75f01746df18bb5b929dfb8dc6c9407fac3a0f3.zip
+    URL_HASH SHA1=81f75c6401e57264a393c9344c255d18f426455e
     DOWNLOAD_ONLY ON
-    CACHE_VERSION aug15_2022
+    CACHE_VERSION jun21_2023
 )
 set(cmsis_SOURCE_DIR ${cmsis_SOURCE_DIR} CACHE INTERNAL "")
 
@@ -84,11 +84,9 @@ INTERFACE
 )
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmsis_dsp.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cmsis_nn.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cmsis_device.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/cmsis_rtos2.cmake)
 
-if(MLTK_PLATFORM_IS_EMBEDDED)
-    include(${CMAKE_CURRENT_LIST_DIR}/cmsis_device.cmake)
-    include(${CMAKE_CURRENT_LIST_DIR}/cmsis_nn.cmake)
-    include(${CMAKE_CURRENT_LIST_DIR}/cmsis_rtos2.cmake)
-endif()
 
 

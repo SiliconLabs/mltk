@@ -16,6 +16,7 @@ The source code for these models may be found on Github: [https://github.com/sil
 | [Keyword Spotting Pac-Man v2](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_pacman_v2.html)                          | This model is the second version of the model designed to work with the [Keyword Spotting Pac-Man](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_pacman.html) tutorial |
 | [Keyword Spotting Pac-Man v3](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_pacman_v3.html)                          | This model is the third version of the model designed to work with the [Keyword Spotting Pac-Man](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_pacman.html) tutorial |
 | [Keyword Spotting Alexa](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_alexa.html)                                   | This model is designed to work with the [Keyword Spotting Alexa](https://siliconlabs.github.io/mltk/mltk/tutorials/keyword_spotting_alexa.html) tutorial        |
+| [Keyword Spotting Numbers](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/keyword_spotting_numbers.html)                               | This is a CNN+LSTM keyword spotting model used to detect the keywords "zero" through "nine". It is designed to work with the [Quantized LSTMs](https://siliconlabs.github.io/mltk/mltk/tutorials/quantized_lstm.html) tutorial        |
 | [Rock Paper Scissors](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/rock_paper_scissors.html)                                         | This model is designed to work with the [Image Classification](https://siliconlabs.github.io/mltk/mltk/tutorials/image_classification.html) tutorial                                        |
 | [Fingerprint Signature Generator](https://siliconlabs.github.io/mltk/docs/python_api/models/siliconlabs/fingerprint_signature_generator.html)                 | This model is designed to work with the [Fingerprint Authentication](https://siliconlabs.github.io/mltk/mltk/tutorials/fingerprint_authentication.html) tutorial                            |
 
@@ -27,7 +28,7 @@ The source code for these models may be found on Github: [https://github.com/sil
 :maxdepth: 1
 :hidden:
 
-./keyword_spotting_mobilenetv2
+./keyword_spotting_numbers
 ./keyword_spotting_on_off
 ./keyword_spotting_on_off_v2
 ./keyword_spotting_on_off_v3
@@ -38,6 +39,7 @@ The source code for these models may be found on Github: [https://github.com/sil
 ./keyword_spotting_alexa
 ./rock_paper_scissors
 ./fingerprint_signature_generator
+./keyword_spotting_mobilenetv2
 ```
 
 

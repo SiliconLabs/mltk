@@ -48,30 +48,31 @@ set(cmsis_dsp_SOURCE_DIR ${cmsis_dsp_SOURCE_DIR} CACHE INTERNAL "")
 
 
 
-add_library(mltk_cmsis_dsp INTERFACE)
-add_library(mltk::cmsis_dsp ALIAS mltk_cmsis_dsp)
+if(MLTK_PLATFORM_IS_EMBEDDED)
+    add_subdirectory("${cmsis_dsp_SOURCE_DIR}/Source")
 
+    add_library(mltk_cmsis_dsp INTERFACE)
+    add_library(mltk::cmsis_dsp ALIAS mltk_cmsis_dsp)
 
-add_subdirectory("${cmsis_dsp_SOURCE_DIR}/Source")
+    target_link_libraries(mltk_cmsis_dsp
+    INTERFACE
+        CMSISDSP
+        mltk_cmsis
+    )
 
-target_link_libraries(mltk_cmsis_dsp
-INTERFACE
-    CMSISDSP
-    mltk_cmsis
-)
+    target_compile_definitions(mltk_cmsis_dsp
+    INTERFACE
+        CMSIS_FORCE_BUILTIN_FUNCTIONS
+    )
 
-target_compile_definitions(mltk_cmsis_dsp
-INTERFACE
-    CMSIS_FORCE_BUILTIN_FUNCTIONS
-)
+    mltk_load_python()
 
+    # Ensure the downloaded library is patched
+    add_custom_command(OUTPUT ${cmsis_dsp_SOURCE_DIR}/mltk_cmsis_dsp_patch_complete.txt
+    DEPENDS ${cmsis_dsp_SOURCE_DIR}/Include ${CMAKE_CURRENT_LIST_DIR}/patch_cmsis_dsp.py
+    COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/libpatcher.py -i "${cmsis_dsp_SOURCE_DIR}/Include" -p ${CMAKE_CURRENT_LIST_DIR}/patch_cmsis_dsp.py -o ${cmsis_dsp_SOURCE_DIR}/mltk_cmsis_dsp_patch_complete.txt
+    )
+    add_custom_target(mltk_cmsis_dsp_apply_patch DEPENDS ${cmsis_dsp_SOURCE_DIR}/mltk_cmsis_dsp_patch_complete.txt)
+    add_dependencies(CMSISDSP mltk_cmsis_dsp_apply_patch)
 
-mltk_load_python()
-
-# Ensure the downloaded library is patched
-add_custom_command(OUTPUT ${cmsis_dsp_SOURCE_DIR}/mltk_cmsis_dsp_patch_complete.txt
-  DEPENDS ${cmsis_dsp_SOURCE_DIR}/Include ${CMAKE_CURRENT_LIST_DIR}/patch_cmsis_dsp.py
-  COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/libpatcher.py -i "${cmsis_dsp_SOURCE_DIR}/Include" -p ${CMAKE_CURRENT_LIST_DIR}/patch_cmsis_dsp.py -o ${cmsis_dsp_SOURCE_DIR}/mltk_cmsis_dsp_patch_complete.txt
-)
-add_custom_target(mltk_cmsis_dsp_apply_patch DEPENDS ${cmsis_dsp_SOURCE_DIR}/mltk_cmsis_dsp_patch_complete.txt)
-add_dependencies(CMSISDSP mltk_cmsis_dsp_apply_patch)
+endif() # MLTK_PLATFORM_IS_EMBEDDED

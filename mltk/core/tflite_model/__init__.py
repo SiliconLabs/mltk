@@ -1,6 +1,6 @@
 
 from .tflite_model import (
-    TfliteModel, 
+    TfliteModel,
     TfliteOpCode
 )
 from .tflite_layer import (
@@ -24,9 +24,11 @@ from .tflite_layer import (
     TfliteDequantizeLayer,
     TfliteMulLayer,
     TfliteMulLayerOptions,
+    TfliteUnidirectionalLstmLayer,
+    TfliteUnidirectionalLstmLayerOptions
 )
 from .tflite_tensor import (
-    TfliteTensor, 
+    TfliteTensor,
     TfliteQuantization,
     TfliteShape
 )
