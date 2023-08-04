@@ -90,7 +90,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 1,
+   "execution_count": 9,
 
    "metadata": {},
 
@@ -112,7 +112,9 @@
 
     "from mltk.core import load_mltk_model, TfliteModel, TfliteModelParameters\n",
 
-    "from mltk.core.tflite_micro import TfliteMicro"
+    "from mltk.core.tflite_micro import TfliteMicro\n",
+
+    "from mltk.utils.archive_downloader import download_url"
 
    ]
 
@@ -140,7 +142,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 2,
+   "execution_count": 10,
 
    "metadata": {},
 
@@ -224,7 +226,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 3,
+   "execution_count": 11,
 
    "metadata": {},
 
@@ -237,6 +239,14 @@
      "output_type": "stream",
 
      "text": [
+
+      "Downloading https://github.com/SiliconLabs/mltk/raw/master/mltk/models/siliconlabs/keyword_spotting_numbers.mltk.zip\n",
+
+      "to c:/Users/dried/silabs/github_siliconlabs/mltk/mltk/examples/keyword_spotting_numbers.mltk.zip\n",
+
+      "(This may take awhile, please be patient ...)\n",
+
+      "Extracting keyword_spotting_numbers.py from C:/Users/dried/silabs/github_siliconlabs/mltk/mltk/examples/keyword_spotting_numbers.mltk.zip                     \n",
 
       "Model: keyword_spotting_numbers classifies 11 classes with the following mapping:\n",
 
@@ -270,9 +280,23 @@
 
    "source": [
 
+    "# Download the \"keyword_spotting_numbers\" model archive from github\n",
+
+    "mltk_model_archive_path = download_url(\n",
+
+    "    url='https://github.com/SiliconLabs/mltk/raw/master/mltk/models/siliconlabs/keyword_spotting_numbers.mltk.zip', \n",
+
+    "    dst_path='keyword_spotting_numbers.mltk.zip', \n",
+
+    "    show_progress=True\n",
+
+    ")\n",
+
+    "\n",
+
     "# Load the MLTK model\n",
 
-    "mltk_model = load_mltk_model('keyword_spotting_numbers')\n",
+    "mltk_model = load_mltk_model(mltk_model_archive_path)\n",
 
     "\n",
 
@@ -316,7 +340,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 4,
+   "execution_count": 12,
 
    "metadata": {},
 
@@ -722,71 +746,65 @@
 
       "|       |                              | 7x1x40 (int8)     |                 |                                                      |\n",
 
-      "| 70    | average_pool_2d              | 7x1x40 (int8)     | 1x1x40 (int8)   | Padding:Valid stride:1x7 filter:1x7 activation:None  |\n",
+      "| 70    | reshape                      | 7x1x40 (int8)     | 7x40x1 (int8)   | Type=none                                            |\n",
 
-      "| 71    | reshape                      | 1x1x40 (int8)     | 1x40 (int8)     | Type=none                                            |\n",
+      "|       |                              | 4 (int32)         |                 |                                                      |\n",
+
+      "| 71    | transpose                    | 7x40x1 (int8)     | 40x1x7 (int8)   | Type=none                                            |\n",
+
+      "|       |                              | 4 (int32)         |                 |                                                      |\n",
+
+      "| 72    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |\n",
 
       "|       |                              | 3 (int32)         |                 |                                                      |\n",
 
-      "| 72    | reshape                      | 7x1x40 (int8)     | 7x40x1 (int8)   | Type=none                                            |\n",
+      "| 73    | squared_difference           | 40x1x7 (int8)     | 40x1x7 (int8)   | Type=none                                            |\n",
 
-      "|       |                              | 4 (int32)         |                 |                                                      |\n",
-
-      "| 73    | transpose                    | 7x40x1 (int8)     | 40x1x7 (int8)   | Type=none                                            |\n",
-
-      "|       |                              | 4 (int32)         |                 |                                                      |\n",
+      "|       |                              | 7 (int8)          |                 |                                                      |\n",
 
       "| 74    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |\n",
 
       "|       |                              | 3 (int32)         |                 |                                                      |\n",
 
-      "| 75    | squared_difference           | 40x1x7 (int8)     | 40x1x7 (int8)   | Type=none                                            |\n",
-
-      "|       |                              | 7 (int8)          |                 |                                                      |\n",
-
-      "| 76    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |\n",
-
-      "|       |                              | 3 (int32)         |                 |                                                      |\n",
-
-      "| 77    | add                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |\n",
+      "| 75    | add                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |\n",
 
       "|       |                              |  (int8)           |                 |                                                      |\n",
 
-      "| 78    | rsqrt                        | 7 (int8)          | 7 (int8)        | Type=none                                            |\n",
+      "| 76    | rsqrt                        | 7 (int8)          | 7 (int8)        | Type=none                                            |\n",
 
-      "| 79    | mul                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |\n",
-
-      "|       |                              | 7 (int8)          |                 |                                                      |\n",
-
-      "| 80    | mul                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |\n",
+      "| 77    | mul                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |\n",
 
       "|       |                              | 7 (int8)          |                 |                                                      |\n",
 
-      "| 81    | sub                          | 7 (int8)          | 7 (int8)        | Type=suboptions                                      |\n",
+      "| 78    | mul                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |\n",
 
       "|       |                              | 7 (int8)          |                 |                                                      |\n",
 
-      "| 82    | add                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |\n",
+      "| 79    | sub                          | 7 (int8)          | 7 (int8)        | Type=suboptions                                      |\n",
 
       "|       |                              | 7 (int8)          |                 |                                                      |\n",
 
-      "| 83    | transpose                    | 40x1x7 (int8)     | 7x40x1 (int8)   | Type=none                                            |\n",
+      "| 80    | add                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |\n",
+
+      "|       |                              | 7 (int8)          |                 |                                                      |\n",
+
+      "| 81    | transpose                    | 40x1x7 (int8)     | 7x40x1 (int8)   | Type=none                                            |\n",
 
       "|       |                              | 4 (int32)         |                 |                                                      |\n",
 
-      "| 84    | reshape                      | 7x40x1 (int8)     | 7x40 (int8)     | Type=none                                            |\n",
+      "| 82    | reshape                      | 7x40x1 (int8)     | 7x40 (int8)     | Type=none                                            |\n",
 
       "|       |                              | 3 (int32)         |                 |                                                      |\n",
 
-      "| 85    | mul                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |\n",
+      "| 83    | mul                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |\n",
 
       "|       |                              | 40 (int8)         |                 |                                                      |\n",
 
-      "| 86    | add                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |\n",
+      "| 84    | add                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |\n",
 
       "|       |                              | 40 (int8)         |                 |                                                      |\n",
 
-      "| 87    | unidirectional_sequence_lstm | 7x40 (int8)       | 7x40 (int8)     | Time major:False, Activation:Tanh, Cell clip:10.0    |\n",
+      "| 85    | unidirectional_sequence_lstm | 7x40 (int8)       | 7x40 (int8)     | Time major:False, Activation:Tanh, Cell clip:10.0    |\n",
 
       "|       |                              | 40 (int8)         |                 |                                                      |\n",
 
@@ -816,137 +834,131 @@
 
       "|       |                              | 40 (int16)        |                 |                                                      |\n",
 
-      "| 88    | strided_slice                | 7x40 (int8)       | 40 (int8)       | Type=stridedsliceoptions                             |\n",
-
-      "|       |                              | 3 (int32)         |                 |                                                      |\n",
-
-      "|       |                              | 3 (int32)         |                 |                                                      |\n",
-
-      "|       |                              | 3 (int32)         |                 |                                                      |\n",
-
-      "| 89    | reshape                      | 40 (int8)         | 40x1x1 (int8)   | Type=none                                            |\n",
+      "| 86    | reshape                      | 7x40 (int8)       | 7x40x1 (int8)   | Type=none                                            |\n",
 
       "|       |                              | 4 (int32)         |                 |                                                      |\n",
 
-      "| 90    | mean                         | 40x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |\n",
+      "| 87    | transpose                    | 7x40x1 (int8)     | 40x1x7 (int8)   | Type=none                                            |\n",
+
+      "|       |                              | 4 (int32)         |                 |                                                      |\n",
+
+      "| 88    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |\n",
 
       "|       |                              | 3 (int32)         |                 |                                                      |\n",
 
-      "| 91    | squared_difference           | 40x1x1 (int8)     | 40x1x1 (int8)   | Type=none                                            |\n",
+      "| 89    | squared_difference           | 40x1x7 (int8)     | 40x1x7 (int8)   | Type=none                                            |\n",
 
-      "|       |                              | 1 (int8)          |                 |                                                      |\n",
+      "|       |                              | 7 (int8)          |                 |                                                      |\n",
 
-      "| 92    | mean                         | 40x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |\n",
+      "| 90    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |\n",
 
       "|       |                              | 3 (int32)         |                 |                                                      |\n",
 
-      "| 93    | add                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |\n",
+      "| 91    | add                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |\n",
 
       "|       |                              |  (int8)           |                 |                                                      |\n",
 
-      "| 94    | rsqrt                        | 1 (int8)          | 1 (int8)        | Type=none                                            |\n",
+      "| 92    | rsqrt                        | 7 (int8)          | 7 (int8)        | Type=none                                            |\n",
 
-      "| 95    | mul                          | 40x1x1 (int8)     | 40x1x1 (int8)   | Activation:None                                      |\n",
+      "| 93    | mul                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |\n",
 
-      "|       |                              | 1 (int8)          |                 |                                                      |\n",
+      "|       |                              | 7 (int8)          |                 |                                                      |\n",
 
-      "| 96    | mul                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |\n",
+      "| 94    | mul                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |\n",
 
-      "|       |                              | 1 (int8)          |                 |                                                      |\n",
+      "|       |                              | 7 (int8)          |                 |                                                      |\n",
 
-      "| 97    | sub                          | 1 (int8)          | 1 (int8)        | Type=suboptions                                      |\n",
+      "| 95    | sub                          | 7 (int8)          | 7 (int8)        | Type=suboptions                                      |\n",
 
-      "|       |                              | 1 (int8)          |                 |                                                      |\n",
+      "|       |                              | 7 (int8)          |                 |                                                      |\n",
 
-      "| 98    | add                          | 40x1x1 (int8)     | 40x1x1 (int8)   | Activation:None                                      |\n",
+      "| 96    | add                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |\n",
 
-      "|       |                              | 1 (int8)          |                 |                                                      |\n",
+      "|       |                              | 7 (int8)          |                 |                                                      |\n",
 
-      "| 99    | reshape                      | 40x1x1 (int8)     | 1x40 (int8)     | Type=none                                            |\n",
+      "| 97    | transpose                    | 40x1x7 (int8)     | 7x40x1 (int8)   | Type=none                                            |\n",
+
+      "|       |                              | 4 (int32)         |                 |                                                      |\n",
+
+      "| 98    | reshape                      | 7x40x1 (int8)     | 7x40 (int8)     | Type=none                                            |\n",
 
       "|       |                              | 3 (int32)         |                 |                                                      |\n",
 
-      "| 100   | mul                          | 1x40 (int8)       | 1x40 (int8)     | Activation:None                                      |\n",
+      "| 99    | mul                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |\n",
 
       "|       |                              | 40 (int8)         |                 |                                                      |\n",
 
-      "| 101   | add                          | 1x40 (int8)       | 1x40 (int8)     | Activation:None                                      |\n",
+      "| 100   | add                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |\n",
 
       "|       |                              | 40 (int8)         |                 |                                                      |\n",
 
-      "| 102   | concatenation                | 1x40 (int8)       | 2x40 (int8)     | Type=concatenationoptions                            |\n",
+      "| 101   | strided_slice                | 7x40 (int8)       | 40 (int8)       | Type=stridedsliceoptions                             |\n",
 
-      "|       |                              | 1x40 (int8)       |                 |                                                      |\n",
+      "|       |                              | 3 (int32)         |                 |                                                      |\n",
 
-      "| 103   | fully_connected              | 2x40 (int8)       | 2x40 (int8)     | Activation:Relu                                      |\n",
+      "|       |                              | 3 (int32)         |                 |                                                      |\n",
+
+      "|       |                              | 3 (int32)         |                 |                                                      |\n",
+
+      "| 102   | fully_connected              | 40 (int8)         | 11 (int8)       | Activation:None                                      |\n",
 
       "|       |                              | 40 (int8)         |                 |                                                      |\n",
-
-      "|       |                              | 40 (int32)        |                 |                                                      |\n",
-
-      "| 104   | reshape                      | 2x40 (int8)       | 80 (int8)       | Type=none                                            |\n",
-
-      "|       |                              | 2 (int32)         |                 |                                                      |\n",
-
-      "| 105   | fully_connected              | 80 (int8)         | 11 (int8)       | Activation:None                                      |\n",
-
-      "|       |                              | 80 (int8)         |                 |                                                      |\n",
 
       "|       |                              | 11 (int32)        |                 |                                                      |\n",
 
-      "| 106   | reshape                      | 11 (int8)         | 11x1x1 (int8)   | Type=none                                            |\n",
+      "| 103   | reshape                      | 11 (int8)         | 11x1x1 (int8)   | Type=none                                            |\n",
 
       "|       |                              | 4 (int32)         |                 |                                                      |\n",
 
-      "| 107   | mean                         | 11x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |\n",
+      "| 104   | mean                         | 11x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |\n",
 
       "|       |                              | 3 (int32)         |                 |                                                      |\n",
 
-      "| 108   | squared_difference           | 11x1x1 (int8)     | 11x1x1 (int8)   | Type=none                                            |\n",
+      "| 105   | squared_difference           | 11x1x1 (int8)     | 11x1x1 (int8)   | Type=none                                            |\n",
 
       "|       |                              | 1 (int8)          |                 |                                                      |\n",
 
-      "| 109   | mean                         | 11x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |\n",
+      "| 106   | mean                         | 11x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |\n",
 
       "|       |                              | 3 (int32)         |                 |                                                      |\n",
 
-      "| 110   | add                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |\n",
+      "| 107   | add                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |\n",
 
       "|       |                              |  (int8)           |                 |                                                      |\n",
 
-      "| 111   | rsqrt                        | 1 (int8)          | 1 (int8)        | Type=none                                            |\n",
+      "| 108   | rsqrt                        | 1 (int8)          | 1 (int8)        | Type=none                                            |\n",
 
-      "| 112   | mul                          | 11x1x1 (int8)     | 11x1x1 (int8)   | Activation:None                                      |\n",
-
-      "|       |                              | 1 (int8)          |                 |                                                      |\n",
-
-      "| 113   | mul                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |\n",
+      "| 109   | mul                          | 11x1x1 (int8)     | 11x1x1 (int8)   | Activation:None                                      |\n",
 
       "|       |                              | 1 (int8)          |                 |                                                      |\n",
 
-      "| 114   | sub                          | 1 (int8)          | 1 (int8)        | Type=suboptions                                      |\n",
+      "| 110   | mul                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |\n",
 
       "|       |                              | 1 (int8)          |                 |                                                      |\n",
 
-      "| 115   | add                          | 11x1x1 (int8)     | 11x1x1 (int8)   | Activation:None                                      |\n",
+      "| 111   | sub                          | 1 (int8)          | 1 (int8)        | Type=suboptions                                      |\n",
 
       "|       |                              | 1 (int8)          |                 |                                                      |\n",
 
-      "| 116   | reshape                      | 11x1x1 (int8)     | 11 (int8)       | Type=none                                            |\n",
+      "| 112   | add                          | 11x1x1 (int8)     | 11x1x1 (int8)   | Activation:None                                      |\n",
+
+      "|       |                              | 1 (int8)          |                 |                                                      |\n",
+
+      "| 113   | reshape                      | 11x1x1 (int8)     | 11 (int8)       | Type=none                                            |\n",
 
       "|       |                              | 2 (int32)         |                 |                                                      |\n",
 
-      "| 117   | mul                          | 11 (int8)         | 11 (int8)       | Activation:None                                      |\n",
+      "| 114   | mul                          | 11 (int8)         | 11 (int8)       | Activation:None                                      |\n",
 
       "|       |                              | 11 (int8)         |                 |                                                      |\n",
 
-      "| 118   | add                          | 11 (int8)         | 11 (int8)       | Activation:None                                      |\n",
+      "| 115   | add                          | 11 (int8)         | 11 (int8)       | Activation:None                                      |\n",
 
       "|       |                              | 11 (int8)         |                 |                                                      |\n",
 
-      "| 119   | softmax                      | 11 (int8)         | 11 (int8)       | Type=softmaxoptions                                  |\n",
+      "| 116   | softmax                      | 11 (int8)         | 11 (int8)       | Type=softmaxoptions                                  |\n",
 
-      "| 120   | dequantize                   | 11 (int8)         | 11 (float32)    | Type=none                                            |\n",
+      "| 117   | dequantize                   | 11 (int8)         | 11 (float32)    | Type=none                                            |\n",
 
       "+-------+------------------------------+-------------------+-----------------+------------------------------------------------------+\n"
 
@@ -958,11 +970,9 @@
 
    "source": [
 
-    "\n",
-
     "# Get the file path to the .tflite in the keyword_spotting_numbers.mltk.zip model archive\n",
 
-    "tflite_path = mltk_model.get_archive_file('keyword_spotting_numbers.tflite')\n",
+    "tflite_path = mltk_model.tflite_archive_path\n",
 
     "print(f'.tflite path: {tflite_path}')\n",
 
@@ -1008,7 +1018,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 6,
+   "execution_count": 13,
 
    "metadata": {},
 
@@ -1048,7 +1058,7 @@
 
       "             '_unknown_'],\n",
 
-      " 'date': '2023-07-18T17:50:46.438Z',\n",
+      " 'date': '2023-08-03T01:11:43.378Z',\n",
 
       " 'detection_threshold': 242,\n",
 
@@ -1108,7 +1118,7 @@
 
       " 'fe.window_step_ms': 10,\n",
 
-      " 'hash': 'fb177254686232d6bb8e89d2b721ed00',\n",
+      " 'hash': '4b22adb625a3300fdcf06fa61105782f',\n",
 
       " 'latency_ms': 10,\n",
 
@@ -1116,7 +1126,7 @@
 
       " 'name': 'keyword_spotting_numbers',\n",
 
-      " 'runtime_memory_size': 80940,\n",
+      " 'runtime_memory_size': 80500,\n",
 
       " 'samplewise_norm.mean_and_std': True,\n",
 
@@ -1124,7 +1134,7 @@
 
       " 'verbose_model_output_logs': False,\n",
 
-      " 'version': 2,\n",
+      " 'version': 1,\n",
 
       " 'volume_gain': 0.0}\n",
 
@@ -1254,7 +1264,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 7,
+   "execution_count": 14,
 
    "metadata": {},
 
@@ -1338,7 +1348,7 @@
 
    "cell_type": "code",
 
-   "execution_count": 9,
+   "execution_count": 15,
 
    "metadata": {},
 
@@ -1356,19 +1366,19 @@
 
       "Name: keyword_spotting_numbers\n",
 
-      "Version: 2\n",
+      "Version: 1\n",
 
-      "Date: 2023-07-18T17:50:46.438Z\n",
+      "Date: 2023-08-03T01:11:43.378Z\n",
 
       "Description: \n",
 
-      "Hash: fb177254686232d6bb8e89d2b721ed00\n",
+      "Hash: 4b22adb625a3300fdcf06fa61105782f\n",
 
       "Accelerator: none\n",
 
       "Classes: zero, one, two, three, four, five, six, seven, eight, nine, _unknown_\n",
 
-      "Total runtime memory: 73.432 kBytes\n",
+      "Total runtime memory: 73.192 kBytes\n",
 
       "\n",
 
@@ -1476,7 +1486,7 @@
 
    "pygments_lexer": "ipython3",
 
-   "version": "3.10.8"
+   "version": "3.8.10"
 
   },
 

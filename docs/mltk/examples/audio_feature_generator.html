@@ -595,6 +595,7 @@
 <span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
 <span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">load_mltk_model</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">,</span> <span class="n">TfliteModelParameters</span>
 <span class="kn">from</span> <span class="nn">mltk.core.tflite_micro</span> <span class="kn">import</span> <span class="n">TfliteMicro</span>
+<span class="kn">from</span> <span class="nn">mltk.utils.archive_downloader</span> <span class="kn">import</span> <span class="n">download_url</span>
 </pre></div>
 </div>
 </div>
@@ -637,8 +638,15 @@ Sample length: 0.7s, rate: 16.0kHz
 <p>Next, we load the MLTK model. We also print a list of the “classes” supported by the model with their corresponding list indices.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the MLTK model</span>
-<span class="n">mltk_model</span> <span class="o">=</span> <span class="n">load_mltk_model</span><span class="p">(</span><span class="s1">'keyword_spotting_numbers'</span><span class="p">)</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download the "keyword_spotting_numbers" model archive from github</span>
+<span class="n">mltk_model_archive_path</span> <span class="o">=</span> <span class="n">download_url</span><span class="p">(</span>
+    <span class="n">url</span><span class="o">=</span><span class="s1">'https://github.com/SiliconLabs/mltk/raw/master/mltk/models/siliconlabs/keyword_spotting_numbers.mltk.zip'</span><span class="p">,</span> 
+    <span class="n">dst_path</span><span class="o">=</span><span class="s1">'keyword_spotting_numbers.mltk.zip'</span><span class="p">,</span> 
+    <span class="n">show_progress</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+
+<span class="c1"># Load the MLTK model</span>
+<span class="n">mltk_model</span> <span class="o">=</span> <span class="n">load_mltk_model</span><span class="p">(</span><span class="n">mltk_model_archive_path</span><span class="p">)</span>
 
 <span class="c1"># Retrieve the classes used by the model</span>
 <span class="n">classes</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">classes</span>
@@ -651,7 +659,11 @@ Sample length: 0.7s, rate: 16.0kHz
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Model: keyword_spotting_numbers classifies 11 classes with the following mapping:
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Downloading https://github.com/SiliconLabs/mltk/raw/master/mltk/models/siliconlabs/keyword_spotting_numbers.mltk.zip
+to c:/Users/dried/silabs/github_siliconlabs/mltk/mltk/examples/keyword_spotting_numbers.mltk.zip
+(This may take awhile, please be patient ...)
+Extracting keyword_spotting_numbers.py from C:/Users/dried/silabs/github_siliconlabs/mltk/mltk/examples/keyword_spotting_numbers.mltk.zip                     
+Model: keyword_spotting_numbers classifies 11 classes with the following mapping:
  0 -&gt; zero
  1 -&gt; one
  2 -&gt; two
@@ -674,7 +686,7 @@ Sample length: 0.7s, rate: 16.0kHz
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the file path to the .tflite in the keyword_spotting_numbers.mltk.zip model archive</span>
-<span class="n">tflite_path</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">get_archive_file</span><span class="p">(</span><span class="s1">'keyword_spotting_numbers.tflite'</span><span class="p">)</span>
+<span class="n">tflite_path</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">tflite_archive_path</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'.tflite path: </span><span class="si">{</span><span class="n">tflite_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
 
 <span class="c1"># Load the .tflite file into a TfliteModel instance</span>
@@ -882,39 +894,36 @@ Sample length: 0.7s, rate: 16.0kHz
 |       |                              | 40 (int32)        |                 |                                                      |
 | 69    | add                          | 7x1x40 (int8)     | 7x1x40 (int8)   | Activation:Relu                                      |
 |       |                              | 7x1x40 (int8)     |                 |                                                      |
-| 70    | average_pool_2d              | 7x1x40 (int8)     | 1x1x40 (int8)   | Padding:Valid stride:1x7 filter:1x7 activation:None  |
-| 71    | reshape                      | 1x1x40 (int8)     | 1x40 (int8)     | Type=none                                            |
+| 70    | reshape                      | 7x1x40 (int8)     | 7x40x1 (int8)   | Type=none                                            |
+|       |                              | 4 (int32)         |                 |                                                      |
+| 71    | transpose                    | 7x40x1 (int8)     | 40x1x7 (int8)   | Type=none                                            |
+|       |                              | 4 (int32)         |                 |                                                      |
+| 72    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |
 |       |                              | 3 (int32)         |                 |                                                      |
-| 72    | reshape                      | 7x1x40 (int8)     | 7x40x1 (int8)   | Type=none                                            |
-|       |                              | 4 (int32)         |                 |                                                      |
-| 73    | transpose                    | 7x40x1 (int8)     | 40x1x7 (int8)   | Type=none                                            |
-|       |                              | 4 (int32)         |                 |                                                      |
+| 73    | squared_difference           | 40x1x7 (int8)     | 40x1x7 (int8)   | Type=none                                            |
+|       |                              | 7 (int8)          |                 |                                                      |
 | 74    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |
 |       |                              | 3 (int32)         |                 |                                                      |
-| 75    | squared_difference           | 40x1x7 (int8)     | 40x1x7 (int8)   | Type=none                                            |
-|       |                              | 7 (int8)          |                 |                                                      |
-| 76    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |
-|       |                              | 3 (int32)         |                 |                                                      |
-| 77    | add                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |
+| 75    | add                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |
 |       |                              |  (int8)           |                 |                                                      |
-| 78    | rsqrt                        | 7 (int8)          | 7 (int8)        | Type=none                                            |
-| 79    | mul                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |
+| 76    | rsqrt                        | 7 (int8)          | 7 (int8)        | Type=none                                            |
+| 77    | mul                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |
 |       |                              | 7 (int8)          |                 |                                                      |
-| 80    | mul                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |
+| 78    | mul                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |
 |       |                              | 7 (int8)          |                 |                                                      |
-| 81    | sub                          | 7 (int8)          | 7 (int8)        | Type=suboptions                                      |
+| 79    | sub                          | 7 (int8)          | 7 (int8)        | Type=suboptions                                      |
 |       |                              | 7 (int8)          |                 |                                                      |
-| 82    | add                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |
+| 80    | add                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |
 |       |                              | 7 (int8)          |                 |                                                      |
-| 83    | transpose                    | 40x1x7 (int8)     | 7x40x1 (int8)   | Type=none                                            |
+| 81    | transpose                    | 40x1x7 (int8)     | 7x40x1 (int8)   | Type=none                                            |
 |       |                              | 4 (int32)         |                 |                                                      |
-| 84    | reshape                      | 7x40x1 (int8)     | 7x40 (int8)     | Type=none                                            |
+| 82    | reshape                      | 7x40x1 (int8)     | 7x40 (int8)     | Type=none                                            |
 |       |                              | 3 (int32)         |                 |                                                      |
-| 85    | mul                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |
+| 83    | mul                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |
 |       |                              | 40 (int8)         |                 |                                                      |
-| 86    | add                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |
+| 84    | add                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |
 |       |                              | 40 (int8)         |                 |                                                      |
-| 87    | unidirectional_sequence_lstm | 7x40 (int8)       | 7x40 (int8)     | Time major:False, Activation:Tanh, Cell clip:10.0    |
+| 85    | unidirectional_sequence_lstm | 7x40 (int8)       | 7x40 (int8)     | Time major:False, Activation:Tanh, Cell clip:10.0    |
 |       |                              | 40 (int8)         |                 |                                                      |
 |       |                              | 40 (int8)         |                 |                                                      |
 |       |                              | 40 (int8)         |                 |                                                      |
@@ -929,72 +938,69 @@ Sample length: 0.7s, rate: 16.0kHz
 |       |                              | 40 (int32)        |                 |                                                      |
 |       |                              | 40 (int8)         |                 |                                                      |
 |       |                              | 40 (int16)        |                 |                                                      |
-| 88    | strided_slice                | 7x40 (int8)       | 40 (int8)       | Type=stridedsliceoptions                             |
-|       |                              | 3 (int32)         |                 |                                                      |
-|       |                              | 3 (int32)         |                 |                                                      |
-|       |                              | 3 (int32)         |                 |                                                      |
-| 89    | reshape                      | 40 (int8)         | 40x1x1 (int8)   | Type=none                                            |
+| 86    | reshape                      | 7x40 (int8)       | 7x40x1 (int8)   | Type=none                                            |
 |       |                              | 4 (int32)         |                 |                                                      |
-| 90    | mean                         | 40x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |
+| 87    | transpose                    | 7x40x1 (int8)     | 40x1x7 (int8)   | Type=none                                            |
+|       |                              | 4 (int32)         |                 |                                                      |
+| 88    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |
 |       |                              | 3 (int32)         |                 |                                                      |
-| 91    | squared_difference           | 40x1x1 (int8)     | 40x1x1 (int8)   | Type=none                                            |
-|       |                              | 1 (int8)          |                 |                                                      |
-| 92    | mean                         | 40x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |
+| 89    | squared_difference           | 40x1x7 (int8)     | 40x1x7 (int8)   | Type=none                                            |
+|       |                              | 7 (int8)          |                 |                                                      |
+| 90    | mean                         | 40x1x7 (int8)     | 7 (int8)        | Type=reduceroptions                                  |
 |       |                              | 3 (int32)         |                 |                                                      |
-| 93    | add                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |
+| 91    | add                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |
 |       |                              |  (int8)           |                 |                                                      |
-| 94    | rsqrt                        | 1 (int8)          | 1 (int8)        | Type=none                                            |
-| 95    | mul                          | 40x1x1 (int8)     | 40x1x1 (int8)   | Activation:None                                      |
-|       |                              | 1 (int8)          |                 |                                                      |
-| 96    | mul                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |
-|       |                              | 1 (int8)          |                 |                                                      |
-| 97    | sub                          | 1 (int8)          | 1 (int8)        | Type=suboptions                                      |
-|       |                              | 1 (int8)          |                 |                                                      |
-| 98    | add                          | 40x1x1 (int8)     | 40x1x1 (int8)   | Activation:None                                      |
-|       |                              | 1 (int8)          |                 |                                                      |
-| 99    | reshape                      | 40x1x1 (int8)     | 1x40 (int8)     | Type=none                                            |
+| 92    | rsqrt                        | 7 (int8)          | 7 (int8)        | Type=none                                            |
+| 93    | mul                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |
+|       |                              | 7 (int8)          |                 |                                                      |
+| 94    | mul                          | 7 (int8)          | 7 (int8)        | Activation:None                                      |
+|       |                              | 7 (int8)          |                 |                                                      |
+| 95    | sub                          | 7 (int8)          | 7 (int8)        | Type=suboptions                                      |
+|       |                              | 7 (int8)          |                 |                                                      |
+| 96    | add                          | 40x1x7 (int8)     | 40x1x7 (int8)   | Activation:None                                      |
+|       |                              | 7 (int8)          |                 |                                                      |
+| 97    | transpose                    | 40x1x7 (int8)     | 7x40x1 (int8)   | Type=none                                            |
+|       |                              | 4 (int32)         |                 |                                                      |
+| 98    | reshape                      | 7x40x1 (int8)     | 7x40 (int8)     | Type=none                                            |
 |       |                              | 3 (int32)         |                 |                                                      |
-| 100   | mul                          | 1x40 (int8)       | 1x40 (int8)     | Activation:None                                      |
+| 99    | mul                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |
 |       |                              | 40 (int8)         |                 |                                                      |
-| 101   | add                          | 1x40 (int8)       | 1x40 (int8)     | Activation:None                                      |
+| 100   | add                          | 7x40 (int8)       | 7x40 (int8)     | Activation:None                                      |
 |       |                              | 40 (int8)         |                 |                                                      |
-| 102   | concatenation                | 1x40 (int8)       | 2x40 (int8)     | Type=concatenationoptions                            |
-|       |                              | 1x40 (int8)       |                 |                                                      |
-| 103   | fully_connected              | 2x40 (int8)       | 2x40 (int8)     | Activation:Relu                                      |
+| 101   | strided_slice                | 7x40 (int8)       | 40 (int8)       | Type=stridedsliceoptions                             |
+|       |                              | 3 (int32)         |                 |                                                      |
+|       |                              | 3 (int32)         |                 |                                                      |
+|       |                              | 3 (int32)         |                 |                                                      |
+| 102   | fully_connected              | 40 (int8)         | 11 (int8)       | Activation:None                                      |
 |       |                              | 40 (int8)         |                 |                                                      |
-|       |                              | 40 (int32)        |                 |                                                      |
-| 104   | reshape                      | 2x40 (int8)       | 80 (int8)       | Type=none                                            |
-|       |                              | 2 (int32)         |                 |                                                      |
-| 105   | fully_connected              | 80 (int8)         | 11 (int8)       | Activation:None                                      |
-|       |                              | 80 (int8)         |                 |                                                      |
 |       |                              | 11 (int32)        |                 |                                                      |
-| 106   | reshape                      | 11 (int8)         | 11x1x1 (int8)   | Type=none                                            |
+| 103   | reshape                      | 11 (int8)         | 11x1x1 (int8)   | Type=none                                            |
 |       |                              | 4 (int32)         |                 |                                                      |
-| 107   | mean                         | 11x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |
+| 104   | mean                         | 11x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |
 |       |                              | 3 (int32)         |                 |                                                      |
-| 108   | squared_difference           | 11x1x1 (int8)     | 11x1x1 (int8)   | Type=none                                            |
+| 105   | squared_difference           | 11x1x1 (int8)     | 11x1x1 (int8)   | Type=none                                            |
 |       |                              | 1 (int8)          |                 |                                                      |
-| 109   | mean                         | 11x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |
+| 106   | mean                         | 11x1x1 (int8)     | 1 (int8)        | Type=reduceroptions                                  |
 |       |                              | 3 (int32)         |                 |                                                      |
-| 110   | add                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |
+| 107   | add                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |
 |       |                              |  (int8)           |                 |                                                      |
-| 111   | rsqrt                        | 1 (int8)          | 1 (int8)        | Type=none                                            |
-| 112   | mul                          | 11x1x1 (int8)     | 11x1x1 (int8)   | Activation:None                                      |
+| 108   | rsqrt                        | 1 (int8)          | 1 (int8)        | Type=none                                            |
+| 109   | mul                          | 11x1x1 (int8)     | 11x1x1 (int8)   | Activation:None                                      |
 |       |                              | 1 (int8)          |                 |                                                      |
-| 113   | mul                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |
+| 110   | mul                          | 1 (int8)          | 1 (int8)        | Activation:None                                      |
 |       |                              | 1 (int8)          |                 |                                                      |
-| 114   | sub                          | 1 (int8)          | 1 (int8)        | Type=suboptions                                      |
+| 111   | sub                          | 1 (int8)          | 1 (int8)        | Type=suboptions                                      |
 |       |                              | 1 (int8)          |                 |                                                      |
-| 115   | add                          | 11x1x1 (int8)     | 11x1x1 (int8)   | Activation:None                                      |
+| 112   | add                          | 11x1x1 (int8)     | 11x1x1 (int8)   | Activation:None                                      |
 |       |                              | 1 (int8)          |                 |                                                      |
-| 116   | reshape                      | 11x1x1 (int8)     | 11 (int8)       | Type=none                                            |
+| 113   | reshape                      | 11x1x1 (int8)     | 11 (int8)       | Type=none                                            |
 |       |                              | 2 (int32)         |                 |                                                      |
-| 117   | mul                          | 11 (int8)         | 11 (int8)       | Activation:None                                      |
+| 114   | mul                          | 11 (int8)         | 11 (int8)       | Activation:None                                      |
 |       |                              | 11 (int8)         |                 |                                                      |
-| 118   | add                          | 11 (int8)         | 11 (int8)       | Activation:None                                      |
+| 115   | add                          | 11 (int8)         | 11 (int8)       | Activation:None                                      |
 |       |                              | 11 (int8)         |                 |                                                      |
-| 119   | softmax                      | 11 (int8)         | 11 (int8)       | Type=softmaxoptions                                  |
-| 120   | dequantize                   | 11 (int8)         | 11 (float32)    | Type=none                                            |
+| 116   | softmax                      | 11 (int8)         | 11 (int8)       | Type=softmaxoptions                                  |
+| 117   | dequantize                   | 11 (int8)         | 11 (float32)    | Type=none                                            |
 +-------+------------------------------+-------------------+-----------------+------------------------------------------------------+
 </pre></div>
 </div>
@@ -1064,7 +1070,7 @@ Sample length: 0.7s, rate: 16.0kHz
              'eight',
              'nine',
              '_unknown_'],
- 'date': '2023-07-18T17:50:46.438Z',
+ 'date': '2023-08-03T01:11:43.378Z',
  'detection_threshold': 242,
  'fe.activity_detection_alpha_a': 0.5,
  'fe.activity_detection_alpha_b': 0.800000011920929,
@@ -1094,15 +1100,15 @@ Sample length: 0.7s, rate: 16.0kHz
  'fe.sample_rate_hz': 16000,
  'fe.window_size_ms': 30,
  'fe.window_step_ms': 10,
- 'hash': 'fb177254686232d6bb8e89d2b721ed00',
+ 'hash': '4b22adb625a3300fdcf06fa61105782f',
  'latency_ms': 10,
  'minimum_count': 2,
  'name': 'keyword_spotting_numbers',
- 'runtime_memory_size': 80940,
+ 'runtime_memory_size': 80500,
  'samplewise_norm.mean_and_std': True,
  'suppression_ms': 700,
  'verbose_model_output_logs': False,
- 'version': 2,
+ 'version': 1,
  'volume_gain': 0.0}
 Generated spectrogram shape: 98x40 (uint16)
 Normalized spectrogram shape: 98x40 (float32)
@@ -1180,13 +1186,13 @@ belongs to the class: "seven" with a confidence of 99.6%
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Tensorflow-Lite Micro model details:
 Name: keyword_spotting_numbers
-Version: 2
-Date: 2023-07-18T17:50:46.438Z
+Version: 1
+Date: 2023-08-03T01:11:43.378Z
 Description: 
-Hash: fb177254686232d6bb8e89d2b721ed00
+Hash: 4b22adb625a3300fdcf06fa61105782f
 Accelerator: none
 Classes: zero, one, two, three, four, five, six, seven, eight, nine, _unknown_
-Total runtime memory: 73.432 kBytes
+Total runtime memory: 73.192 kBytes
 
 Raw classification results: [0.         0.         0.         0.         0.         0.
  0.         0.99609375 0.         0.         0.        ]
