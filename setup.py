@@ -133,12 +133,14 @@ except:
 
 
 additional_install_dependencies = []
+tflite_support_version = ''
 
 # If we're running Python3.7 then we also need to install pickle5
 if python_version == '37':
     print('Adding pickle5 to install dependencies')
     additional_install_dependencies.append('pickle5')
     additional_install_dependencies.append('gast<=0.4.0')  # The MLTK does NOT have a dependency on this, but tensorflow does
+    tflite_support_version = '==0.4.1' # This version uses flatbuffers 1.12
 # Other ensure pickle5 is NOT installed as that will break other dependencies
 else:
     print('Uninstalling pickle5 (if necessary)')
@@ -164,10 +166,12 @@ install_dependencies = [
     'pyaml<22.0',
     'tensorflow>=2.3,<3.0',
     'tensorflow_probability>=0.12.2',
-    'tflite-support',
+    f'tflite-support{tflite_support_version}',
     'protobuf>=3.18,<4.0', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
     f'onnx{onnx_version}',
     'onnxruntime',
+    #'flatbuffers<2.0', # This is required by TF
+    #'numpy<1.23', # Numba, which is installed by TF, has a requirement of < 1.23
     'scipy<2.0',
     'matplotlib<4.0',
     'tqdm<5.0',
