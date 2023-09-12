@@ -1,6 +1,9 @@
-
-# This app currently only supports embedded platforms
-if(NOT MLTK_PLATFORM_IS_EMBEDDED)
+set(IMAGE_CLASSIFIER_SUPPORTED_PLATFORMS brd2204 brd2601 brd4166 brd4186)
+if(NOT ${MLTK_PLATFORM_NAME} IN_LIST IMAGE_CLASSIFIER_SUPPORTED_PLATFORMS)
+    mltk_info(
+        "Image Classifier app NOT currently supported by platform: ${MLTK_PLATFORM_NAME}"
+        TAG mltk_image_classifier
+    )
     return()
 endif()
 

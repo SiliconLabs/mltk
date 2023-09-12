@@ -3,12 +3,12 @@ import sys
 import stat
 import re
 import multiprocessing
-import pytest 
+import pytest
 import warnings
 
 from mltk import MLTK_ROOT_DIR
 from mltk.utils.test_helper import get_logger, run_mltk_command
-from mltk.utils.shell_cmd import run_shell_cmd 
+from mltk.utils.shell_cmd import run_shell_cmd
 from mltk.utils.archive_downloader import download_verify_extract
 from mltk.utils.path import create_tempdir, clean_directory, recursive_listdir, get_user_setting
 from mltk.utils.python import import_module_at_path
@@ -50,11 +50,12 @@ else:
 
 build_params = []
 
-ALL_BOARDS = [ 
+ALL_BOARDS = [
     'brd2601b',
     'brd2204a',
     'brd4166a',
-    'brd4001a,brd4186c'
+    'brd4001a,brd4186c',
+    'brd4001a,brd4401c'
 ]
 
 
@@ -69,8 +70,8 @@ _add_build_params('hello_world', ALL_BOARDS)
 _add_build_params('model_profiler', ALL_BOARDS)
 _add_build_params('audio_classifier', ['brd2601b', 'brd2204a', 'brd4166a'])
 _add_build_params('ble_audio_classifier', ['brd2601b'])
-_add_build_params('image_classifier', ALL_BOARDS)
-_add_build_params('fingerprint_authenticator', ALL_BOARDS)
+_add_build_params('image_classifier', ['brd2601b', 'brd2204a', 'brd4166a', 'brd4001a,brd4186c'])
+_add_build_params('fingerprint_authenticator', ['brd2601b', 'brd2204a', 'brd4166a', 'brd4001a,brd4186c'])
 
 
 
@@ -80,7 +81,7 @@ generate_slcp_logger = get_logger('simplicity_studio_tests', console=False)
 gsdk_dir = None
 slc_cli = None
 gcc_dir = None
-jre_bin_dir = None 
+jre_bin_dir = None
 
 
 @pytest.mark.dependency()
@@ -119,9 +120,9 @@ def test_simplicity_studio_project(app_name, board):
     app_dir = f'{MLTK_ROOT_DIR}/cpp/shared/apps/{app_name}'
     build_dir = create_tempdir(f'utest/simplicity_studio/{app_name}-{board.replace(",", "_")}')
     clean_directory(build_dir)
-    
-    cmd = slc_cli + ['generate', 
-        '-s', gsdk_dir, 
+
+    cmd = slc_cli + ['generate',
+        '-s', gsdk_dir,
         '--require-clean-project',
         '--new-project',
         '--copy-sources',
@@ -160,7 +161,7 @@ def _get_slc_exe() -> str:
 
     url = WINDOWS_URL if os.name == 'nt' else LINUX_URL
 
-    slc_dir = download_verify_extract( 
+    slc_dir = download_verify_extract(
         url=url,
         dest_subdir='tools/slc_cli',
         remove_root_dir=True,
@@ -202,14 +203,14 @@ def _get_slc_exe() -> str:
 
 
 def _get_gsdk_dir() -> str:
-    """Get the path to the GSDK repo downloaded by the MLTK build scripts 
+    """Get the path to the GSDK repo downloaded by the MLTK build scripts
     """
     gsdk_mltk_dir = f'{MLTK_ROOT_DIR}/cpp/shared/gecko_sdk'
     cmakeliststxt_path = f'{gsdk_mltk_dir}/CMakeLists.txt'
 
     cache_version_re = re.compile(r'\s*CACHE_VERSION\s+([\w\.]+)\s*.*')
 
-    sdk_version = None 
+    sdk_version = None
     git_tag = None
     with open(cmakeliststxt_path, 'r') as f:
         for line in f:
@@ -217,7 +218,7 @@ def _get_gsdk_dir() -> str:
             if match:
                 sdk_version = match.group(1)
                 break
-        
+
     if not sdk_version:
         raise RuntimeError(f'Failed to parse {cmakeliststxt_path} for GSDK version')
 
@@ -239,8 +240,8 @@ def _get_java_bin_dir() -> str:
     def _is_java(p:str) -> bool:
         nonlocal found
         if not found and p.endswith(java_exe):
-            found = True 
-            return True 
+            found = True
+            return True
         return False
 
     if os.name == 'nt':

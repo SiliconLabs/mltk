@@ -14,8 +14,12 @@ except ModuleNotFoundError:
         try:
             from keras.utils.data_utils import Sequence
             DataSequence = Sequence
-        except:
-            DataSequence = object
+        except ModuleNotFoundError:
+            try:
+                from keras.utils import Sequence
+                DataSequence = Sequence
+            except ModuleNotFoundError:
+                DataSequence = object
 
 try:
     from keras_preprocessing.image import ImageDataGenerator

@@ -1,6 +1,10 @@
 
-# This app currently only supports embedded platforms
-if(NOT MLTK_PLATFORM_IS_EMBEDDED)
+set(FINGERPRINT_AUTHENTICATOR_SUPPORTED_PLATFORMS brd2204 brd2601 brd4166 brd4186)
+if(NOT ${MLTK_PLATFORM_NAME} IN_LIST FINGERPRINT_AUTHENTICATOR_SUPPORTED_PLATFORMS)
+    mltk_info(
+        "Fingerprint Authenticator app NOT currently supported by platform: ${MLTK_PLATFORM_NAME}"
+        TAG mltk_fingerprint_authenticator
+    )
     return()
 endif()
 

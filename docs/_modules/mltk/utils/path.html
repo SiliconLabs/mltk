@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.utils.path &#8212; MLTK 0.18.0 documentation</title>
+    <title>mltk.utils.path &#8212; MLTK 0.19.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.18.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.19.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.18.0 documentation logo">
+                   alt="MLTK 0.19.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.18.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.19.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.18.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.19.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -438,6 +438,7 @@
 <span class="kn">import</span> <span class="nn">tempfile</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">Tuple</span>
 
@@ -803,6 +804,27 @@
         <span class="n">num_sep_this</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">sep</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">num_sep</span> <span class="o">+</span> <span class="n">depth</span> <span class="o">&lt;=</span> <span class="n">num_sep_this</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">dirs</span><span class="p">[:]</span></div>
+
+
+
+<div class="viewcode-block" id="pushd"><a class="viewcode-back" href="../../../docs/python_api/utils/path.html#mltk.utils.path.pushd">[docs]</a><span class="nd">@contextlib</span><span class="o">.</span><span class="n">contextmanager</span>
+<span class="k">def</span> <span class="nf">pushd</span><span class="p">(</span><span class="n">new_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Change to the given directory, execute, and return to the previous directory</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    print(f'Old path: {os.getcwd()}')</span>
+<span class="sd">    with pushd('some/path')</span>
+<span class="sd">        print(f'New path: {os.getcwd()}')</span>
+<span class="sd">    print(f'Old path: {os.getcwd()}')</span>
+
+<span class="sd">    """</span>
+    <span class="n">old_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">new_dir</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">old_dir</span><span class="p">)</span></div>
 </pre></div>
 
           </article>
@@ -828,7 +850,7 @@
               
           </div>
             Last updated on
-              Aug 04, 2023.
+              Sep 12, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

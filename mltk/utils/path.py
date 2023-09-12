@@ -10,6 +10,7 @@ import shutil
 import tempfile
 import datetime
 import subprocess
+import contextlib
 from pathlib import Path
 from typing import Callable, List, Union, Iterator, Tuple
 
@@ -375,3 +376,24 @@ def walk_with_depth(
         num_sep_this = root.count(os.path.sep)
         if num_sep + depth <= num_sep_this:
             del dirs[:]
+
+
+
+@contextlib.contextmanager
+def pushd(new_dir:str):
+    """Change to the given directory, execute, and return to the previous directory
+
+    Example:
+
+    print(f'Old path: {os.getcwd()}')
+    with pushd('some/path')
+        print(f'New path: {os.getcwd()}')
+    print(f'Old path: {os.getcwd()}')
+
+    """
+    old_dir = os.getcwd()
+    os.chdir(new_dir)
+    try:
+        yield
+    finally:
+        os.chdir(old_dir)

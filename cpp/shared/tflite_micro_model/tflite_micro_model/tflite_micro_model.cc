@@ -12,7 +12,8 @@
 
 
 #ifdef __arm__
-#ifndef __HEAP_SIZE
+#if !defined(__HEAP_SIZE) || __HEAP_SIZE == 0
+#undef __HEAP_SIZE
 extern "C" uint32_t __heap_size;
 #define __HEAP_SIZE ((uint32_t)(&__heap_size))
 #endif // ifndef __HEAP_SIZE

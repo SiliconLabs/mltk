@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.tflite_model.tflite_tensor &#8212; MLTK 0.18.0 documentation</title>
+    <title>mltk.core.tflite_model.tflite_tensor &#8212; MLTK 0.19.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.18.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.19.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.18.0 documentation logo">
+                   alt="MLTK 0.19.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.18.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.19.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.18.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.19.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -464,11 +464,38 @@
             <span class="n">buffer</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">flatbuffer_model</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="n">fb_tensor</span><span class="o">.</span><span class="n">buffer</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">buffer</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">data_bytes</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">buffer</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="k">else</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">buffer</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">data_bytes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_bytes</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">flat_size</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+                <span class="k">if</span>  <span class="nb">hasattr</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="p">,</span> <span class="s1">'INT4'</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="o">.</span><span class="n">INT4</span><span class="p">:</span>
+                    <span class="c1"># NumPy does not support int4 so we have to expand to int8</span>
+                    <span class="c1"># See https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/kernels/internal/portable_tensor_utils.cc</span>
+                    <span class="c1"># UnpackDenseInt4IntoInt8()</span>
+                    <span class="n">n_elements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">flat_size</span>
+                    <span class="n">raw_data_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_elements</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+
+                    <span class="n">sign_bit_mask</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="mi">4</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="k">def</span> <span class="nf">sign_extend_4bits</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="p">(</span><span class="n">value</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">sign_bit_mask</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">-</span> <span class="p">(</span><span class="n">value</span> <span class="o">&amp;</span> <span class="n">sign_bit_mask</span><span class="p">)</span>
+
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_elements</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="n">data_bytes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+                        <span class="n">lower</span> <span class="o">=</span> <span class="n">sign_extend_4bits</span><span class="p">(</span><span class="n">v</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">)</span>
+                        <span class="n">upper</span> <span class="o">=</span> <span class="n">sign_extend_4bits</span><span class="p">((</span><span class="n">v</span> <span class="o">&amp;</span> <span class="mh">0xF0</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span>
+                        <span class="n">raw_data_array</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">lower</span>
+                        <span class="n">raw_data_array</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">upper</span>
+
+                    <span class="c1"># If the buffer size is odd, extract the final lower nibble.</span>
+                    <span class="k">if</span> <span class="n">n_elements</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">v</span> <span class="o">=</span> <span class="n">data_bytes</span><span class="p">[</span><span class="n">n_elements</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+                        <span class="n">lower</span> <span class="o">=</span> <span class="n">sign_extend_4bits</span><span class="p">((</span><span class="n">v</span> <span class="o">&amp;</span> <span class="mh">0xF0</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">4</span><span class="p">)</span>
+                        <span class="n">raw_data_array</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">lower</span>
+
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">a</span>
+                    <span class="n">raw_data_array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">data_bytes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">raw_data_array</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">flat_size</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">raw_data_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">raw_data_array</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_data'</span><span class="p">):</span>
             <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
@@ -541,7 +568,33 @@
 
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'_model'</span><span class="p">):</span>
             <span class="n">buffer</span> <span class="o">=</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">BufferT</span><span class="p">()</span>
-            <span class="n">buffer</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">tobytes</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+            <span class="n">data_bytes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">tobytes</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="p">,</span> <span class="s1">'INT4'</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="o">.</span><span class="n">INT4</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="c1"># NumPy does not support int4 so we have to pack the two int8 values into 1 byte</span>
+                <span class="c1"># See https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/kernels/internal/portable_tensor_utils.cc</span>
+
+                <span class="n">data_bytes_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data_bytes</span><span class="p">)</span>
+                <span class="n">packed_data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data_bytes_len</span><span class="o">//</span><span class="mi">2</span><span class="p">):</span>
+                    <span class="n">lower</span> <span class="o">=</span> <span class="n">data_bytes</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">0</span><span class="p">]</span>
+                    <span class="n">upper</span> <span class="o">=</span> <span class="n">data_bytes</span><span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="k">assert</span> <span class="n">lower</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">4</span>
+                    <span class="k">assert</span> <span class="n">upper</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">4</span>
+                    <span class="n">packed_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">lower</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">)</span> <span class="o">|</span> <span class="p">((</span><span class="n">upper</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span><span class="p">)</span>
+                    <span class="n">packed_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">packed_value</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">data_bytes_len</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">lower</span> <span class="o">=</span> <span class="n">data_bytes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">assert</span> <span class="n">lower</span><span class="o">.</span><span class="n">bit_length</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">4</span>
+                    <span class="n">packed_value</span> <span class="o">=</span> <span class="p">(</span><span class="n">lower</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">)</span>
+                    <span class="n">packed_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">packed_value</span><span class="p">)</span>
+
+                <span class="n">data_bytes</span> <span class="o">=</span> <span class="n">packed_data</span>
+
+            <span class="n">buffer</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">data_bytes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">flatbuffer_model</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">]</span> <span class="o">=</span> <span class="n">buffer</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">regenerate_flatbuffer</span><span class="p">()</span>
 
@@ -655,6 +708,9 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">int16</span>
     <span class="k">elif</span> <span class="n">tflite_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="o">.</span><span class="n">INT8</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="p">,</span> <span class="s1">'INT4'</span><span class="p">)</span> <span class="ow">and</span> <span class="n">tflite_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="o">.</span><span class="n">INT4</span><span class="p">:</span>
+        <span class="c1"># Numpy does not support 4-bit, so we have to use int8</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">int8</span>
     <span class="k">elif</span> <span class="n">tflite_type</span> <span class="o">==</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">TensorType</span><span class="o">.</span><span class="n">BOOL</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">bool8</span>
     <span class="k">else</span><span class="p">:</span>
@@ -706,7 +762,7 @@
               
           </div>
             Last updated on
-              Aug 04, 2023.
+              Sep 12, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

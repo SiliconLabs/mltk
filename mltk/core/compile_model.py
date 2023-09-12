@@ -1,5 +1,6 @@
 
 import os
+import logging
 from typing import Union
 
 
@@ -18,6 +19,7 @@ def compile_model(
     accelerator:str,
     output:str=None,
     update_archive:bool=None,
+    logger:logging.Logger=None,
     **kwargs,
 ) -> Union[str,TfliteModel]:
     """Compile the given quantized .tflite model for the specified accelerator
@@ -58,13 +60,16 @@ def compile_model(
 
     accelerator = TfliteMicro.normalize_accelerator_name(accelerator).lower()
 
-    logger = get_mltk_logger()
+    logger = logger or get_mltk_logger()
 
     tflm_accelerator = TfliteMicro.get_accelerator(accelerator)
     if not tflm_accelerator.supports_model_compilation:
         raise RuntimeError(f'Accelerator {accelerator} does not support compilation')
 
-    report_path = f'{tflite_model.path}.{accelerator}-compilation_report.txt'
+    if output and os.path.isdir(output):
+        report_path = f'{output}/{tflite_model.name}.{accelerator}-compilation_report.txt'
+    else:
+        report_path = f'{tflite_model.path}.{accelerator}-compilation_report.txt'
 
     compiled_tflite_model = tflm_accelerator.compile_model(
         tflite_model,

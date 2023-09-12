@@ -22,6 +22,7 @@ EMBEDDED_PLATFORMS = [
     'brd2204',
     'brd4166',
     'brd4186',
+    'brd4401',
 ]
 ALL_PLATFORMS = [
     get_current_os(),
@@ -31,6 +32,7 @@ ALL_PLATFORMS = [
 PLATFORM_ACCELERATORS = {
     'brd2601' : 'mvp',
     'brd4186': 'mvp',
+    'brd4401': 'mvp',
     'windows': 'mvp',
     'linux': 'mvp'
 }
@@ -52,8 +54,8 @@ _add_app('mltk_hello_world', ALL_PLATFORMS)
 _add_app('mltk_model_profiler', ALL_PLATFORMS, PLATFORM_ACCELERATORS)
 _add_app('mltk_audio_classifier', [get_current_os(), 'brd2601', 'brd2204'])
 build_params.append(('mltk_ble_audio_classifier', 'brd2601', 'mvp'))
-_add_app('mltk_image_classifier', EMBEDDED_PLATFORMS)
-_add_app('mltk_fingerprint_authenticator', EMBEDDED_PLATFORMS)
+_add_app('mltk_image_classifier', ('brd2601', 'brd2204', 'brd4166', 'brd4186'))
+_add_app('mltk_fingerprint_authenticator', ('brd2601', 'brd2204', 'brd4166', 'brd4186'))
 
 
 app_build_logger = get_logger('build_app_tests')

@@ -149,7 +149,7 @@ else:
 if pyhton_minor_version < 10:
     onnx_version = '<1.11' # >= 1.11 loads the estimator models *very* slowly on linux
 else:
-    onnx_version = '<1.13'
+    onnx_version = '<=1.14'
 
 install_dependencies = [
     'typer<1.0',
@@ -163,11 +163,11 @@ install_dependencies = [
     'tensorflow>=2.3,<3.0',
     'tensorflow_probability>=0.12.2',
     'tflite-support',
-    'protobuf>=3.18,<3.20', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
+    'protobuf>=3.18,<4.0', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
     f'onnx{onnx_version}',
-    f'onnxruntime{onnx_version}',
+    'onnxruntime',
     #'flatbuffers<2.0', # This is required by TF
-    'numpy<1.23', # Numba, which is installed by TF, has a requirement of < 1.23
+    #'numpy<1.23', # Numba, which is installed by TF, has a requirement of < 1.23
     'scipy<2.0',
     'matplotlib<4.0',
     'tqdm<5.0',

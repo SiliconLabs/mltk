@@ -58,7 +58,7 @@ def profile_model(
             If less than 0, automatically find the optimal tensor arena size, ignore the size built into the model parameters
         test: If a "test" model is provided
         post_process: This allows for post-processing the profiling results (e.g. uploading to a cloud) if supported by the given MltkModel
-        return_estimates: If profiling in the simulator, this will estimate additional metrics such as CPU cycles and energy. 
+        return_estimates: If profiling in the simulator, this will estimate additional metrics such as CPU cycles and energy.
             Disabling this option can reduce profiling time
     Returns:
         The results of model profiling
@@ -146,9 +146,9 @@ def profile_model_in_simulator(
     Args:
         tflite_model: .tflite model to profile
         accelerator: Optional, name of accelerator to profile for
-        return_estimates: This will estimate additional metrics such as CPU cycles and energy. 
+        return_estimates: This will estimate additional metrics such as CPU cycles and energy.
             Disabling this option can reduce profiling time
-    
+
     Returns:
         ProfilingModelResults: Results of the model profiling
     """
@@ -175,7 +175,8 @@ def profile_model_on_device(
     accelerator:str=None,
     port:str=None,
     baud:int=115200,
-    platform:str=None
+    platform:str=None,
+    timeout:float=90,
 ) -> ProfilingModelResults:
     """Profile the given TfliteModel on a physical embedded target
 
@@ -243,8 +244,8 @@ def profile_model_on_device(
         commander.reset_device(platform=platform)
 
         # Wait for up to a minute for the profiler to complete
-        if not serial_reader.read(timeout=60):
-            raise TimeoutError('Timed-out waiting for profiler on device to complete')
+        if not serial_reader.read(activity_timeout=timeout):
+            raise TimeoutError(f'Timed-out ({timeout}s) waiting for profiler on device to complete')
 
         # Check if the profiler failed
         if serial_reader.failed:
@@ -272,6 +273,8 @@ def parse_device_model_profiler_log(
     lines = [x.strip() for x in log_data.splitlines()]
     runtime_memory_size = 0
     cpu_clock_rate = 0
+    layer_error_msgs = {}
+    n_layers = 0
     layer_results:List[ProfilingLayerResult] = []
 
     cpu_clock_re = re.compile(r'CPU clock:\s([\d\.Mk]+)Hz')
@@ -284,12 +287,8 @@ def parse_device_model_profiler_log(
     error_msg_re = TfliteMicroLayerError.WARNING_RE
     time_ms_re = re.compile(r'([\d\.]+) ms')
 
-    layer_error_msgs = {}
-    line_index = 0
-    while line_index < len(lines):
-        line = lines[line_index]
-        line_index += 1
-
+    # First parse the summary info and any layer error messages
+    for line in lines:
         match = cpu_clock_re.match(line)
         if match:
             cpu_clock_rate = _line_to_int(match.group(1))
@@ -306,47 +305,63 @@ def parse_device_model_profiler_log(
             continue
 
         match = layer_name_re.match(line)
-        if not match:
+        if match:
+            n_layers = int(match.group(1))+1
             continue
 
-        layer_index = int(match.group(1))
-        i = len(layer_results)
-        while i <= layer_index:
-            layer_err_msg = None if i not in layer_error_msgs else layer_error_msgs[i]
-            layer_results.append(ProfilingLayerResult(
-                tflite_layer=tflite_model.layers[i],
-                error_msg=layer_err_msg
-            ))
-            i += 1
+    # Next parse each layer's info
+    for current_layer_index in range(n_layers):
+        layer_err_msg = None if current_layer_index not in layer_error_msgs else layer_error_msgs[current_layer_index]
+        layer = ProfilingLayerResult(
+            tflite_layer=tflite_model.layers[current_layer_index],
+            error_msg=layer_err_msg
+        )
+        layer_results.append(layer)
+        parse_state = 'find_next_layer'
 
-        layer = layer_results[layer_index]
-        while line_index < len(lines):
-            line = lines[line_index]
+        for line in lines:
             match = layer_name_re.match(line)
-            if match or line.startswith('--') or not line:
-                break
-            line_index += 1
+            if match:
+                layer_index = int(match.group(1))
 
-            match = ops_cycles_re.match(line)
-            if match:
-                layer['ops'] = _line_to_int(match.group(1))
+                if parse_state == 'find_next_layer' and layer_index == current_layer_index:
+                    parse_state = 'parse_metrics'
+                elif parse_state == 'parse_metrics':
+                    parse_state = 'find_layer_results'
+                elif parse_state == 'find_layer_results' and layer_index == current_layer_index:
+                    parse_state = 'parse_results'
+                elif parse_state == 'parse_results':
+                    break
+
                 continue
-            match = macs_cycles_re.match(line)
-            if match:
-                layer['macs'] = _line_to_int(match.group(1))
-                continue
-            match = cpu_cycles_re.match(line)
-            if match:
-                layer['cpu_cycles'] = _line_to_int(match.group(1))
-                continue
-            match = acc_cycles_re.match(line)
-            if match:
-                layer['accelerator_cycles'] = _line_to_int(match.group(1))
-                continue
-            match = time_ms_re.match(line)
-            if match:
-                layer['time'] = float(match.group(1))/1e3
-                continue
+
+            if parse_state == 'parse_metrics':
+                match = ops_cycles_re.match(line)
+                if match:
+                    layer['ops'] = _line_to_int(match.group(1))
+                    continue
+
+                match = macs_cycles_re.match(line)
+                if match:
+                    layer['macs'] = _line_to_int(match.group(1))
+                    continue
+
+            if parse_state == 'parse_results':
+                match = time_ms_re.match(line)
+                if match:
+                    layer['time'] = float(match.group(1))/1e3
+                    continue
+
+                match = cpu_cycles_re.match(line)
+                if match:
+                    layer['cpu_cycles'] = _line_to_int(match.group(1))
+                    continue
+                match = acc_cycles_re.match(line)
+                if match:
+                    layer['accelerator_cycles'] = _line_to_int(match.group(1))
+                    continue
+
+
 
     return ProfilingModelResults(
         model=tflite_model,

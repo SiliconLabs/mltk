@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.profile_model &#8212; MLTK 0.18.0 documentation</title>
+    <title>mltk.core.profile_model &#8212; MLTK 0.19.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.18.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.19.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.18.0 documentation logo">
+                   alt="MLTK 0.19.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.18.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.19.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.18.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.19.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -486,7 +486,7 @@
 <span class="sd">            If less than 0, automatically find the optimal tensor arena size, ignore the size built into the model parameters</span>
 <span class="sd">        test: If a "test" model is provided</span>
 <span class="sd">        post_process: This allows for post-processing the profiling results (e.g. uploading to a cloud) if supported by the given MltkModel</span>
-<span class="sd">        return_estimates: If profiling in the simulator, this will estimate additional metrics such as CPU cycles and energy. </span>
+<span class="sd">        return_estimates: If profiling in the simulator, this will estimate additional metrics such as CPU cycles and energy.</span>
 <span class="sd">            Disabling this option can reduce profiling time</span>
 <span class="sd">    Returns:</span>
 <span class="sd">        The results of model profiling</span>
@@ -574,9 +574,9 @@
 <span class="sd">    Args:</span>
 <span class="sd">        tflite_model: .tflite model to profile</span>
 <span class="sd">        accelerator: Optional, name of accelerator to profile for</span>
-<span class="sd">        return_estimates: This will estimate additional metrics such as CPU cycles and energy. </span>
+<span class="sd">        return_estimates: This will estimate additional metrics such as CPU cycles and energy.</span>
 <span class="sd">            Disabling this option can reduce profiling time</span>
-<span class="sd">    </span>
+
 <span class="sd">    Returns:</span>
 <span class="sd">        ProfilingModelResults: Results of the model profiling</span>
 <span class="sd">    """</span>
@@ -603,7 +603,8 @@
     <span class="n">accelerator</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">port</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">baud</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">115200</span><span class="p">,</span>
-    <span class="n">platform</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span>
+    <span class="n">platform</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProfilingModelResults</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Profile the given TfliteModel on a physical embedded target</span>
 
@@ -671,8 +672,8 @@
         <span class="n">commander</span><span class="o">.</span><span class="n">reset_device</span><span class="p">(</span><span class="n">platform</span><span class="o">=</span><span class="n">platform</span><span class="p">)</span>
 
         <span class="c1"># Wait for up to a minute for the profiler to complete</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">serial_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">60</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="s1">'Timed-out waiting for profiler on device to complete'</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">serial_reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">activity_timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Timed-out (</span><span class="si">{</span><span class="n">timeout</span><span class="si">}</span><span class="s1">s) waiting for profiler on device to complete'</span><span class="p">)</span>
 
         <span class="c1"># Check if the profiler failed</span>
         <span class="k">if</span> <span class="n">serial_reader</span><span class="o">.</span><span class="n">failed</span><span class="p">:</span>
@@ -700,6 +701,8 @@
     <span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">log_data</span><span class="o">.</span><span class="n">splitlines</span><span class="p">()]</span>
     <span class="n">runtime_memory_size</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">cpu_clock_rate</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">layer_error_msgs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">n_layers</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">layer_results</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">ProfilingLayerResult</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="n">cpu_clock_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'CPU clock:\s([\d\.Mk]+)Hz'</span><span class="p">)</span>
@@ -712,12 +715,8 @@
     <span class="n">error_msg_re</span> <span class="o">=</span> <span class="n">TfliteMicroLayerError</span><span class="o">.</span><span class="n">WARNING_RE</span>
     <span class="n">time_ms_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'([\d\.]+) ms'</span><span class="p">)</span>
 
-    <span class="n">layer_error_msgs</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">line_index</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">while</span> <span class="n">line_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
-        <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">line_index</span><span class="p">]</span>
-        <span class="n">line_index</span> <span class="o">+=</span> <span class="mi">1</span>
-
+    <span class="c1"># First parse the summary info and any layer error messages</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
         <span class="n">match</span> <span class="o">=</span> <span class="n">cpu_clock_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
             <span class="n">cpu_clock_rate</span> <span class="o">=</span> <span class="n">_line_to_int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
@@ -734,47 +733,63 @@
             <span class="k">continue</span>
 
         <span class="n">match</span> <span class="o">=</span> <span class="n">layer_name_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">match</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">n_layers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">+</span><span class="mi">1</span>
             <span class="k">continue</span>
 
-        <span class="n">layer_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer_results</span><span class="p">)</span>
-        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">layer_index</span><span class="p">:</span>
-            <span class="n">layer_err_msg</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">layer_error_msgs</span> <span class="k">else</span> <span class="n">layer_error_msgs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-            <span class="n">layer_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ProfilingLayerResult</span><span class="p">(</span>
-                <span class="n">tflite_layer</span><span class="o">=</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">i</span><span class="p">],</span>
-                <span class="n">error_msg</span><span class="o">=</span><span class="n">layer_err_msg</span>
-            <span class="p">))</span>
-            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># Next parse each layer's info</span>
+    <span class="k">for</span> <span class="n">current_layer_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_layers</span><span class="p">):</span>
+        <span class="n">layer_err_msg</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">current_layer_index</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">layer_error_msgs</span> <span class="k">else</span> <span class="n">layer_error_msgs</span><span class="p">[</span><span class="n">current_layer_index</span><span class="p">]</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="n">ProfilingLayerResult</span><span class="p">(</span>
+            <span class="n">tflite_layer</span><span class="o">=</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">current_layer_index</span><span class="p">],</span>
+            <span class="n">error_msg</span><span class="o">=</span><span class="n">layer_err_msg</span>
+        <span class="p">)</span>
+        <span class="n">layer_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
+        <span class="n">parse_state</span> <span class="o">=</span> <span class="s1">'find_next_layer'</span>
 
-        <span class="n">layer</span> <span class="o">=</span> <span class="n">layer_results</span><span class="p">[</span><span class="n">layer_index</span><span class="p">]</span>
-        <span class="k">while</span> <span class="n">line_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">line_index</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
             <span class="n">match</span> <span class="o">=</span> <span class="n">layer_name_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">match</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">'--'</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
-                <span class="k">break</span>
-            <span class="n">line_index</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="n">layer_index</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 
-            <span class="n">match</span> <span class="o">=</span> <span class="n">ops_cycles_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                <span class="n">layer</span><span class="p">[</span><span class="s1">'ops'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_line_to_int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">parse_state</span> <span class="o">==</span> <span class="s1">'find_next_layer'</span> <span class="ow">and</span> <span class="n">layer_index</span> <span class="o">==</span> <span class="n">current_layer_index</span><span class="p">:</span>
+                    <span class="n">parse_state</span> <span class="o">=</span> <span class="s1">'parse_metrics'</span>
+                <span class="k">elif</span> <span class="n">parse_state</span> <span class="o">==</span> <span class="s1">'parse_metrics'</span><span class="p">:</span>
+                    <span class="n">parse_state</span> <span class="o">=</span> <span class="s1">'find_layer_results'</span>
+                <span class="k">elif</span> <span class="n">parse_state</span> <span class="o">==</span> <span class="s1">'find_layer_results'</span> <span class="ow">and</span> <span class="n">layer_index</span> <span class="o">==</span> <span class="n">current_layer_index</span><span class="p">:</span>
+                    <span class="n">parse_state</span> <span class="o">=</span> <span class="s1">'parse_results'</span>
+                <span class="k">elif</span> <span class="n">parse_state</span> <span class="o">==</span> <span class="s1">'parse_results'</span><span class="p">:</span>
+                    <span class="k">break</span>
+
                 <span class="k">continue</span>
-            <span class="n">match</span> <span class="o">=</span> <span class="n">macs_cycles_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                <span class="n">layer</span><span class="p">[</span><span class="s1">'macs'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_line_to_int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-                <span class="k">continue</span>
-            <span class="n">match</span> <span class="o">=</span> <span class="n">cpu_cycles_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                <span class="n">layer</span><span class="p">[</span><span class="s1">'cpu_cycles'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_line_to_int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-                <span class="k">continue</span>
-            <span class="n">match</span> <span class="o">=</span> <span class="n">acc_cycles_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                <span class="n">layer</span><span class="p">[</span><span class="s1">'accelerator_cycles'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_line_to_int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
-                <span class="k">continue</span>
-            <span class="n">match</span> <span class="o">=</span> <span class="n">time_ms_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
-                <span class="n">layer</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="mf">1e3</span>
-                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">parse_state</span> <span class="o">==</span> <span class="s1">'parse_metrics'</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">ops_cycles_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">'ops'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_line_to_int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="k">continue</span>
+
+                <span class="n">match</span> <span class="o">=</span> <span class="n">macs_cycles_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">'macs'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_line_to_int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">parse_state</span> <span class="o">==</span> <span class="s1">'parse_results'</span><span class="p">:</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">time_ms_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">/</span><span class="mf">1e3</span>
+                    <span class="k">continue</span>
+
+                <span class="n">match</span> <span class="o">=</span> <span class="n">cpu_cycles_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">'cpu_cycles'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_line_to_int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="k">continue</span>
+                <span class="n">match</span> <span class="o">=</span> <span class="n">acc_cycles_re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                    <span class="n">layer</span><span class="p">[</span><span class="s1">'accelerator_cycles'</span><span class="p">]</span> <span class="o">=</span> <span class="n">_line_to_int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="k">continue</span>
+
+
 
     <span class="k">return</span> <span class="n">ProfilingModelResults</span><span class="p">(</span>
         <span class="n">model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
@@ -847,7 +862,7 @@
               
           </div>
             Last updated on
-              Aug 04, 2023.
+              Sep 12, 2023.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

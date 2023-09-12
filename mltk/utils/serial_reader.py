@@ -61,7 +61,6 @@ class SerialReader:
         self._stop_regex:List[re.Pattern] = None
         self._fail_regex:List[re.Pattern] = None
         self._callback_regex:List[_CallbackRegexContext] = None
-        self._activity_timestamp:float = 0
 
         self._captured_data = ''
         self._error_message = ''
@@ -151,7 +150,7 @@ class SerialReader:
         """Open the a connection to the serial port"""
         port = SerialReader.resolve_port(self.port)
         if not port:
-            raise Exception('Invalid serial port')
+            raise ValueError('Invalid serial port')
 
         try:
             self._handle = serial.Serial(
@@ -162,7 +161,7 @@ class SerialReader:
                 bytesize=serial.EIGHTBITS
             )
         except Exception as e:
-            raise Exception( # pylint: disable=raise-missing-from
+            raise RuntimeError( # pylint: disable=raise-missing-from
                 f'Failed to open COM port: {port}\n' \
                 'Ensure the development board is on and properly enumerated.\n' \
                 'Also ensure no other serial terminals are connected to the COM port.\n' \
@@ -258,15 +257,16 @@ class SerialReader:
         # Wait forever if not timeout is given
         timeout = timeout or 1e9
 
+        previous_activity_timestamp = time.time()
         start_time = time.time()
-        self._activity_timestamp = time.time()
         saved_terminators = None
         if hasattr(self.outfile, 'set_terminator'):
             saved_terminators = self.outfile.set_terminator('')
 
         try:
             while (time.time() - start_time) < timeout:
-                self._buffer_data()
+                if self._buffer_data():
+                    previous_activity_timestamp = time.time()
 
                 if self._check_for_fail_condition():
                     return True
@@ -277,7 +277,7 @@ class SerialReader:
                 if self._check_for_stop_condition():
                     return True
 
-                if activity_timeout and (time.time() - self._activity_timestamp) > activity_timeout:
+                if activity_timeout and (time.time() - previous_activity_timestamp) > activity_timeout:
                     break
 
         finally:
@@ -318,12 +318,12 @@ class SerialReader:
             self._handle.flush()
 
 
-    def _buffer_data(self):
+    def _buffer_data(self) -> bool:
         """Receive data from the COM port and write the the outfile and _captured_data buffer
 
         """
         if not self.is_open:
-            raise Exception('Connection not opened')
+            raise RuntimeError('Connection not opened')
 
         new_data = ''
         while not self._rx_queue.empty():
@@ -350,12 +350,13 @@ class SerialReader:
                 ctx.offset += match.end()
                 ctx.callback(match)
 
+        return len(new_data) > 0
+
 
     def _read_loop(self):
         """Thread loop to read the COM port"""
         while True:
             if self._handle.in_waiting > 0:
-                self._activity_timestamp = time.time()
                 data = self._handle.read(self._handle.in_waiting)
                 self._rx_queue.put(data)
             if self._rx_thread_active.wait(0.005):

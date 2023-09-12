@@ -67,7 +67,12 @@ extern "C" const uint32_t sl_tflite_model_len;
 #else
     // Otherwise, we dynamically find the optimal runtime size
     // and allocate from the heap
-    const int runtime_memory_size = -1;
+    // MODEL_PROFILER_RUNTIME_MEMORY_SIZE=0 then attempt to retrieve the runtime size from the given .tflite
+    // other dynamically determine the runtime size
+#   ifndef MODEL_PROFILER_RUNTIME_MEMORY_SIZE
+#       define MODEL_PROFILER_RUNTIME_MEMORY_SIZE -1
+#   endif
+    const int runtime_memory_size =MODEL_PROFILER_RUNTIME_MEMORY_SIZE;
     uint8_t* runtime_memory_buffer = nullptr;
 #endif
 

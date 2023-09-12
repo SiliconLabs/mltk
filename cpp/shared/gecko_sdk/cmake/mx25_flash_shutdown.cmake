@@ -16,12 +16,12 @@ PUBLIC
 )
 
 target_sources(${NAME}_eusart
-PRIVATE 
+PRIVATE
   src/sl_mx25_flash_shutdown_eusart/sl_mx25_flash_shutdown.c
 )
 
 target_link_libraries(${NAME}_eusart
-PRIVATE 
+PRIVATE
   ${GECKO_SDK_BOARD_TARGET}
 )
 
@@ -32,11 +32,11 @@ PUBLIC
 )
 
 target_sources(${NAME}_usart
-PRIVATE 
+PRIVATE
   src/sl_mx25_flash_shutdown_usart/sl_mx25_flash_shutdown.c
 )
 
 target_link_libraries(${NAME}_usart
-PRIVATE 
+PRIVATE
   ${GECKO_SDK_BOARD_TARGET}
 )

@@ -36,11 +36,38 @@ class TfliteTensor(_tflite_schema_fb.TensorT):
             buffer = model.flatbuffer_model.buffers[fb_tensor.buffer]
             if buffer.data is not None:
                 data_bytes = buffer.data.tobytes() if isinstance(buffer.data, np.ndarray) else bytes(buffer.data)
-                a = np.frombuffer(data_bytes, dtype=self.dtype)
-                if len(data_bytes) == self.shape.flat_size and len(self.shape) > 1:
-                    self._data = a.reshape(self.shape)
+
+                if  hasattr(_tflite_schema_fb.TensorType, 'INT4') and self.type == _tflite_schema_fb.TensorType.INT4:
+                    # NumPy does not support int4 so we have to expand to int8
+                    # See https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/kernels/internal/portable_tensor_utils.cc
+                    # UnpackDenseInt4IntoInt8()
+                    n_elements = self.shape.flat_size
+                    raw_data_array = np.empty((n_elements,), dtype=np.int8)
+
+                    sign_bit_mask = 1 << (4 - 1)
+                    def sign_extend_4bits(value):
+                        return (value & (sign_bit_mask-1)) - (value & sign_bit_mask)
+
+                    for i in range(n_elements // 2):
+                        v = data_bytes[i]
+                        lower = sign_extend_4bits(v & 0x0F)
+                        upper = sign_extend_4bits((v & 0xF0) >> 4)
+                        raw_data_array[i*2 + 0] = lower
+                        raw_data_array[i*2 + 1] = upper
+
+                    # If the buffer size is odd, extract the final lower nibble.
+                    if n_elements % 2 != 0:
+                        v = data_bytes[n_elements//2]
+                        lower = sign_extend_4bits((v & 0xF0) >> 4)
+                        raw_data_array[-1] = lower
+
                 else:
-                    self._data = a
+                    raw_data_array = np.frombuffer(data_bytes, dtype=self.dtype)
+
+                if raw_data_array.size == self.shape.flat_size and len(self.shape) > 1:
+                    self._data = raw_data_array.reshape(self.shape)
+                else:
+                    self._data = raw_data_array
 
         if not hasattr(self, '_data'):
             s = self.shape if len(self.shape) > 1 else (0,)
@@ -113,7 +140,33 @@ class TfliteTensor(_tflite_schema_fb.TensorT):
 
         if hasattr(self, '_model'):
             buffer = _tflite_schema_fb.BufferT()
-            buffer.data = np.frombuffer(self._data.tobytes(), dtype=np.uint8)
+            data_bytes = self._data.tobytes()
+
+            if hasattr(_tflite_schema_fb.TensorType, 'INT4') and self.type == _tflite_schema_fb.TensorType.INT4 and isinstance(v, np.ndarray):
+                # NumPy does not support int4 so we have to pack the two int8 values into 1 byte
+                # See https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/kernels/internal/portable_tensor_utils.cc
+
+                data_bytes_len = len(data_bytes)
+                packed_data = bytearray()
+
+                for i in range(data_bytes_len//2):
+                    lower = data_bytes[i*2 + 0]
+                    upper = data_bytes[i*2 + 1]
+                    assert lower.bit_length() <= 4
+                    assert upper.bit_length() <= 4
+                    packed_value = (lower & 0x0F) | ((upper & 0x0F) << 4)
+                    packed_data.append(packed_value)
+
+                if data_bytes_len % 2 != 0:
+                    lower = data_bytes[-1]
+                    assert lower.bit_length() <= 4
+                    packed_value = (lower & 0x0F)
+                    packed_data.append(packed_value)
+
+                data_bytes = packed_data
+
+            buffer.data = np.frombuffer(data_bytes, dtype=np.uint8)
+
             self._model.flatbuffer_model.buffers[self.buffer] = buffer
             self._model.regenerate_flatbuffer()
 
@@ -226,6 +279,9 @@ def tflite_to_numpy_dtype(tflite_type:_tflite_schema_fb.TensorType) -> np.dtype:
     elif tflite_type == _tflite_schema_fb.TensorType.INT16:
         return np.int16
     elif tflite_type == _tflite_schema_fb.TensorType.INT8:
+        return np.int8
+    elif hasattr(_tflite_schema_fb.TensorType, 'INT4') and tflite_type == _tflite_schema_fb.TensorType.INT4:
+        # Numpy does not support 4-bit, so we have to use int8
         return np.int8
     elif tflite_type == _tflite_schema_fb.TensorType.BOOL:
         return np.bool8

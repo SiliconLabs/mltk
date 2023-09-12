@@ -121,7 +121,7 @@ def update_launch_json(
             cwd = workspace_dir,
             armToolchainPath = toolchain_dir,
             serverpath = segger_server_path.replace('\\', '/'),
-            serverArgs = ['-JLinkDevicesXMLPath', commander_dir],
+            serverArgs = ['-JLinkDevicesXMLPath', f'{commander_dir}/resources/jlink'],
             executable = exe_path,
             preRestartCommands = [
                 'enable breakpoint',

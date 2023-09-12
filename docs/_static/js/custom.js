@@ -4,7 +4,7 @@ window.SURVEY_URL = 'https://www.surveymonkey.com/r/8KCP7P5';
 const MINUTE = 60;
 const DAY = 24*60*60;
 
-window.SHOW_SURVEY_AFTER_SECONDS = 10*MINUTE; // Show the survey after 10min of activity
+window.SHOW_SURVEY_AFTER_SECONDS = 20*MINUTE; // Show the survey after 20min of activity
 window.SHOW_SURVEY_ON_ACTIVITY_DELAY = 45; // Once the survey should be shown, wait 45s before displaying it (this ensures the user is actively using the page)
 window.INITIAL_IGNORED_SURVEY_TIMEOUT = 15*DAY; // Reshow the survey after 15 days the first time it was ignored
 window.ADDITIONAL_IGNORED_SURVEY_TIMEOUT = 25*DAY; // Reshow the survey after 25 days each additional time the survey is ignored

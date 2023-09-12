@@ -95,3 +95,28 @@ mltk_set(TFLITE_MICRO_ACCELERATOR mvp)
 The platform also supports the following [commands](../command_line/index.md) when using `--device` command line option:
 
 - [profile](../guides/model_profiler.md)
+
+
+## BRD4401
+
+- Name: EFR32xG28 2.4 GHz BLE and +20 dBm Radio Board
+- [Product Link](https://www.silabs.com/development-tools/wireless/xg28-rb4401c-efr32xg28-2-4-ghz-ble-and-20-dbm-radio-board)
+
+
+To build a C++ application for this platform using [VSCode](../cpp_development/vscode.md) or [Command-Line](../cpp_development/command_line.md), create/modify `<mltk repo root>/user_options.cmake`:
+
+```
+mltk_set(MLTK_PLATFORM_NAME brd4401)
+```
+
+This platform features the [MVP](https://docs.silabs.com/gecko-platform/latest/machine-learning/tensorflow/mvp-accelerator) machine learning hardware accelerator.
+
+To build a C++ application with MVP hardware acceleration using [VSCode](../cpp_development/vscode.md) or [Command-Line](../cpp_development/command_line.md), create/modify `<mltk repo root>/user_options.cmake`:
+
+```
+mltk_set(TFLITE_MICRO_ACCELERATOR mvp)
+```
+
+The platform also supports the following [commands](../command_line/index.md) when using `--device` command line option:
+
+- [profile](../guides/model_profiler.md)

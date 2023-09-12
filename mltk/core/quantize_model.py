@@ -179,21 +179,22 @@ def quantize_model(
             float32_converter = tf.lite.TFLiteConverter.from_keras_model(keras_model)
             float32_converter.optimizations = [tf.lite.Optimize.DEFAULT]
             float32_tflite_flatbuffer = float32_converter.convert()
+
+            save_flatbuffer_file(
+                mltk_model=mltk_model,
+                tflite_flatbuffer=float32_tflite_flatbuffer,
+                logger=logger,
+                output=float32_tflite_path,
+                add_runtime_memory_size=False
+            )
+
         except Exception as e:
-            logger.error(f'Failed to generated unquantized (i.e. float32) tflite model, err: {e}', exc_info=e)
+            logger.error(f'Failed to generate unquantized (i.e. float32) tflite model, err: {e}', exc_info=e)
 
         finally:
             # The TfLiteConverter adds a StreamHandler to the root logger,
             # remove it so we don't double print everything to the console
             logger.root.handlers.clear()
-
-        save_flatbuffer_file(
-            mltk_model=mltk_model,
-            tflite_flatbuffer=float32_tflite_flatbuffer,
-            logger=logger,
-            output=float32_tflite_path,
-            add_runtime_memory_size=False
-        )
 
 
     converter = tf.lite.TFLiteConverter.from_keras_model(keras_model)
@@ -517,7 +518,7 @@ def _convert_dtype(dtype):
     if dtype in (np.int32, np.dtype('int32'), 'int32'):
         return tf.int32
 
-    if dtype in (np.float, np.float32, np.dtype('float32'), 'float32'):
+    if dtype in (np.float32, np.dtype('float32'), 'float32'):
         return tf.float32
 
     return dtype

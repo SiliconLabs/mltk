@@ -27,9 +27,8 @@ PLATFORM_TOOLCHAIN_MAPPING = {
     'brd4186'  : 'gcc/arm/arm_toolchain.cmake',
     'brd2601'  : 'gcc/arm/arm_toolchain.cmake',
     'brd4166'  : 'gcc/arm/arm_toolchain.cmake',
+    'brd4401'  : 'gcc/arm/arm_toolchain.cmake',
 }
-
-
 
 
 def build_mltk_target(
