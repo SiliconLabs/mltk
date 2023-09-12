@@ -148,6 +148,8 @@ else:
 # The MLTK does NOT have a dependency on ONNX, but tflite-support and tensorflow depend on protobuf and this does as well,
 if pyhton_minor_version < 10:
     onnx_version = '<1.11' # >= 1.11 loads the estimator models *very* slowly on linux
+    additional_install_dependencies.append('numpy<1.23') # These requirements make the install smoother for Python < 3.10
+    additional_install_dependencies.append('flatbuffers<2.0')
 else:
     onnx_version = '<=1.14'
 
@@ -166,8 +168,6 @@ install_dependencies = [
     'protobuf>=3.18,<4.0', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
     f'onnx{onnx_version}',
     'onnxruntime',
-    #'flatbuffers<2.0', # This is required by TF
-    #'numpy<1.23', # Numba, which is installed by TF, has a requirement of < 1.23
     'scipy<2.0',
     'matplotlib<4.0',
     'tqdm<5.0',
