@@ -31,15 +31,20 @@ class DoubleValue(object):
             return self._tab.Get(flatbuffers.number_types.Float64Flags, o + self._tab.Pos)
         return 0.0
 
-def Start(builder): builder.StartObject(1)
 def DoubleValueStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddValue(builder, value): builder.PrependFloat64Slot(0, value, 0.0)
+    builder.StartObject(1)
+
+def Start(builder):
+    DoubleValueStart(builder)
+
 def DoubleValueAddValue(builder, value):
-    """This method is deprecated. Please switch to AddValue."""
-    return AddValue(builder, value)
-def End(builder): return builder.EndObject()
+    builder.PrependFloat64Slot(0, value, 0.0)
+
+def AddValue(builder, value):
+    DoubleValueAddValue(builder, value)
+
 def DoubleValueEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return DoubleValueEnd(builder)

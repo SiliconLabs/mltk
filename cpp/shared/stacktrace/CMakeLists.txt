@@ -19,7 +19,10 @@ PUBLIC
 )
 
 if(CMAKE_HOST_SYSTEM_NAME STREQUAL Windows)
-    target_link_libraries(${PROJECT_NAME} imagehlp)
+    target_link_libraries(${PROJECT_NAME} 
+    PUBLIC
+        imagehlp
+    )
 endif()
 
 

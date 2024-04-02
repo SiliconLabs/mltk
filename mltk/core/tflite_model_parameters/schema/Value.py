@@ -20,4 +20,3 @@ class Value(object):
     int32_list = 14
     float_list = 15
     bin = 16
-

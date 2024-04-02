@@ -10,8 +10,8 @@ add_library(mltk::gtest ALIAS ${PROJECT_NAME})
 CPMAddPackage(
 NAME GTest
 GITHUB_REPOSITORY google/googletest
-GIT_TAG release-1.11.0
-CACHE_VERSION v1.11.0
+GIT_TAG v1.14.0
+CACHE_VERSION v1.14.0
 OPTIONS
     "MSVC OFF" # This is causing bugs when building with SystemC
     "BUILD_GMOCK OFF"
@@ -29,6 +29,11 @@ INTERFACE
 target_include_directories(${PROJECT_NAME}
 INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
+)
+
+target_compile_definitions(gtest
+PRIVATE
+    "PATH_MAX=500"
 )
 
 # Patch the gtest library if we're using the one that comes with the MLTK

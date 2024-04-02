@@ -38,7 +38,7 @@ class Dictionary(object):
             x = self._tab.Vector(o)
             x += flatbuffers.number_types.UOffsetTFlags.py_type(j) * 4
             x = self._tab.Indirect(x)
-            from Entry import Entry
+            from .Entry import Entry
             obj = Entry()
             obj.Init(self._tab.Bytes, x)
             return obj
@@ -56,23 +56,32 @@ class Dictionary(object):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(6))
         return o == 0
 
-def Start(builder): builder.StartObject(2)
 def DictionaryStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddSchemaVersion(builder, schemaVersion): builder.PrependUint8Slot(0, schemaVersion, 0)
+    builder.StartObject(2)
+
+def Start(builder):
+    DictionaryStart(builder)
+
 def DictionaryAddSchemaVersion(builder, schemaVersion):
-    """This method is deprecated. Please switch to AddSchemaVersion."""
-    return AddSchemaVersion(builder, schemaVersion)
-def AddEntries(builder, entries): builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(entries), 0)
+    builder.PrependUint8Slot(0, schemaVersion, 0)
+
+def AddSchemaVersion(builder, schemaVersion):
+    DictionaryAddSchemaVersion(builder, schemaVersion)
+
 def DictionaryAddEntries(builder, entries):
-    """This method is deprecated. Please switch to AddEntries."""
-    return AddEntries(builder, entries)
-def StartEntriesVector(builder, numElems): return builder.StartVector(4, numElems, 4)
+    builder.PrependUOffsetTRelativeSlot(1, flatbuffers.number_types.UOffsetTFlags.py_type(entries), 0)
+
+def AddEntries(builder, entries):
+    DictionaryAddEntries(builder, entries)
+
 def DictionaryStartEntriesVector(builder, numElems):
-    """This method is deprecated. Please switch to Start."""
-    return StartEntriesVector(builder, numElems)
-def End(builder): return builder.EndObject()
+    return builder.StartVector(4, numElems, 4)
+
+def StartEntriesVector(builder, numElems: int) -> int:
+    return DictionaryStartEntriesVector(builder, numElems)
+
 def DictionaryEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return DictionaryEnd(builder)

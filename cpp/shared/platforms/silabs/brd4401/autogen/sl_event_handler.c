@@ -91,3 +91,4 @@ void sl_iostream_init_instances(void)
   sl_iostream_eusart_init_instances();
 }
 
+void sli_sleeptimer_set_pm_em_requirement() {}

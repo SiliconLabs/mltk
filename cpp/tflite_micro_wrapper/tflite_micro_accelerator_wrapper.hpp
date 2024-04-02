@@ -9,8 +9,8 @@ namespace mltk
 class TfliteMicroAcceleratorWrapper
 {
 public:
-    const TfliteMicroAccelerator* accelerator = nullptr;
-    
+    TfliteMicroAccelerator* accelerator = nullptr;
+
     // Register the accelerator and return its op resolver
     virtual tflite::MicroOpResolver* load() = 0;
 };

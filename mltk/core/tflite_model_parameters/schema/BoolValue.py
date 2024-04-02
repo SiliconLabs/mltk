@@ -31,15 +31,20 @@ class BoolValue(object):
             return bool(self._tab.Get(flatbuffers.number_types.BoolFlags, o + self._tab.Pos))
         return False
 
-def Start(builder): builder.StartObject(1)
 def BoolValueStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddValue(builder, value): builder.PrependBoolSlot(0, value, 0)
+    builder.StartObject(1)
+
+def Start(builder):
+    BoolValueStart(builder)
+
 def BoolValueAddValue(builder, value):
-    """This method is deprecated. Please switch to AddValue."""
-    return AddValue(builder, value)
-def End(builder): return builder.EndObject()
+    builder.PrependBoolSlot(0, value, 0)
+
+def AddValue(builder, value):
+    BoolValueAddValue(builder, value)
+
 def BoolValueEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return BoolValueEnd(builder)

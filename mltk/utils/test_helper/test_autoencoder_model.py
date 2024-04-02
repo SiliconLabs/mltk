@@ -1,13 +1,13 @@
 
 import functools
 import numpy as np
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from mltk.core.model import (
     MltkModel,
     TrainMixin,
     ImageDatasetMixin,
     EvaluateAutoEncoderMixin
 )
+from mltk.core.keras import ImageDataGenerator
 from mltk.models.shared import FullyConnectedAutoEncoder
 
 
@@ -17,9 +17,9 @@ from mltk.models.shared import FullyConnectedAutoEncoder
 # - EvaluateAutoEncoderMixin  - Provides auto-encoder evaluation operations and settings
 # @my_model   # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    ImageDatasetMixin, 
+    MltkModel,
+    TrainMixin,
+    ImageDatasetMixin,
     EvaluateAutoEncoderMixin
 ):
     pass
@@ -33,7 +33,7 @@ my_model.description = 'Testing autoencoder model'
 #################################################
 # Training parameters
 my_model.epochs = 5
-my_model.batch_size = 3 
+my_model.batch_size = 3
 my_model.optimizer = 'adam'
 my_model.loss = 'mean_squared_error'
 my_model.metrics = ['mean_squared_error']
@@ -84,7 +84,7 @@ def my_model_builder(model: MyModel):
         input_shape=model.input_shape
     )
     autoencoder.compile(
-        loss=model.loss, 
+        loss=model.loss,
         optimizer=model.optimizer,
         metrics=model.metrics
     )

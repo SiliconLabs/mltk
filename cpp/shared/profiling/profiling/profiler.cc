@@ -94,6 +94,20 @@ int32_t Profiler::increment_custom_stat(const char* name, int32_t amount)
 }
 
 /*************************************************************************************************/
+int32_t Profiler::set_custom_stat(const char* name, int32_t amount)
+{
+    if(!custom_stats.contains(name))
+    {
+        int32_t initial_value = 0;
+        custom_stats.put(name, &initial_value);
+    }
+
+    int32_t* new_amount = custom_stats.get(name);
+    *new_amount = amount;
+    return *new_amount;
+}
+
+/*************************************************************************************************/
 int32_t Profiler::get_custom_stat(const char* name) const
 {
     if(!custom_stats.contains(name))

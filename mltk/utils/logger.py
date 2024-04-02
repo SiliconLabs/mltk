@@ -176,7 +176,7 @@ def redirect_stream(
             setattr(sys, saved_sys_std_stream_name, io.TextIOWrapper(os.fdopen(stream_fd, 'wb'), encoding='utf-8' ))
 
     # Map tensorflow logs to the Python logger's corresponding level
-    tf_err_re = re.compile('.*:\s([DIWE])\s(.*)')
+    tf_err_re = re.compile(r'.*:\s([DIWE])\s(.*)')
     def _process_line(line:str):
         match = tf_err_re.match(line)
         if match:

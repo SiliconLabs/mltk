@@ -117,7 +117,7 @@ function checkIfAcceptedCookies() {
 function onAcceptedCookies() {
     localStorage.acceptedCookies = 'true';
     initialiseGoogleAnalytics();
-    initializeSurvey();
+    //initializeSurvey();
 }
 
 

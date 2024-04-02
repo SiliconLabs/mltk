@@ -19,8 +19,8 @@ set(ENV{GIT_LFS_SKIP_SMUDGE} 1)
 CPMAddPackage(
   NAME gecko_sdk
   GITHUB_REPOSITORY SiliconLabs/gecko_sdk
-  GIT_TAG v4.3.0 # Be sure to update the <mltk repo root>/README.md when updating this
-  CACHE_VERSION v4.3.0
+  GIT_TAG v4.3.3 # Be sure to update the <mltk repo root>/README.md when updating this
+  CACHE_VERSION v4.3.3
   DOWNLOAD_ONLY ON
 )
 

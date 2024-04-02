@@ -33,7 +33,7 @@
 
 #include "cli_opts.hpp"
 #include "audio_io.h"
-
+#include "mltk_audio_classifier_model_generated.hpp"
 
 
 #ifdef SL_CATALOG_KERNEL_PRESENT
@@ -52,7 +52,6 @@ static sl_sleeptimer_timer_handle_t inference_timer;
   #error "Sample application requires two leds"
 #endif
 
-static tflite::AllOpsResolver op_resolver;
 static RecognizeCommands *command_recognizer = nullptr;
 static mltk::TfliteMicroModel model;
 
@@ -67,10 +66,6 @@ int category_count = 0;
 static mltk::StringList category_labels;
 static int category_label_count;
 
-// This is defined by the build scripts
-// which converts the specified .tflite to a C array
-extern "C" const uint8_t sl_tflite_model_array[];
-
 
 
 static void handle_results(int32_t current_time, int result, uint8_t score, bool is_new_command);
@@ -84,21 +79,25 @@ static sl_status_t process_output(const bool did_run_inference);
  ******************************************************************************/
 void audio_classifier_init(void)
 {
+  #ifdef SL_TFLITE_MICRO_OPCODE_RESOLVER
+  SL_TFLITE_MICRO_OPCODE_RESOLVER(mltk_model_op_resolver);
+  #endif
+
   sl_status_t status;
 
   printf("Audio Classifier\n");
 
-#ifdef __arm__
+  #ifdef __arm__
   // First check if a new .tflite was programmed to the end of flash
   // (This will happen when this app is executed from the command-line: "mltk classify_audio my_model --device")
-  if(!mltk::get_tflite_flatbuffer_from_end_of_flash(&cli_opts.model_flatbuffer))
+  if(!mltk::TfliteMicroModelHelper::get_tflite_flatbuffer_from_end_of_flash(&cli_opts.model_flatbuffer))
   {
     // If no .tflite was programmed, then just use the default model
     printf("Using default model built into application\n");
-    cli_opts.model_flatbuffer = sl_tflite_model_array;
+    cli_opts.model_flatbuffer = mltk_model_flatbuffer;
   }
 
-#else // If this is a Windows/Linux build
+  #else // If this is a Windows/Linux build
   // Parse the CLI options
   parse_cli_opts();
 
@@ -107,16 +106,16 @@ void audio_classifier_init(void)
   if(cli_opts.model_flatbuffer == nullptr)
   {
     printf("Using default model built into application\n");
-    cli_opts.model_flatbuffer = sl_tflite_model_array;
+    cli_opts.model_flatbuffer = mltk_model_flatbuffer;
   }
-#endif // ifdef __arm__
+  #endif // ifdef __arm__
 
 
   // Register the accelerator if the TFLM lib was built with one
   mltk::mltk_tflite_micro_register_accelerator();
 
   // Attempt to load the model using the arena size specified in the .tflite
-  if(!model.load(cli_opts.model_flatbuffer, op_resolver))
+  if(!model.load(cli_opts.model_flatbuffer, mltk_model_op_resolver))
   {
     printf("ERROR: Failed to load .tflite model\n");
     while(1)
@@ -153,14 +152,14 @@ void audio_classifier_init(void)
       ;
   }
 
-#ifdef AUDIO_IO_ENABLED
+  #ifdef AUDIO_IO_ENABLED
   if(!audio_io_init())
   {
     printf("ERROR: Failed to init audio I/O\n");
     while(1)
       ;
   }
-#endif
+  #endif
 
   // Instantiate CommandRecognizer
   static RecognizeCommands static_recognizer(SMOOTHING_WINDOW_DURATION_MS,

@@ -106,7 +106,7 @@ class FlatbufferDictionary(dict):
         DictionaryStartEntriesVector(builder, len(entry_offsets))
         for o in reversed(entry_offsets):
             builder.PrependUOffsetTRelative(o)
-        entries_offset = builder.EndVector(len(entry_offsets))
+        entries_offset = builder.EndVector_Patched(len(entry_offsets))
        
 
         DictionaryStart(builder)
@@ -412,7 +412,7 @@ def _generate_value(builder:flatbuffers.Builder, value) -> tuple:
         StringListStartDataVector(builder, len(s_offsets))
         for o in reversed(s_offsets):
             builder.PrependUOffsetTRelative(o)
-        v = builder.EndVector(len(s_offsets))
+        v = builder.EndVector_Patched(len(s_offsets))
 
         StringListStart(builder)
         StringListAddData(builder, v)
@@ -422,7 +422,7 @@ def _generate_value(builder:flatbuffers.Builder, value) -> tuple:
         Int32ListStartDataVector(builder, len(value))
         for o in reversed(value):
             builder.PrependInt32(int(o))
-        v = builder.EndVector(len(value))
+        v = builder.EndVector_Patched(len(value))
 
         Int32ListStart(builder)
         Int32ListAddData(builder, v)
@@ -432,7 +432,7 @@ def _generate_value(builder:flatbuffers.Builder, value) -> tuple:
         FloatListStartDataVector(builder, len(value))
         for o in reversed(value):
             builder.PrependFloat32(float(o))
-        v = builder.EndVector(len(value))
+        v = builder.EndVector_Patched(len(value))
 
         FloatListStart(builder)
         FloatListAddData(builder, v)
@@ -526,3 +526,16 @@ def _parse_value(fb_type, fb_value):
 
     else:
         raise RuntimeError(f'Unknown flatbuffer data type: {fb_type}')
+
+
+
+def _EndVector_Patched(self, l):
+    """This works around a discrepancy between newer and 
+    older version of the flatbuffers.Builder.EndVector API
+    """
+    try:
+        return self.EndVector(l)
+    except:
+        return self.EndVector()
+
+flatbuffers.Builder.EndVector_Patched = _EndVector_Patched

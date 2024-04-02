@@ -18,6 +18,7 @@ mltk_set(TFLITE_MICRO_PROFILER_ENABLED ON)
 # Enable MLTK tensor recording support in TFLM
 # NOTE: This must be set BEFORE the tflm package is included by CMake below
 mltk_set(TFLITE_MICRO_RECORDER_ENABLED ON)
+mltk_set(TFLITE_MICRO_ACCELERATOR_RECORDER_ENABLED ON)
 # Enable the hardware simulator
 # NOTE: This must be set BEFORE the tflm package is included by CMake below
 mltk_set(TFLITE_MICRO_SIMULATOR_ENABLED ON)

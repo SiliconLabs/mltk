@@ -6,7 +6,7 @@ export(PACKAGE ${PROJECT_NAME})
 
 
 add_executable(${PROJECT_NAME})
-
+mltk_add_exe_targets(${PROJECT_NAME})
 
 find_package(mltk_microfrontend REQUIRED)
 find_package(mltk_gtest REQUIRED)
@@ -32,18 +32,12 @@ PRIVATE
     mltk::gtest
 )
 
-mltk_get(MLTK_PLATFORM_IS_EMBEDDED)
-if(MLTK_PLATFORM_IS_EMBEDDED OR NOT HOST_OS_IS_WINDOWS)
-    target_link_libraries(${PROJECT_NAME}
-    PRIVATE 
-        mltk::microfrontend
-    )
-else()
-    target_link_libraries(${PROJECT_NAME}
-    PRIVATE 
-        microfrontend # Optional: link to the micrfrontend DLL instead of static library
-    )
-endif()
+
+target_link_libraries(${PROJECT_NAME}
+PRIVATE 
+    mltk::microfrontend
+)
+
 
 #####################################################
 # Unit test

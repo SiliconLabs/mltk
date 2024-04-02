@@ -32,7 +32,7 @@
 
 #include "image_classifier.h"
 #include "recognize_commands.h"
-
+#include "mltk_image_classifier_model_generated.hpp"
 
 
 #define DETECTION_LED sl_led_led1
@@ -55,7 +55,6 @@ static sl_sleeptimer_timer_handle_t inference_timer;
   #error "Sample application requires two leds"
 #endif
 
-static tflite::AllOpsResolver op_resolver;
 static RecognizeCommands *command_recognizer = nullptr;
 static mltk::TfliteMicroModel model;
 
@@ -68,9 +67,6 @@ static int previous_result = 0;
 static mltk::StringList category_labels;
 int category_count;
 
-// This is defined by the build scripts
-// which converts the specified .tflite to a C array
-extern "C" const uint8_t sl_tflite_model_array[];
 
 AppSettings app_settings;
 
@@ -90,6 +86,9 @@ static void dump_image(const uint8_t* image_data, uint32_t image_length);
  ******************************************************************************/
 void image_classifier_init(void)
 {
+    #ifdef SL_TFLITE_MICRO_OPCODE_RESOLVER
+    SL_TFLITE_MICRO_OPCODE_RESOLVER(mltk_model_op_resolver);
+    #endif
     const uint8_t* model_flatbuffer;
 
     printf("Image Classifier\n");
@@ -100,18 +99,18 @@ void image_classifier_init(void)
 
     // First check if a new .tflite was programmed to the end of flash
     // (This will happen when this app is executed from the command-line: "mltk classify_image my_model")
-    if(!mltk::get_tflite_flatbuffer_from_end_of_flash(&model_flatbuffer))
+    if(!mltk::TfliteMicroModelHelper::get_tflite_flatbuffer_from_end_of_flash(&model_flatbuffer))
     {
         // If no .tflite was programmed, then just use the default model
         printf("Using default model built into application\n");
-        model_flatbuffer = sl_tflite_model_array;
+        model_flatbuffer = mltk_model_flatbuffer;
     }
 
     // Register the accelerator if the TFLM lib was built with one
     mltk::mltk_tflite_micro_register_accelerator();
 
     // Attempt to load the model using the arena size specified in the .tflite
-    if(!model.load(model_flatbuffer, op_resolver))
+    if(!model.load(model_flatbuffer, mltk_model_op_resolver))
     {
         printf("ERROR: Failed to load .tflite model\n");
         while(1)

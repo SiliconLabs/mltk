@@ -66,15 +66,20 @@ def compile_model(
     if not tflm_accelerator.supports_model_compilation:
         raise RuntimeError(f'Accelerator {accelerator} does not support compilation')
 
-    if output and os.path.isdir(output):
-        report_path = f'{output}/{tflite_model.name}.{accelerator}-compilation_report.txt'
-    else:
-        report_path = f'{tflite_model.path}.{accelerator}-compilation_report.txt'
+    if 'report_path' not in kwargs:
+        if output and os.path.isdir(output):
+            output_base = f'{output}/{tflite_model.name}.{accelerator}'
+        else:
+            output_base = f'{tflite_model.path}.{accelerator}'
+
+        kwargs['report_path'] = f'{output_base}-compilation_report.txt'
+        fh = logging.FileHandler(f'{output_base}-compilation_log.txt', mode='w')
+        fh.setLevel(logging.DEBUG)
+        logger.addHandler(fh)
 
     compiled_tflite_model = tflm_accelerator.compile_model(
         tflite_model,
         logger=logger,
-        report_path=report_path,
         **kwargs
     )
 

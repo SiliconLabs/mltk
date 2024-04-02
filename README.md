@@ -7,11 +7,11 @@ This package is made available as a self-serve reference supported only by the o
 There are no Silicon Labs support services for this software at this time.
 ```
 
-<a href="https://siliconlabs.github.io/mltk" target="_blank">![version](https://img.shields.io/badge/MLTK%20Version-0.19.0-red?style=for-the-badge)</a>
+<a href="https://siliconlabs.github.io/mltk" target="_blank">![version](https://img.shields.io/badge/MLTK%20Version-0.20.0-red?style=for-the-badge)</a>
 <a href="https://pypi.org/project/silabs-mltk" target="_blank">![PyPI - Python Version](https://img.shields.io/pypi/pyversions/silabs-mltk?style=for-the-badge)</a>
-<a href="https://github.com/SiliconLabs/gecko_sdk/tree/v4.3.0" target="_blank">![gsdk](https://img.shields.io/badge/Gecko%20SDK-4.3.0-green?style=for-the-badge)</a>
-<a href="https://github.com/tensorflow/tflite-micro/tree/9bc9deab8db4d24dcca4070c8153e7d7b5d28770" target="_blank">![tflm](https://img.shields.io/badge/Tensorflow--Lite%20Micro-June%202023-orange?style=for-the-badge)</a>
-<a href="https://www.tensorflow.org/api_docs" target="_blank">![tf](https://img.shields.io/badge/Tensorflow-2.13-yellow?style=for-the-badge)</a>
+<a href="https://github.com/SiliconLabs/gecko_sdk/tree/v4.3.3" target="_blank">![gsdk](https://img.shields.io/badge/Gecko%20SDK-4.3.3-green?style=for-the-badge)</a>
+<a href="https://github.com/tensorflow/tflite-micro/tree/7005d60ede074762f01c1d0fd24ec58240af89b5" target="_blank">![tflm](https://img.shields.io/badge/Tensorflow--Lite%20Micro-March%202024-orange?style=for-the-badge)</a>
+<a href="https://www.tensorflow.org/api_docs" target="_blank">![tf](https://img.shields.io/badge/Tensorflow-2.16-yellow?style=for-the-badge)</a>
 
 This is a Python package with command-line utilities and scripts to aid the development 
 of machine learning models for Silicon Lab's embedded platforms.

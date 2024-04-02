@@ -11,3 +11,4 @@ from .commander import (
     set_adapter_info
 )
 from .download import download_commander
+from .download_run import download_image_and_run

@@ -25,7 +25,7 @@ class ParallelImageDataGenerator(ImageDataGenerator):
 
     This class works the exact same as the `Keras ImageDataGenerator <https://keras.io/preprocessing/image>`_
     except images are processed in the background using the standard Python 
-    `multiprocessing <https://docs.python.org/3.7/library/multiprocessing.html>`_ module.
+    `multiprocessing <https://docs.python.org/3.10/library/multiprocessing.html>`_ module.
     
     The can greatly improve training times as multiple CPU cores can process batch images in the background while
     training is done in the foreground on the GPU(s). 

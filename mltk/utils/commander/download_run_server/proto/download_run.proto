@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+
+message Request {
+  bytes image_data = 1;
+  string image_path = 2;
+  string platform = 3;
+  bool masserase = 4;
+  string device = 5;
+  string serial_number = 6;
+  string ip_address = 7;
+  bytes setup_script_data = 8;
+  string setup_script_args = 9;
+  bytes program_script_data = 10;
+  string program_script_args = 11;
+  bytes reset_script_data = 12;
+  string reset_script_args = 13;
+  string port = 14;
+  int32 baud = 15;
+  float timeout = 16;
+  string start_msg = 17;
+  string complete_msg = 18;
+  int32 retries = 19;
+  float lock_timeout = 20;
+}
+
+enum Status {
+  Timeout = 0;
+  Running = 1;
+  Complete = 2;
+  Error = 3;
+  DebugLog = 4;
+  Log = 5;
+  SerialOut = 6;
+}
+
+message Response {
+  Status status = 1;
+  string message = 2;
+}
+
+
+service DownloadRun {
+  rpc DownloadAndRun(Request) returns (stream Response);
+}

@@ -200,24 +200,6 @@ mltk_set(TFLITE_MICRO_ACCELERATOR_PROFILER_ENABLED ON)
 ```
 
 
-### MLTK_RUN_MODEL_FROM_RAM
-
-If enabled, the `.tflite` model file is copied from flash to RAM
-and the model executes entirely from RAM.
-
-```shell
-mltk_set(MLTK_RUN_MODEL_FROM_RAM ON)
-```
-
-__NOTE:__ To use this, the `.tflite` _must_ fit into RAM along with the normal runtime working memory.  
-__HINT:__ You could also use the `MODEL_PROFILER_MODEL_MEMORY_SECTION` variable to do something similar.
-
-
-### MLTK_RUNTIME_MEMORY_SIZE
-
-This is deprecated, see `MODEL_PROFILER_RUNTIME_MEMORY_SIZE`
-
-
 ### TFLITE_MICRO_RECORDER_ENABLED
 
 If enabled, then record each layer's input/output tensor data.

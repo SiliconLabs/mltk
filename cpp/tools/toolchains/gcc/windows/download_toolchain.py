@@ -8,9 +8,9 @@ sys.path.append(os.path.normpath(f'{CURDIR}/../../../../..'))
 
 
 
-URL = 'https://github.com/brechtsanders/winlibs_mingw/releases/download/8.4.0-7.0.0-r1/mingw-w64-x86_64-8.4.0-7.0.0-r1.7z'
-SHA1 = 'EECBC18AEB784A0A2350A16194177A4B25FD0904'
-VERSION = '8.4.0'
+URL = 'https://github.com/brechtsanders/winlibs_mingw/releases/download/13.2.0posix-17.0.6-11.0.1-ucrt-r5/winlibs-x86_64-posix-seh-gcc-13.2.0-mingw-w64ucrt-11.0.1-r5.7z'
+SHA1 = '18de8644d500fb124d5df8a9e1e37a4407eb35d2'
+VERSION = '13.2.0'
 SUBDIR = 'mingw64'
 
 

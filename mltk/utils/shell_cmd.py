@@ -75,7 +75,7 @@ def run_shell_cmd(
             env=env,
             startupinfo=si,
             shell=use_shell,
-            text=process_line_by_line, # If we're processing line-by-line, then convert the shell output to a string (instead of bytes)
+            text=False,
             close_fds=True
         )
     except FileNotFoundError as e:
@@ -163,9 +163,16 @@ def _run_with_line_processing(p:subprocess.Popen, outfile, line_processor):
 
 
 def _enqueue_output(file, q):
+    newline = ord('\n')
+
     try:
-        for line in iter(file.readline, ''):
-            q.put(line)
+        line = bytearray()
+        while True:
+            c = file.read(1)
+            line.extend(c)
+            if line[-1] == newline:
+                q.put(line)
+                line = bytearray()
     except KeyboardInterrupt:
         pass
     finally:
@@ -190,12 +197,12 @@ def _read_popen_pipes(p:subprocess.Popen, sigint:SignalHandler):
             out_line = err_line = ''
 
             try:
-                out_line = q_stdout.get_nowait()
-            except queue.Empty:
+                out_line = q_stdout.get_nowait().decode('utf-8')
+            except:
                 pass
             try:
-                err_line = q_stderr.get_nowait()
-            except queue.Empty:
+                err_line = q_stderr.get_nowait().decode('utf-8')
+            except:
                 pass
 
             if not (out_line or err_line):

@@ -17,7 +17,10 @@ const char TfliteModelParameters::METADATA_TAG[] = "SL_PARAMSv1";
 /*************************************************************************************************/
 bool TfliteModelParameters::load_from_tflite_flatbuffer(const void* flatbuffer, TfliteModelParameters& parameters)
 {
-    const void* metadata = get_metadata_from_tflite_flatbuffer(flatbuffer, TfliteModelParameters::METADATA_TAG);
+    const void* metadata = TfliteMicroModelHelper::get_metadata_from_tflite_flatbuffer(
+        flatbuffer, 
+        TfliteModelParameters::METADATA_TAG
+    );
     if(metadata == nullptr)
     {
         return false;

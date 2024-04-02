@@ -1,92 +1,30 @@
-from typing import List, Dict
+from __future__ import annotations
+from typing import List, Dict, Callable
 import re
+from dataclasses import dataclass
 import collections
-import logging
 import numpy as np
 import msgpack
 
 
-from mltk.utils.string_formatting import  format_units
-
 from .tflite_micro_accelerator import TfliteMicroAccelerator
+from .tflite_micro_model_details import TfliteMicroModelDetails
 
 
-class TfliteMicroModelDetails:
-    """TF-Lite Micro Model Details"""
 
-    def __init__(self, wrapper_details:dict):
-        self._details:dict = wrapper_details
-
-    @property
-    def name(self) -> str:
-        """Name of model"""
-        return self._details['name']
-    @property
-    def version(self)-> int:
-        """Version of model"""
-        return self._details['version']
-    @property
-    def date(self)-> str:
-        """Date of model in ISO8601 format"""
-        return self._details['date']
-    @property
-    def description(self)-> str:
-        """Description of model"""
-        return self._details['description']
-    @property
-    def classes(self) -> List[str]:
-        """List of class labels"""
-        return self._details['classes']
-    @property
-    def hash(self)-> str:
-        """Unique hash of model data"""
-        return self._details['hash']
-    @property
-    def accelerator(self)-> str:
-        """Accelerater kernels loaded into TFLM interpreter"""
-        return self._details['accelerator']
-    @property
-    def runtime_memory_size(self)-> int:
-        """Total amount of RAM required at runtime to run model"""
-        return self._details['runtime_memory_size']
-
-
-    def __str__(self):
-        s = ''
-        s += f"Name: {self.name}\n"
-        s += f"Version: {self.version}\n"
-        s += f"Date: {self.date}\n"
-        s += f"Description: {self.description}\n"
-        s += f"Hash: {self.hash}\n"
-        s += f"Accelerator: {self.accelerator}\n"
-        s += f"Classes: {', '.join(self.classes)}\n"
-        s += f"Total runtime memory: {format_units(self.runtime_memory_size)}Bytes\n"
-        return s
-
-
+@dataclass
 class TfliteMicroLayerError:
     WARNING_RE = re.compile(r'.*Op(\d+)-(\S+)\ not supported: (.*)')
+    index:int 
+    """The layer's index"""
+    name:str
+    """The layer's full name"""
+    msg:str 
+    """The layer's error msg"""
 
-    def __init__(self, index:int, name:str, msg:str):
-        self._index = index
-        self._name = name
-        self._msg = msg
-
-    @property
-    def index(self) -> int:
-        """The layer's index"""
-        return self._index
-    @property
-    def name(self) -> int:
-        """The layer's full name"""
-        return self._name
-    @property
-    def msg(self) -> int:
-        """The layer's error msg"""
-        return self._msg
-
+     
     @staticmethod
-    def _parse_error_log(msg):
+    def create(msg) -> TfliteMicroLayerError:
         match = TfliteMicroLayerError.WARNING_RE.match(msg)
         if not match:
             return None
@@ -136,7 +74,6 @@ class TfliteMicroProfiledLayerResult(collections.defaultdict):
         return self['energy']
 
 
-
 class TfliteMicroModel:
     """This class wrappers the TF-Lite Micro interpreter loaded with a .tflite model"""
 
@@ -146,41 +83,40 @@ class TfliteMicroModel:
         tflm_accelerator:TfliteMicroAccelerator,
         flatbuffer_data:bytes,
         enable_profiler:bool=False,
+        enable_recorder:bool=False,
         enable_tensor_recorder:bool=False,
         force_buffer_overlap:bool=False,
-        runtime_buffer_size:int=0,
+        runtime_buffer_sizes:List[int] = None,
     ):
         # pylint: disable=protected-access
         from .tflite_micro import TfliteMicro
 
-        # Hide non-critical errors while loading the model
-        # Any layer errors will be parsed separately
-        logger = TfliteMicro.get_logger()
-        saved_log_level = logger.level
-        logger.setLevel(logging.CRITICAL)
-
-        try:
-            TfliteMicro._clear_logged_errors()
-            accelerator_wrapper = None if tflm_accelerator is None else tflm_accelerator.accelerator_wrapper
-            self._model_wrapper = tflm_wrapper.TfliteMicroModelWrapper()
-            if not self._model_wrapper.load(
-                flatbuffer_data,
-                accelerator_wrapper,
-                enable_profiler,
-                enable_tensor_recorder,
-                force_buffer_overlap,
-                runtime_buffer_size
-            ):
-                raise RuntimeError(
-                    f'Failed to load model, additional info:\n{TfliteMicro._get_logged_errors_str()}'
-                )
-        finally:
-            logger.setLevel(saved_log_level)
-
-        self._tflm_accelerator = tflm_accelerator
+        self._layer_callback:Callable[[int,List[bytes]], bool] = None
         self._layer_errors:List[TfliteMicroLayerError] = []
-        for msg in TfliteMicro._get_logged_errors():
-            err = TfliteMicroLayerError._parse_error_log(msg)
+        self._tflm_accelerator = tflm_accelerator
+
+        if not runtime_buffer_sizes:
+            runtime_buffer_sizes = [0]
+
+        TfliteMicro._clear_logged_errors()
+        accelerator_wrapper = None if tflm_accelerator is None else tflm_accelerator.accelerator_wrapper
+        self._model_wrapper = tflm_wrapper.TfliteMicroModelWrapper()
+        if not self._model_wrapper.load(
+            flatbuffer_data,
+            accelerator_wrapper,
+            enable_profiler,
+            enable_recorder,
+            enable_tensor_recorder,
+            force_buffer_overlap,
+            runtime_buffer_sizes
+        ):
+            raise RuntimeError(
+                f'Failed to load model, additional info:\n{TfliteMicro._get_logged_errors_str()}'
+            )
+
+        layer_msgs = self._model_wrapper.get_layer_msgs()
+        for msg in layer_msgs:
+            err = TfliteMicroLayerError.create(msg)
             if err:
                 self._layer_errors.append(err)
 
@@ -264,14 +200,20 @@ class TfliteMicroModel:
         return retval
 
 
+
+    @property
+    def is_recorder_enabled(self) -> bool:
+        """Return if the model recorder is enabled """
+        return self._model_wrapper.is_recorder_enabled()
+    
     @property
     def is_tensor_recorder_enabled(self) -> bool:
         """Return if the tensor recorder is enabled """
         return self._model_wrapper.is_tensor_recorder_enabled()
 
 
-    def get_recorded_data(self) -> List[Dict[str,object]]:
-        """Return the recorded contents of each model layers' tensors
+    def get_recorded_data(self) -> Dict:
+        """Return the recorded contents of the model
 
         Returns:
             A list where each entry contains the input/output tensors
@@ -286,7 +228,30 @@ class TfliteMicroModel:
         except Exception as e:
             raise RuntimeError(f'Failed to parse recorded model binary msgpack data, err: {e}')
 
-        return recorded_data
+        retval = dict(
+            memory_plan=recorded_data.pop('memory_plan', None),
+            layers=[]
+        )
+        
+
+        init_layers = recorded_data.pop('init', [])
+        prepare_layers = recorded_data.pop('prepare', [])
+        execute_layers = recorded_data.pop('execute', [])
+
+        def _merge_layers(layers):
+            for l in layers:
+                index = l.pop('index')
+                while len(retval['layers']) <= index:
+                    retval['layers'].append({})
+                retval['layers'][index].update(l)
+
+        _merge_layers(init_layers)
+        _merge_layers(prepare_layers)
+        _merge_layers(execute_layers)
+        retval.update(recorded_data)
+
+        return retval
+    
 
     def get_layer_error(self, index:int) -> TfliteMicroLayerError:
         """Return the TfliteMicroLayerError at the given layer index if found else return None"""
@@ -295,6 +260,25 @@ class TfliteMicroModel:
                 return err
         return None
 
+    def set_layer_callback(
+        self, 
+        callback:Callable[[int,List[bytes]], bool]
+    ):
+        self._layer_callback = callback 
+        self._model_wrapper.set_layer_callback(self._layer_callback_handler if callback else None)
+
+
+    def _layer_callback_handler(self, param:dict) -> bool:
+        if not self._layer_callback:
+            return 
+
+        layer_index = param.get('index')
+        layer_outputs = param.get('outputs')
+
+        return self._layer_callback(
+            index=layer_index, 
+            outputs=layer_outputs
+        )
 
     def __str__(self) -> str:
         return f'{self.details}'

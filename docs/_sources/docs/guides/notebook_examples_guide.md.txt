@@ -15,7 +15,7 @@ To run an MLTK example or tutorial notebook in VSCode:
 
 1. Open [VSCode](https://code.visualstudio.com)
 2. Select a Python Interpreter  
-   This can be any supported Python Interpreter (Python3.7, 3.8, 3.9 or 3.10), however, it's recommended to create a
+   This can be any supported Python Interpreter (Python 3.9, 3.10, 3.11, _or_ 3.12), however, it's recommended to create a
    Python "virtual environment" for installing the MLTK.  
    See the [Installation Guide](../installation.md) for more details.  
    To select the Python Interpreter open the VSCode "Command Palette" (`Ctrl+Shift+P`), and enter: __Python: Select Interpreter__  

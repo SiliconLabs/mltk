@@ -124,18 +124,3 @@ mltk_set(AUDIO_CLASSIFIER_MODEL ~/my_models/my_model.mltk.zip)
 #       https://siliconlabs.github.io/mltk/docs/guides/model_search_path.html
 mltk_set(AUDIO_CLASSIFIER_MODEL image_example1)
 ```
-
-
-## MLTK_RUN_MODEL_FROM_RAM
-
-In the [__mltk__/cpp/shared/apps/model_profiler](../../cpp/shared/apps/model_profiler) app, load the `.tflite` model into RAM before
-running inference. This causes all models weights and filters to 
-reside in RAM as well.
-
-__NOTE:__ Bobcat only has 256K of RAM total. So the model
-must be small enough to fit the model + TFLM working memory.
-
-```shell
-mltk_set(MLTK_RUN_MODEL_FROM_RAM ON)
-```
-

@@ -1,10 +1,12 @@
 #include <exception>
 
+#include "tensorflow/lite/micro/memory_helpers.h"
 #include "all_ops_resolver.h"
 #include "tflite_micro_model_wrapper.hpp"
 #include "tflite_micro_accelerator_wrapper.hpp"
 #include "mltk_tflite_micro_helper.hpp"
 #include "pybind11_helper.hpp"
+#include "mltk_tflite_micro_accelerator_recorder.hpp"
 
 
 extern bool mltk_tflm_force_buffer_overlap;
@@ -18,7 +20,6 @@ static tflite::AllOpsResolver reference_ops_resolver;
 TfliteMicroModelWrapper::~TfliteMicroModelWrapper()
 {
     unload();
-    mltk_tflite_micro_set_accelerator(nullptr);
 }
 
 /*************************************************************************************************/
@@ -26,12 +27,24 @@ bool TfliteMicroModelWrapper::load(
     const std::string& flatbuffer_data,
     void* accelerator,
     bool enable_profiler,
+    bool enable_recorder,
     bool enable_tensor_recorder,
     bool force_buffer_overlap,
-    int runtime_memory_size
+    const std::vector<int>& runtime_memory_sizes
 )
 {
+    if(runtime_memory_sizes.size() == 0)
+    {
+        get_logger().error("Must provide runtime memory size(s)");
+        return false;
+    }
+
+    TfliteMicroKernelMessages::set_flush_callback(kernel_message_callback, this);
+
     get_logger().debug("Loading model ...");
+
+    // This ensures the accelerator recorded is included in the python wrapper DLL
+    TfliteMicroAcceleratorRecorder::instance();
 
     tflite::MicroOpResolver *op_resolver;
     this->_flatbuffer_data = flatbuffer_data;
@@ -40,6 +53,10 @@ bool TfliteMicroModelWrapper::load(
     if(enable_profiler)
     {
         this->enable_profiler();
+    }
+    if(enable_recorder)
+    {
+        this->enable_recorder();
     }
     if(enable_tensor_recorder)
     {
@@ -60,24 +77,53 @@ bool TfliteMicroModelWrapper::load(
 
     mltk_tflm_force_buffer_overlap = force_buffer_overlap;
 
-    uint8_t* runtime_buffer = nullptr;
-    if(runtime_memory_size > 0)
+    const int runtime_buffer_count = runtime_memory_sizes.size();
+    uint8_t* runtime_buffers[runtime_buffer_count];
+    int32_t runtime_buffer_sizes[runtime_buffer_count];
+
+    for(int i = 0; i < runtime_buffer_count; ++i)
     {
-        _runtime_memory.reserve(runtime_memory_size);
-        runtime_buffer = (uint8_t*)_runtime_memory.c_str();
-        memset(runtime_buffer, 0, runtime_memory_size);
+        runtime_buffer_sizes[i] = runtime_memory_sizes[i];
+        if(runtime_buffer_sizes[i] > 0)
+        {
+            auto buffer = new std::string();
+            buffer->reserve(runtime_buffer_sizes[i]);
+            _runtime_buffers.push_back(buffer);
+            runtime_buffers[i] = (uint8_t*)buffer->c_str();
+            memset(runtime_buffers[i], 0, runtime_buffer_sizes[i]);
+        }
+        else 
+        {
+            runtime_buffers[i] = nullptr;
+        }
     }
 
     bool retval = TfliteMicroModel::load(
         this->_flatbuffer_data.c_str(),
-        *op_resolver,
-        runtime_buffer,
-        runtime_memory_size
+        op_resolver,
+        runtime_buffers,
+        runtime_buffer_sizes,
+        runtime_buffer_count
     );
 
     mltk_tflm_force_buffer_overlap = false;
 
     return retval;
+}
+
+/*************************************************************************************************/
+void TfliteMicroModelWrapper::unload()
+{
+    TfliteMicroModel::unload();
+    mltk_tflite_micro_set_accelerator(nullptr);
+    TfliteMicroKernelMessages::set_flush_callback(nullptr);
+    for(auto buffer : _runtime_buffers)
+    {
+        delete buffer;
+    }
+    _runtime_buffers.clear();
+    _layer_msgs.clear();
+    _layer_callback = nullptr;
 }
 
 /*************************************************************************************************/
@@ -194,7 +240,7 @@ py::list TfliteMicroModelWrapper::get_profiling_results() const
 }
 
 /*************************************************************************************************/
-py::bytes TfliteMicroModelWrapper::get_recorded_data()
+py::object TfliteMicroModelWrapper::get_recorded_data()
 {
     const uint8_t* data;
     uint32_t length;
@@ -208,8 +254,88 @@ py::bytes TfliteMicroModelWrapper::get_recorded_data()
     return py::none();
 }
 
+/*************************************************************************************************/
+py::list TfliteMicroModelWrapper::get_layer_msgs() const
+{
+    py::list msgs;
+
+    for(auto& e : _layer_msgs)
+    {
+        msgs.append(e);
+    }
+
+    return msgs;
+}
+
+/*************************************************************************************************/
+void TfliteMicroModelWrapper::set_layer_callback(std::function<bool(py::dict)> callback)
+{
+    if(callback == nullptr)
+    {
+        TfliteMicroModelHelper::set_layer_callback(tflite_context(), nullptr);
+        return;
+    }
+
+    _layer_callback = callback;
+    TfliteMicroModelHelper::set_layer_callback(
+        tflite_context(), 
+        TfliteMicroModelWrapper::layer_callback_handler, 
+        this
+    );
+}
+
+/*************************************************************************************************/
+TfLiteStatus TfliteMicroModelWrapper::layer_callback_handler(
+    int index,
+    TfLiteContext& context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    TfLiteStatus invoke_status,
+    void* arg
+)
+{
+    auto& self = *reinterpret_cast<TfliteMicroModelWrapper*>(arg);
+
+    py::dict callback_arg;
+    py::list outputs;
+    callback_arg["index"] = index;
+    callback_arg["outputs"] = outputs;
 
 
+    for(int i = 0; i < node_and_registration.node.outputs->size; ++i)
+    {
+        auto output_index = node_and_registration.node.outputs->data[i];
+        auto output_tensor = context.GetEvalTensor(&context, output_index);
+        if(output_tensor == nullptr)
+        {
+            get_logger().error("Output tensor-%d is null when it shouldn't be", i);
+            return kTfLiteError;
+        }
 
+        const auto output_shape = tflite::micro::GetTensorShape(output_tensor);
+        const auto output_flat_size = output_shape.FlatSize();
+        size_t output_dtype_len;
+
+        tflite::TfLiteTypeSizeOf(output_tensor->type, &output_dtype_len);
+        const int output_byte_len = output_flat_size*output_dtype_len;
+
+        std::string buf((const char*)output_tensor->data.raw, output_byte_len);
+        outputs.append(py::bytes(buf));
+    }
+
+    const bool retval = self._layer_callback(callback_arg);
+
+    return retval ? kTfLiteOk : kTfLiteError;
+}
+
+
+/*************************************************************************************************/
+void TfliteMicroModelWrapper::kernel_message_callback(
+    const char* msg, 
+    void *arg
+)
+{
+    auto& self = *reinterpret_cast<TfliteMicroModelWrapper*>(arg);
+    self._layer_msgs.push_back(std::string(msg));
+}
 
 } // namespace mltk

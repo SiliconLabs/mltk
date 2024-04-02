@@ -312,7 +312,7 @@ static int os_init()
         const char* USERPROFILE_DIR = getenv("USERPROFILE");
         if(USERPROFILE_DIR != NULL)
         {
-            snprintf(addr2line_path, sizeof(addr2line_path), "%s\\.mltk\\tools\\toolchains\\gcc\\windows\\8.4.0\\mingw64\\bin\\addr2line.exe", USERPROFILE_DIR);
+            snprintf(addr2line_path, sizeof(addr2line_path), "%s\\.mltk\\tools\\toolchains\\gcc\\windows\\13.2.0\\mingw64\\bin\\addr2line.exe", USERPROFILE_DIR);
             if(stat(addr2line_path, &buffer) != 0)
             {
                 // If we can't find it, then just revert to the default location

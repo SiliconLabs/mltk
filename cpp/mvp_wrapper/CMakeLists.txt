@@ -76,7 +76,7 @@ if(HOST_OS_IS_WINDOWS)
 else()
   target_link_options(${MODULE_NAME}
   PUBLIC
-    -static-libgcc -static-libstdc++ -pthread
+    -static-libgcc -pthread
   )
 endif()
 
@@ -85,6 +85,15 @@ endif()
 set(mvp_accelerator_dir "${TFLITE_MICRO_WRAPPER_ACCELERATORS_DIR}/mvp")
 tflite_micro_link_python_wrapper(${MODULE_NAME} ${mvp_accelerator_dir})
 
+if(HOST_OS_IS_WINDOWS)
+  # This is required by the stacktrace component for Windows
+  # We link it here to work-around potential runtime DLL import errors
+  # NOTE: This must come AFTER the tflite_micro_link_python_wrapper() call above
+  target_link_libraries(${MODULE_NAME}
+  PUBLIC
+    imagehlp
+  )
+endif()
 
 target_compile_features(${MODULE_NAME}  
 PUBLIC 

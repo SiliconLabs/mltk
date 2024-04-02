@@ -5,8 +5,6 @@ from mltk.utils.system import get_current_os
 from mltk.utils.test_helper import get_logger
 from mltk.utils.path import create_tempdir
 
-#SPECIFIC_PLATFORM = 'brd4186'
-
 
 APP_TARGETS = [
     'mltk_hello_world',
@@ -20,6 +18,7 @@ APP_TARGETS = [
 EMBEDDED_PLATFORMS = [
     'brd2601',
     'brd2204',
+    'brd2705',
     'brd4166',
     'brd4186',
     'brd4401',
@@ -31,6 +30,7 @@ ALL_PLATFORMS = [
 
 PLATFORM_ACCELERATORS = {
     'brd2601' : 'mvp',
+    'brd2705' : 'mvp',
     'brd4186': 'mvp',
     'brd4401': 'mvp',
     'windows': 'mvp',

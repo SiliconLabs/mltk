@@ -899,17 +899,29 @@ macro(mltk_load_python)
       set(Python3_FIND_STRATEGY LOCATION)
       set(Python3_FIND_REGISTRY NEVER)
       set(Python3_ROOT_DIR "${MLTK_PYTHON_VENV_DIR}")
-      set(ENV{VIRTUAL_ENV} "${MLTK_PYTHON_VENV_DIR}")
-      unset(Python3_FOUND) # Ensure Python is found again
+      set(Python_FIND_VIRTUALENV ONLY)
+      set(Python_FIND_STRATEGY LOCATION)
+      set(Python_FIND_REGISTRY NEVER)
+      set(Python_ROOT_DIR "${MLTK_PYTHON_VENV_DIR}")
+
+      unset(Python3_FOUND) # Ensure Python3 is found again
       unset(Python3_Interpreter_FOUND)
       unset(Python3_EXECUTABLE)
+      unset(Python_FOUND) # Ensure Python is found again
+      unset(Python_Interpreter_FOUND)
+      unset(Python_EXECUTABLE)
+
+      set(ENV{VIRTUAL_ENV} "${MLTK_PYTHON_VENV_DIR}")
+
     elseif(NOT MLTK_ALLOW_EXTERNAL_PYTHON_EXECUTABLE)
       mltk_warn("Directory not found: MLTK_PYTHON_VENV_DIR=${MLTK_PYTHON_VENV_DIR}")
     endif()
 
+    find_package(Python REQUIRED) # Ensure both Python and Python3 point to the same interpreter
     find_package(Python3 REQUIRED)
 
-    mltk_debug("Python executable: ${Python3_EXECUTABLE}")
+    mltk_debug("Python executable: ${Python_EXECUTABLE}")
+    mltk_debug("Python3 executable: ${Python3_EXECUTABLE}")
     mltk_get(MLTK_ALLOW_EXTERNAL_PYTHON_EXECUTABLE)
     string(TOLOWER "${Python3_EXECUTABLE}" Python3_EXECUTABLE_lower)
     string(TOLOWER "${MLTK_PYTHON_VENV_DIR}" MLTK_PYTHON_VENV_DIR_lower)
@@ -1137,26 +1149,27 @@ endfunction()
 #
 # Add a .tflite to the given build target.
 #
-# This does the following:
-# 1. Convert given .tflite to C array
-# 2. Generate new .c file with .tflite C array
-# 3. Append generated .c file as source to build target
-#
-# The built application can then access the .tflite model
-# using the C variables:
-# extern "C" const uint8_t sl_tflite_model_array[];
-# extern "C" const uint32_t sl_tflite_model_len;
-#
 # target - CMake build target
-# tflite_path - File path to .tflite or MLTK model name
-# MEMORY_SECTION - Optional, specify which memory section the model will be placed
+# tflite_path - Required, gile path to .tflite or MLTK model name
+# OUTPUT - Optional,  path to generated output file
+# MODEL_MEMORY_SECTION - Optional, specify which memory section the model will be placed
+# RUNTIME_MEMORY_SIZE - Optional, size of the runtime memory buffer
+# RUNTIME_MEMORY_SECTION - Optional, specify which memory section the runtime buffer will be placed
+# GENERATE_OP_RESOLVER - Optional, Generate the op resolver from the model's layers
 function(mltk_add_tflite_model target tflite_path)
-  cmake_parse_arguments(_PARSED "" "MEMORY_SECTION" "" "${ARGN}")
+  cmake_parse_arguments(_PARSED "GENERATE_OP_RESOLVER" "MODEL_MEMORY_SECTION;RUNTIME_MEMORY_SECTION;RUNTIME_MEMORY_SIZE;OUTPUT" "" "${ARGN}")
   mltk_load_python()
 
-  set(_generated_model_output_path "${MLTK_BINARY_DIR}/${target}_generated_model.tflite.c")
-  if(NOT EXISTS ${_generated_model_output_path})
-      file(WRITE ${_generated_model_output_path})
+  if(NOT _PARSED_OUTPUT)
+    set(_PARSED_OUTPUT "${CMAKE_BINARY_DIR}/${target}_model_generated.hpp")
+    target_include_directories(${target}
+    PRIVATE 
+      "${CMAKE_BINARY_DIR}"
+    )  
+  endif()
+
+  if(NOT EXISTS ${_PARSED_OUTPUT})
+      file(WRITE ${_PARSED_OUTPUT})
   endif()
 
   mltk_get(TFLITE_MICRO_ACCELERATOR)
@@ -1164,8 +1177,20 @@ function(mltk_add_tflite_model target tflite_path)
     set(_accelerator_arg --accelerator ${TFLITE_MICRO_ACCELERATOR})
   endif()
 
-  if(_PARSED_MEMORY_SECTION)
-    set(_generate_model_memory_section_arg --memory-section ${_PARSED_MEMORY_SECTION})
+  if(_PARSED_MODEL_MEMORY_SECTION)
+    set(_model_memory_section_arg --model-memory-section ${_PARSED_MODEL_MEMORY_SECTION})
+  endif()
+
+  if(_PARSED_RUNTIME_MEMORY_SECTION)
+    set(_runtime_memory_section_arg --runtime-memory-section ${_PARSED_RUNTIME_MEMORY_SECTION})
+  endif()
+
+  if(_PARSED_RUNTIME_MEMORY_SIZE OR "${_PARSED_RUNTIME_MEMORY_SIZE}" STREQUAL "0")
+    set(_runtime_memory_size_arg --runtime-memory-size ${_PARSED_RUNTIME_MEMORY_SIZE})
+  endif()
+
+  if(_PARSED_GENERATE_OP_RESOLVER)
+   set(_op_resolver_arg --generate-op-resolver)
   endif()
 
   mltk_get(MLTK_TFLITE_MODEL_DEPENDENCIES)
@@ -1173,17 +1198,23 @@ function(mltk_add_tflite_model target tflite_path)
     set(_dependency_arg --depends ${MLTK_TFLITE_MODEL_DEPENDENCIES})
   endif()
 
+  mltk_get(MLTK_TFLITE_MODEL_SETTINGS_FILE)
+  if(MLTK_TFLITE_MODEL_SETTINGS_FILE)
+    set(_settings_file_arg --settings-file "${MLTK_TFLITE_MODEL_SETTINGS_FILE}")
+  endif()
+
+  mltk_get(MLTK_PLATFORM_NAME)
+  if(MLTK_PLATFORM_NAME)
+    set(_platform_arg --platform ${MLTK_PLATFORM_NAME})
+  endif()
+
   add_custom_target(${target}_generate_model
-      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/generate_model_header.py "${tflite_path}" --name "sl_tflite_model_array" --length_name "sl_tflite_model_len" --output "${_generated_model_output_path}" ${_accelerator_arg} ${_generate_model_memory_section_arg} ${_dependency_arg}
-      COMMENT "Generating ${target}_generated_model.tflite.c from ${tflite_path}"
-      BYPRODUCTS ${_generated_model_output_path}
+      COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_UTILS_DIR}/generate_model_header.py "${tflite_path}" --output "${_PARSED_OUTPUT}" ${_platform_arg} ${_accelerator_arg} ${_model_memory_section_arg} ${_runtime_memory_section_arg} ${_runtime_memory_size_arg} ${_op_resolver_arg} ${_memory_layout_arg} ${_dependency_arg} ${_settings_file_arg}
+      COMMENT "Generating ${_PARSED_OUTPUT} from ${tflite_path} 
+      ${_accelerator_arg} ${_model_memory_section_arg} ${_runtime_memory_section_arg} ${_runtime_memory_size_arg} ${_op_resolver_arg} ${_memory_layout_arg} ${_dependency_arg} ${_settings_file_arg}"
+      BYPRODUCTS ${_PARSED_OUTPUT}
   )
   add_dependencies(${target} ${target}_generate_model)
-
-  target_sources(${target}
-  PRIVATE
-      ${_generated_model_output_path}
-  )
 
 endfunction()
 

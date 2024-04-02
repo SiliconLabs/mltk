@@ -27,7 +27,8 @@ def update_launch_json(
     serial_number:str=None,
     interface:str='swd',
     speed:str='auto',
-    svd_path:str=None
+    svd_path:str=None,
+    jlink_devices_xml_path:str=None
 ):
     """
     Update the .vscode/launch.json
@@ -102,12 +103,20 @@ def update_launch_json(
 
         commander_dir = os.path.dirname(download_commander()).replace('\\', '/')
 
-        if commander_settings['debug_server']:
+        if commander_settings.get('debug_server', None):
             segger_server_path = commander_settings['debug_server']
         elif is_windows():
             segger_server_path = 'C:/Program Files/SEGGER/JLink/JLinkGDBServerCL.exe'
         else:
             segger_server_path = 'JLinkGDBServerCL'
+
+        # If jlink_devices_xml_path was not given to this function,
+        # then check if it's in the commander settings
+        if not jlink_devices_xml_path and commander_settings.get('jlink_devices_xml_path', None):
+            jlink_devices_xml_path = commander_settings['jlink_devices_xml_path']
+
+        # If jlink_devices_xml_path is not given, then default to commander's path
+        jlink_devices_xml_path = jlink_devices_xml_path or f'{commander_dir}/resources/jlink'
 
         config_name = f'Debug {platform}: {name}'
         new_config = dict(
@@ -121,7 +130,7 @@ def update_launch_json(
             cwd = workspace_dir,
             armToolchainPath = toolchain_dir,
             serverpath = segger_server_path.replace('\\', '/'),
-            serverArgs = ['-JLinkDevicesXMLPath', f'{commander_dir}/resources/jlink'],
+            serverArgs = ['-JLinkDevicesXMLPath', jlink_devices_xml_path],
             executable = exe_path,
             preRestartCommands = [
                 'enable breakpoint',
@@ -152,7 +161,7 @@ def update_launch_json(
     for i, cfg in enumerate(configurations):
         if cfg['name'] == config_name:
             existing_config = configurations[i]
-            update_keys = ('program', 'executable', 'serialNumber', 'ipAddress', 'armToolchainPath')
+            update_keys = ('program', 'executable', 'serialNumber', 'ipAddress', 'armToolchainPath', 'serverArgs')
             for key in update_keys:
                 if key in new_config:
                     existing_config[key] = new_config[key]
@@ -191,6 +200,7 @@ if __name__ == '__main__':
     parser.add_argument('--interface', help=' JLink debugger interface (jtag, swd, etc)', default='swd')
     parser.add_argument('--speed', help=' JLink debugger speed', default='auto')
     parser.add_argument('--svd_path', help='File path to .svd file for given platform')
+    parser.add_argument('--jlink_devices_xml_path', help='File path to Segger JLinkDevices.xml. If omitted then just ~/.mltk/tools/commander/<version')
 
 
     args = parser.parse_args()
@@ -207,7 +217,8 @@ if __name__ == '__main__':
             ip_address=args.ip_address,
             interface=args.interface,
             speed=args.speed,
-            svd_path=args.svd_path
+            svd_path=args.svd_path,
+            jlink_devices_xml_path=args.jlink_devices_xml_path
         )
     except Exception as cli_ex:
         traceback.print_exc()

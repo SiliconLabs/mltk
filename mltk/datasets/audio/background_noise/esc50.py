@@ -27,9 +27,9 @@ from mltk.utils.process_pool import ProcessPool
 from mltk.core.preprocess.utils import audio as audio_utils
 
 
-DOWNLOAD_URL = 'https://github.com/karoldvl/ESC-50/archive/master.zip'
+DOWNLOAD_URL = 'https://github.com/karolpiczak/ESC-50/archive/a5e0c7451e12a751302b32283f1f039cbd111356.zip'
 """Public download URL"""
-VERIFY_SHA1 = '60764EEF4F073D27A766033A47956E23022A2EBC'
+VERIFY_SHA1 = '160bb1269418240f9d2bb86eee598ffbd882ca89'
 """SHA1 hash of the downloaded archive"""
 
 

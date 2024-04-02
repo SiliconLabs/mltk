@@ -1,7 +1,16 @@
+import os
+import sys 
+
+try:
+    import imp 
+except ModuleNotFoundError:
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+
 try:
     # This works around the error: module 'tensorflow' has no attribute 'io'
     # when importing tensorflow_lite_support.metadata.schema_py_generated
-    import os
+    
     import tensorflow_lite_support
 
     tensorflow_lite_support_dir = os.path.dirname(tensorflow_lite_support.__file__)
@@ -23,8 +32,8 @@ except:
 
 
 try:
-    # Newer versions use the package at: tflite_support
-    from tflite_support.schema_py_generated import *
+    # Linux uses this package
+    from tensorflow_lite_support.metadata.schema_py_generated import * # pylint: disable=wildcard-import,unused-wildcard-import
 except ModuleNotFoundError:
-    # Older versions use the package at: tensorflow_lite_support
-    from tensorflow_lite_support.metadata.schema_py_generated import *
+    # While Windows uses this package
+    from tflite_support.schema_py_generated import *  # pylint: disable=wildcard-import,unused-wildcard-import

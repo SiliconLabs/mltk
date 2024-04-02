@@ -2,7 +2,8 @@
 
 
 def should_patch_file(path: str) -> object:
-
+    if path.endswith('custom/gtest.h'):
+        return dict(func=process_custom_gtest_h, state=0)
     if path.endswith('custom/gtest-port.h'):
         return dict(func=process_custom_gtest_port_h, state=0)
     if path.endswith('internal/gtest-port.h'):
@@ -18,23 +19,52 @@ def should_patch_file(path: str) -> object:
 def process_file_line(lineno: int, line: str, arg: object) -> str:
     return arg['func'](lineno, line, arg)
 
+def process_custom_gtest_h(lineno: int, line: str, context: dict) -> str:
+    if context['state'] == 0 and 'GOOGLETEST_INCLUDE_GTEST_INTERNAL_CUSTOM_GTEST_H_' in line:
+        context['state'] = 1
+
+    elif context['state'] == 1:
+        context['state'] = 2
+        s = '#define GOOGLETEST_INCLUDE_GTEST_INTERNAL_CUSTOM_GTEST_H_\n'
+        s += '#include "./gtest-port.h"\n'
+        return s
+
+    elif context['state'] == 2:
+        return None 
+
+    return line
+
 
 def process_custom_gtest_port_h(lineno: int, line: str, context: dict) -> str:
     patch_data=\
-"""#ifdef __arm__
+"""
+#define GOOGLETEST_INCLUDE_GTEST_INTERNAL_CUSTOM_GTEST_PORT_H_
+#ifdef __arm__
+#undef GTEST_HAS_CLONE
 #define GTEST_HAS_CLONE             0
+#undef GTEST_HAS_EXCEPTIONS
 #define GTEST_HAS_EXCEPTIONS        0
+#undef GTEST_HAS_POSIX_RE
 #define GTEST_HAS_POSIX_RE          0
+#undef GTEST_HAS_RTTI
 #define GTEST_HAS_RTTI              0
+#undef GTEST_HAS_PTHREAD
 #define GTEST_HAS_PTHREAD           0
+#undef GTEST_HAS_STD_WSTRING
 #define GTEST_HAS_STD_WSTRING       0
+#undef GTEST_HAS_SEH
 #define GTEST_HAS_SEH               0
+#undef GTEST_HAS_STREAM_REDIRECTION
 #define GTEST_HAS_STREAM_REDIRECTION 0
+#undef GTEST_LINKED_AS_SHARED_LIBRARY
 #define GTEST_LINKED_AS_SHARED_LIBRARY 0
+#undef GTEST_CREATE_SHARED_LIBRARY
 #define GTEST_CREATE_SHARED_LIBRARY 0
+#undef GTEST_HAS_TR1_TUPLE
 #define GTEST_HAS_TR1_TUPLE         0
-#define GTEST_HAS_DEATH_TEST        0
-#endif
+#undef GTEST_HAS_DEATH_TEST
+
+#endif // __arm__
 """
 
     if context['state'] == 0 and 'GOOGLETEST_INCLUDE_GTEST_INTERNAL_CUSTOM_GTEST_PORT_H_' in line:
@@ -130,9 +160,9 @@ def process_gtest_cc(lineno: int, line: str, context: dict) -> str:
         state['force_color'] = 1
         return 'static const bool in_color_mode = true; // Patched by MLTK\n' 
 
-    if state['unstatic printf'] == 0 and line.strip() == 'static void ColoredPrintf(GTestColor color, const char *fmt, ...) {':
+    if state['unstatic printf'] == 0 and line.strip().startswith('static void ColoredPrintf('):
         state['unstatic printf'] = 1
-        return 'void ColoredPrintf(GTestColor color, const char *fmt, ...) { // Patched by MLTK\n' 
+        return 'void ColoredPrintf(GTestColor color, const char* fmt, ...) { // Patched by MLTK\n' 
 
     if state['color'] == 0 and line.strip() == 'if (!use_color) {':
         state['color'] = 1

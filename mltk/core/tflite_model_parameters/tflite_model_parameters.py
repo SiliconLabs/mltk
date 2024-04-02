@@ -38,7 +38,7 @@ class TfliteModelParameters(FlatbufferDictionary):
     """
 
     @staticmethod
-    def load_from_tflite_file(tflite_path:str):
+    def load_from_tflite_file(tflite_path:str, tag:str=None):
         """Load the TfliteModelParameters from the given .tflite model file's metadata"""
 
         if not os.path.exists(tflite_path):
@@ -47,34 +47,36 @@ class TfliteModelParameters(FlatbufferDictionary):
         with open(tflite_path, 'rb') as fp:
             tflite_flatbuffer = fp.read()
 
-        return TfliteModelParameters.load_from_tflite_flatbuffer(tflite_flatbuffer)
+        return TfliteModelParameters.load_from_tflite_flatbuffer(tflite_flatbuffer, tag=tag)
 
 
     @staticmethod
-    def load_from_tflite_flatbuffer(tflite_flatbuffer:bytes):
+    def load_from_tflite_flatbuffer(tflite_flatbuffer:bytes, tag:str=None):
         """Load the TfliteModelParameters from the given .tflite model flatbuffer bytes"""
 
         # Load the .tflite model flatbuffer
         tflite_model = TfliteModel(tflite_flatbuffer)
 
-        return TfliteModelParameters.load_from_tflite_model(tflite_model)
+        return TfliteModelParameters.load_from_tflite_model(tflite_model, tag=tag)
 
 
     @staticmethod
-    def load_from_tflite_model(tflite_model: TfliteModel):
+    def load_from_tflite_model(tflite_model: TfliteModel, tag:str=None):
         """Load the TfliteModelParameters from the given TfliteModel object"""
 
+        tag = tag or TFLITE_METADATA_TAG
+
         # Retrieve the model parameters from the metadata
-        parameters_flatbuffer = tflite_model.get_metadata(TFLITE_METADATA_TAG)
+        parameters_flatbuffer = tflite_model.get_metadata(tag)
         if parameters_flatbuffer is None:
-            raise RuntimeError(f'Model parameters with tag {TFLITE_METADATA_TAG} not found in .tflite model file')
+            raise RuntimeError(f'Model parameters with tag {tag} not found in .tflite model file')
 
         # Load the TfliteModelParameters object from the flatbuffer
         params = TfliteModelParameters.deserialize(parameters_flatbuffer)
         return TfliteModelParameters(params)
 
 
-    def add_to_tflite_file(self, tflite_path:str, output:str=None):
+    def add_to_tflite_file(self, tflite_path:str, output:str=None, tag:str=None):
         """Add the model parameters to the given .tflite model file
 
         This adds the current parameters to the given .tflite model file's metadata.
@@ -86,12 +88,13 @@ class TfliteModelParameters(FlatbufferDictionary):
         """
         tflite_model = TfliteModel.load_flatbuffer_file(tflite_path)
         parameters_flatbuffer = self.serialize()
-        tflite_model.add_metadata(TFLITE_METADATA_TAG, parameters_flatbuffer)
+        tag = tag or TFLITE_METADATA_TAG
+        tflite_model.add_metadata(tag, parameters_flatbuffer)
 
         tflite_model.save(output)
 
 
-    def add_to_tflite_flatbuffer(self, tflite_flatbuffer:bytes) -> bytes:
+    def add_to_tflite_flatbuffer(self, tflite_flatbuffer:bytes, tag:str=None) -> bytes:
         """Add the model parameters to the given .tflite flatbuffer and return
         the updated flatbuffer
 
@@ -104,16 +107,18 @@ class TfliteModelParameters(FlatbufferDictionary):
         parameters_flatbuffer = self.serialize()
 
         tflite_model = TfliteModel(tflite_flatbuffer)
-        tflite_model.add_metadata(TFLITE_METADATA_TAG, parameters_flatbuffer)
+        tag = tag or TFLITE_METADATA_TAG
+        tflite_model.add_metadata(tag, parameters_flatbuffer)
 
         return tflite_model.flatbuffer_data
 
 
-    def add_to_tflite_model(self, tflite_model:TfliteModel):
+    def add_to_tflite_model(self, tflite_model:TfliteModel, tag:str=None):
         """Add the model parameters to the given TfliteModel object
 
         Args:
             tflite_model: TfliteModel model object
         """
         parameters_flatbuffer = self.serialize()
-        tflite_model.add_metadata(TFLITE_METADATA_TAG, parameters_flatbuffer)
+        tag = tag or TFLITE_METADATA_TAG
+        tflite_model.add_metadata(tag, parameters_flatbuffer)

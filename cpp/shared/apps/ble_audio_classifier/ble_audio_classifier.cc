@@ -37,6 +37,7 @@
 #include "mltk_tflite_micro_helper.hpp"
 #include "app.h"
 #include "recognize_commands.h"
+#include "mltk_ble_audio_classifier_model_generated.hpp"
 
 
 static void audio_classifier_task(void *arg);
@@ -51,7 +52,6 @@ static StaticEventGroup_t event_group;
 
 
 
-static tflite::MicroMutableOpResolver<11> opcode_resolver;
 static RecognizeCommands *command_recognizer = nullptr;
 static mltk::TfliteMicroModel model;
 
@@ -67,9 +67,6 @@ static mltk::StringList category_labels;
 static int category_label_count;
 static BleAudioClassifierDetectionCallback detection_callback = nullptr;
 
-// This is defined by the build scripts
-// which converts the specified .tflite to a C array
-extern "C" const uint8_t sl_tflite_model_array[];
 
 
 
@@ -84,8 +81,11 @@ static sl_status_t process_output(const bool did_run_inference);
  ******************************************************************************/
 extern "C" void ble_audio_classifier_init(void)
 {
+  #ifdef SL_TFLITE_MICRO_OPCODE_RESOLVER
+  SL_TFLITE_MICRO_OPCODE_RESOLVER(mltk_model_op_resolver);
+  #endif
   sl_status_t status;
-  const uint8_t* model_flatbuffer = sl_tflite_model_array;
+  const uint8_t* model_flatbuffer = mltk_model_flatbuffer;
 
   printf("BLE Audio Classifier\n");
 
@@ -93,22 +93,8 @@ extern "C" void ble_audio_classifier_init(void)
   // Register the accelerator if the TFLM lib was built with one
   mltk::mltk_tflite_micro_register_accelerator();
 
-  // Register the basic kernels
-  opcode_resolver.AddConv2D();
-  opcode_resolver.AddDepthwiseConv2D();
-  opcode_resolver.AddMaxPool2D();
-  opcode_resolver.AddAveragePool2D();
-  opcode_resolver.AddReshape();
-  opcode_resolver.AddFullyConnected();
-  opcode_resolver.AddPad();
-  opcode_resolver.AddConcatenation();
-  opcode_resolver.AddAdd();
-  opcode_resolver.AddMean();
-  opcode_resolver.AddSoftmax();
-
-
   // Attempt to load the model using the arena size specified in the .tflite
-  if(!model.load(model_flatbuffer, opcode_resolver))
+  if(!model.load(model_flatbuffer, mltk_model_op_resolver))
   {
     printf("ERROR: Failed to load .tflite model\n");
     while(1)

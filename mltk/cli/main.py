@@ -39,8 +39,14 @@ def main():
 
     # This will send the CTRL+Break signal to any subprocesses after 5s of the program exiting.
     # This helps to ensure that the CLI does not hang due to processes not being cleaned up properly.
-    t = threading.Timer(5, send_signal, kwargs=dict(sig=signal.SIGTERM, pid=-1))
-    atexit.register(t.start)
+    def _kill_processes_after_5s():
+        t = threading.Timer(5, send_signal, kwargs=dict(sig=signal.SIGTERM, pid=-1))
+        try:
+            t.start()
+        except:
+            ...
+    atexit.register(_kill_processes_after_5s)
+
 
     # Execute the command
     try:

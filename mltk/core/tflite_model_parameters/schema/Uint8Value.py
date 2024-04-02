@@ -31,15 +31,20 @@ class Uint8Value(object):
             return self._tab.Get(flatbuffers.number_types.Uint8Flags, o + self._tab.Pos)
         return 0
 
-def Start(builder): builder.StartObject(1)
 def Uint8ValueStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddValue(builder, value): builder.PrependUint8Slot(0, value, 0)
+    builder.StartObject(1)
+
+def Start(builder):
+    Uint8ValueStart(builder)
+
 def Uint8ValueAddValue(builder, value):
-    """This method is deprecated. Please switch to AddValue."""
-    return AddValue(builder, value)
-def End(builder): return builder.EndObject()
+    builder.PrependUint8Slot(0, value, 0)
+
+def AddValue(builder, value):
+    Uint8ValueAddValue(builder, value)
+
 def Uint8ValueEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return Uint8ValueEnd(builder)

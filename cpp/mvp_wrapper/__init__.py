@@ -1,7 +1,6 @@
 import logging
 
 from mltk import MLTK_ROOT_DIR
-from mltk.utils.cmake import build_mltk_target
 
 
 def build_mvp_wrapper(
@@ -12,6 +11,9 @@ def build_mvp_wrapper(
     debug:bool=False,
 ):  
     """Build the MVP kernels + simulator Python wrapper for the current OS/Python environment"""
+
+    # This must be import here in case the CMake package is installed during setup
+    from mltk.utils.cmake import build_mltk_target
     logger = logger or logging.getLogger()
 
     build_mltk_target(

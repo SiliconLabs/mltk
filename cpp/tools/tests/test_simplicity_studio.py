@@ -3,8 +3,11 @@ import sys
 import stat
 import re
 import multiprocessing
-import pytest
+
+
+
 import warnings
+import pytest
 
 from mltk import MLTK_ROOT_DIR
 from mltk.utils.test_helper import get_logger, run_mltk_command
@@ -51,8 +54,9 @@ else:
 build_params = []
 
 ALL_BOARDS = [
-    'brd2601b',
     'brd2204a',
+    'brd2601b',
+    'brd2705a',
     'brd4166a',
     'brd4001a,brd4186c',
     'brd4001a,brd4401c'
@@ -182,6 +186,26 @@ def _get_slc_exe() -> str:
     if retcode != 0:
         raise RuntimeError(f'Failed to install slc requirements.txt, err: {retmsg}')
 
+    retcode, retmsg = run_shell_cmd([python_venv_exe, '-m', 'pip', 'install', '--upgrade', 'setuptools'])
+    if retcode != 0:
+        raise RuntimeError(f'Failed to install setuptools into slc venv, err: {retmsg}')
+
+
+    slc_common_data = ''
+    added_setup_tools = False
+    with open(f'{slc_dir}/lib/slc_common.py', 'r') as f:
+        for line in f:
+            if not added_setup_tools:
+                if line.strip() == 'import setuptools':
+                    slc_common_data = None 
+                    break 
+                added_setup_tools = True
+                slc_common_data += 'import setuptools\n'
+            slc_common_data += line 
+
+    if added_setup_tools:
+        with open(f'{slc_dir}/lib/slc_common.py', 'w') as f:
+            f.write(slc_common_data)
 
     exe_path = [python_venv_exe, f'{slc_dir}/slc']
 

@@ -31,15 +31,20 @@ class Int64Value(object):
             return self._tab.Get(flatbuffers.number_types.Int64Flags, o + self._tab.Pos)
         return 0
 
-def Start(builder): builder.StartObject(1)
 def Int64ValueStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddValue(builder, value): builder.PrependInt64Slot(0, value, 0)
+    builder.StartObject(1)
+
+def Start(builder):
+    Int64ValueStart(builder)
+
 def Int64ValueAddValue(builder, value):
-    """This method is deprecated. Please switch to AddValue."""
-    return AddValue(builder, value)
-def End(builder): return builder.EndObject()
+    builder.PrependInt64Slot(0, value, 0)
+
+def AddValue(builder, value):
+    Int64ValueAddValue(builder, value)
+
 def Int64ValueEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return Int64ValueEnd(builder)

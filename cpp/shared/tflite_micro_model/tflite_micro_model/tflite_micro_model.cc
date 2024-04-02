@@ -7,12 +7,11 @@
 #include "tflite_micro_model/tflite_micro_model.hpp"
 #include "tflite_micro_model/tflite_micro_utils.hpp"
 #include "mltk_tflite_micro_helper.hpp"
-
-#include "mltk_tflite_micro_internal.hpp"
+#include "mltk_tflite_micro_context.hpp"
 
 
 #ifdef __arm__
-#if !defined(__HEAP_SIZE) || __HEAP_SIZE == 0
+#if !defined(__HEAP_SIZE)
 #undef __HEAP_SIZE
 extern "C" uint32_t __heap_size;
 #define __HEAP_SIZE ((uint32_t)(&__heap_size))
@@ -28,39 +27,58 @@ int adjust_required_tensor_arena_bytes_from_64bit_to_32bit(
     int tensor_arena_size
 );
 
-
-/*************************************************************************************************/
 TfliteMicroModel::~TfliteMicroModel()
 {
     unload();
 }
 
 
-/*************************************************************************************************/
 bool TfliteMicroModel::load(
     const void* flatbuffer,
-    tflite::MicroOpResolver& op_resolver,
+    const tflite::MicroOpResolver& op_resolver,
     uint8_t *runtime_buffer,
-    unsigned runtime_buffer_size
+    int32_t runtime_buffer_size
 )
 {
-    uint32_t allocated_buffer_size = 0;
-    model_has_unknown_layers = false;
-    set_unsupported_kernel_messages_enabled(true);
+    uint8_t* local_buffers[1] = {runtime_buffer};
+    const int32_t local_buffer_sizes[1] = {runtime_buffer_size};
 
-    if(TFLITE_MICRO_VERSION != nullptr)
+    return load(flatbuffer, &op_resolver, local_buffers, local_buffer_sizes, 1);
+}
+
+bool TfliteMicroModel::load(
+    const void* flatbuffer, 
+    const tflite::MicroOpResolver* op_resolver,
+    uint8_t* buffers[],
+    const int32_t buffer_sizes[],
+    int32_t buffer_count
+)
+{
+    if(buffer_count <= 0 || buffers == nullptr || buffer_sizes == nullptr)
     {
-        MLTK_INFO("Using Tensorflow-Lite Micro version: %s", TFLITE_MICRO_VERSION);
+        MLTK_ERROR("Invalid buffer argument");
+        return false;
     }
 
-    auto accelerator = mltk_tflite_micro_get_registered_accelerator();
-    if(accelerator != nullptr)
+    int32_t allocated_buffer_size = 0;
+    uint8_t* local_buffers[buffer_count];
+    int32_t local_buffer_sizes[buffer_count];
+    // The first buffer in the list is considered the "runtime buffer" 
+    // which is also used to store persistent data and temp allocations
+    uint8_t* runtime_buffer = buffers[0]; 
+    int32_t runtime_buffer_size = buffer_sizes[0];
+
+    for(int i = 0; i < buffer_count; ++i)
     {
-        accelerator->init();
+        local_buffers[i] = buffers[i];
+        local_buffer_sizes[i] = buffer_sizes[i];
     }
 
+    // Ensure kernel messages are enabled while the model is loaded
+    mltk::TfliteMicroKernelMessages::set_enabled(true);
+
+    // Load the model's parameters from the metadata (if available)
     load_model_parameters(flatbuffer);
-
 
     // If no runtime buffer was specified,
     // then we need to allocate one now
@@ -101,15 +119,18 @@ bool TfliteMicroModel::load(
                 allocated_buffer_size = model_runtime_size;
 
 
-    #if INTPTR_MAX == INT64_MAX
+                #if INTPTR_MAX == INT64_MAX
                 // The buffer size embedded into the .tflite is meant for a 32-bit ARM MCU
                 // If we're running on a 64-bit system then add 1MB of additional memory
                 // to account for 64-bit pointer overhead
                 allocated_buffer_size += 1024*1024;
-    #endif
+                #endif
 
                 // Allocate the buffer with the specified size
                 runtime_buffer = static_cast<uint8_t*>(malloc(allocated_buffer_size));
+                local_buffers[0] = runtime_buffer;
+                local_buffer_sizes[0] = allocated_buffer_size;
+
                 if(runtime_buffer == nullptr)
                 {
                     // If there isn't enough memory to allocate the buffer
@@ -117,7 +138,13 @@ bool TfliteMicroModel::load(
                     MLTK_WARN("Failed to allocate buffer with size: %d specified in .tflite model", allocated_buffer_size);
                 }
                 // Load the model with the buffer
-                else if(load_interpreter(flatbuffer, op_resolver, runtime_buffer, allocated_buffer_size))
+                else if(load_interpreter(
+                    flatbuffer, 
+                    op_resolver, 
+                    local_buffers, 
+                    local_buffer_sizes,
+                    buffer_count
+                ))
                 {
                     // If we successfully loaded the model with the runtime memory size from the flatbuffer
                     // then we're done
@@ -132,7 +159,7 @@ bool TfliteMicroModel::load(
 
                     // If the model has unsupported layers,
                     // then just return as we cannot load it
-                    if(model_has_unknown_layers)
+                    if(TfliteMicroKernelMessages::unknown_layers_detected())
                     {
                         MLTK_WARN("Model contains one or more unknown layers. You may need to update your OpResolver");
                         unload();
@@ -162,11 +189,21 @@ bool TfliteMicroModel::load(
         // then use the buffer size optimization algorithm now
         if(runtime_buffer == nullptr)
         {
+            local_buffers[0] = nullptr;
+            local_buffer_sizes[0] = runtime_buffer_size;
+
             // Find the optimal buffer size
-            if(!find_optimal_buffer_size(flatbuffer, op_resolver, runtime_buffer_size))
+            if(!find_optimal_buffer_size(
+                flatbuffer, 
+                op_resolver, 
+                local_buffers,
+                local_buffer_sizes,
+                buffer_count,
+                runtime_buffer_size
+            ))
             {
                 // On failure, just return
-                if(model_has_unknown_layers)
+                if(TfliteMicroKernelMessages::unknown_layers_detected())
                 {
                     MLTK_WARN("Model contains one or more unknown layers. You may need to update your OpResolver");
                 }
@@ -180,15 +217,18 @@ bool TfliteMicroModel::load(
 
             allocated_buffer_size = runtime_buffer_size;
 
-#if INTPTR_MAX == INT64_MAX
+            #if INTPTR_MAX == INT64_MAX
             // If we're running on a 64-bit system then add 1MB of additional memory
             // to account for 64-bit pointer overhead.
             // This is only used when allocating temporary tenesors (e.g. context.GetTensor())
             allocated_buffer_size += 1024*1024;
-#endif
+            #endif
 
             // Allocate the buffer
             runtime_buffer = static_cast<uint8_t*>(malloc(allocated_buffer_size));
+            local_buffers[0] = runtime_buffer;
+            local_buffer_sizes[0] = allocated_buffer_size;
+
             if(runtime_buffer == nullptr)
             {
                 // If this fails, something is wrong with find_optimal_buffer_size()
@@ -197,7 +237,13 @@ bool TfliteMicroModel::load(
                 return false;
             }
             // Load the model with the buffer
-            else if(!load_interpreter(flatbuffer, op_resolver, runtime_buffer, allocated_buffer_size))
+            else if(!load_interpreter(
+                flatbuffer, 
+                op_resolver, 
+                local_buffers, 
+                local_buffer_sizes,
+                buffer_count
+            ))
             {
                 // If this fails, something is wrong with find_optimal_buffer_size()
                 MLTK_WARN("Failed to allocate buffer with size: %d", allocated_buffer_size);
@@ -215,6 +261,8 @@ bool TfliteMicroModel::load(
     else
     {
         allocated_buffer_size = runtime_buffer_size;
+        local_buffers[0] = runtime_buffer;
+        local_buffer_sizes[0] = allocated_buffer_size;
 
         // Verify the runtime_buffer_size is > 0
         if(runtime_buffer_size <= 0)
@@ -224,10 +272,16 @@ bool TfliteMicroModel::load(
             return false;
         }
         // If a runtime buffer was provided, then load the interpreter with it now
-        else if(!load_interpreter(flatbuffer, op_resolver, runtime_buffer, runtime_buffer_size))
+        else if(!load_interpreter(
+            flatbuffer, 
+            op_resolver, 
+            local_buffers, 
+            local_buffer_sizes,
+            buffer_count
+        ))
         {
             // Return the error on failure
-            if(model_has_unknown_layers)
+            if(TfliteMicroKernelMessages::unknown_layers_detected())
             {
                 MLTK_WARN("Model contains one or more unknown layers. You may need to update your OpResolver");
             }
@@ -240,42 +294,51 @@ bool TfliteMicroModel::load(
         }
     }
 
-    _ops_resolver = &op_resolver;
-    _flatbuffer = flatbuffer;
-
-#ifdef __arm__
+    #ifdef __arm__
     _model_details._runtime_memory_size = runtime_buffer_size;
-#else
+    #else
     _model_details._runtime_memory_size = adjust_required_tensor_arena_bytes_from_64bit_to_32bit(flatbuffer, _interpreter, runtime_buffer_size);
-#endif
+    #endif
 
+    MLTK_RECORD_PARAM("total_runtime_size", (uint32_t)_interpreter->allocator_.used_bytes());
+    MLTK_RECORD_PARAM("total_persistent_runtime_size", 
+        (_interpreter->allocator_.persistent_buffer_allocator_ != nullptr) ?
+            (uint32_t)_interpreter->allocator_.persistent_buffer_allocator_->GetPersistentUsedBytes() : 0
+    );
+
+    auto accelerator = mltk_tflite_micro_get_registered_accelerator();
     if(accelerator != nullptr)
     {
-        _model_details._accelerator = accelerator->name;
-#ifdef TFLITE_MICRO_SIMULATOR_ENABLED
+        _model_details._accelerator = accelerator->name();
+        #ifdef TFLITE_MICRO_SIMULATOR_ENABLED
         accelerator->set_simulator_memory("sram", runtime_buffer, allocated_buffer_size); // Be sure to use the actually allocated buffer size used by this 64-bit program
         accelerator->set_simulator_memory("flash", (void*)flatbuffer, 2*1024*1024);
-#endif
+        #endif
     }
+
+    TfliteMicroModelHelper::set_processing_callback(
+        tflite_context(), 
+        this->_processing_callback, 
+        this->_processing_callback_arg
+    );
 
     return true;
 }
 
-/*************************************************************************************************/
 void TfliteMicroModel::unload()
 {
     auto accelerator = mltk_tflite_micro_get_registered_accelerator();
 
     if(accelerator != nullptr)
     {
-        accelerator->deinit();
+        accelerator->deinit(&_interpreter->context_);
     }
 
     _flatbuffer = nullptr;
     _ops_resolver = nullptr;
     parameters.unload();
     _model_details.unload();
-    TFLITE_MICRO_RESET_RECORDER();
+    MLTK_RECORD_RESET();
     if(_interpreter != nullptr)
     {
         _interpreter->~MicroInterpreter();
@@ -287,15 +350,15 @@ void TfliteMicroModel::unload()
         free(_runtime_buffer);
         _runtime_buffer = nullptr;
     }
+
+    TfliteMicroModelHelper::set_active_tflite_context(nullptr);
 }
 
-/*************************************************************************************************/
 bool TfliteMicroModel::is_loaded() const
 {
     return _interpreter != nullptr;
 }
 
-/*************************************************************************************************/
 bool TfliteMicroModel::invoke() const
 {
     bool retval;
@@ -307,17 +370,14 @@ bool TfliteMicroModel::invoke() const
         return false;
     }
 
-    TFLITE_MICRO_RESET_RECORDER();
+    TfliteMicroModelHelper::set_active_tflite_context(tflite_context());
 
     if(profiler_is_enabled())
     {
         profiling::reset(this->profiler());
     }
 
-    mltk::_processing_callback = this->_processing_callback;
-    mltk::_processing_callback_arg = this->_processing_callback_arg;
-
-#ifdef TFLITE_MICRO_SIMULATOR_ENABLED
+    #ifdef TFLITE_MICRO_SIMULATOR_ENABLED
     if(accelerator != nullptr)
     {
         retval = accelerator->invoke_simulator([this]() -> bool
@@ -329,23 +389,20 @@ bool TfliteMicroModel::invoke() const
     {
         retval = (_interpreter->Invoke() == kTfLiteOk);
     }
-#else
+    #else
     retval = (_interpreter->Invoke() == kTfLiteOk);
-#endif
+    #endif
 
-    mltk::_processing_callback = nullptr;
-    mltk::_processing_callback_arg = nullptr;
+    TfliteMicroModelHelper::set_active_tflite_context(nullptr);
 
     return retval;
 }
 
-/*************************************************************************************************/
 const TfliteMicroModelDetails& TfliteMicroModel::details() const
 {
     return _model_details;
 }
 
-/*************************************************************************************************/
 void TfliteMicroModel::print_summary(logging::Logger *logger) const
 {
     auto& l = (logger != nullptr) ? *logger : get_logger();
@@ -395,7 +452,6 @@ void TfliteMicroModel::print_summary(logging::Logger *logger) const
     l.flags(orig_flags);
 }
 
-/*************************************************************************************************/
 unsigned TfliteMicroModel::input_size() const
 {
     if(!is_loaded())
@@ -407,7 +463,6 @@ unsigned TfliteMicroModel::input_size() const
     return _interpreter->inputs_size();
 }
 
-/*************************************************************************************************/
 TfliteTensorView* TfliteMicroModel::input(unsigned index) const
 {
     if(!is_loaded())
@@ -419,7 +474,6 @@ TfliteTensorView* TfliteMicroModel::input(unsigned index) const
     return reinterpret_cast<TfliteTensorView*>(_interpreter->input(index));
 }
 
-/*************************************************************************************************/
 unsigned TfliteMicroModel::output_size() const
 {
     if(!is_loaded())
@@ -431,7 +485,6 @@ unsigned TfliteMicroModel::output_size() const
     return _interpreter->outputs_size();
 }
 
-/*************************************************************************************************/
 TfliteTensorView* TfliteMicroModel::output(unsigned index) const
 {
     if(!is_loaded())
@@ -443,80 +496,111 @@ TfliteTensorView* TfliteMicroModel::output(unsigned index) const
     return reinterpret_cast<TfliteTensorView*>(_interpreter->output(index));
 }
 
-/*************************************************************************************************/
 bool TfliteMicroModel::enable_profiler()
 {
-#ifdef TFLITE_MICRO_PROFILER_ENABLED
+    #ifdef TFLITE_MICRO_PROFILER_ENABLED
     if(is_loaded())
     {
         MLTK_ERROR("Model already loaded");
         return false;
     }
-    model_profiler_enabled = true;
+    TfliteMicroProfiler::set_enabled(true);
     return true;
-#else
+    #else
     MLTK_ERROR("C++ library not build with profiling support");
     return false;
-#endif
+    #endif
 }
 
-/*************************************************************************************************/
 bool TfliteMicroModel::profiler_is_enabled() const
 {
-    return model_profiler_enabled;
+    return TfliteMicroProfiler::is_enabled();
 }
 
-/*************************************************************************************************/
 profiling::Profiler* TfliteMicroModel::profiler() const
 {
     return profiling::get("Inference");
 }
 
-/*************************************************************************************************/
-bool TfliteMicroModel::enable_tensor_recorder()
+bool TfliteMicroModel::enable_recorder()
 {
-#if TFLITE_MICRO_RECORDER_ENABLED
+    #if TFLITE_MICRO_RECORDER_ENABLED
     if(is_loaded())
     {
         MLTK_ERROR("Model already loaded");
         return false;
     }
-    model_tensor_recorder_enabled = true;
+    TfliteMicroRecorder::set_enabled(true);
     return true;
-#else
+    #else
     MLTK_ERROR("C++ library not build with recording support");
     return false;
-#endif
+    #endif
 }
 
-/*************************************************************************************************/
+bool TfliteMicroModel::is_recorder_enabled() const
+{
+    #if TFLITE_MICRO_RECORDER_ENABLED
+    return TfliteMicroRecorder::is_enabled();
+    #else 
+    return false;
+    #endif
+}
+
+bool TfliteMicroModel::enable_tensor_recorder()
+{
+    #if TFLITE_MICRO_RECORDER_ENABLED
+    if(is_loaded())
+    {
+        MLTK_ERROR("Model already loaded");
+        return false;
+    }
+    TfliteMicroRecorder::set_tensor_data_recording_enabled(true);
+    return true;
+    #else
+    MLTK_ERROR("C++ library not build with recording support");
+    return false;
+    #endif
+}
+
 bool TfliteMicroModel::is_tensor_recorder_enabled() const
 {
-    return model_tensor_recorder_enabled;
+    #if TFLITE_MICRO_RECORDER_ENABLED
+    return TfliteMicroRecorder::is_tensor_data_recording_enabled();
+    #else 
+    return false;
+    #endif
 }
 
-/*************************************************************************************************/
-#ifdef TFLITE_MICRO_RECORDER_ENABLED
 bool TfliteMicroModel::recorded_data(const uint8_t** buffer_ptr, uint32_t* length_ptr) const
 {
-    return get_recorded_data(buffer_ptr, length_ptr);
+    #ifdef TFLITE_MICRO_RECORDER_ENABLED
+    return TfliteMicroRecorder::get_recorded_data(buffer_ptr, length_ptr);
+    #else 
+    return false;
+    #endif
 }
-#endif
 
-/*************************************************************************************************/
 void TfliteMicroModel::set_processing_callback(void (*callback)(void*), void *arg)
 {
     _processing_callback = callback;
     _processing_callback_arg = arg;
+
+    if(is_loaded())
+    {
+        TfliteMicroModelHelper::set_processing_callback(
+            tflite_context(), 
+            this->_processing_callback, 
+            this->_processing_callback_arg
+        );
+    }
 }
 
-/*************************************************************************************************/
 const void* TfliteMicroModel::find_metadata(const char* tag, uint32_t* length) const
 {
-    return get_metadata_from_tflite_flatbuffer(this->_flatbuffer, tag, length);
+    return TfliteMicroModelHelper::get_metadata_from_tflite_flatbuffer(this->_flatbuffer, tag, length);
 }
 
-/*************************************************************************************************/
 bool TfliteMicroModel::load_model_parameters(const void* flatbuffer)
 {
     flatbuffer = (flatbuffer == nullptr) ? this->_flatbuffer : flatbuffer;
@@ -532,64 +616,144 @@ bool TfliteMicroModel::load_model_parameters(const void* flatbuffer)
     }
 }
 
-/*************************************************************************************************/
 bool TfliteMicroModel::load_interpreter(
-    const void* flatbuffer,
-    tflite::MicroOpResolver& op_resolver,
-    uint8_t* runtime_buffer,
-    unsigned runtime_buffer_size,
-    bool disable_logs
+    const void* flatbuffer, 
+    const tflite::MicroOpResolver* op_resolver,
+    uint8_t* buffers[],
+    const int32_t buffer_sizes[],
+    int32_t buffer_count
 )
 {
+    TfliteMicroContext* mltk_tflm_context = nullptr;
+    tflite::MicroAllocator *allocator = nullptr;
     auto tflite_model = tflite::GetModel(flatbuffer);
-    _interpreter = new(_interpreter_buffer)tflite::MicroInterpreter(
-        tflite_model,
-        op_resolver,
-        runtime_buffer, runtime_buffer_size
-    );
 
-    const auto saved_log_level = get_logger().level();
-
-    if(disable_logs)
+    // Register the accelerator that was built with this application
+    auto accelerator = mltk_tflite_micro_get_registered_accelerator();
+    if(accelerator != nullptr)
     {
-        get_logger().level(logging::Error);
+        // Initialize the accelerator
+        if(!accelerator->init())
+        {
+            MLTK_ERROR("Failed to initialize the accelerator");
+            return false;
+        }
     }
 
-    bool retval = true;
-    if(_interpreter->AllocateTensors() != kTfLiteOk)
+    if(accelerator != nullptr)
     {
-        _interpreter->~MicroInterpreter();
-        _interpreter = nullptr;
+        // Attempt to create a memory allocator for this accelerator.
+        // This API will return false if there was an error creating the allocator.
+        // The "allocator" argument will be NULL if no allocator was created 
+        // (i.e. the model was not compile with a memory plan)
+        if(!accelerator->create_allocator(
+            flatbuffer,
+            buffers, 
+            buffer_sizes, 
+            buffer_count, 
+            &allocator
+        ))
+        {
+            MLTK_ERROR("Failed to create accelerator memory allocator");
+            accelerator->deinit(&_interpreter->context_);
+            return false;
+        }
+    }
+
+    if(allocator == nullptr)
+    {
+        #ifdef MLTK_TFLITE_OFFLINE_MEMORY_PLANNING_REQUIRED
+        MLTK_ERROR("Offline memory planning is required for this build");
+        unload();
+        return false;
+        #else
+        allocator = tflite::MicroAllocator::Create(
+            buffers[0], 
+            buffer_sizes[0]
+        );
+        #endif // MLTK_TFLITE_OFFLINE_MEMORY_PLANNING_REQUIRED
+    }
+
+    _interpreter = new(_interpreter_buffer)tflite::MicroInterpreter(
+        tflite_model,
+        *op_resolver,
+        allocator
+    );
+
+    auto context = &_interpreter->context_;
+
+    mltk_tflm_context = (accelerator != nullptr) ? 
+        accelerator->create_context(context) :
+        TfliteMicroContext::create(context);
+
+    if(!mltk_tflm_context->init(
+        flatbuffer,
+        context, 
+        accelerator,
+        allocator
+    ))
+    {
+        MLTK_ERROR("Failed to init context");
+        unload();
+        return false;
+    }
+
+    TfliteMicroModelHelper::set_active_tflite_context(tflite_context());
+
+    MLTK_RECORD_START();
+
+    bool retval = true;
+    if(_interpreter->AllocateTensors() == kTfLiteOk)
+    {
+        _ops_resolver = op_resolver;
+        _flatbuffer = flatbuffer;
+
+        if(!mltk_tflm_context->load(context))
+        {
+            MLTK_ERROR("Failed to load context");
+            unload();
+            return false;
+        }
+    }
+    else 
+    {
+        unload();
         retval = false;
     }
 
+    TfliteMicroModelHelper::set_active_tflite_context(nullptr);
     // Unsupported kernel message should only be printed the first time we attempt to load the model.
     // Need to all TfliteMicroModel.load() to print them again.
-    set_unsupported_kernel_messages_enabled(false);
-
-    if(disable_logs)
-    {
-        get_logger().level(saved_log_level);
-    }
+    TfliteMicroKernelMessages::set_enabled(false);
 
     return retval;
 }
 
-
-/*************************************************************************************************/
+/**
+ * Do a binary search to find the optimal runtime memory size
+*/
 bool TfliteMicroModel::find_optimal_buffer_size(
     const void* flatbuffer,
-    tflite::MicroOpResolver& op_resolver,
-    unsigned &runtime_buffer_size
+    const tflite::MicroOpResolver* op_resolver,
+    uint8_t* buffers[],
+    int32_t buffer_sizes[],
+    int32_t buffer_count,
+    int32_t &optimal_buffer_size
 )
 {
-#ifdef __arm__
+    #ifdef __arm__
     int upper_limit = __HEAP_SIZE - 8*1024;
-#else
+    #else
     int upper_limit = SRAM_SIZE;
-#endif
+    #endif
     int lower_limit = 2048;
     int last_working_buffer_size = -1;
+    const bool saved_profiler_enabled = TfliteMicroProfiler::is_enabled();
+    const bool saved_recording_enabled = TfliteMicroRecorder::is_enabled();
+    const auto saved_log_level = get_logger().level();
+    TfliteMicroProfiler::set_enabled(false);
+    TfliteMicroRecorder::set_enabled(false);
+    get_logger().level(logging::Error);
 
     MLTK_INFO("Searching for optimal runtime memory size ...");
 
@@ -597,7 +761,7 @@ bool TfliteMicroModel::find_optimal_buffer_size(
     // Try to get the optimal buffer size to within 128 bytes
     while((upper_limit - lower_limit) > 128)
     {
-        // Get the midpoint between the update and lower limits
+        // Get the midpoint between the upper and lower limits
         int buffer_size = (upper_limit + lower_limit) / 2;
         buffer_size = ((buffer_size + 16 - 1) / 16) * 16; // align to 16-bytes
 
@@ -612,8 +776,17 @@ bool TfliteMicroModel::find_optimal_buffer_size(
             continue;
         }
 
+        buffer_sizes[0] = buffer_size;
+        buffers[0] = buffer;
+
         // Try to load the model with the new buffer
-        if(load_interpreter(flatbuffer, op_resolver, buffer, buffer_size, true))
+        if(load_interpreter(
+            flatbuffer, 
+            op_resolver, 
+            buffers, 
+            buffer_sizes,
+            buffer_count
+        ))
         {
             // The model was successfully loaded
             // Save the buffer size
@@ -624,14 +797,13 @@ bool TfliteMicroModel::find_optimal_buffer_size(
             upper_limit = buffer_size;
 
             // Also unload the interpreter so we can load it again
-            _interpreter->~MicroInterpreter();
-            _interpreter = nullptr;
+            unload();
         }
         else
         {
             // Immediately break out of the loop
             // if the model has unknown layers
-            if(model_has_unknown_layers)
+            if(TfliteMicroKernelMessages::unknown_layers_detected())
             {
                 break;
             }
@@ -645,9 +817,13 @@ bool TfliteMicroModel::find_optimal_buffer_size(
         free(buffer);
     }
 
+    TfliteMicroProfiler::set_enabled(saved_profiler_enabled);
+    TfliteMicroRecorder::set_enabled(saved_recording_enabled);
+    get_logger().level(saved_log_level);
+
     if(last_working_buffer_size == -1)
     {
-        runtime_buffer_size = 0;
+        optimal_buffer_size = 0;
         // Return false if we failed to find a working buffer size
         return false;
     }
@@ -659,7 +835,7 @@ bool TfliteMicroModel::find_optimal_buffer_size(
 
     // Otherwise, we found a good buffer size
     // So return success
-    runtime_buffer_size = last_working_buffer_size;
+    optimal_buffer_size = last_working_buffer_size;
     return true;
 }
 
@@ -708,7 +884,7 @@ int adjust_required_tensor_arena_bytes_from_64bit_to_32bit(
 
     // Account for the pointers defined in the various MVP kernel OpData structs
     auto accelerator = mltk_tflite_micro_get_registered_accelerator();
-    if(accelerator != nullptr && strcmp(accelerator->name, "MVP") == 0)
+    if(accelerator != nullptr && strcmp(accelerator->name(), "mvp") == 0)
     {
         const auto& operators = *subgraph.operators();
         const auto& opcodes = *tflite_model->operator_codes();

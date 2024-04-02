@@ -1,8 +1,8 @@
-
-import distutils.log
-import distutils.cmd
-
 import os
+from setuptools.command.build_ext import build_ext
+
+
+
 from cpp.mvp_wrapper import build_mvp_wrapper
 from cpp.audio_feature_generator_wrapper import build_audio_feature_generator_wrapper
 from cpp.tflite_micro_wrapper import build_tflite_micro_wrapper
@@ -12,7 +12,7 @@ from cpp.tflite_micro_wrapper import build_tflite_micro_wrapper
 from .utils import get_command_logger
 
 
-class BuildWrappersCommand(distutils.cmd.Command):
+class BuildWrappersCommand(build_ext):
     """Custom setup.py command to build the Python C++ wrappers
     
     Invoke this command by:
@@ -22,6 +22,7 @@ class BuildWrappersCommand(distutils.cmd.Command):
     ```
 
     """
+    editable_mode = True
     description = 'Build C++ Python wrappers'
     user_options = [
         # The format is (long option, short option, description).

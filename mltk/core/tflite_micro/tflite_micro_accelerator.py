@@ -1,6 +1,5 @@
 from typing import List
 import logging
-from mltk.core.profiling_results import ProfilingModelResults
 from mltk.core.tflite_model import TfliteModel
 from mltk.utils.python import get_case_insensitive
 
@@ -84,16 +83,16 @@ class TfliteMicroAccelerator:
 
     def estimate_profiling_results(
         self,
-        results:ProfilingModelResults,
+        results, # ProfilingModelResults
         **kwargs
     ):
         """Update the given ProfilingModelResults with estimated model metrics"""
 
 
-    def enable_program_recorder(self):
+    def set_program_recorder_enabled(self, enabled:bool):
         """Enable the accelerator instruction recorder"""
-        if hasattr(self._accelerator_wrapper, 'enable_program_recorder'):
-            return self._accelerator_wrapper.enable_program_recorder()
+        if hasattr(self._accelerator_wrapper, 'set_program_recorder_enabled'):
+            return self._accelerator_wrapper.set_program_recorder_enabled(enabled)
         else:
             return None
 

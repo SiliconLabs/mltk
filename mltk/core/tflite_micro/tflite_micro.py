@@ -6,14 +6,14 @@ import importlib
 import copy
 import threading
 import inspect
-from typing import Union, List, Dict, Tuple
+import functools
+from typing import Union, List, Dict, Tuple, Callable
 import numpy as np
 
 from mltk.core.tflite_model import TfliteModel, TfliteLayer
 from mltk.core.utils import get_mltk_logger
 from mltk.utils.python import (as_list, get_case_insensitive, import_module_at_path, append_exception_msg)
 from mltk.utils.path import (fullpath, get_user_setting)
-from ..profiling_results import ProfilingModelResults, ProfilingLayerResult
 from .tflite_micro_accelerator import (TfliteMicroAccelerator, PlaceholderTfliteMicroAccelerator)
 from .tflite_micro_model import TfliteMicroModel, TfliteMicroModelDetails
 
@@ -124,9 +124,10 @@ class TfliteMicro:
         model: Union[str, TfliteModel],
         accelerator:str=None,
         enable_profiler=False,
+        enable_recorder=False,
         enable_tensor_recorder=False,
         force_buffer_overlap=False,
-        runtime_buffer_size=0,
+        runtime_buffer_size:int=None,
         **kwargs
     ) -> TfliteMicroModel:
         """Load the TF-Lite Micro interpreter with the given .tflite model
@@ -146,16 +147,23 @@ class TfliteMicro:
             tflm_accelerator = None
 
         TfliteMicro._model_lock.acquire()
+
         try:
             tflite_model = _load_tflite_model(model)
+            runtime_buffer_sizes = _retrieve_runtime_buffer_sizes(
+                tflite_model,
+                runtime_buffer_size=runtime_buffer_size,
+                accelerator=accelerator
+            )
             tflm_model = TfliteMicroModel(
                 tflm_wrapper=wrapper,
                 tflm_accelerator=tflm_accelerator,
                 flatbuffer_data=tflite_model.flatbuffer_data,
                 enable_profiler=enable_profiler,
+                enable_recorder=enable_recorder,
                 enable_tensor_recorder=enable_tensor_recorder,
                 force_buffer_overlap=force_buffer_overlap,
-                runtime_buffer_size=runtime_buffer_size,
+                runtime_buffer_sizes=runtime_buffer_sizes,
             )
         except:
             # Release the model lock if an exception occurred while loading it
@@ -172,6 +180,9 @@ class TfliteMicro:
             if hasattr(accelerator, 'deinit_variant'):
                 accelerator.deinit_variant()
 
+        # pylint: disable=protected-access
+        if model._model_wrapper:
+            model._model_wrapper.unload()
         del model
         TfliteMicro._model_lock.release()
 
@@ -186,15 +197,18 @@ class TfliteMicro:
         runtime_buffer_size=-1, # If runtime_buffer_size not given, determine the optimal memory size
         input_data: Union[np.ndarray,List[np.ndarray]]=None,
         **kwargs
-    ) -> ProfilingModelResults:
+    ): # -> ProfilingModelResults
         """Profile the given model in the simulator and optionally determine metric estimates
 
         """
+        from mltk.core.profiling_results import ProfilingModelResults, ProfilingLayerResult
+
         tflite_model = _load_tflite_model(model)
         tflm_model = TfliteMicro.load_tflite_model(
             model=tflite_model,
             accelerator=accelerator,
             enable_profiler=True,
+            enable_recorder=True,
             runtime_buffer_size=runtime_buffer_size
         )
         try:
@@ -238,37 +252,58 @@ class TfliteMicro:
             if disable_calculate_accelerator_cycles_only:
                 tflm_accelerator.set_calculate_accelerator_cycles_only_enabled(False)
 
+            recorded_layers = recorded_data['layers']
             layer_results = []
-            for layer_index, (tflm_layer_result, recorded_layer_data) in enumerate(zip(tflm_results, recorded_data)):
+            for layer_index, tflm_layer_result in enumerate(tflm_results):
+                tflite_layer = tflite_model.layers[layer_index]
                 layer_err = tflm_model.get_layer_error(layer_index)
                 layer_err_msg = None if layer_err is None else layer_err.msg
                 del tflm_layer_result['name']
                 layer_result = ProfilingLayerResult(
-                    tflite_layer=tflite_model.layers[layer_index],
+                    tflite_layer=tflite_layer,
                     error_msg=layer_err_msg,
                     **tflm_layer_result
                 )
-                layer_result.update(recorded_layer_data)
+
+                layer_recorded_data = recorded_layers[layer_index] if layer_index < len(recorded_layers) else {}
+                updated = True 
+                while updated:
+                    updated = False
+                    for key, value in layer_recorded_data.items():
+                        if not isinstance(value, (int,float,str)):
+                            tflite_layer.metadata[key] = value
+                            layer_recorded_data.pop(key)
+                            updated = True 
+                            break 
+
+                layer_result.update(layer_recorded_data)
                 layer_results.append(layer_result)
 
         finally:
             TfliteMicro.unload_model(tflm_model)
 
+        model_details = tflm_model.details
+        _add_memory_plan(
+            tflite_model=tflite_model,
+            recorded_data=recorded_data,
+            model_details=model_details
+        )
+
         results = ProfilingModelResults(
             model=tflite_model,
             accelerator=accelerator,
             runtime_memory_bytes=tflm_model_details.runtime_memory_size,
-            layers=layer_results
+            layers=layer_results,
+            model_details=model_details
         )
-
 
         # If we want to return estimates for metrics like:
         # CPU cycles and energy
         if return_estimates:
             # If accelerator=none
             # then just use the MVP accelerator's 'none' (i.e. CMSIS-only) estimators
-            if tflm_accelerator is None and 'MVP' in TfliteMicro._accelerators:
-                tflm_accelerator = TfliteMicro._accelerators['MVP']
+            if tflm_accelerator is None and 'mvp' in TfliteMicro._accelerators:
+                tflm_accelerator = TfliteMicro._accelerators['mvp']
 
             if tflm_accelerator is not None:
                 tflm_accelerator.estimate_profiling_results(
@@ -284,9 +319,12 @@ class TfliteMicro:
         model: Union[str, TfliteModel],
         input_data: Union[np.ndarray,List[np.ndarray]]=None,
         accelerator:str=None,
-        enable_accelerator_recorder = False,
+        enable_accelerator_recorder=False,
         disable_simulator_backend=False,
-        return_model_details=False
+        enable_tensor_recorder=True,
+        return_model_details=False,
+        update_input_model=False,
+        layer_callback:Callable[[TfliteLayer], bool]=None,
     ) -> Union[List[TfliteLayer], Tuple[List[TfliteLayer],TfliteMicroModelDetails]]:
         """Run one inference and record each model layer's input/output tensors
 
@@ -299,30 +337,51 @@ class TfliteMicro:
                 Each layers' recorded data is a dictionary with the entries specific to the hardware accelerator.
             disable_simulator_backend: Disable the simulator backend while running the accelerator recorder.
                 This can greatly improve execution time, however, the generated data output (i.e. output tensors) is invalid
+            enable_tensor_recorder: Record the input/output tensors of each layer
             return_model_details: Also return the recorded model's TfliteMicroModelDetails
         Return:
-            Return a list of TfliteLayers with the tensor data
+            If return_model_details=False, then return a list of TfliteLayers with the tensor data
             updated with the recorded values from the previous inference
+            If return_model_details=True, then return a tuple(list(TfliteLayers), TfliteMicroModelDetails)
         """
+        if update_input_model and not isinstance(model, TfliteModel):
+            raise ValueError('Input model must be a TfliteModel instance to use update_input_model=True')
+
         tflite_model = _load_tflite_model(model)
         tflm_model = TfliteMicro.load_tflite_model(
             model=tflite_model,
             accelerator=accelerator,
-            enable_tensor_recorder=True,
+            enable_recorder=True,
+            enable_tensor_recorder=enable_tensor_recorder,
             enable_profiler=False,
-            runtime_buffer_size=16*1024*1024 # 16MB
+            runtime_buffer_size=16*1024*1024, # 16MB
         )
 
-        reenable_simulator_backend = False
+        disable_program_recorder = False
         if enable_accelerator_recorder:
             if tflm_model.accelerator is None:
                 raise ValueError('Must provide accelerator when using enable_accelerator_recorder')
-            if disable_simulator_backend and hasattr(tflm_model.accelerator, 'set_simulator_backend_enabled'):
+            tflm_model.accelerator.set_program_recorder_enabled(True)
+            disable_program_recorder = True
+
+        
+        reenable_simulator_backend = False
+        reenable_simulator_accelerator_cycles = False
+        if disable_simulator_backend:
+            if tflm_model.accelerator is None:
+                raise ValueError('Must provide accelerator when using disable_simulator_backend')
+            if hasattr(tflm_model.accelerator, 'set_simulator_backend_enabled'):
                 reenable_simulator_backend = True
                 tflm_model.accelerator.set_simulator_backend_enabled(False)
-
-            tflm_model.accelerator.enable_program_recorder()
-
+            if hasattr(tflm_model.accelerator, 'set_calculate_accelerator_cycles_only_enabled'):
+                tflm_model.accelerator.set_calculate_accelerator_cycles_only_enabled(True)
+            
+        if layer_callback:
+            tflm_model.set_layer_callback(functools.partial(
+                _layer_callback_handler,
+                tflite_model=tflite_model,
+                callback=layer_callback
+            ))
 
         try:
             if input_data is not None:
@@ -331,24 +390,34 @@ class TfliteMicro:
                         tflm_model.input(index=i, value=v)
                 else:
                     tflm_model.input(value=input_data)
+            else:
+                for i, inp in enumerate(tflite_model.inputs):
+                    d = np.zeros_like(inp.data)
+                    tflm_model.input(index=i, value=d)
 
             tflm_model.invoke()
             recorded_data = tflm_model.get_recorded_data()
 
             if reenable_simulator_backend:
                 tflm_model.accelerator.set_simulator_backend_enabled(True)
+            if reenable_simulator_accelerator_cycles:
+                tflm_model.accelerator.set_calculate_accelerator_cycles_only_enabled(False)
+            if disable_program_recorder:
+                tflm_model.accelerator.set_program_recorder_enabled(False)
+
 
             retval = []
 
-            for layer_index, recorded_layer_data in enumerate(recorded_data):
+            for layer_index, recorded_layer_data in enumerate(recorded_data.get('layers', [])):
                 # pylint: disable=protected-access
-                tf_layer = copy.deepcopy(tflite_model.layers[layer_index])
+                tf_layer = tflite_model.layers[layer_index] if update_input_model \
+                    else copy.deepcopy(tflite_model.layers[layer_index])
                 retval.append(tf_layer)
 
                 layer_err = tflm_model.get_layer_error(layer_index)
                 tf_layer.metadata['error_msg'] = None if layer_err is None else layer_err.msg
 
-                for input_index, input_bytes in enumerate(recorded_layer_data['inputs']):
+                for input_index, input_bytes in enumerate(recorded_layer_data.get('inputs', [])):
                     if input_index >= tf_layer.n_inputs:
                         break
                     input_tensor = tf_layer.inputs[input_index]
@@ -360,7 +429,7 @@ class TfliteMicro:
                     else:
                         tf_layer.inputs[input_index]._data = input_buf
 
-                for output_index, output_bytes in enumerate(recorded_layer_data['outputs']):
+                for output_index, output_bytes in enumerate(recorded_layer_data.get('outputs', [])):
                     output_tensor = tf_layer.outputs[output_index]
                     output_buf = np.frombuffer(output_bytes, dtype=output_tensor.dtype)
                     if output_tensor.shape.flat_size > 0:
@@ -374,6 +443,11 @@ class TfliteMicro:
 
             if return_model_details:
                 model_details = tflm_model.details
+                _add_memory_plan(
+                    tflite_model=tflite_model,
+                    recorded_data=recorded_data,
+                    model_details=model_details
+                )
         finally:
             TfliteMicro.unload_model(tflm_model)
 
@@ -524,9 +598,13 @@ class TfliteMicro:
             value = getattr(accelerator_module, key)
             if inspect.isclass(value) and issubclass(value, TfliteMicroAccelerator):
                 # Create an accelerator instance
-                tflm_accelerator = value()
-                break
-
+                try:
+                    tflm_accelerator = value()
+                    break
+                except Exception as e:
+                    logger.warning(f'Accelerator module: {accelerator_dir} failed to initialize, err: \n{e}')
+                    return False
+                
         if tflm_accelerator is None:
             logger.debug(f'Accelerator module: {accelerator_dir} does not contain a TfliteMicroAccelerator class definition')
             return False
@@ -595,3 +673,62 @@ def _load_tflite_model(model:Union[str,TfliteModel]) -> TfliteModel:
         return TfliteModel.load_flatbuffer_file(model)
     else:
         raise RuntimeError('Must provide TfliteModel or path to .tflite file')
+
+
+def _add_memory_plan(
+    tflite_model:TfliteModel,
+    recorded_data:List,
+    model_details:TfliteMicroModelDetails
+):
+    from .tflite_micro_memory_plan import TfliteMicroMemoryPlan
+
+    recorded_data_layers = recorded_data.get('layers', [])
+    model_details._memory_plan = TfliteMicroMemoryPlan.create( # pylint: disable=protected-access
+        memory_plan=recorded_data.get('memory_plan', []),
+        tflite_model=tflite_model,
+        total_persistent_runtime_size=recorded_data.get('total_persistent_runtime_size', 0),
+        temp_runtime_sizes=list(x.get('temp_memory_used', 0) for x in recorded_data_layers),
+        persistent_runtime_sizes=list(x.get('persistent_memory_used', 0) for x in recorded_data_layers)
+    )
+
+
+def _layer_callback_handler(
+    tflite_model:TfliteModel,
+    callback:Callable[[TfliteLayer],bool], 
+    index:int, 
+    outputs:List[bytes]
+) -> bool:
+    tf_layer = copy.deepcopy(tflite_model.layers[index])
+    for output_index, output_bytes in enumerate(outputs):
+        output_tensor = tf_layer.outputs[output_index]
+        output_buf = np.frombuffer(output_bytes, dtype=output_tensor.dtype)
+        if output_tensor.shape.flat_size > 0:
+            tf_layer.outputs[output_index]._data = np.reshape(output_buf, newshape=output_tensor.shape) # pylint: disable=protected-access
+        else:
+            tf_layer.outputs[output_index]._data = output_buf # pylint: disable=protected-access
+        
+    return callback(tf_layer)
+
+
+def _retrieve_runtime_buffer_sizes(
+    tflite_model:TfliteModel,
+    accelerator:str,
+    runtime_buffer_size:int,
+) -> List[int]:
+    from mltk.core.tflite_model_parameters import TfliteModelParameters
+    runtime_buffer_sizes = [0]
+    try:
+        memory_spec = TfliteModelParameters.load_from_tflite_model(
+            tflite_model, 
+            tag=f'{accelerator}_memory_spec'
+        )
+    except:
+        memory_spec = {}
+
+    if memory_spec:
+        runtime_buffer_sizes = memory_spec.get('sizes', [0])
+
+    if runtime_buffer_size:
+        runtime_buffer_sizes[0] = runtime_buffer_size
+
+    return runtime_buffer_sizes

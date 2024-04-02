@@ -278,7 +278,7 @@ static int deserialize_next_object(msgpack_context_t *context, msgpack_object_t 
 
         is_dict_or_array = true;
         obj->obj.type = MSGPACK_TYPE_DICT;
-        obj_size = sizeof(msgpack_object_dict_t) + sizeof(msgpack_dict_entry_t)*obj->count;
+        obj_size = sizeof(msgpack_object_dict_t);
     }
     // --------------------------
     // ARRAY
@@ -301,7 +301,7 @@ static int deserialize_next_object(msgpack_context_t *context, msgpack_object_t 
 
         is_dict_or_array = true;
         obj->obj.type = MSGPACK_TYPE_ARRAY;
-        obj_size = sizeof(msgpack_object_array_t) + sizeof(msgpack_object_t*)*obj->count;
+        obj_size = sizeof(msgpack_object_array_t);
     }
     // --------------------------
     // STR (UTF8 string)
@@ -377,6 +377,27 @@ static int deserialize_next_object(msgpack_context_t *context, msgpack_object_t 
             const uint8_t *source = bin_obj->data;
             bin_obj->data = (char*)&bin_obj[1];
             memcpy(bin_obj->data, source, bin_obj->length);
+        }
+    }
+
+    if(obj->type == MSGPACK_TYPE_ARRAY)
+    {
+        msgpack_object_array_t* arr = (msgpack_object_array_t*)obj;
+        arr->entries = malloc(sizeof(msgpack_object_dict_t*)*arr->count);
+        if(arr->entries == NULL)
+        {
+            free(obj);
+            return -1;
+        }
+    }
+    else if(obj->type == MSGPACK_TYPE_DICT)
+    {
+        msgpack_object_dict_t* dict = (msgpack_object_dict_t*)obj;
+        dict->entries = (msgpack_dict_entry_t*)malloc(sizeof(msgpack_dict_entry_t)*dict->count);
+        if(dict->entries == NULL)
+        {
+            free(obj);
+            return -1;
         }
     }
 

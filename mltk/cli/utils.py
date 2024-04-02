@@ -348,7 +348,7 @@ def _check_disable_tensorflow():
         cmd = None if len(sys.argv) < 2 else sys.argv[1]
         if cmd in ('commander', 'build'):
             disable_tf = True
-        elif cmd in ('profile', 'summarize', 'update_params', 'view', 'classify_audio'):
+        elif cmd in ('profile', 'update_params', 'classify_audio'):
             for a in sys.argv[2:]:
                 if a.endswith('.tflite'):
                     disable_tf = True

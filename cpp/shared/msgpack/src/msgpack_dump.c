@@ -5,6 +5,7 @@
 
 
 #define MAX_CONTAINER_DEPTH 32
+#define MAX_ARRAY_LENGTH 32
 
 typedef struct
 {
@@ -76,8 +77,15 @@ static int dump_callback(context_t *context, const msgpack_object_t *root, int r
     {
         const msgpack_object_array_t *array_obj = (const msgpack_object_array_t*)root;
 
+
         for(uint32_t i = 0; i < MSGPACK_ARRAY_LENGTH(array_obj); ++i)
         {
+            if(i == MAX_ARRAY_LENGTH)
+            {
+                write_str(context, recursive_depth, "  [%d] ...\n", i);
+                break;
+            }
+
             const msgpack_object_t *entry = array_obj->entries[i];
 
             write_str(context, recursive_depth, "  [%d] %s\n", i, msgpack_to_str(entry, format_buffer, sizeof(format_buffer)));

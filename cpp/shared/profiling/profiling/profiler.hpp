@@ -134,6 +134,7 @@ public:
 
     void custom_stats_printer(CustomStatsPrinter* printer);
     int32_t increment_custom_stat(const char* name, int32_t amount=1);
+    int32_t set_custom_stat(const char* name, int32_t amount);
     int32_t get_custom_stat(const char* name) const;
 
    

@@ -116,6 +116,11 @@ void msgpack_free_objects(void *obj)
                 }
                 msgpack_free_objects(entry->value);
             }
+
+            if(dict->obj.flags & MSGPACK_OBJECT_FLAG_WAS_ALLOCATED)
+            {
+                free(dict->entries);
+            }
         }
         else if(MSGPACK_IS_ARRAY(object))
         {
@@ -126,6 +131,11 @@ void msgpack_free_objects(void *obj)
             {
                 msgpack_object_t *entry = array->entries[i];
                 msgpack_free_objects(entry);
+            }
+
+            if(array->obj.flags & MSGPACK_OBJECT_FLAG_WAS_ALLOCATED)
+            {
+                free(array->entries);
             }
         }
 

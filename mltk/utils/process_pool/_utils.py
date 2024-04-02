@@ -47,7 +47,19 @@ def read_data(pipe:io.FileIO) -> dict:
 
     rx_length = struct.unpack('<L', rx_length_bytes)[0]
     if rx_length > MAX_LENGTH:
-        raise OverflowError(f'RX length ({rx_length}) > max length ({MAX_LENGTH})')
+        handled_err_msg = ''
+        try:
+            data = pipe.read()
+            s = bytearray(handled_err_msg)
+            s.extend(data)
+            handled_err_msg = str(s)
+        except:
+            pass
+        raise OverflowError(
+            f'RX length ({rx_length}) > max length ({MAX_LENGTH}).\n'
+            f'This could be due to the python script incorrectly printing to stdout.\n'
+            f'Data read from stdout: {handled_err_msg}'
+        )
 
     rx_bytes = pipe.read(rx_length)
     if not rx_bytes:

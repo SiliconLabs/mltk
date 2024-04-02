@@ -441,7 +441,7 @@ class TfliteModel:
         return removed_metadata
 
 
-    def save(self, output_path: str = None):
+    def save(self, output_path: str = None, update_path=False):
         """Save flatbuffer data to file
         If output_path is specified then write to new file,
         otherwise overwrite existing file
@@ -461,9 +461,12 @@ class TfliteModel:
 
         with open(output_path, 'wb') as f:
             f.write(self._flatbuffer_data)
+    
+        if update_path:
+            self._path = output_path
 
 
-    def regenerate_flatbuffer(self):
+    def regenerate_flatbuffer(self, reload_model=False):
         """Re-generate the underlying flatbuffer based on  the information cached in the local ModelT instance
 
         .. Note::
@@ -474,6 +477,9 @@ class TfliteModel:
         b = flatbuffers.Builder(0)
         b.Finish(self._model.Pack(b), TFLITE_FILE_IDENTIFIER)
         self._flatbuffer_data = b.Output()
+
+        if reload_model:
+            self._load_model()
 
 
     def predict(

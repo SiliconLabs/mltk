@@ -437,7 +437,7 @@ class ImageDatasetMixin(DataGeneratorDatasetMixin):
 
     def _register_attributes(self):
         from mltk.core.preprocess.image.parallel_generator import ParallelImageDataGenerator
-        from tensorflow.keras.preprocessing.image import ImageDataGenerator
+        from mltk.core.keras import ImageDataGenerator
 
         self._attributes.register('image.follow_links', dtype=bool)
         self._attributes.register('image.shuffle_dataset_enabled', dtype=bool)

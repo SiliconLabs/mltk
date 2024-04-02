@@ -202,8 +202,8 @@ TfLiteStatus Prepare(TfLiteContext* context, TfLiteNode* node) {
   OpData* data = static_cast<OpData*>(node->user_data);
 
   TF_LITE_ENSURE_STATUS(
-      context->RequestScratchBufferInArena(context, 
-                                           num_inputs * (sizeof(RuntimeShape) + sizeof(RuntimeShape*) + sizeof(void*)), 
+      context->RequestScratchBufferInArena(context,
+                                           num_inputs * (sizeof(RuntimeShape) + sizeof(RuntimeShape*) + sizeof(void*)),
                                            &data->scratch_buffer_index));
 
 
@@ -295,8 +295,10 @@ TfLiteStatus Eval(TfLiteContext* context, TfLiteNode* node) {
 
 }  // namespace
 
+#ifndef TFLITE_MICRO_CONCATENATION_DISABLED
 TFLMRegistration Register_CONCATENATION() {
   return tflite::micro::RegisterOp(Init, Prepare, Eval);
 }
+#endif
 
 }  // namespace tflite

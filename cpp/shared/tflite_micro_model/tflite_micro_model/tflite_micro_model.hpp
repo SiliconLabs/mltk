@@ -52,9 +52,42 @@ public:
      */
     bool load(
       const void* flatbuffer, 
-      tflite::MicroOpResolver& op_resolver,
+      const tflite::MicroOpResolver& op_resolver,
       uint8_t *runtime_buffer = nullptr,
-      unsigned runtime_buffer_size = 0 
+      int32_t runtime_buffer_size = 0
+    );
+
+    /**
+     * @brief Load model with multiple runtime memory buffers
+     * 
+     * Load a model flatbuffer (.tflite) with multiple runtime memory buffers.
+     * The model must be pre-compiled to leverage the given memory buffers.
+     * 
+     * @note The provided `flatbuffer` MUST persist for the life of this model object.
+     * 
+     * The first entry in the buffer list is also used to store "persistent" memory
+     * and any temporary allocations.
+     * 
+     * @note If buffer[0] is NULL then a buffer will be automatically allocated. In this case,
+     * - If buffer_sizes[0] < 0, then automatically find the optimal run-time buffer size
+     * - If buffer_sizes[0] > 0, then allocate the specified size, if the size is too small then return the error
+     * - If buffer_sizes[0] == 0, then attempt to retrieve the arena size from the .tflite parameters metadata,
+     *     and allocate the buffer. If the buffer is too small or was not found in the metadata, 
+     *     then automatically find the optimal run-time buffer size.
+     * 
+     * @param flatbuffer Model flatbuffer (.tflite) binary data
+     * @param op_resolver @ref tflite::MicroOpResolver with reigstered kernels
+     * @param buffers List of buffers to hold the model's runtime buffers
+     * @param buffer_sizes Size of each buffer
+     * @param buffer_count Number of buffer provided
+     * @return true if model successfully loaded, false else
+     */
+    bool load(
+      const void* flatbuffer, 
+      const tflite::MicroOpResolver* op_resolver,
+      uint8_t* buffers[],
+      const int32_t buffer_sizes[],
+      int32_t buffer_count
     );
 
     /**
@@ -168,6 +201,22 @@ public:
     profiling::Profiler* profiler() const;
 
    /**
+     * Enable recording of model information.
+     * 
+     * @note This must be called BEFORE the model is loaded
+     * 
+     * @return true if recorder enabled, false else
+     */
+    bool enable_recorder();
+
+    /**
+     * Return if model recording is enabled
+     * 
+     * @return true if model recording is enabled, false else
+     */
+    bool is_recorder_enabled() const;
+
+   /**
      * Enable recording of model tensors during inference
      * 
      * @note This must be called BEFORE the model is loaded
@@ -182,6 +231,7 @@ public:
      * @return true if tensor recording is enabled, false else
      */
     bool is_tensor_recorder_enabled() const;
+
 
     /**
      * Return the recorded data from the previous inference
@@ -203,9 +253,18 @@ public:
      * Return a pointer to the tflite::MicroOpResolver
      * used by the model
      */
-    tflite::MicroOpResolver* ops_resolver()
+    const tflite::MicroOpResolver* ops_resolver()
     {
       return _ops_resolver;
+    }
+
+    /**
+     * Return a pointer to the TfliteContext of the MicroInterpreter instance
+     * used by the model
+     */
+    TfLiteContext* tflite_context() const
+    {
+      return (_interpreter != nullptr) ? &_interpreter->context_ : nullptr;
     }
 
     /**
@@ -218,7 +277,7 @@ public:
 private:
   uint8_t _interpreter_buffer[sizeof(tflite::MicroInterpreter)];
   tflite::MicroInterpreter* _interpreter = nullptr;
-  tflite::MicroOpResolver* _ops_resolver = nullptr;
+  const tflite::MicroOpResolver* _ops_resolver = nullptr;
   TfliteMicroModelDetails _model_details;
   const void* _flatbuffer = nullptr;
   void (*_processing_callback)(void*) = nullptr;
@@ -227,24 +286,22 @@ private:
 
   bool load_interpreter(
       const void* flatbuffer, 
-      tflite::MicroOpResolver& op_resolver,
-      uint8_t *runtime_buffer,
-      unsigned runtime_buffer_size,
-      bool disable_logs = false
+      const tflite::MicroOpResolver* op_resolver,
+      uint8_t* buffers[],
+      const int32_t buffer_sizes[],
+      int32_t buffer_count
   );
+
   bool find_optimal_buffer_size(
       const void* flatbuffer, 
-      tflite::MicroOpResolver& op_resolver,
-      unsigned &runtime_buffer_size 
+      const tflite::MicroOpResolver* op_resolver,
+      uint8_t* buffers[],
+      int32_t buffer_sizes[],
+      int32_t buffer_count,
+      int32_t &optimal_buffer_size
   );
   bool load_model_parameters(const void* flatbuffer=nullptr);
 };
 
 
 } // namespace mltk
-
-
-extern "C" void mltk_sl_tflite_micro_init(mltk::TfliteMicroModel *model);
-extern "C" TfLiteStatus mltk_sl_tflite_micro_invoke();
-
-

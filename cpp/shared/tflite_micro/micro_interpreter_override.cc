@@ -15,11 +15,6 @@
 
 #include "mltk_tflite_micro_helper.hpp"
 
-namespace mltk
-{
-    bool model_has_unknown_layers;
-}
-
 
 namespace tflite
 {
@@ -123,7 +118,7 @@ TfLiteStatus MicroInterpreter::PrepareNodeAndRegistrationDataFromFlatbuffer() {
 
   if(retval != kTfLiteOk)
   {
-    mltk::model_has_unknown_layers = true;
+    mltk::TfliteMicroKernelMessages::set_unknown_layers_detected(true);
   }
   return retval;
 }

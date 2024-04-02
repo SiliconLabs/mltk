@@ -13,7 +13,7 @@ else
     echo "You must first install the flatbuffer compiler executable."
     echo "You can either install it into the environment PATH"
     echo "OR you may download the executable from:"
-    echo "https://github.com/google/flatbuffers/releases/tag/v2.0.0"
+    echo "https://github.com/google/flatbuffers/releases/tag/v23.5.26"
     echo "and extract to the directory: $SCRIPT_DIR"
     exit 
 fi 

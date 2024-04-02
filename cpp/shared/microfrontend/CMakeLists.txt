@@ -68,31 +68,31 @@ PUBLIC
 ##############################################
 # If this is a non-embedded build
 # then also build the microfrontend as a DLL
-if(NOT MLTK_PLATFORM_IS_EMBEDDED)
-    add_library(microfrontend SHARED)
-    set_target_properties(microfrontend PROPERTIES PREFIX "")
+# if(NOT MLTK_PLATFORM_IS_EMBEDDED)
+#     add_library(microfrontend SHARED)
+#     set_target_properties(microfrontend PROPERTIES PREFIX "")
 
-    target_compile_definitions(microfrontend
-    PRIVATE
-        MICROFRONTEND_DLL_EXPORT
-    )
+#     target_compile_definitions(microfrontend
+#     PRIVATE
+#         MICROFRONTEND_DLL_EXPORT
+#     )
 
-    target_sources(microfrontend
-    PRIVATE
-        ${sources}
-    )
+#     target_sources(microfrontend
+#     PRIVATE
+#         ${sources}
+#     )
 
-    target_link_libraries(microfrontend
-    PUBLIC
-        ${libs}
-    )
+#     target_link_libraries(microfrontend
+#     PUBLIC
+#         ${libs}
+#     )
 
-    target_include_directories(microfrontend
-    PUBLIC
-        ${CMAKE_CURRENT_LIST_DIR}
-    )
+#     target_include_directories(microfrontend
+#     PUBLIC
+#         ${CMAKE_CURRENT_LIST_DIR}
+#     )
 
-endif()
+# endif()
 
 
 add_subdirectory(tests)

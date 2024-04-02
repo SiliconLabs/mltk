@@ -108,8 +108,8 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR})
 set(SPEC_PATH "${TOOLCHAIN_DIR}/arm-none-eabi/lib")
 set(CLIB_SPECS "--specs ${SPEC_PATH}/nano.specs --specs ${SPEC_PATH}/nosys.specs")
 
-set(CMAKE_C_FLAGS_INIT   "${CLIB_SPECS} -ffunction-sections -fdata-sections -ffreestanding -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fno-unwind-tables -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "c compiler flags")
-set(CMAKE_CXX_FLAGS_INIT "${CLIB_SPECS} -ffunction-sections -fdata-sections -ffreestanding -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fno-unwind-tables -fno-threadsafe-statics -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "cxx compiler flags")
+set(CMAKE_C_FLAGS_INIT   "${CLIB_SPECS} -ffunction-sections -fdata-sections -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fno-unwind-tables -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "c compiler flags")
+set(CMAKE_CXX_FLAGS_INIT "${CLIB_SPECS} -ffunction-sections -fdata-sections -fno-common -fno-delete-null-pointer-checks -Wno-unused-parameter -fno-unwind-tables -fno-threadsafe-statics -fno-rtti -fno-exceptions -fno-use-cxa-atexit -fmacro-prefix-map=${CMAKE_SOURCE_DIR}/=/ -fmacro-prefix-map=${MLTK_CPP_DIR}/=/" CACHE INTERNAL "cxx compiler flags")
 set(CMAKE_ASM_FLAGS_INIT "${CMAKE_C_FLAGS_INIT} -x assembler-with-cpp")
 set(CMAKE_EXE_LINKER_FLAGS_INIT "-Wl,--gc-sections -Wl,--cref" CACHE INTERNAL "exe link flags")
 
@@ -213,6 +213,7 @@ function(mltk_toolchain_add_exe_targets target)
         endif()
     endif()
 
+    mltk_get(MLTK_JLINK_DEVICES_XML_PATH)
 
     file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/${target}_post_build.cmake
 "
@@ -222,7 +223,7 @@ execute_process(COMMAND ${CMAKE_OBJCOPY} -j .bootloader -O binary \"${_output_pr
 execute_process(COMMAND ${CMAKE_OBJCOPY} -O srec \"${_output_prefix}.stripped.elf\" \"${_output_prefix}.s37\")
 execute_process(COMMAND ${CMAKE_SIZE} \"${_output_path}\")
 execute_process(COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/elf-size-analyze/elf-size-analyze.py \"${_output_path}\" --toolchain-path ${TOOLCHAIN_BIN_DIR}/arm-none-eabi- --no-color --ram --rom --human-readable --max-width 120 --output \"${_output_dir}/${target}-memory_usage.txt\")
-execute_process(COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/utils/update_launch_json.py --name ${target} --path \"${_output_path}\" --toolchain \"${TOOLCHAIN_BIN_DIR}\" --platform ${MLTK_PLATFORM_NAME} --workspace \"${CMAKE_SOURCE_DIR}\" --device \"${MLTK_JLINK_DEVICE}\" --serial_number \"${MLTK_JLINK_SERIAL_NUMBER}\" --ip_address \"${MLTK_JLINK_IP_ADDRESS}\" --svd_path \"${MLTK_PLATFORM_SVD_PATH}\" )
+execute_process(COMMAND ${PYTHON_EXECUTABLE} ${MLTK_CPP_DIR}/tools/utils/update_launch_json.py --name ${target} --path \"${_output_path}\" --toolchain \"${TOOLCHAIN_BIN_DIR}\" --platform ${MLTK_PLATFORM_NAME} --workspace \"${CMAKE_SOURCE_DIR}\" --device \"${MLTK_JLINK_DEVICE}\" --serial_number \"${MLTK_JLINK_SERIAL_NUMBER}\" --ip_address \"${MLTK_JLINK_IP_ADDRESS}\" --svd_path \"${MLTK_PLATFORM_SVD_PATH}\" --jlink_devices_xml_path \"${MLTK_JLINK_DEVICES_XML_PATH}\" )
 execute_process(COMMAND ${CMAKE_COMMAND} -E echo \"For more details, see: ${_output_dir}/${target}-memory_usage.txt\")
 ")
 

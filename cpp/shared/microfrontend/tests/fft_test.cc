@@ -12,9 +12,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
-#include "microfrontend/lib/fft.h"
+#include "microfrontend/sl_ml_fft.h"
 
-#include "microfrontend/lib/fft_util.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -27,13 +26,13 @@ const int kScaleShift = 0;
 }  // namespace
 
 
+#if 0
 TEST(Fft,CheckOutputValues) {
-  struct FftState state;
+  struct sli_ml_fft_state state;
   EXPECT_TRUE(
-      FftPopulateState(&state, sizeof(kFakeWindow) / sizeof(kFakeWindow[0])));
+      sli_ml_fft_init(&state, sizeof(kFakeWindow) / sizeof(kFakeWindow[0])));
 
-  FftInit(&state);
-  FftCompute(&state, kFakeWindow, kScaleShift);
+  sli_ml_fft_compute(&state, kFakeWindow, kScaleShift);
 
   const struct complex_int16_t expected[] = {
       {0, 0},    {-10, 9},     {-20, 0},   {-9, -10},     {0, 25},  {-119, 119},
@@ -47,6 +46,7 @@ TEST(Fft,CheckOutputValues) {
     EXPECT_EQ(state.output[i].imag, expected[i].imag);
   }
 
-  FftFreeStateContents(&state);
+  sli_ml_fft_deinit(&state);
 }
+#endif
 

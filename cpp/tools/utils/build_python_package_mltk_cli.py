@@ -310,7 +310,7 @@ Release for all supported Python versions.
     # Run the MLTK unit tests
     _run_unit_tests(
         utests=utests,
-        pip_args=[wheel_path],
+        pip_args=[f'{wheel_path}[full]'],
         logger=logger,
         python_exe=python_exe,
         python_version=python_version,
@@ -332,7 +332,7 @@ Release for all supported Python versions.
             cli.abort(msg=f'Failed to run upload to https://test.pypi.org, err: {retmsg}')
 
         _run_unit_tests(
-            pip_args=['--extra-index-url', 'https://test.pypi.org/simple/', f'silabs-mltk=={mltk_version}'],
+            pip_args=['--extra-index-url', 'https://test.pypi.org/simple/', f'silabs-mltk[full]=={mltk_version}'],
             logger=logger,
             python_exe=python_exe,
             python_version=python_version,
@@ -355,7 +355,7 @@ Release for all supported Python versions.
             cli.abort(msg=f'Failed to run upload to https://pypi.org, err: {retmsg}')
 
         _run_unit_tests(
-            pip_args=[f'silabs-mltk=={mltk_version}'],
+            pip_args=[f'silabs-mltk[full]=={mltk_version}'],
             logger=logger,
             python_exe=python_exe,
             python_version=python_version,

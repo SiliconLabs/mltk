@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.profiling_results &#8212; MLTK 0.19.0 documentation</title>
+    <title>mltk.core.profiling_results &#8212; MLTK 0.20.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../index.html" title="MLTK 0.19.0 documentation"
+        <a href="../../../index.html" title="MLTK 0.20.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../_static/logo.png"
-                   alt="MLTK 0.19.0 documentation logo">
+                   alt="MLTK 0.20.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../index.html" title="MLTK 0.19.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../index.html" title="MLTK 0.20.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../index.html"
-       title="MLTK 0.19.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.20.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -437,6 +437,7 @@
 <span class="kn">from</span> <span class="nn">prettytable</span> <span class="kn">import</span> <span class="n">PrettyTable</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.string_formatting</span> <span class="kn">import</span> <span class="n">format_units</span> <span class="k">as</span> <span class="n">format_units_func</span>
 <span class="kn">from</span> <span class="nn">.tflite_model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TfliteLayer</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">,</span> <span class="n">TfliteOpCode</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.tflite_micro</span> <span class="kn">import</span> <span class="n">TfliteMicroModelDetails</span>
 
 
 <div class="viewcode-block" id="ProfilingLayerResult"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingLayerResult">[docs]</a><span class="k">class</span> <span class="nc">ProfilingLayerResult</span><span class="p">(</span><span class="n">defaultdict</span><span class="p">):</span>
@@ -602,6 +603,7 @@
         <span class="n">runtime_memory_bytes</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
         <span class="n">layers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ProfilingLayerResult</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_simulated</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">model_details</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="p">:</span><span class="n">TfliteModel</span> <span class="o">=</span> <span class="n">model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
@@ -610,7 +612,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_cpu_clock_rate</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="n">cpu_clock_rate</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_runtime_memory_bytes</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="n">runtime_memory_bytes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_layers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ProfilingLayerResult</span><span class="p">]</span> <span class="o">=</span> <span class="n">layers</span> <span class="ow">or</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_is_simulated</span> <span class="o">=</span> <span class="n">is_simulated</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_is_simulated</span> <span class="o">=</span> <span class="n">is_simulated</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_details</span><span class="p">:</span><span class="n">TfliteMicroModelDetails</span> <span class="o">=</span> <span class="n">model_details</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -620,6 +623,10 @@
     <span class="k">def</span> <span class="nf">tflite_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Associated TfliteModel"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">tflite_micro_model_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteMicroModelDetails</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""TF-Lite Micro model-specific details"""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_details</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">accelerator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Name of accelerator used for profiling"""</span>
@@ -1070,7 +1077,12 @@
         <span class="n">x</span><span class="o">.</span><span class="n">align</span> <span class="o">=</span> <span class="s1">'l'</span>
         <span class="n">s</span> <span class="o">+=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_string</span><span class="p">()</span>
 
+        <span class="k">if</span> <span class="n">full_summary</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_details</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s1">'</span><span class="se">\n\n</span><span class="s1">Memory Plan</span><span class="se">\n</span><span class="s1">'</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_details</span><span class="o">.</span><span class="n">memory_plan</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">s</span></div>
+
 
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span></div>
@@ -1095,11 +1107,11 @@
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2023, Silicon Labs.
+              &#169; Copyright 2024, Silicon Labs.
               
           </div>
             Last updated on
-              Sep 12, 2023.
+              Apr 02, 2024.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
@@ -1107,7 +1119,6 @@
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>
         </div>
-        <button id="survey-link" class="feedback-button">Feedback</button>
       </div>
     </div>
   </footer>
@@ -1120,13 +1131,6 @@
       <a class="privacy-banner-accept" href="#">Got it</a>
     </div>
 </div>
-  
-<div class="survey-container" id="dlg-survey"> 
-    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
-    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
-    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
-</div>
-  
   <script src="../../../_static/javascripts/application.js"></script>
   <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
   </body>

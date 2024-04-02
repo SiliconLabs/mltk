@@ -34,3 +34,13 @@ PUBLIC
     mltk::profiling
     mltk::gecko_sdk::includes
 )
+
+
+mltk_get(MLTK_TFLITE_OFFLINE_MEMORY_PLANNING_REQUIRED)
+if(MLTK_TFLITE_OFFLINE_MEMORY_PLANNING_REQUIRED)
+    mltk_info("MLTK_TFLITE_OFFLINE_MEMORY_PLANNING_REQUIRED=ON" TAG mltk_tflite_micro_model)
+    target_compile_definitions(${PROJECT_NAME}
+    PRIVATE 
+        MLTK_TFLITE_OFFLINE_MEMORY_PLANNING_REQUIRED
+    )
+endif()

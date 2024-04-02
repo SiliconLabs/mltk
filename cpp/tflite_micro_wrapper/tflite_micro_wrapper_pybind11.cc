@@ -12,12 +12,13 @@
 namespace py = pybind11;
 
 extern void init_tflite_micro_model(py::module &);
-
+extern void init_tflite_micro_memory_planner(py::module &m);
 
 
 PYBIND11_MODULE(MODULE_NAME, m) 
 {
     init_tflite_micro_model(m);
+    init_tflite_micro_memory_planner(m);
 
     /*************************************************************************************************
      * API version number of the wrapper 
@@ -65,13 +66,22 @@ PYBIND11_MODULE(MODULE_NAME, m)
      * Set mltk logger with callback
      * This allows for sending the MLTK logs to a python logger
      */
-    m.def("set_logger_callback", [](const std::function<void(const char*)>& callback)
+    m.def("set_logger_callback", [](const std::function<void(const std::string&)>& callback)
     {
         auto& logger = mltk::get_logger();
         logger.flags(logging::PrintLevel);
         logger.writer([callback](const char *msg, int length, void *arg)
         {
-            callback(msg);
+            if(length < 0)
+            {
+                length = strlen(msg);
+            }
+
+            if(length > 0)
+            {
+                const std::string s(msg, length);
+                callback(s);
+            }
         });
     });
 

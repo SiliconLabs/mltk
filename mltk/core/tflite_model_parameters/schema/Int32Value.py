@@ -31,15 +31,20 @@ class Int32Value(object):
             return self._tab.Get(flatbuffers.number_types.Int32Flags, o + self._tab.Pos)
         return 0
 
-def Start(builder): builder.StartObject(1)
 def Int32ValueStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddValue(builder, value): builder.PrependInt32Slot(0, value, 0)
+    builder.StartObject(1)
+
+def Start(builder):
+    Int32ValueStart(builder)
+
 def Int32ValueAddValue(builder, value):
-    """This method is deprecated. Please switch to AddValue."""
-    return AddValue(builder, value)
-def End(builder): return builder.EndObject()
+    builder.PrependInt32Slot(0, value, 0)
+
+def AddValue(builder, value):
+    Int32ValueAddValue(builder, value)
+
 def Int32ValueEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return Int32ValueEnd(builder)

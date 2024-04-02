@@ -31,15 +31,20 @@ class Int8Value(object):
             return self._tab.Get(flatbuffers.number_types.Int8Flags, o + self._tab.Pos)
         return 0
 
-def Start(builder): builder.StartObject(1)
 def Int8ValueStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddValue(builder, value): builder.PrependInt8Slot(0, value, 0)
+    builder.StartObject(1)
+
+def Start(builder):
+    Int8ValueStart(builder)
+
 def Int8ValueAddValue(builder, value):
-    """This method is deprecated. Please switch to AddValue."""
-    return AddValue(builder, value)
-def End(builder): return builder.EndObject()
+    builder.PrependInt8Slot(0, value, 0)
+
+def AddValue(builder, value):
+    Int8ValueAddValue(builder, value)
+
 def Int8ValueEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return Int8ValueEnd(builder)

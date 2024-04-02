@@ -8,8 +8,11 @@ set(MLTK_TOOLCHAIN_NAME linux CACHE INTERNAL "")
 
 include(${CMAKE_CURRENT_LIST_DIR}/../../../cmake/utilities.cmake)
 
+if(DEFINED ENV{GCC_VERSION})
+  set(GCC_VERSION $ENV{GCC_VERSION} CACHE INTERNAL "")
+endif()
 if(NOT GCC_VERSION)
-  set(GCC_VERSION 9 CACHE INTERNAL "")
+  set(GCC_VERSION 13 CACHE INTERNAL "")
 endif()
 
 if(NOT MLTK_USER_OPTIONS)
@@ -133,12 +136,6 @@ macro(mltk_toolchain_add_exe_targets target)
   add_custom_command(TARGET ${target}
     POST_BUILD
     COMMAND ${CMAKE_COMMAND} -P ${target}_post_build.cmake
-  )
-
-  mltk_warn("Statically linking exe, adding ld flags: static-libgcc -static-libstdc++ -pthread -static")
-  target_link_options(${target}
-  PUBLIC
-      -static-libgcc -static-libstdc++ -pthread -static
   )
 
   add_custom_target(${target}_download_run

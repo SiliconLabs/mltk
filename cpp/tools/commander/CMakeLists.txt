@@ -93,26 +93,32 @@ endmacro()
 # target - CMake target name of the embedded executable
 #
 # Optional arguments:
+# IMAGE <path> - Path to firmware image to download
+#                If omitted then use ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.s37
 # TIMEOUT <seconds> - Number of seconds to wait before timing out when using the download_run target
 # COMPLETED_MSG <msg> - Console msg app prints to be considered complete
 macro(mltk_commander_add_download_run_target target)
-  cmake_parse_arguments(DOWNLOAD_RUN_ARG "" "TIMEOUT;COMPLETED_MSG" "" ${ARGN})
+  cmake_parse_arguments(DOWNLOAD_RUN_ARG "" "IMAGE;TIMEOUT;COMPLETED_MSG" "" ${ARGN})
   mltk_load_python()
   mltk_get(MLTK_PLATFORM_NAME)
   mltk_get(MLTK_JLINK_DEVICE)
   mltk_get(MLTK_JLINK_SERIAL_NUMBER)
   mltk_get(MLTK_DOWNLOAD_RUN_SETUP_SCRIPT)
   mltk_get(MLTK_DOWNLOAD_RUN_SETUP_SCRIPT_ARGS)
+  mltk_get(MLTK_DOWNLOAD_RUN_PROGRAM_SCRIPT)
+  mltk_get(MLTK_DOWNLOAD_RUN_PROGRAM_SCRIPT_ARGS)
+  mltk_get(MLTK_DOWNLOAD_RUN_RESET_SCRIPT)
+  mltk_get(MLTK_DOWNLOAD_RUN_RESET_SCRIPT_ARGS)
   mltk_get(MLTK_DOWNLOAD_RUN_PORT)
   mltk_get(MLTK_DOWNLOAD_RUN_BAUD)
   mltk_get(MLTK_DOWNLOAD_RUN_SERIAL_NUMBER)
   mltk_get(MLTK_DOWNLOAD_RUN_IP_ADDRESS)
   mltk_get(MLTK_DOWNLOAD_RUN_TIMEOUT)
   mltk_get(MLTK_DOWNLOAD_RUN_RETRIES)
-  mltk_get(MLTK_DOWNLOAD_RUN_SSH_HOSTNAME)
   mltk_get(MLTK_DOWNLOAD_RUN_NO_MASSERASE)
   mltk_get(MLTK_DOWNLOAD_RUN_START_MSG)
   mltk_get(MLTK_DOWNLOAD_RUN_COMPLETED_MSG)
+  mltk_get(MLTK_DOWNLOAD_RUN_REMOTE_ADDRESS)
 
   if(MLTK_JLINK_DEVICE)
     set(device_arg --device ${MLTK_JLINK_DEVICE})
@@ -121,9 +127,22 @@ macro(mltk_commander_add_download_run_target target)
   if(MLTK_DOWNLOAD_RUN_SETUP_SCRIPT)
     set(setup_script_arg --setup-script "${MLTK_DOWNLOAD_RUN_SETUP_SCRIPT}")
   endif()
-
   if(MLTK_DOWNLOAD_RUN_SETUP_SCRIPT_ARGS)
-    set(setup_script_args_arg --setup-script-args "${MLTK_DOWNLOAD_RUN_SETUP_SCRIPT_ARGS}")
+    set(setup_script_args_arg --setup-script-args ${MLTK_DOWNLOAD_RUN_SETUP_SCRIPT_ARGS})
+  endif()
+
+  if(MLTK_DOWNLOAD_RUN_PROGRAM_SCRIPT)
+    set(program_script_arg --program-script "${MLTK_DOWNLOAD_RUN_PROGRAM_SCRIPT}")
+  endif()
+  if(MLTK_DOWNLOAD_RUN_PROGRAM_SCRIPT_ARGS)
+    set(program_script_args_arg --program-script-args ${MLTK_DOWNLOAD_RUN_PROGRAM_SCRIPT_ARGS})
+  endif()
+
+  if(MLTK_DOWNLOAD_RUN_RESET_SCRIPT)
+    set(reset_script_arg --reset-script "${MLTK_DOWNLOAD_RUN_RESET_SCRIPT}")
+  endif()
+  if(MLTK_DOWNLOAD_RUN_RESET_SCRIPT_ARGS)
+    set(reset_script_args_arg --reset-script-args ${MLTK_DOWNLOAD_RUN_RESET_SCRIPT_ARGS})
   endif()
 
   if(MLTK_DOWNLOAD_RUN_PORT)
@@ -135,13 +154,13 @@ macro(mltk_commander_add_download_run_target target)
   endif()
 
   if(MLTK_DOWNLOAD_RUN_SERIAL_NUMBER)
-    set(serial_number_arg --serial-number ${MLTK_DOWNLOAD_RUN_SERIAL_NUMBER})
+    set(serial_number_arg --serial-number "${MLTK_DOWNLOAD_RUN_SERIAL_NUMBER}")
   elseif(MLTK_JLINK_SERIAL_NUMBER)
-    set(serial_number_arg --serial-number ${MLTK_JLINK_SERIAL_NUMBER})
+    set(serial_number_arg --serial-number "${MLTK_JLINK_SERIAL_NUMBER}")
   endif()
 
   if(MLTK_DOWNLOAD_RUN_IP_ADDRESS)
-    set(ip_address_arg --ip-address ${MLTK_DOWNLOAD_RUN_IP_ADDRESS})
+    set(ip_address_arg --ip-address "${MLTK_DOWNLOAD_RUN_IP_ADDRESS}")
   endif()
 
   if(DOWNLOAD_RUN_ARG_TIMEOUT)
@@ -154,8 +173,8 @@ macro(mltk_commander_add_download_run_target target)
     set(retries_arg --retries ${MLTK_DOWNLOAD_RUN_RETRIES})
   endif()
 
-  if(MLTK_DOWNLOAD_RUN_SSH_HOSTNAME)
-    set(host_arg --host "${MLTK_DOWNLOAD_RUN_SSH_HOSTNAME}")
+  if(MLTK_DOWNLOAD_RUN_REMOTE_ADDRESS)
+    set(remote_address_arg --remote-address "${MLTK_DOWNLOAD_RUN_REMOTE_ADDRESS}")
   endif()
 
    if(MLTK_DOWNLOAD_RUN_START_MSG)
@@ -169,15 +188,20 @@ macro(mltk_commander_add_download_run_target target)
   endif()
 
 
-
   if(NOT MLTK_DOWNLOAD_RUN_NO_MASSERASE)
     set(masserase_arg --masserase)
   endif()
 
+  if(NOT DOWNLOAD_RUN_ARG_IMAGE)
+    set(DOWNLOAD_RUN_ARG_IMAGE "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.s37")
+  endif()
+
+  set(log_path_arg --log-path "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.log")
+
   add_custom_target(${target}_download_run
-    COMMAND ${PYTHON_EXECUTABLE} -m mltk build download_run "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${target}.s37" --platform ${MLTK_PLATFORM_NAME} ${masserase_arg} ${device_arg} ${setup_script_arg} ${setup_script_args_arg} ${port_arg} ${baud_arg} ${serial_number_arg} ${ip_address_arg} ${timeout_arg} ${retries_arg} ${host_arg} ${start_msg_arg} ${completed_msg_arg}
+    COMMAND ${PYTHON_EXECUTABLE} -m mltk build download_run "${DOWNLOAD_RUN_ARG_IMAGE}" --platform ${MLTK_PLATFORM_NAME} ${log_path_arg} --dump-log-file ${masserase_arg} ${device_arg} ${setup_script_arg} ${setup_script_args_arg} ${program_script_arg} ${program_script_args_arg} ${reset_script_arg} ${reset_script_args_arg} ${port_arg} ${baud_arg} ${serial_number_arg} ${ip_address_arg} ${timeout_arg} ${retries_arg} ${remote_address_arg} ${start_msg_arg} ${completed_msg_arg}
     DEPENDS ${target}
-    COMMENT "Downloading and running ${target}.s37 on ${MLTK_PLATFORM_NAME}'s ..."
+    COMMENT "Downloading and running ${DOWNLOAD_RUN_ARG_IMAGE} on ${MLTK_PLATFORM_NAME}'s ..."
     USES_TERMINAL
   )
 

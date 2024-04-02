@@ -1,16 +1,10 @@
-
-
-
-
 #include "tensorflow/lite/kernels/padding.h"
 #include "tensorflow/lite/kernels/internal/tensor_ctypes.h"
 #include "tensorflow/lite/kernels/kernel_util.h"
 #include "tensorflow/lite/micro/kernels/kernel_util.h"
 
-#include "mltk_tflite_micro_internal.hpp"
-
-
-
+#include "mltk_tflite_micro_profiler.hpp"
+#include "mltk_tflite_micro_model_helper.hpp"
 
 
 using namespace tflite::micro;
@@ -20,9 +14,28 @@ namespace mltk
 {
 
 
-#define GetInput(index) tflite::micro::GetEvalInput(context, &node_and_registration.node, index)
-#define GetOutput(index) tflite::micro::GetEvalOutput(context, &node_and_registration.node, index)
 
+/*************************************************************************************************/
+static const TfLiteEvalTensor* _GetInput(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration, 
+    int index
+)
+{
+    return tflite::micro::GetEvalInput(context, &node_and_registration.node, index);
+}
+#define GetInput(index) _GetInput(context, node_and_registration, index)
+
+/*************************************************************************************************/
+static TfLiteEvalTensor* _GetOutput(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration, 
+    int index
+)
+{
+    return tflite::micro::GetEvalOutput(context, &node_and_registration.node, index);
+}
+#define GetOutput(index) _GetOutput(context, node_and_registration, index)
 
 
 /*************************************************************************************************/
@@ -47,9 +60,11 @@ static uint32_t add_activation_ops(TfLiteFusedActivation activation, int count)
 }
 
 /*************************************************************************************************/
-static void calculate_fully_connected(const TfLiteContext* context,
-                                      const tflite::NodeAndRegistration& node_and_registration,
-                                      profiling::Metrics& metrics)
+static void calculate_fully_connected(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     constexpr int kWeightsTensor = 1;
     constexpr int kOutputTensor = 0;
@@ -77,9 +92,11 @@ static void calculate_fully_connected(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_conv2d(const TfLiteContext* context,
-                             const tflite::NodeAndRegistration& node_and_registration,
-                             profiling::Metrics& metrics)
+static void calculate_conv2d(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     constexpr int kInputTensor = 0;
     constexpr int kFilterTensor = 1;
@@ -118,9 +135,11 @@ static void calculate_conv2d(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_transpose_conv(const TfLiteContext* context,
-                                     const tflite::NodeAndRegistration& node_and_registration,
-                                     profiling::Metrics& metrics)
+static void calculate_transpose_conv(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     //constexpr int kOutputShapeTensor = 0;
     constexpr int kFilterTensor = 1;
@@ -162,9 +181,11 @@ static void calculate_transpose_conv(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_depthwise_conv2d(const TfLiteContext* context,
-                                       const tflite::NodeAndRegistration& node_and_registration,
-                                        profiling::Metrics& metrics)
+static void calculate_depthwise_conv2d(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     constexpr int kInputTensor = 0;
     constexpr int kOutputTensor = 0;
@@ -202,9 +223,11 @@ static void calculate_depthwise_conv2d(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_max_pool2d(const TfLiteContext* context,
-                                 const tflite::NodeAndRegistration& node_and_registration,
-                                 profiling::Metrics& metrics)
+static void calculate_max_pool2d(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     constexpr int kInputTensor = 0;
     constexpr int kOutputTensor = 0;
@@ -228,9 +251,11 @@ static void calculate_max_pool2d(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_average_pool2d(const TfLiteContext* context,
-                                     const tflite::NodeAndRegistration& node_and_registration,
-                                     profiling::Metrics& metrics)
+static void calculate_average_pool2d(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     constexpr int kInputTensor = 0;
     constexpr int kOutputTensor = 0;
@@ -254,9 +279,11 @@ static void calculate_average_pool2d(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_softmax(const TfLiteContext* context,
-                              const tflite::NodeAndRegistration& node_and_registration,
-                              profiling::Metrics& metrics)
+static void calculate_softmax(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     const auto input = GetInput(0);
     const auto& dims = *input->dims;
@@ -266,9 +293,11 @@ static void calculate_softmax(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_add(const TfLiteContext* context,
-                           const tflite::NodeAndRegistration& node_and_registration,
-                           profiling::Metrics& metrics)
+static void calculate_add(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     const auto input = GetInput(0);
     const auto input_shape = tflite::micro::GetTensorShape(input);
@@ -278,9 +307,11 @@ static void calculate_add(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_quantize(const TfLiteContext* context,
-                           const tflite::NodeAndRegistration& node_and_registration,
-                           profiling::Metrics& metrics)
+static void calculate_quantize(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     const auto input = GetInput(0);
     const auto input_shape = tflite::micro::GetTensorShape(input);
@@ -295,9 +326,11 @@ static void calculate_quantize(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_dequantize(const TfLiteContext* context,
-                           const tflite::NodeAndRegistration& node_and_registration,
-                           profiling::Metrics& metrics)
+static void calculate_dequantize(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     const auto input = GetInput(0);
     const auto input_shape = tflite::micro::GetTensorShape(input);
@@ -310,9 +343,11 @@ static void calculate_dequantize(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_pad(const TfLiteContext* context,
-                           const tflite::NodeAndRegistration& node_and_registration,
-                           profiling::Metrics& metrics)
+static void calculate_pad(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     const auto output = GetOutput(0);
     const auto output_shape = tflite::micro::GetTensorShape(output);
@@ -325,9 +360,11 @@ static void calculate_pad(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_reshape(const TfLiteContext* context,
-                           const tflite::NodeAndRegistration& node_and_registration,
-                           profiling::Metrics& metrics)
+static void calculate_reshape(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     const auto input = GetInput(0);
     const auto output = GetOutput(0);
@@ -345,9 +382,11 @@ static void calculate_reshape(const TfLiteContext* context,
 
 
 /*************************************************************************************************/
-static void calculate_mean(const TfLiteContext* context,
-                           const tflite::NodeAndRegistration& node_and_registration,
-                           profiling::Metrics& metrics)
+static void calculate_mean(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
 //    const auto input = GetInput(0);
 //    const auto output = GetOutput0);
@@ -363,9 +402,11 @@ static void calculate_mean(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_resize_nearest_neighbor(const TfLiteContext* context,
-                                              const tflite::NodeAndRegistration& node_and_registration,
-                                              profiling::Metrics& metrics)
+static void calculate_resize_nearest_neighbor(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     constexpr int kSizeTensor = 1;
     constexpr int GetNearestNeighbor_flops = 8; // just an approximation for the number of operations in GetNearestNeighbor()
@@ -382,9 +423,11 @@ static void calculate_resize_nearest_neighbor(const TfLiteContext* context,
 
 
 /*************************************************************************************************/
-static void calculate_relu(const TfLiteContext* context,
-                           const tflite::NodeAndRegistration& node_and_registration,
-                           profiling::Metrics& metrics)
+static void calculate_relu(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     constexpr int kInputTensor = 0;
 
@@ -395,9 +438,11 @@ static void calculate_relu(const TfLiteContext* context,
 }
 
 /*************************************************************************************************/
-static void calculate_multiply(const TfLiteContext* context,
-                           const tflite::NodeAndRegistration& node_and_registration,
-                           profiling::Metrics& metrics)
+static void calculate_multiply(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     const auto output = GetOutput(0);
     const auto output_shape = tflite::micro::GetTensorShape(output);
@@ -408,9 +453,11 @@ static void calculate_multiply(const TfLiteContext* context,
 
 
 /*************************************************************************************************/
-bool calculate_op_metrics(const TfLiteContext* context,
-                          const tflite::NodeAndRegistration& node_and_registration,
-                          profiling::Metrics& metrics)
+bool TfliteMicroProfiler::calculate_op_metrics(
+    TfLiteContext *context,
+    const tflite::NodeAndRegistration& node_and_registration,
+    profiling::Metrics& metrics
+)
 {
     const auto builtin_code = node_and_registration.registration->builtin_code;
 

@@ -2,11 +2,11 @@
 
 CPMAddPackage(
     NAME cmsis_nn
-    URL https://github.com/ARM-software/CMSIS-NN/archive/dc64e488f6655aa2792d2aceca316c896f78b4db.zip
-    URL_HASH SHA1=7cc7f8391bc29f584e661ea7599cd01d9569d169
+    URL https://github.com/ARM-software/CMSIS-NN/archive/refs/tags/24.02.zip
+    URL_HASH SHA1=42cffeae7e05cb07de844774cd92ff6ec2c0e8dc
     DOWNLOAD_ONLY ON
     CACHE_SUBDIR cmsis
-    CACHE_VERSION may23_2023
+    CACHE_VERSION feb11_2024
 )
 set(cmsis_nn_SOURCE_DIR ${cmsis_nn_SOURCE_DIR} CACHE INTERNAL "")
 

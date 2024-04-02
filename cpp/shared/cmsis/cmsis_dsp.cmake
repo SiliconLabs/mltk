@@ -38,11 +38,11 @@ endif()
 
 CPMAddPackage(
     NAME cmsis_dsp
-    URL https://github.com/ARM-software/CMSIS-DSP/archive/refs/tags/v1.11.0.zip
-    URL_HASH SHA1=db167d876b3ab30e8a35f74e0d6be91746aacb30
+    URL https://github.com/ARM-software/CMSIS-DSP/archive/refs/tags/v1.15.0.zip
+    URL_HASH SHA1=130b5faa006fc0cd8939270b7afd507f2ea3f077
     DOWNLOAD_ONLY ON
     CACHE_SUBDIR cmsis
-    CACHE_VERSION v1.11
+    CACHE_VERSION v1.15
 )
 set(cmsis_dsp_SOURCE_DIR ${cmsis_dsp_SOURCE_DIR} CACHE INTERNAL "")
 

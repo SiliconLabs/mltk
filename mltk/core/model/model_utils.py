@@ -5,8 +5,6 @@ import re
 import shutil
 import collections
 
-from tensorflow.keras.models import Model as KerasModel
-from tensorflow.keras.models import load_model as load_keras_model
 
 from mltk import __version__ as mltk_version_str
 from mltk import MLTK_ROOT_DIR
@@ -24,6 +22,7 @@ from .mixins.archive_mixin import (
     extract_file
 )
 from ..tflite_model import TfliteModel
+from ..keras import (KerasModel, load_keras_model)
 
 
 

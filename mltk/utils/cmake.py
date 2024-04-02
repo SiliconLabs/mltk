@@ -28,6 +28,7 @@ PLATFORM_TOOLCHAIN_MAPPING = {
     'brd2601'  : 'gcc/arm/arm_toolchain.cmake',
     'brd4166'  : 'gcc/arm/arm_toolchain.cmake',
     'brd4401'  : 'gcc/arm/arm_toolchain.cmake',
+    'brd2705'  : 'gcc/arm/arm_toolchain.cmake',
 }
 
 

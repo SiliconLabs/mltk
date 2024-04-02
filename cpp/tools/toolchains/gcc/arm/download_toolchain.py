@@ -12,16 +12,16 @@ sys.path.append(os.path.normpath(f'{CURDIR}/../../../../..'))
 # https://developer.arm.com/tools-and-software/open-source-software/developer-tools/gnu-toolchain/gnu-rm/downloads
 URLS = {
     'windows': dict(
-        url='https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-win32.zip',
-        version='2021.10',
-        md5='2bc8f0c4c4659f8259c8176223eeafc1',
-        extract_subdir='/gcc-arm-none-eabi-10.3-2021.10'
+        url='https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-mingw-w64-i686-arm-none-eabi.zip',
+        version='13.2',
+        md5='2d2c13d5a364d40987710ea2d1eeae28b1fe6136',
+        extract_subdir='/arm-gnu-toolchain-13.2.Rel1-mingw-w64-i686-arm-none-eabi'
     ),
     'linux': dict(
-        url='https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2',
-        version='2021.10',
-        md5='2383e4eb4ea23f248d33adc70dc3227e',
-        extract_subdir='/gcc-arm-none-eabi-10.3-2021.10'
+        url='https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz',
+        version='13.2',
+        md5='14753b0cb5f7baa4586c9f2ba6ec331d225e702e',
+        extract_subdir='/arm-gnu-toolchain-13.2.Rel1-x86_64-arm-none-eabi'
     )
 }
 

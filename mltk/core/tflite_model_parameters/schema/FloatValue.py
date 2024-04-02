@@ -31,15 +31,20 @@ class FloatValue(object):
             return self._tab.Get(flatbuffers.number_types.Float32Flags, o + self._tab.Pos)
         return 0.0
 
-def Start(builder): builder.StartObject(1)
 def FloatValueStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddValue(builder, value): builder.PrependFloat32Slot(0, value, 0.0)
+    builder.StartObject(1)
+
+def Start(builder):
+    FloatValueStart(builder)
+
 def FloatValueAddValue(builder, value):
-    """This method is deprecated. Please switch to AddValue."""
-    return AddValue(builder, value)
-def End(builder): return builder.EndObject()
+    builder.PrependFloat32Slot(0, value, 0.0)
+
+def AddValue(builder, value):
+    FloatValueAddValue(builder, value)
+
 def FloatValueEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return FloatValueEnd(builder)

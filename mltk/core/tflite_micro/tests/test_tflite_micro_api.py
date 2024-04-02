@@ -28,11 +28,11 @@ def test_set_log_level():
 def test_normalize_accelerator_name():
     assert TfliteMicro.normalize_accelerator_name(None) is None
     assert TfliteMicro.normalize_accelerator_name('bogus') is None
-    assert TfliteMicro.normalize_accelerator_name('mvp') == 'MVP'
+    assert TfliteMicro.normalize_accelerator_name('mvp') == 'mvp'
 
 def test_get_supported_accelerators():
     accs  = TfliteMicro.get_supported_accelerators()
-    assert 'MVP' in accs
+    assert 'mvp' in accs
 
 def test_accelerator_is_supported():
     assert TfliteMicro.accelerator_is_supported(None) is False
@@ -57,7 +57,7 @@ def test_load_tflite_model_mvp():
     )
     assert isinstance(tflm_model, TfliteMicroModel)
     assert isinstance(tflm_model.accelerator, TfliteMicroAccelerator)
-    assert tflm_model.accelerator.name == 'MVP'
+    assert tflm_model.accelerator.name == 'mvp'
     TfliteMicro.unload_model(tflm_model)
 
 

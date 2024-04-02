@@ -31,7 +31,7 @@ class BaseEstimator(abc.ABC):
         if self._loaded:
             return
 
-        get_mltk_logger().warn(f'Loading estimators for {self.name}')
+        get_mltk_logger().warning(f'Loading estimators for {self.name}')
 
         self._loaded = True
         self.cpu_cycles_model = load_model(

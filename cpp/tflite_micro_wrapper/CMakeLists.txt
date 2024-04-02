@@ -37,6 +37,7 @@ add_custom_target(${PROJECT_NAME}
 pybind11_add_module(${TFLITE_MICRO_MODULE_NAME} 
   tflite_micro_wrapper_pybind11.cc
   tflite_micro_model_wrapper_pybind11.cc
+  tflite_micro_memory_planner_pybind11.cc
   tflite_micro_model_wrapper.cc
 )
 

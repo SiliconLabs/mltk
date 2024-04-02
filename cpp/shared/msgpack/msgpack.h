@@ -524,7 +524,7 @@ typedef struct
 {
     msgpack_object_t obj;
     uint32_t count;
-    msgpack_dict_entry_t entries[];
+    msgpack_dict_entry_t* entries;
 }  msgpack_object_dict_t;
 
 /**
@@ -538,7 +538,7 @@ typedef struct
 {
     msgpack_object_t obj;
     uint32_t count;
-    msgpack_object_t *entries[];
+    msgpack_object_t** entries;
 } msgpack_object_array_t;
 
 

@@ -3,11 +3,10 @@
 import functools
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.layers import (
-    Dense, 
-    Activation, 
-    Flatten, 
+    Dense,
+    Activation,
+    Flatten,
     BatchNormalization,
     Conv2D,
     AveragePooling2D
@@ -29,9 +28,9 @@ from mltk.core.model import (
 # - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings
 # @mltk_model # NOTE: This tag is required for this model be discoverable
 class MyModel(
-    MltkModel, 
-    TrainMixin, 
-    ImageDatasetMixin, 
+    MltkModel,
+    TrainMixin,
+    ImageDatasetMixin,
     EvaluateClassifierMixin
 ):
     pass
@@ -40,7 +39,7 @@ mltk_model = MyModel()
 
 #################################################
 # General Settings
-# 
+#
 mltk_model.version = 1
 mltk_model.description = 'Model used for unit tests'
 
@@ -56,7 +55,7 @@ mltk_model.loss = 'categorical_crossentropy'
 #################################################
 # Training callback Settings
 
-# Generate a training weights .h5 whenever the 
+# Generate a training weights .h5 whenever the
 # val_accuracy improves
 mltk_model.checkpoint['monitor'] =  'val_accuracy'
 
@@ -119,16 +118,16 @@ mltk_model.datagen = ImageDataGenerator(
 def my_model_builder(model: MyModel):
     keras_model = Sequential(name=mltk_model.name)
 
-    keras_model.add(Conv2D(8, strides=(2,2), 
-                            kernel_size=3, use_bias=True, padding='same', 
+    keras_model.add(Conv2D(8, strides=(2,2),
+                            kernel_size=3, use_bias=True, padding='same',
                             activation='relu', input_shape=model.input_shape))
     keras_model.add(Flatten())
     keras_model.add(Dense(model.n_classes, use_bias=True))
     keras_model.add(Activation('softmax'))
 
     keras_model.compile(
-        loss=model.loss, 
-        optimizer=model.optimizer, 
+        loss=model.loss,
+        optimizer=model.optimizer,
         metrics=model.metrics
     )
 

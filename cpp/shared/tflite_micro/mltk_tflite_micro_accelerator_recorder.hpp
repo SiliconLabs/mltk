@@ -1,174 +1,87 @@
-#pragma once
+#pragma once 
 
-#include <new>
-#include <cassert>
 #include <vector>
 
-#ifdef TFLITE_MICRO_ACCELERATOR_RECORDER_ENABLED
+#include "cpputils/helpers.hpp"
 #include "mltk_tflite_micro_recorder.hpp"
 
-
-#define TFLITE_MICRO_ACCELERATOR_RECORDER_CLEAR() ::mltk::TfliteMicroAcceleratorRecorder::instance().clear()
-#define TFLITE_MICRO_ACCELERATOR_RECORDER_START_LAYER() ::mltk::TfliteMicroAcceleratorRecorder::instance().start_layer()
-#define TFLITE_MICRO_ACCELERATOR_RECORDER_END_LAYER() ::mltk::TfliteMicroAcceleratorRecorder::instance().end_layer()
-#define TFLITE_MICRO_ACCELERATOR_RECORD_PROGRAM(data, length) ::mltk::TfliteMicroAcceleratorRecorder::instance().record_program((const void*)data, length)
-#define TFLITE_MICRO_ACCELERATOR_RECORD_PROGRAM_METADATA(key, data) ::mltk::TfliteMicroAcceleratorRecorder::instance().record_program_metadata(key, data)
-#define TFLITE_MICRO_ACCELERATOR_RECORD_DATA(key, data, ...) ::mltk::TfliteMicroAcceleratorRecorder::instance().record_data(key, data, ##__VA_ARGS__)
 
 
 namespace mltk
 {
 
-
-
-
-
-struct TfliteMicroAcceleratorRecorder
+class DLL_EXPORT TfliteMicroAcceleratorRecorder
 {
-    bool program_recording_enabled = false;
-    bool data_recording_enabled = false;
-    bool layer_started = false;
-    bool program_started = false;
-    msgpack_context_t *program_context = nullptr;
+public:
+    static TfliteMicroAcceleratorRecorder& instance();
+    static bool is_enabled();
+    static void set_enabled(bool enabled);
+    static bool is_program_recording_enabled();
+    static void set_program_recording_enabled(bool enabled);
+    static msgpack_context_t* programs_context();
 
-    void clear()
+    static void reset();
+    static bool record_data(const char* key, const void* data, uint32_t length);
+    static bool record_data(const char* key, const uint8_t* data, uint32_t length);
+    static bool record_program(const void* data, unsigned length);
+    
+    template<typename T>
+    static bool record_program_metadata(const char* key, T value)
     {
-        msgpack_buffered_writer_deinit(program_context, true);
-        program_context = nullptr;
-        program_started = false;
-    }
+        auto& self = instance();
 
-    void set_program_recording_enabled(bool enabled = true)
-    {
-        program_recording_enabled = enabled;
-    }
-
-    void set_data_recording_enabled(bool enabled = true)
-    {
-        data_recording_enabled = enabled;
-    }
-
-    void start_layer()
-    {
-        layer_started = true;
-        program_started = false;
-        if(program_recording_enabled)
+        if(self._programs_context == nullptr)
         {
-            msgpack_buffered_writer_init(&program_context, 4096);
-            msgpack_write_array_marker(program_context, -1);
+            return false;
         }
+
+        _start_program();
+        msgpack_write_dict(self._programs_context, key, value);
+
+        return true;
     }
 
-    void end_layer()
+    template<typename T>
+    static bool record_program_metadata(
+        const char* key,
+        const std::vector<T>& data,
+        void (*write_callback)(msgpack_context_t*, const void*) = nullptr
+    )
     {
-        if(layer_started)
+        auto& self = instance();
+
+        if(self._programs_context == nullptr)
         {
-            layer_started = false;
+            return false;
+        }
 
-            if(program_context != nullptr)
+        _start_program();
+        msgpack_write_dict_array(self._programs_context, key, data.size());
+        for(const T& e : data)
+        {
+            if(write_callback != nullptr)
             {
-                if(msgpack_finalize_dynamic(program_context) == 0) // finalize the program array
-                {
-                    auto msgpack = get_layer_recording_context(true);
-                    msgpack_write_dict_context(msgpack, "programs", program_context);
-                }
-
-                msgpack_buffered_writer_deinit(program_context, true);
-                program_context = nullptr;
+                write_callback(self._programs_context, &e);
+            }
+            else
+            {
+                msgpack_write(self._programs_context, e);
             }
         }
-    }
-
-    bool record_program(const void* data, unsigned length)
-    {
-        if(!program_recording_enabled || ! layer_started || program_context == nullptr)
-        {
-            return false;
-        }
-
-        _start_program();
-        msgpack_write_dict_bin(program_context, "data", data, length);
-        msgpack_finalize_dynamic(program_context); // finalize the program dict
-        program_started = false;
 
         return true;
     }
 
     template<typename T>
-    bool record_program_metadata(const char* key, T value)
+    static bool record_data(const char* key, const T* data, uint32_t length)
     {
-        if(!program_recording_enabled || ! layer_started || program_context == nullptr)
+        auto& self = instance();
+
+        if(!self._enabled)
         {
             return false;
         }
-        _start_program();
-        msgpack_write_dict(program_context, key, value);
-
-        return true;
-    }
-
-    template<typename T>
-    bool record_program_metadata(const char* key, const std::vector<T>& data)
-    {
-        if(!program_recording_enabled || ! layer_started || program_context == nullptr)
-        {
-            return false;
-        }
-
-        _start_program();
-        msgpack_write_dict_array(program_context, key, data.size());
-        for(T e : data)
-        {
-            msgpack_write(program_context, e);
-        }
-
-        return true;
-    }
-
-    template<typename T>
-    bool record_data(const char* key, const std::vector<T>& data)
-    {
-        if(!data_recording_enabled || !layer_started)
-        {
-            return false;
-        }
-        auto msgpack = get_layer_recording_context(true);
-        msgpack_write_dict_array(msgpack, key, data.size());
-        for(T e : data)
-        {
-            msgpack_write(msgpack, e);
-        }
-    }
-
-    bool record_data(const char* key, const void* data, uint32_t length)
-    {
-        if(!data_recording_enabled || !layer_started)
-        {
-            return false;
-        }
-        auto msgpack = get_layer_recording_context(true);
-        msgpack_write_dict_bin(msgpack, key, data, length);
-    }
-
-    bool record_data(const char* key, const uint8_t* data, uint32_t length)
-    {
-        if(!data_recording_enabled || !layer_started)
-        {
-            return false;
-        }
-        auto msgpack = get_layer_recording_context(true);
-        msgpack_write_dict_bin(msgpack, key, data, length);
-    }
-
-
-    template<typename T>
-    bool record_data(const char* key, const T* data, uint32_t length)
-    {
-        if(!data_recording_enabled || !layer_started)
-        {
-            return false;
-        }
-        auto msgpack = get_layer_recording_context(true);
+        auto msgpack = TfliteMicroRecorder::get_context();
         msgpack_write_dict_array(msgpack, key, length);
         for(int i = 0; i < length; ++i)
         {
@@ -177,53 +90,72 @@ struct TfliteMicroAcceleratorRecorder
     }
 
     template<typename T>
-    bool record_data(const char* key, T value)
+    static bool record_data(const char* key, T value)
     {
-        if(!data_recording_enabled || !layer_started)
+        auto& self = instance();
+
+        if(!self._enabled)
         {
             return false;
         }
-        auto msgpack = get_layer_recording_context(true);
+        auto msgpack = TfliteMicroRecorder::get_context();
         msgpack_write_dict(msgpack, key, value);
         return true;
     }
 
-
-    static TfliteMicroAcceleratorRecorder& instance()
+    template<typename T>
+    static bool record_data(const char* key, const std::vector<T>& data)
     {
-        static TfliteMicroAcceleratorRecorder* instance = nullptr;
-        static uint8_t instance_buffer[sizeof(TfliteMicroAcceleratorRecorder)];
+        auto& self = instance();
 
-        if(instance == nullptr)
+        if(!self._enabled)
         {
-            instance = new(instance_buffer)TfliteMicroAcceleratorRecorder();
+            return false;
+        }
+        auto msgpack = TfliteMicroRecorder::get_context();
+
+        msgpack_write_dict_array(msgpack, key, data.size());
+        for(T e : data)
+        {
+            msgpack_write(msgpack, e);
         }
 
-        return *instance;
+        return true;
     }
+
 
 private:
-    void _start_program()
-    {
-        if(!program_started)
-        {
-            program_started = true;
-            msgpack_write_dict_marker(program_context, -1);
-        }
-    }
+    msgpack_context_t *_programs_context = nullptr;
+    bool _program_active = false;
+    bool _enabled = false; 
+    bool _program_recording_enabled = false;
+
+    static void _on_layer_execution_started();
+    static void _on_layer_execution_ending();
+    static void _start_program();
+
+    TfliteMicroAcceleratorRecorder() = default;
 };
+
+
 
 
 } // namespace mltk
 
 
-#else
-#define TFLITE_MICRO_ACCELERATOR_RECORDER_CLEAR()
-#define TFLITE_MICRO_ACCELERATOR_RECORDER_START_LAYER()
-#define TFLITE_MICRO_ACCELERATOR_RECORDER_END_LAYER()
-#define TFLITE_MICRO_ACCELERATOR_RECORD_PROGRAM(data, length)
-#define TFLITE_MICRO_ACCELERATOR_RECORD_PROGRAM_METADATA(key, data)
-#define TFLITE_MICRO_ACCELERATOR_RECORD_DATA(key, data, ...)
 
-#endif
+#ifdef TFLITE_MICRO_ACCELERATOR_RECORDER_ENABLED
 
+#define MLTK_ACCELERATOR_RECORDER_RESET() ::mltk::TfliteMicroAcceleratorRecorder::reset()
+#define MLTK_ACCELERATOR_RECORD_PROGRAM(data, length) ::mltk::TfliteMicroAcceleratorRecorder::record_program(data, length)
+#define MLTK_ACCELERATOR_RECORD_PROGRAM_METADATA(key, data, ...) ::mltk::TfliteMicroAcceleratorRecorder::record_program_metadata(key, data, ## __VA_ARGS__)
+#define MLTK_ACCELERATOR_RECORD_DATA(key, data, ...) ::mltk::TfliteMicroAcceleratorRecorder::record_data(key, data, ## __VA_ARGS__)
+
+#else 
+
+#define MLTK_ACCELERATOR_RECORDER_RESET()
+#define MLTK_ACCELERATOR_RECORD_PROGRAM(data, length)
+#define MLTK_ACCELERATOR_RECORD_PROGRAM_METADATA(key, data, ...)
+#define MLTK_ACCELERATOR_RECORD_DATA(key, data, ...)
+
+#endif // TFLITE_MICRO_ACCELERATOR_RECORDER_ENABLED

@@ -233,7 +233,8 @@ class SerialReader:
     def read(
         self,
         timeout:float=None,
-        activity_timeout:float=None
+        activity_timeout:float=None,
+        abort_event:threading.Event=None
     ) -> bool:
         """Read data for the given timeout or until stop_regex or fail_regex
         have been found in the received data.
@@ -256,6 +257,7 @@ class SerialReader:
 
         # Wait forever if not timeout is given
         timeout = timeout or 1e9
+        abort_event = abort_event or threading.Event()
 
         previous_activity_timestamp = time.time()
         start_time = time.time()
@@ -265,6 +267,9 @@ class SerialReader:
 
         try:
             while (time.time() - start_time) < timeout:
+                if abort_event.is_set():
+                    return False 
+                
                 if self._buffer_data():
                     previous_activity_timestamp = time.time()
 
@@ -279,6 +284,8 @@ class SerialReader:
 
                 if activity_timeout and (time.time() - previous_activity_timestamp) > activity_timeout:
                     break
+            
+                time.sleep(0.250)
 
         finally:
             if saved_terminators:

@@ -286,6 +286,7 @@ def parse_device_model_profiler_log(
     macs_cycles_re = re.compile(r'([\d\.kMG]+) MACs')
     error_msg_re = TfliteMicroLayerError.WARNING_RE
     time_ms_re = re.compile(r'([\d\.]+) ms')
+    custom_stat_re = re.compile(r'\s*([\w\-\.]+)=([\d\-\.]+).*')
 
     # First parse the summary info and any layer error messages
     for line in lines:
@@ -361,6 +362,10 @@ def parse_device_model_profiler_log(
                     layer['accelerator_cycles'] = _line_to_int(match.group(1))
                     continue
 
+                match = custom_stat_re.match(line)
+                if match:
+                    layer[match.group(1)] = _line_to_int(match.group(2))
+                    continue
 
 
     return ProfilingModelResults(

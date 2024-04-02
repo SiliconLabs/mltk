@@ -44,40 +44,6 @@ if(NOT MLTK_PLATFORM_IS_EMBEDDED)
 
 endif()
 
-mltk_get(MLTK_RUN_MODEL_FROM_RAM)
-if(MLTK_RUN_MODEL_FROM_RAM)
-    mltk_info("Loading .tflite flatbuffer into RAM" TAG mltk_model_profiler)
-    target_compile_definitions(mltk_model_profiler
-    PUBLIC
-        MLTK_RUN_MODEL_FROM_RAM
-    )
-endif()
-
-
-
-mltk_get(MLTK_RUNTIME_MEMORY_SIZE)
-if(DEFINED MLTK_RUNTIME_MEMORY_SIZE)
-    set(MODEL_PROFILER_RUNTIME_MEMORY_SIZE ${MLTK_RUNTIME_MEMORY_SIZE})
-endif()
-mltk_get(MODEL_PROFILER_RUNTIME_MEMORY_SIZE)
-mltk_get(MODEL_PROFILER_RUNTIME_MEMORY_SECTION)
-if(DEFINED MODEL_PROFILER_RUNTIME_MEMORY_SIZE)
-    mltk_info("MODEL_PROFILER_RUNTIME_MEMORY_SIZE=${MODEL_PROFILER_RUNTIME_MEMORY_SIZE} bytes" TAG mltk_model_profiler)
-    target_compile_definitions(mltk_model_profiler
-    PRIVATE
-        MODEL_PROFILER_RUNTIME_MEMORY_SIZE=${MODEL_PROFILER_RUNTIME_MEMORY_SIZE}
-    )
-
-    if(MODEL_PROFILER_RUNTIME_MEMORY_SECTION)
-        mltk_info("MODEL_PROFILER_RUNTIME_MEMORY_SECTION=${MODEL_PROFILER_RUNTIME_MEMORY_SECTION}" TAG mltk_model_profiler)
-        target_compile_definitions(mltk_model_profiler
-        PRIVATE
-            MODEL_PROFILER_RUNTIME_MEMORY_SECTION=\"${MODEL_PROFILER_RUNTIME_MEMORY_SECTION}\"
-        )
-    endif()
-elseif(MODEL_PROFILER_RUNTIME_MEMORY_SECTION)
-    mltk_warn("MODEL_PROFILER_RUNTIME_MEMORY_SECTION is not used if MODEL_PROFILER_RUNTIME_MEMORY_SIZE is not defined" TAG mltk_model_profiler)
-endif()
 
 
 #####################################################
@@ -102,18 +68,40 @@ mltk_info("MODEL_PROFILER_MODEL=${MODEL_PROFILER_MODEL}" TAG mltk_model_profiler
 
 mltk_get(MODEL_PROFILER_MODEL_MEMORY_SECTION)
 if(MODEL_PROFILER_MODEL_MEMORY_SECTION)
-    set(memory_section_arg MEMORY_SECTION ${MODEL_PROFILER_MODEL_MEMORY_SECTION})
+    set(model_memory_section_arg MODEL_MEMORY_SECTION ${MODEL_PROFILER_MODEL_MEMORY_SECTION})
     mltk_info("MODEL_PROFILER_MODEL_MEMORY_SECTION=${MODEL_PROFILER_MODEL_MEMORY_SECTION}" TAG mltk_model_profiler)
 endif()
-mltk_add_tflite_model(mltk_model_profiler "${MODEL_PROFILER_MODEL}" ${memory_section_arg})
+
+
+mltk_get(MODEL_PROFILER_RUNTIME_MEMORY_SIZE)
+mltk_get(MODEL_PROFILER_RUNTIME_MEMORY_SECTION)
+if(DEFINED MODEL_PROFILER_RUNTIME_MEMORY_SIZE)
+    mltk_info("MODEL_PROFILER_RUNTIME_MEMORY_SIZE=${MODEL_PROFILER_RUNTIME_MEMORY_SIZE} bytes" TAG mltk_model_profiler)
+    set(runtime_memory_size_arg RUNTIME_MEMORY_SIZE ${MODEL_PROFILER_RUNTIME_MEMORY_SIZE})
+
+    if(MODEL_PROFILER_RUNTIME_MEMORY_SECTION)
+        mltk_info("MODEL_PROFILER_RUNTIME_MEMORY_SECTION=${MODEL_PROFILER_RUNTIME_MEMORY_SECTION}" TAG mltk_model_profiler)
+        set(runtime_memory_section_arg RUNTIME_MEMORY_SECTION ${MODEL_PROFILER_RUNTIME_MEMORY_SECTION})
+    endif()
+elseif(MODEL_PROFILER_RUNTIME_MEMORY_SECTION)
+    mltk_warn("MODEL_PROFILER_RUNTIME_MEMORY_SECTION is not used if MODEL_PROFILER_RUNTIME_MEMORY_SIZE is not defined" TAG mltk_model_profiler)
+endif()
 
 
 mltk_get(MODEL_PROFILER_GENERATE_OP_RESOLVER_HEADER)
 if(MODEL_PROFILER_GENERATE_OP_RESOLVER_HEADER)
     mltk_info("Generating OpResolver from ${MODEL_PROFILER_MODEL}" TAG mltk_model_profiler)
-    mltk_add_tflite_model_op_resolver_header(mltk_model_profiler ${MODEL_PROFILER_MODEL})
+    set(generate_op_resolver_arg GENERATE_OP_RESOLVER ON)
 endif()
 
+mltk_add_tflite_model(
+    mltk_model_profiler "${MODEL_PROFILER_MODEL}" 
+    GENERATE_MEMORY_LAYOUT ON
+    ${model_memory_section_arg} 
+    ${runtime_memory_section_arg}
+    ${runtime_memory_size_arg}
+    ${generate_op_resolver_arg}
+)
 
 # Generate the exe output files (if necessary for the build platform)
 mltk_add_exe_targets(mltk_model_profiler)

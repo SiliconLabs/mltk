@@ -24,7 +24,7 @@ else:
         print("  You must first install the flatbuffer compiler executable.")
         print("  You can either install it into the environment PATH")
         print("  OR you may download the executable from:")
-        print("  https://github.com/google/flatbuffers/releases/tag/v2.0.8")
+        print("  https://github.com/google/flatbuffers/releases/tag/v23.5.26")
         print(f"  and extract to the directory: {curdir}")
         sys.exit(-1)
 
@@ -44,7 +44,9 @@ with open(output_header_path, 'r')  as fp:
         
         if line.startswith('#include "flatbuffers/flatbuffers.h"'):
             output_header_modified += line 
-            output_header_modified += '\n\nnamespace mltk {\n'
+            output_header_modified += '\n#undef FLATBUFFERS_FINAL_CLASS\n'
+            output_header_modified += '#define FLATBUFFERS_FINAL_CLASS\n\n'
+            output_header_modified += 'namespace mltk {\n'
             output_header_modified += 'namespace schema {\n\n'
             continue 
 

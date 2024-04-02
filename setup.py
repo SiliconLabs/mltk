@@ -72,7 +72,7 @@ import os
 import sys
 import time
 import re
-import subprocess
+import traceback
 from setuptools import setup, find_packages
 from setuptools.command.build_py import build_py
 
@@ -98,8 +98,10 @@ if os.environ.get('MLTK_NO_BUILD_WRAPPERS', None) != '1':
     try:
         from cpp.tools.setup.build_wrappers_command import BuildWrappersCommand
         cmdclass['build_ext'] = BuildWrappersCommand
-    except:
-        pass
+        print('Added MLTK Python build wrappers')
+    except Exception as e:
+        traceback.print_exc()
+        print(f'Failed to add MLTK Python build wrappers, err:{e}')
 
     class CustomBuildPy(build_py):
         def run(self):
@@ -133,18 +135,6 @@ except:
 
 
 additional_install_dependencies = []
-tflite_support_version = ''
-
-# If we're running Python3.7 then we also need to install pickle5
-if python_version == '37':
-    print('Adding pickle5 to install dependencies')
-    additional_install_dependencies.append('pickle5')
-    additional_install_dependencies.append('gast<=0.4.0')  # The MLTK does NOT have a dependency on this, but tensorflow does
-    tflite_support_version = '==0.4.1' # This version uses flatbuffers 1.12
-# Other ensure pickle5 is NOT installed as that will break other dependencies
-else:
-    print('Uninstalling pickle5 (if necessary)')
-    subprocess.run([sys.executable, '-m', 'pip', 'uninstall', 'pickle5'])
 
 
 # The MLTK does NOT have a dependency on ONNX, but tflite-support and tensorflow depend on protobuf and this does as well,
@@ -153,7 +143,7 @@ if pyhton_minor_version < 10:
     additional_install_dependencies.append('numpy<1.23') # These requirements make the install smoother for Python < 3.10
     additional_install_dependencies.append('flatbuffers<2.0')
 else:
-    onnx_version = '<=1.14'
+    onnx_version = '<1.17'
 
 install_dependencies = [
     'typer<1.0',
@@ -164,18 +154,17 @@ install_dependencies = [
     'ninja',
     'psutil',
     'pyaml<22.0',
-    'tensorflow>=2.3,<3.0',
+    'tensorflow>=2.3,<2.17',
+    'tf_keras',
     'tensorflow_probability>=0.12.2',
-    f'tflite-support{tflite_support_version}',
+    'tflite-support',
     'protobuf>=3.18,<4.0', # The MLTK does NOT have a dependency on this, but tflite-support and tensorflow do
-    f'onnx{onnx_version}',
-    'onnxruntime',
     #'flatbuffers<2.0', # This is required by TF
     #'numpy<1.23', # Numba, which is installed by TF, has a requirement of < 1.23
     'scipy<2.0',
     'matplotlib<4.0',
     'tqdm<5.0',
-    'pillow<9.0',
+    'pillow<11.0',
     'librosa<1.0',
     'bincopy<18.0',
     'pyserial<4.0',
@@ -191,7 +180,9 @@ extra_dependencies = {
         'netron',
         'paramiko',
         'cryptography',
-        'tensorboard_plugin_profile'
+        'tensorboard_plugin_profile',
+        f'onnx{onnx_version}',
+        'onnxruntime',
     ]
 }
 
@@ -228,13 +219,13 @@ setup(
     author='Silicon Labs',
     license='SPDX-License-Identifier: Zlib',
     classifiers=[
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
-    python_requires='>=3.7,<3.11',
-    setup_requires=['wheel'],
+    python_requires='>=3.9,<3.13',
+    setup_requires=['wheel', 'cmake', 'ninja', 'patool==1.12', 'pyaml'],
     install_requires=install_dependencies,
     extras_require=extra_dependencies,
     packages=find_packages(include=['mltk', 'mltk.*']),

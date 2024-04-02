@@ -51,19 +51,26 @@ class Int32List(object):
         o = flatbuffers.number_types.UOffsetTFlags.py_type(self._tab.Offset(4))
         return o == 0
 
-def Start(builder): builder.StartObject(1)
 def Int32ListStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddData(builder, data): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(data), 0)
+    builder.StartObject(1)
+
+def Start(builder):
+    Int32ListStart(builder)
+
 def Int32ListAddData(builder, data):
-    """This method is deprecated. Please switch to AddData."""
-    return AddData(builder, data)
-def StartDataVector(builder, numElems): return builder.StartVector(4, numElems, 4)
+    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(data), 0)
+
+def AddData(builder, data):
+    Int32ListAddData(builder, data)
+
 def Int32ListStartDataVector(builder, numElems):
-    """This method is deprecated. Please switch to Start."""
-    return StartDataVector(builder, numElems)
-def End(builder): return builder.EndObject()
+    return builder.StartVector(4, numElems, 4)
+
+def StartDataVector(builder, numElems: int) -> int:
+    return Int32ListStartDataVector(builder, numElems)
+
 def Int32ListEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return Int32ListEnd(builder)

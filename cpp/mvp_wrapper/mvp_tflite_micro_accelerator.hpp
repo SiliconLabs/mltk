@@ -16,8 +16,7 @@ public:
     tflite::MicroOpResolver* load() override
     {
         get_logger().debug("Loading MVP accelerator");
-        mltk_tflite_micro_register_accelerator();
-        this->accelerator = mltk_tflite_micro_get_registered_accelerator();
+        this->accelerator = mltk_tflite_micro_register_accelerator();
         return &mvp_ops_resolver;
     }
 };

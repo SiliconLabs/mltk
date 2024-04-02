@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 ==============================================================================*/
 
-#include "tensorflow/lite/micro/micro_graph.h"
+#include "tensorflow/lite/micro/micro_interpreter_graph.h"
 
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
@@ -23,8 +23,9 @@ limitations under the License.
 #include "tensorflow/lite/micro/micro_log.h"
 #include "tensorflow/lite/micro/micro_profiler.h"
 #include "tensorflow/lite/schema/schema_generated.h"
+#include "tensorflow/lite/micro/arena_allocator/single_arena_buffer_allocator.h"
 
-#include "mltk_tflite_micro_internal.hpp"
+#include "mltk_tflite_micro_helper.hpp"
 
 namespace tflite {
 namespace {
@@ -39,9 +40,9 @@ const char* OpNameFromRegistration(const TFLMRegistration* registration) {
 
 }  // namespace
 
-MicroGraph::MicroGraph(TfLiteContext* context, const Model* model,
-                       MicroAllocator* allocator,
-                       MicroResourceVariables* resource_variables)
+MicroInterpreterGraph::MicroInterpreterGraph(
+    TfLiteContext* context, const Model* model, MicroAllocator* allocator,
+    MicroResourceVariables* resource_variables)
     : context_(context),
       model_(model),
       allocator_(allocator),
@@ -52,12 +53,16 @@ MicroGraph::MicroGraph(TfLiteContext* context, const Model* model,
   }
 }
 
-MicroGraph::~MicroGraph() {
-  FREE_PROFILERS();
+MicroInterpreterGraph::~MicroInterpreterGraph() {
+  MLTK_FREE_PROFILERS();
+  MLTK_RECORD_RESET();
 }
 
-TfLiteStatus MicroGraph::InitSubgraphs() {
+TfLiteStatus MicroInterpreterGraph::InitSubgraphs() {
+  auto context = context_;
   int previous_subgraph_idx = current_subgraph_index_;
+
+  MLTK_RECORD_BEGIN_SECTION();
 
   for (size_t subgraph_idx = 0; subgraph_idx < subgraphs_->size();
        subgraph_idx++) {
@@ -66,10 +71,9 @@ TfLiteStatus MicroGraph::InitSubgraphs() {
     for (size_t i = 0; i < operators_size; ++i) {
       TfLiteNode* node =
           &(subgraph_allocations_[subgraph_idx].node_and_registrations[i].node);
-      const TFLMRegistration* registration =
-          subgraph_allocations_[subgraph_idx]
-              .node_and_registrations[i]
-              .registration;
+      const TFLMRegistration* registration = subgraph_allocations_[subgraph_idx]
+                                                 .node_and_registrations[i]
+                                                 .registration;
       size_t init_data_size;
       const char* init_data;
       if (registration->builtin_code == BuiltinOperator_CUSTOM) {
@@ -80,26 +84,37 @@ TfLiteStatus MicroGraph::InitSubgraphs() {
         init_data_size = 0;
       }
       if (registration->init) {
+        MLTK_SET_CURRENT_KERNEL(i, registration->builtin_code);
+        MLTK_RECORD_BEGIN_LAYER(i, node);
         node->user_data =
             registration->init(context_, init_data, init_data_size);
+        MLTK_RECORD_END_LAYER();
+        MLTK_CLEAR_CURRENT_KERNEL();
       }
     }
   }
   current_subgraph_index_ = previous_subgraph_idx;
+  MLTK_RECORD_END_SECTION();
 
   return kTfLiteOk;
 }
 
-TfLiteStatus MicroGraph::PrepareSubgraphs() {
+TfLiteStatus MicroInterpreterGraph::PrepareSubgraphs() {
   TfLiteStatus retval = kTfLiteOk;
+  auto context = context_;
   auto& logger = mltk::get_logger();
   int previous_subgraph_idx = current_subgraph_index_;
+  #ifdef TFLITE_MICRO_RECORDER_ENABLED
+  const auto buffer_allocator = reinterpret_cast<SingleArenaBufferAllocator*>(allocator_->non_persistent_buffer_allocator_);
+  #endif // TFLITE_MICRO_RECORDER_ENABLED
+
+  MLTK_RECORD_BEGIN_SECTION();
 
   for (size_t subgraph_idx = 0; subgraph_idx < subgraphs_->size();
        subgraph_idx++) {
     current_subgraph_index_ = subgraph_idx;
     uint32_t operators_size = NumSubgraphOperators(model_, subgraph_idx);
-    ALLOCATE_PROFILERS(subgraph_idx, operators_size)
+    MLTK_ALLOCATE_PROFILERS(subgraph_idx, operators_size)
     for (size_t i = 0; i < operators_size; ++i) {
       TfLiteNode* node =
           &(subgraph_allocations_[subgraph_idx].node_and_registrations[i].node);
@@ -107,19 +122,34 @@ TfLiteStatus MicroGraph::PrepareSubgraphs() {
           subgraph_allocations_[subgraph_idx]
               .node_and_registrations[i]
               .registration;
-      SET_CURRENT_KERNEL(i, registration->builtin_code);
+      MLTK_SET_CURRENT_KERNEL(i, registration->builtin_code);
+    
       if (registration->prepare != nullptr) {
+        MLTK_RECORD_BEGIN_LAYER(i, node);
+        #ifdef TFLITE_MICRO_RECORDER_ENABLED
+        const uint8_t* previous_tail = buffer_allocator->tail_;
+        #endif // TFLITE_MICRO_RECORDER_ENABLED
+
         TfLiteStatus prepare_status = registration->prepare(context_, node);
 
-        if(mltk::has_unsupported_kernel_messages())
+        #ifdef TFLITE_MICRO_RECORDER_ENABLED
+        const int used_temp = (buffer_allocator->temp_ - buffer_allocator->head_);
+        const int used_persistent = (previous_tail - buffer_allocator->tail_);
+        MLTK_RECORD_LAYER_PARAM("temp_memory_used", used_temp);
+        MLTK_RECORD_LAYER_PARAM("persistent_memory_used", used_persistent);
+        #endif // TFLITE_MICRO_RECORDER_ENABLED
+
+        MLTK_RECORD_END_LAYER();
+
+
+        if(!mltk::TfliteMicroKernelMessages::have_messages() && 
+          prepare_status != kTfLiteOk
+        )
         {
-            mltk::flush_unsupported_kernel_messages(logging::Error);
+          MLTK_KERNEL_UNSUPPORTED_MSG("Failed to prepare with status %d", prepare_status);
         }
-        else if(prepare_status != kTfLiteOk)
-        {
-          logger.error("Op%d-%s not supported: Failed to prepare with status %d",
-                      i, OpNameFromRegistration(registration), prepare_status);
-        }
+
+        mltk::TfliteMicroKernelMessages::flush(logging::Error);
 
         if (prepare_status != kTfLiteOk) {
 
@@ -127,17 +157,24 @@ TfLiteStatus MicroGraph::PrepareSubgraphs() {
           continue;
         }
       }
+
       allocator_->FinishPrepareNodeAllocations(/*node_id=*/i);
-      CLEAR_CURRENT_KERNEL()
-      REGISTER_PROFILER(subgraph_idx, i, registration->builtin_code, context_, subgraph_allocations_[subgraph_idx].node_and_registrations[i])
+      MLTK_CLEAR_CURRENT_KERNEL();
+      MLTK_REGISTER_PROFILER(
+        subgraph_idx, 
+        i, 
+        registration->builtin_code, 
+        subgraph_allocations_[subgraph_idx].node_and_registrations[i]
+      );
     }
   }
   current_subgraph_index_ = previous_subgraph_idx;
+  MLTK_RECORD_END_SECTION();
 
   return retval;
 }
 
-TfLiteStatus MicroGraph::ResetSubgraphs() {
+TfLiteStatus MicroInterpreterGraph::ResetSubgraphs() {
   int previous_subgraph_idx = current_subgraph_index_;
 
   for (size_t subgraph_idx = 0; subgraph_idx < subgraphs_->size();
@@ -162,7 +199,7 @@ TfLiteStatus MicroGraph::ResetSubgraphs() {
   return kTfLiteOk;
 }
 
-TfLiteStatus MicroGraph::FreeSubgraphs() {
+TfLiteStatus MicroInterpreterGraph::FreeSubgraphs() {
   int previous_subgraph_idx = current_subgraph_index_;
 
   for (size_t subgraph_idx = 0; subgraph_idx < subgraphs_->size();
@@ -172,10 +209,9 @@ TfLiteStatus MicroGraph::FreeSubgraphs() {
     for (size_t i = 0; i < operators_size; ++i) {
       TfLiteNode* node =
           &(subgraph_allocations_[subgraph_idx].node_and_registrations[i].node);
-      const TFLMRegistration* registration =
-          subgraph_allocations_[subgraph_idx]
-              .node_and_registrations[i]
-              .registration;
+      const TFLMRegistration* registration = subgraph_allocations_[subgraph_idx]
+                                                 .node_and_registrations[i]
+                                                 .registration;
       // registration is allocated outside the interpreter, so double check to
       // make sure it's not nullptr;
       if (registration != nullptr && registration->free != nullptr) {
@@ -188,8 +224,9 @@ TfLiteStatus MicroGraph::FreeSubgraphs() {
   return kTfLiteOk;
 }
 
-TfLiteStatus MicroGraph::InvokeSubgraph(int subgraph_idx) {
+TfLiteStatus MicroInterpreterGraph::InvokeSubgraph(int subgraph_idx) {
   auto& logger = mltk::get_logger();
+  auto context = context_;
   int previous_subgraph_idx = current_subgraph_index_;
   current_subgraph_index_ = subgraph_idx;
 
@@ -198,8 +235,9 @@ TfLiteStatus MicroGraph::InvokeSubgraph(int subgraph_idx) {
                 subgraph_idx, subgraphs_->size());
     return kTfLiteError;
   }
-  INVOKE_PROCESSING_CALLBACK();
-  START_INFERENCE_PROFILER(subgraph_idx)
+  MLTK_RECORD_BEGIN_SECTION();
+  MLTK_INVOKE_PROCESSING_CALLBACK();
+  MLTK_START_INFERENCE_PROFILER(subgraph_idx);
   uint32_t operators_size = NumSubgraphOperators(model_, subgraph_idx);
   for (size_t i = 0; i < operators_size; ++i) {
     auto& node_and_registration = subgraph_allocations_[subgraph_idx].node_and_registrations[i];
@@ -216,14 +254,14 @@ TfLiteStatus MicroGraph::InvokeSubgraph(int subgraph_idx) {
 #endif
 
     TFLITE_DCHECK(registration->invoke);
-    SET_CURRENT_KERNEL(i, registration->builtin_code);
-    TFLITE_MICRO_RECORD_INPUTS(i, context_, node)
-    START_OP_PROFILER(subgraph_idx, i, registration->builtin_code)
+    MLTK_SET_CURRENT_KERNEL(i, registration->builtin_code);
+    MLTK_RECORD_BEGIN_LAYER(i, node);
+    MLTK_START_OP_PROFILER(subgraph_idx, i);
     TfLiteStatus invoke_status = registration->invoke(context_, node);
-    STOP_OP_PROFILER(subgraph_idx, i)
-    INVOKE_LAYER_CALLBACK(i, *context_, node_and_registration, invoke_status)
-    TFLITE_MICRO_RECORD_OUTPUTS(i, context_, node)
-    CLEAR_CURRENT_KERNEL()
+    MLTK_STOP_OP_PROFILER(subgraph_idx, i)
+    MLTK_INVOKE_LAYER_CALLBACK(node_and_registration, invoke_status);
+    MLTK_RECORD_END_LAYER();
+    MLTK_CLEAR_CURRENT_KERNEL();
 
     // All TfLiteTensor structs used in the kernel are allocated from temp
     // memory in the allocator. This creates a chain of allocations in the
@@ -239,14 +277,15 @@ TfLiteStatus MicroGraph::InvokeSubgraph(int subgraph_idx) {
       return invoke_status;
     }
 
-    INVOKE_PROCESSING_CALLBACK();
+    MLTK_INVOKE_PROCESSING_CALLBACK();
   }
-  STOP_INFERENCE_PROFILER(subgraph_idx)
+  MLTK_STOP_INFERENCE_PROFILER(subgraph_idx);
+  MLTK_RECORD_END_SECTION();
   current_subgraph_index_ = previous_subgraph_idx;
   return kTfLiteOk;
 }
 
-TfLiteStatus MicroGraph::ResetVariableTensors() {
+TfLiteStatus MicroInterpreterGraph::ResetVariableTensors() {
   for (size_t subgraph_idx = 0; subgraph_idx < subgraphs_->size();
        subgraph_idx++) {
     const SubGraph* subgraph = (*subgraphs_)[subgraph_idx];
@@ -273,30 +312,32 @@ TfLiteStatus MicroGraph::ResetVariableTensors() {
   return kTfLiteOk;
 }
 
-int MicroGraph::NumSubgraphs() { return model_->subgraphs()->size(); }
+int MicroInterpreterGraph::NumSubgraphs() {
+  return model_->subgraphs()->size();
+}
 
-void MicroGraph::SetSubgraphAllocations(
+void MicroInterpreterGraph::SetSubgraphAllocations(
     SubgraphAllocations* subgraph_allocations) {
   subgraph_allocations_ = subgraph_allocations;
 }
 
-size_t MicroGraph::NumSubgraphInputs(int subgraph_idx) {
+size_t MicroInterpreterGraph::NumSubgraphInputs(int subgraph_idx) {
   return model_->subgraphs()->Get(subgraph_idx)->inputs()->size();
 }
 
-TfLiteEvalTensor* MicroGraph::GetSubgraphInput(int subgraph_idx,
-                                               int input_idx) {
+TfLiteEvalTensor* MicroInterpreterGraph::GetSubgraphInput(int subgraph_idx,
+                                                          int input_idx) {
   int tensor_idx =
       model_->subgraphs()->Get(subgraph_idx)->inputs()->Get(input_idx);
   return &subgraph_allocations_[subgraph_idx].tensors[tensor_idx];
 }
 
-size_t MicroGraph::NumSubgraphOutputs(int subgraph_idx) {
+size_t MicroInterpreterGraph::NumSubgraphOutputs(int subgraph_idx) {
   return model_->subgraphs()->Get(subgraph_idx)->outputs()->size();
 }
 
-TfLiteEvalTensor* MicroGraph::GetSubgraphOutput(int subgraph_idx,
-                                                int output_idx) {
+TfLiteEvalTensor* MicroInterpreterGraph::GetSubgraphOutput(int subgraph_idx,
+                                                           int output_idx) {
   int tensor_idx =
       model_->subgraphs()->Get(subgraph_idx)->outputs()->Get(output_idx);
   return &subgraph_allocations_[subgraph_idx].tensors[tensor_idx];

@@ -18,8 +18,8 @@ set(Python3_FOUND OFF)
 CPMAddPackage(
     NAME pybind11
     GITHUB_REPOSITORY pybind/pybind11
-    GIT_TAG v2.6.2
-    CACHE_VERSION v2.6.2
+    GIT_TAG v2.12.0
+    CACHE_VERSION v2.12.0
     OPTIONS 
         "MSVC OFF"
 )

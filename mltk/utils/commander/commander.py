@@ -28,7 +28,8 @@ DEVICE_MAPPING = {
     'brd4186': ['EFR32MG24AxxxF1536', 'EFR32MG24B210F1536IM48'],
     'brd2601': ['EFR32MG24BxxxF1536', 'EFR32MG24B110F1536GM48', 'EFR32MG24B310F1536IM48'],
     'brd2204': ['EFM32GG11B820F2048GL192'],
-    'brd4401': ['EFR32XG28BxxxF1024', 'EFR32ZG28B322F1024IM68']
+    'brd4401': ['EFR32XG28BxxxF1024', 'EFR32ZG28B322F1024IM68'],
+    'brd2705': ['EFR32XG28BxxxF1024', 'EFR32ZG28B312F1024IM48']
 }
 
 _serial_number:str=None
@@ -111,10 +112,16 @@ def issue_command(
     if logger is not None:
         logger.debug(cmd_str)
 
+    def _line_processor(line:str) -> str:
+        if logger is not None:
+            if line.strip():
+                logger.debug(line.rstrip())
+        return line_processor(line) if line_processor else line
+
     retcode, retmsg = run_shell_cmd(
         cmd,
         outfile=outfile,
-        line_processor=line_processor
+        line_processor=_line_processor
     )
     if retcode != 0 or ('--help' not in cmd and 'error' in retmsg.lower()):
         if 'WARNING: DCI communication failed' in retmsg and ('ERROR: Timeout while waiting' in retmsg or 'ERROR: DP write failed' in retmsg):
@@ -136,10 +143,6 @@ def issue_command(
                 retmsg += '- 1. Ensure the development board is properly connected and enumerated\n'
                 retmsg += '- 2. Install the Segger J-Link drivers: https://www.segger.com/downloads/jlink\n'
             raise RuntimeError(f'{cmd_str}\nretcode={retcode}\n{retmsg}')
-
-    if logger is not None:
-        s = ''.join([f'{x.strip()}\n' for x in retmsg.splitlines(keepends=True) if len(x.strip()) > 0])
-        logger.debug(s)
 
     return retmsg
 
@@ -356,7 +359,7 @@ def get_device_from_platform(platform: str) -> str:
     """Given a platform name return the corresponding MCU code"""
     platform = platform.lower()
     if platform not in DEVICE_MAPPING:
-        raise Exception(f'Unknown platform: {platform}, supported platforms are: {", ".join(DEVICE_MAPPING.keys())}')
+        raise ValueError(f'Unknown platform: {platform}, supported platforms are: {", ".join(DEVICE_MAPPING.keys())}')
     return DEVICE_MAPPING[platform][0]
 
 
@@ -383,6 +386,12 @@ def _update_commander_args(
     """Populate commander.exe arguments from the ~/.mltk/user_settings.yaml"""
     commander_path = download_commander()
     commander_settings = get_commander_settings()
+    global_settings = globals()
+    # Update the user_settings.yaml value with the global setting (if available)
+    if global_settings.get('_serial_number', None):
+        commander_settings['serial_number'] = global_settings['_serial_number']
+    if global_settings.get('_ip_address', None):
+        commander_settings['ip_address'] = global_settings['_ip_address']
 
     cmd = list(args)
     cmd.insert(0, commander_path)
@@ -406,13 +415,13 @@ def _update_commander_args(
                 cmd.extend(['--device', device])
 
         if '--ip' not in cmd:
-            ip_address = globals().get('_ip_address', commander_settings.get('ip_address', None))
+            ip_address = commander_settings.get('ip_address', None)
             if ip_address:
                 cmd.extend(['--ip', ip_address])
         if not ('--serialno' in cmd or '-s' in cmd):
-            serial_number = globals().get('_serial_number', commander_settings.get('serial_number', None))
+            serial_number = commander_settings.get('serial_number', None)
             if serial_number:
-                cmd.extend(['--serialno', serial_number])
+                cmd.extend(['--serialno', str(serial_number)])
 
     if file_path:
         cmd.append(file_path)

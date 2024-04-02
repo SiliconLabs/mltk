@@ -48,23 +48,32 @@ class Entry(object):
             return obj
         return None
 
-def Start(builder): builder.StartObject(3)
 def EntryStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddKey(builder, key): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(key), 0)
+    builder.StartObject(3)
+
+def Start(builder):
+    EntryStart(builder)
+
 def EntryAddKey(builder, key):
-    """This method is deprecated. Please switch to AddKey."""
-    return AddKey(builder, key)
-def AddValueType(builder, valueType): builder.PrependUint8Slot(1, valueType, 0)
+    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(key), 0)
+
+def AddKey(builder, key):
+    EntryAddKey(builder, key)
+
 def EntryAddValueType(builder, valueType):
-    """This method is deprecated. Please switch to AddValueType."""
-    return AddValueType(builder, valueType)
-def AddValue(builder, value): builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(value), 0)
+    builder.PrependUint8Slot(1, valueType, 0)
+
+def AddValueType(builder, valueType):
+    EntryAddValueType(builder, valueType)
+
 def EntryAddValue(builder, value):
-    """This method is deprecated. Please switch to AddValue."""
-    return AddValue(builder, value)
-def End(builder): return builder.EndObject()
+    builder.PrependUOffsetTRelativeSlot(2, flatbuffers.number_types.UOffsetTFlags.py_type(value), 0)
+
+def AddValue(builder, value):
+    EntryAddValue(builder, value)
+
 def EntryEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return EntryEnd(builder)

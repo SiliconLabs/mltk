@@ -3,8 +3,13 @@ import platform
 
 _version = sys.version_info
 _architecture_bits = platform.architecture()[0]
-if _version[0] != 3 or _version[1] < 7 or _version[1] >= 11 or _architecture_bits != '64bit':
-    sys.stdout.write(f'Cannot install MLTK, Python 64-bit, version 3.7, 3.8, 3.9, 3.10 is required (current version is: Python {_architecture_bits}  v{_version[0]}.{_version[1]})\n')
+python_major_version = _version[0]
+python_minor_version = _version[1]
+if python_major_version != 3 or python_minor_version < 9 or python_minor_version > 12 or _architecture_bits != '64bit':
+    sys.stdout.write(
+        f'Cannot install MLTK, Python 64-bit, version 3.9, 3.10, 3.11, 3.12 is required '
+        f'(current version is: Python {_architecture_bits}  v{python_major_version}.{python_minor_version})\n'
+    )
     sys.exit(-1)
 
 import argparse
@@ -106,13 +111,13 @@ def install_mltk_for_local_dev(
     except Exception as e:
         err_msg = f'{e}'
         additional_msg = ''
-        if 'ensurepip' in err_msg:
+        if os.name != 'nt':
             additional_msg += '\n\nTry running the following commands first:\n'
             additional_msg += 'sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test\n'
             additional_msg += 'sudo add-apt-repository -y ppa:deadsnakes/ppa\n'
             additional_msg += 'sudo apt update\n'
-            additional_msg += f'sudo apt-get -y install build-essential g++-9 ninja-build gdb python{python_version}-dev libportaudio2 pulseaudio p7zip-full git-lfs\n\n'
-        raise Exception(f'{err_msg}{additional_msg}') #pylint: disable=raise-missing-from
+            additional_msg += f'sudo apt-get -y install build-essential g++-13 ninja-build gdb python{python_version}-dev python{python_version}-venv libportaudio2 pulseaudio p7zip-full git-lfs\n\n'
+        raise RuntimeError(f'{err_msg}{additional_msg}') #pylint: disable=raise-missing-from
 
 
     if os.name == 'nt':
@@ -164,9 +169,9 @@ def install_mltk_for_local_dev(
             additional_msg += 'sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test\n'
             additional_msg += 'sudo add-apt-repository ppa:deadsnakes/ppa\n'
             additional_msg += 'sudo apt update\n'
-            additional_msg += f'sudo apt-get -y install build-essential g++-9 ninja-build gdb python{python_version}-dev libportaudio2 pulseaudio p7zip-full git-lfs\n'
+            additional_msg += f'sudo apt-get -y install build-essential g++-13 ninja-build gdb python{python_version}-dev libportaudio2 pulseaudio p7zip-full git-lfs\n'
             additional_msg += '\n\n'
-        raise Exception(f'{err_msg}{additional_msg}') #pylint: disable=raise-missing-from
+        raise RuntimeError(f'{err_msg}{additional_msg}') #pylint: disable=raise-missing-from
 
     logging.info('Done\n\n')
     logging.info('The MLTK has successfully been installed!\n')

@@ -1,0 +1,1 @@
+This directory is only used by the Simplicity Studio Project.

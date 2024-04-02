@@ -12,18 +12,13 @@
 
 #include "app_controller.hpp"
 #include "fingerprint_authenticator.hpp"
-
+#include "mltk_fingerprint_authenticator_model_generated.hpp"
 
 #include "app_config.hpp"
 
 
 using namespace mltk;
 
-
-// These are defined by the build scripts
-// which converts the specified .tflite to a C array
-extern "C" const uint8_t sl_tflite_model_array[];
-extern "C" const uint32_t sl_tflite_model_len;
 
 // This is defined by the GSDK NVM library
 extern "C" const uint32_t linker_nvm_begin;
@@ -55,11 +50,11 @@ extern "C" int main(void)
 
     // First check if a new .tflite was programmed to the end of flash
     // (This will happen when this app is executed from the command-line: "mltk classify_image my_model")
-    if(!mltk::get_tflite_flatbuffer_from_end_of_flash(&model_flatbuffer, nullptr, &linker_nvm_begin))
+    if(!mltk::TfliteMicroModelHelper::get_tflite_flatbuffer_from_end_of_flash(&model_flatbuffer, nullptr, &linker_nvm_begin))
     {
         // If no .tflite was programmed, then just use the default model
         printf("Using default model built into application\n");
-        model_flatbuffer = sl_tflite_model_array;
+        model_flatbuffer = mltk_model_flatbuffer;
     }
 
 
@@ -83,7 +78,7 @@ extern "C" int main(void)
         return -1;
     }
 
-    if(!verify_model_flatbuffer(sl_tflite_model_array, sl_tflite_model_len))
+    if(!mltk::TfliteMicroModelHelper::verify_model_flatbuffer(mltk_model_flatbuffer, mltk_model_flatbuffer_length))
     {
         MLTK_ERROR("Invalid model flatbuffer");
         app_controller.update_state(AppController::State::fatalError);

@@ -31,15 +31,20 @@ class StringValue(object):
             return self._tab.String(o + self._tab.Pos)
         return None
 
-def Start(builder): builder.StartObject(1)
 def StringValueStart(builder):
-    """This method is deprecated. Please switch to Start."""
-    return Start(builder)
-def AddData(builder, data): builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(data), 0)
+    builder.StartObject(1)
+
+def Start(builder):
+    StringValueStart(builder)
+
 def StringValueAddData(builder, data):
-    """This method is deprecated. Please switch to AddData."""
-    return AddData(builder, data)
-def End(builder): return builder.EndObject()
+    builder.PrependUOffsetTRelativeSlot(0, flatbuffers.number_types.UOffsetTFlags.py_type(data), 0)
+
+def AddData(builder, data):
+    StringValueAddData(builder, data)
+
 def StringValueEnd(builder):
-    """This method is deprecated. Please switch to End."""
-    return End(builder)
+    return builder.EndObject()
+
+def End(builder):
+    return StringValueEnd(builder)

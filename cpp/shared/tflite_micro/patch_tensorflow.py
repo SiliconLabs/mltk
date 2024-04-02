@@ -14,7 +14,7 @@ def should_patch_file(path: str) -> object:
         return dict(func=process_fake_micro_context_cc, state=0)
 
     if path.endswith('/micro/micro_allocator.cc'):
-        return dict(func=process_micro_allocator_cc, state=0)
+        return dict(func=process_micro_allocator_cc, state=0, header_state=0)
 
     if path.endswith('/micro/arena_allocator/single_arena_buffer_allocator.cc'):
         return dict(func=process_single_arena_buffer_allocator_cc, state=0)
@@ -22,7 +22,13 @@ def should_patch_file(path: str) -> object:
     if path.endswith('/micro/memory_planner/greedy_memory_planner.cc'):
         return dict(func=process_greedy_memory_planner_cc, state=0)
 
-    if path.endswith(('/micro/micro_interpreter.h', '/micro/micro_allocator.h', '/micro/micro_context.h')):
+    if path.endswith((
+        '/micro/micro_interpreter.h', 
+        '/micro/micro_context.h', 
+        '/micro/micro_allocation_info.h',
+        '/micro/memory_planner/greedy_memory_planner.h',
+        '/micro/arena_allocator/single_arena_buffer_allocator.h'
+    )):
         return dict(func=process_header_visibility, state=0)
 
     if path.endswith('/kernels/kernel_util.cc'):
@@ -49,6 +55,9 @@ def should_patch_file(path: str) -> object:
     if path.endswith('/micro/micro_interpreter.cc'):
         return dict(func=process_micro_interpreter_cc, state=0)
 
+    if path.endswith('/micro/micro_allocator.h'):
+        return dict(func=process_micro_allocator_h, state=0)
+    
     return None
 
 
@@ -119,6 +128,19 @@ def process_micro_allocator_cc(lineno: int, line: str, arg: object) -> str:
         if 'Patched by MLTK' not in line:
             line =  '  // Patched by MLTK\n'
             line += '  if(tensor == nullptr){ return; } // TFLITE_DCHECK(tensor != nullptr);\n'
+
+
+    if arg['header_state'] == 0:
+        if 'mltk_tflite_micro_recorder.hpp' in line:
+            arg['header_state'] = 1
+
+        elif  line.strip() == 'namespace tflite {':
+            arg['header_state'] = 1
+            return '\n#include "mltk_tflite_micro_recorder.hpp" // Patched by MLTK\n\n\n' + line
+
+    if line.strip() == 'allocation_info, allocation_info_count));':
+        line = line.rstrip() + '  // Patched by MLTK\n'
+        return line + '  MLTK_RECORD_MEMORY_PLAN(memory_planner_, allocation_info, allocation_info_count, builder.info_.subgraph_offsets);\n'
 
     return line
 
@@ -206,6 +228,9 @@ def process_op_macros_h(lineno: int, line: str, arg: object) -> str:
 
 
 def process_builtin_op_data_h(lineno: int, line: str, arg: object) -> str:
+    if 'enum TfLiteReduceWindowFunction reduce_function;' in line:
+        return '  TfLiteReduceWindowFunction reduce_function; // Patched by MLTK\n'
+
     if arg['state'] == 0 and '#endif  // __cplusplus' in line:
         arg['state'] = 1
 
@@ -247,8 +272,8 @@ def process_conv_common_cc(lineno: int, line: str, arg: object) -> str:
 
     elif arg['state'] == 2:
         arg['state'] = 3
-        if 'TFLITE_MICRO_RECORD_CONV_PARAMS' not in line:
-            line = '  TFLITE_MICRO_RECORD_CONV_PARAMS(op_params, data.per_channel_output_multiplier, data.per_channel_output_shift, data.padding.height_offset); // Patched by MLTK\n' + line
+        if 'MLTK_RECORD_CONV_PARAMS' not in line:
+            line = '  MLTK_RECORD_CONV_PARAMS(op_params, data.per_channel_output_multiplier, data.per_channel_output_shift, data.padding.height_offset); // Patched by MLTK\n' + line
 
     elif arg['state'] == 3:
         if 'int output_channels = filter->dims->data[kConvQuantizedDimension];' in line:
@@ -276,8 +301,8 @@ def process_depthwise_conv_common_cc(lineno: int, line: str, arg: object) -> str
 
     elif arg['state'] == 2:
         arg['state'] = 3
-        if 'TFLITE_MICRO_RECORD_DEPTHWISE_CONV_PARAMS' not in line:
-            line = '  TFLITE_MICRO_RECORD_DEPTHWISE_CONV_PARAMS(op_params, data.per_channel_output_multiplier, data.per_channel_output_shift, data.padding.height_offset); // Patched by MLTK\n' + line
+        if 'MLTK_RECORD_DEPTHWISE_CONV_PARAMS' not in line:
+            line = '  MLTK_RECORD_DEPTHWISE_CONV_PARAMS(op_params, data.per_channel_output_multiplier, data.per_channel_output_shift, data.padding.height_offset); // Patched by MLTK\n' + line
 
     elif arg['state'] == 3:
         if 'int output_channels = filter->dims->data[kDepthwiseConvQuantizedDimension];' in line:
@@ -305,8 +330,8 @@ def process_fully_connected_common_cc(lineno: int, line: str, arg: object) -> st
 
     elif arg['state'] == 2:
         arg['state'] = 3
-        if 'TFLITE_MICRO_RECORD_FULLY_CONNECTED_PARAMS' not in line:
-            line = '  TFLITE_MICRO_RECORD_FULLY_CONNECTED_PARAMS(op_params); // Patched by MLTK\n' + line
+        if 'MLTK_RECORD_FULLY_CONNECTED_PARAMS' not in line:
+            line = '  MLTK_RECORD_FULLY_CONNECTED_PARAMS(op_params); // Patched by MLTK\n' + line
 
     return line
 
@@ -326,7 +351,7 @@ def process_pooling_h(lineno: int, line: str, arg: object) -> str:
     elif arg['state'] == 2 or arg['state'] == 4:
         arg['state'] += 1
         if '// Patched by MLTK' not in line:
-            line = '\n  op_params.padding_type = tflite::micro::RuntimePaddingType(params->padding); // Patched by MLTK\n  TFLITE_MICRO_RECORD_POOL_PARAMS(op_params);\n' + line
+            line = '\n  op_params.padding_type = tflite::micro::RuntimePaddingType(params->padding); // Patched by MLTK\n  MLTK_RECORD_POOL_PARAMS(op_params);\n' + line
 
     return line
 
@@ -349,5 +374,19 @@ def process_micro_interpreter_cc(lineno: int, line: str, arg: object) -> str:
         arg['state'] = 3
         line = '}\n'
         line += '#endif // Patched by MLTK, if 0\n'
+
+    return line
+
+
+def process_micro_allocator_h(lineno: int, line: str, arg: object) -> str:
+    if line.strip() == 'private:':
+        return ' public: // Patched by the MLTK\n'
+
+    if 'allocate_planned_persistent_buffer' in line:
+        arg['state'] = 1 
+
+    elif arg['state'] == 0 and 'protected' in line:
+        line = ' virtual void* allocate_planned_persistent_buffer(size_t size){ return nullptr; }; //Patched by the MLTK\n'
+        line += '\n protected:\n'
 
     return line

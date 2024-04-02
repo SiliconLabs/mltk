@@ -9,6 +9,7 @@ import csv
 from prettytable import PrettyTable
 from mltk.utils.string_formatting import format_units as format_units_func
 from .tflite_model import (TfliteLayer, TfliteModel, TfliteOpCode)
+from .tflite_micro import TfliteMicroModelDetails
 
 
 class ProfilingLayerResult(defaultdict):
@@ -174,6 +175,7 @@ class ProfilingModelResults:
         runtime_memory_bytes:int = 0,
         layers: List[ProfilingLayerResult] = None,
         is_simulated = True,
+        model_details=None
     ):
         self._model:TfliteModel = model
         self._model_name:str = None
@@ -183,6 +185,7 @@ class ProfilingModelResults:
         self._runtime_memory_bytes:int = runtime_memory_bytes
         self._layers: List[ProfilingLayerResult] = layers or []
         self._is_simulated = is_simulated
+        self._model_details:TfliteMicroModelDetails = model_details
 
     @property
     def name(self) -> str:
@@ -192,6 +195,10 @@ class ProfilingModelResults:
     def tflite_model(self) -> TfliteModel:
         """Associated TfliteModel"""
         return self._model
+    @property
+    def tflite_micro_model_details(self) -> TfliteMicroModelDetails:
+        """TF-Lite Micro model-specific details"""
+        return self._model_details
     @property
     def accelerator(self) -> str:
         """Name of accelerator used for profiling"""
@@ -642,7 +649,12 @@ class ProfilingModelResults:
         x.align = 'l'
         s += x.get_string()
 
+        if full_summary and self._model_details:
+            s += '\n\nMemory Plan\n'
+            s += self._model_details.memory_plan.to_string()
+
         return s
+
 
     def __str__(self):
         return self.to_string()

@@ -76,7 +76,7 @@ def test_train_model_with_params_in_cmd_create_venv():
         create_venv=True,
         upload_files=[f'{__file__}|{upload_file_abspath}', 'test_autoencoder_model.py'],
         environment=['TEST="This is a test"', 'FOO', 'BAR=this is a string without quotes', 'CUDA_VISIBLE_DEVICES=-1'],
-        startup_cmds=["echo $TEST > ./test_startup_cmd.txt"],
+        startup_cmds=["pip3 install tf_keras", "echo $TEST > ./test_startup_cmd.txt"],
         download_files=[f'./test_startup_cmd.txt|{startup_cmd_file_path}'],
         shutdown_cmds=[f'echo "shutting down ..." > {shutdown_cmd_file_path}'],
     )
@@ -138,7 +138,8 @@ def test_train_model_with_params_in_settings_no_create_venv():
             "echo $TEST > ./test_startup_cmd.txt",
             "python3 -m venv .venv",
             '. ./.venv/bin/activate',
-            'pip3 install silabs-mltk'
+            'pip3 install silabs-mltk',
+            "pip3 install tf_keras", 
         ],
         download_files=[f'./test_startup_cmd.txt|{startup_cmd_file_path}'],
         shutdown_cmds=[f'echo "shutting down ..." > {shutdown_cmd_file_path}'],
@@ -200,9 +201,9 @@ def test_train_model_with_ssh_mixin_and_config():
 
             dst.write('\n\n')
             dst.write(f'mltk_model.ssh_remote_dir = "{os.path.basename(ssh_workspace_dir)}"\n')
-            dst.write(f'mltk_model.ssh_create_venv = True\n')
-            dst.write(f'mltk_model.ssh_environment = dict(TEST="This is a test", CUDA_VISIBLE_DEVICES="-1")\n')
-            dst.write(f'mltk_model.ssh_startup_cmds = ["echo $TEST > ./test_startup_cmd.txt"]\n')
+            dst.write('mltk_model.ssh_create_venv = True\n')
+            dst.write('mltk_model.ssh_environment = dict(TEST="This is a test", CUDA_VISIBLE_DEVICES="-1")\n')
+            dst.write('mltk_model.ssh_startup_cmds = ["pip3 install tf_keras", "echo $TEST > ./test_startup_cmd.txt"]\n')
             dst.write(f'mltk_model.ssh_upload_files = ["{__file__}|{upload_file_abspath}"]\n')
             dst.write(f'mltk_model.ssh_download_files = ["./test_startup_cmd.txt|{startup_cmd_file_path}"]\n')
             dst.write(f'mltk_model.ssh_shutdown_cmds = [\'echo "shutting down ..." > {shutdown_cmd_file_path}\']\n')
@@ -279,7 +280,7 @@ def test_train_model_nowait():
         create_venv=True,
         upload_files=[f'{__file__}|{upload_file_abspath}', 'test_autoencoder_model.py'],
         environment=['TEST="This is a test"', 'FOO', 'BAR=this is a string without quotes', 'CUDA_VISIBLE_DEVICES=-1'],
-        startup_cmds=["echo $TEST > ./test_startup_cmd.txt"],
+        startup_cmds=["pip3 install tf_keras", "echo $TEST > ./test_startup_cmd.txt"],
         download_files=[f'./test_startup_cmd.txt|{startup_cmd_file_path}'],
         shutdown_cmds=[f'echo "shutting down ..." > {shutdown_cmd_file_path}'],
     )
@@ -333,7 +334,7 @@ def _get_ssh_workspace_dir() -> str:
         _, retmsg = run_shell_cmd(['bash', '-l', '-c', 'cd ~ && pwd'])
     # Otherwise, just use whatever directory is used in the bash login
     else:
-        _, retmsg = run_shell_cmd(['bash', '-l', '-c', 'pwd'])
+        _, retmsg = run_shell_cmd(['bash', '-l', '-c', 'pwd'], cwd=os.path.expanduser('~'))
     return retmsg.splitlines()[-1].strip() + '/utest_ssh_workspace'
 
 

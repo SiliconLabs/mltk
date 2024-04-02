@@ -3,7 +3,7 @@ import sys
 import os
 from typing import TYPE_CHECKING
 
-__version__ = '0.19.0'
+__version__ = '0.20.0'
 
 MLTK_DIR = os.path.dirname(os.path.abspath(__file__)).replace('\\', '/')
 MLTK_ROOT_DIR = os.path.dirname(MLTK_DIR).replace('\\', '/')
@@ -23,3 +23,7 @@ def disable_tensorflow():
 
 if os.environ.get('MLTK_DISABLE_TF', '0') == '1' or TYPE_CHECKING:
     disable_tensorflow()
+if 'TF_USE_LEGACY_KERAS' not in os.environ:
+    # The MTLK is currently based on the "legacy" keras, i.e. the keras that is inside the TF package
+    # e.g.  import tensorflow.keras
+    os.environ['TF_USE_LEGACY_KERAS'] = '1'

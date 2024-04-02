@@ -60,7 +60,7 @@ More details here: [https://www.7-zip.org/download.html](https://www.7-zip.org/d
 
 ### 3) Install Python
 
-Install Python 3.7, 3.8, 3.9 _or_ 3.10 64-bit and ensure it is available on the command `PATH`  
+Install Python 3.9, 3.10, 3.11, _or_ 3.12 64-bit and ensure it is available on the command `PATH`  
 More details here: [https://www.python.org/downloads](https://www.python.org/downloads)
 
 ### 4) Install GIT
@@ -168,7 +168,7 @@ From Simplicity Studio,
 3. The on the sidebar, expand the __Simplicity Studio__ entry
 4. Click the __SDKs__ entry
 5. Click the __Add SDK...__ button
-6. Populate the __Location__ with the path to the locally cloned GSDK, e.g. `<mltk repo root>/cpp/shared/gecko_sdk/v4.3.0`
+6. Populate the __Location__ with the path to the locally cloned GSDK, e.g. `<mltk repo root>/cpp/shared/gecko_sdk/v4.3.3`
 7. Click: __OK__
 9. If prompted, click the __Trust__ button to "trust" the locally cloned MLTK GSDK
 9. Click: __Apply and Close__

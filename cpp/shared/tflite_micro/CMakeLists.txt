@@ -18,11 +18,11 @@ mltk_info("Processing Tensorflow-Lite Micro repository (this may take awhile) ..
 # <mltk root>/cpp/shared/gecko_sdk/simplicity_studio/mltk_tflite_micro_reference_kernels.slcc
 # Also be sure to update the TFLITE_MICRO_VERSION_STR define in the mltk_tflite_micro.slcc
 # Also update the <mltk root>/README.md with the version change
-set(_tflm_cache_version "jun13_2023")
+set(_tflm_cache_version "mar27_2024")
 CPMAddPackage(
 NAME Tensorflow
   GITHUB_REPOSITORY tensorflow/tflite-micro
-  GIT_TAG 9bc9deab8db4d24dcca4070c8153e7d7b5d28770 # latest master as of ${_tflm_cache_version}
+  GIT_TAG 7005d60ede074762f01c1d0fd24ec58240af89b5 # latest master as of ${_tflm_cache_version}
   DOWNLOAD_ONLY ON
   CACHE_SUBDIR tflite_micro
   CACHE_VERSION ${_tflm_cache_version}
@@ -89,23 +89,26 @@ include(${CMAKE_CURRENT_LIST_DIR}/mltk_tflite_micro_cmsis_kernels.cmake)
 
 
 set(tflm_sources
-tensorflow/lite/core/c/common.cc
-tensorflow/lite/core/api/flatbuffer_conversions.cc
-tensorflow/lite/core/api/op_resolver.cc
-tensorflow/lite/core/api/tensor_utils.cc
 tensorflow/lite/core/api/error_reporter.cc
+tensorflow/lite/core/api/flatbuffer_conversions.cc
+tensorflow/lite/core/api/tensor_utils.cc
+tensorflow/lite/core/c/common.cc
 tensorflow/lite/schema/schema_utils.cc
-tensorflow/lite/kernels/internal/quantization_util.cc
+tensorflow/lite/kernels/kernel_util.cc
+tensorflow/lite/kernels/internal/common.cc
 tensorflow/lite/kernels/internal/portable_tensor_utils.cc
+tensorflow/lite/kernels/internal/quantization_util.cc
 tensorflow/lite/kernels/internal/tensor_utils.cc
 tensorflow/lite/kernels/internal/tensor_ctypes.cc
 tensorflow/lite/kernels/internal/reference/portable_tensor_utils.cc
 tensorflow/lite/kernels/internal/reference/comparisons.cc
-tensorflow/lite/kernels/kernel_util.cc
 tensorflow/lite/micro/arena_allocator/non_persistent_arena_buffer_allocator.cc
 tensorflow/lite/micro/arena_allocator/persistent_arena_buffer_allocator.cc
 tensorflow/lite/micro/arena_allocator/recording_single_arena_buffer_allocator.cc
 tensorflow/lite/micro/arena_allocator/single_arena_buffer_allocator.cc
+tensorflow/lite/micro/memory_planner/greedy_memory_planner.cc
+tensorflow/lite/micro/memory_planner/linear_memory_planner.cc
+tensorflow/lite/micro/memory_planner/non_persistent_buffer_planner_shim.cc
 tensorflow/lite/micro/tflite_bridge/micro_error_reporter.cc
 tensorflow/lite/micro/tflite_bridge/flatbuffer_conversions_bridge.cc
 tensorflow/lite/micro/debug_log.cc
@@ -115,21 +118,20 @@ tensorflow/lite/micro/memory_helpers.cc
 tensorflow/lite/micro/micro_allocation_info.cc
 tensorflow/lite/micro/micro_allocator.cc
 tensorflow/lite/micro/micro_context.cc
-#tensorflow/lite/micro/micro_graph.cc # This is overridden to enable recording and profiling
+tensorflow/lite/micro/micro_interpreter_context.cc
+#tensorflow/lite/micro/micro_interpreter_graph.cc # This is overridden by the MLTK
 tensorflow/lite/micro/micro_interpreter.cc
 #tensorflow/lite/micro/micro_log.cc  # This is overridden
 tensorflow/lite/micro/micro_op_resolver.cc
 tensorflow/lite/micro/micro_profiler.cc
 tensorflow/lite/micro/micro_resource_variable.cc
-tensorflow/lite/micro/micro_string.cc
 tensorflow/lite/micro/micro_time.cc
 tensorflow/lite/micro/micro_utils.cc
 tensorflow/lite/micro/mock_micro_graph.cc
-tensorflow/lite/micro/test_helpers.cc
 tensorflow/lite/micro/test_helper_custom_ops.cc
+tensorflow/lite/micro/test_helpers.cc
+
 tensorflow/lite/micro/kernels/kernel_runner.cc
-tensorflow/lite/micro/memory_planner/greedy_memory_planner.cc
-tensorflow/lite/micro/memory_planner/linear_memory_planner.cc
 tensorflow/lite/micro/kernels/kernel_util.cc
 tensorflow/lite/micro/kernels/micro_tensor_utils.cc
 tensorflow/lite/micro/kernels/activations.cc
@@ -139,6 +141,7 @@ tensorflow/lite/micro/kernels/add_common.cc
 tensorflow/lite/micro/kernels/add_n.cc
 tensorflow/lite/micro/kernels/arg_min_max.cc
 tensorflow/lite/micro/kernels/assign_variable.cc
+tensorflow/lite/micro/kernels/batch_matmul.cc
 tensorflow/lite/micro/kernels/batch_to_space_nd.cc
 tensorflow/lite/micro/kernels/broadcast_args.cc
 tensorflow/lite/micro/kernels/broadcast_to.cc
@@ -201,8 +204,9 @@ tensorflow/lite/micro/kernels/quantize.cc
 tensorflow/lite/micro/kernels/quantize_common.cc
 tensorflow/lite/micro/kernels/read_variable.cc
 tensorflow/lite/micro/kernels/reduce_common.cc
-tensorflow/lite/micro/kernels/reduce.cc
+#tensorflow/lite/micro/kernels/reduce.cc  # This is overridden to optionally replace the MEAN kernel
 tensorflow/lite/micro/kernels/reshape.cc
+tensorflow/lite/micro/kernels/reshape_common.cc
 tensorflow/lite/micro/kernels/resize_bilinear.cc
 tensorflow/lite/micro/kernels/resize_nearest_neighbor.cc
 tensorflow/lite/micro/kernels/round.cc
@@ -218,6 +222,7 @@ tensorflow/lite/micro/kernels/split_v.cc
 tensorflow/lite/micro/kernels/squared_difference.cc
 tensorflow/lite/micro/kernels/squeeze.cc
 tensorflow/lite/micro/kernels/strided_slice.cc
+tensorflow/lite/micro/kernels/strided_slice_common.cc
 tensorflow/lite/micro/kernels/sub.cc
 tensorflow/lite/micro/kernels/sub_common.cc
 tensorflow/lite/micro/kernels/svdf_common.cc
@@ -240,6 +245,7 @@ set(tflm_overidden_kernels
   kernels/elementwise.cc
   kernels/fully_connected.cc
   kernels/pooling.cc
+  kernels/reduce.cc
 )
 
 # Exclude any reference kernels
@@ -259,6 +265,19 @@ if(TFLITE_MICRO_EXCLUDED_REF_KERNELS)
       TFLITE_MICRO_RSQRT_DISABLED
     )
   endif()
+  if("mean" IN_LIST TFLITE_MICRO_EXCLUDED_REF_KERNELS)
+    target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+      TFLITE_MICRO_MEAN_DISABLED
+    )
+  endif()
+  if("concatenation" IN_LIST TFLITE_MICRO_EXCLUDED_REF_KERNELS)
+    target_compile_definitions(${PROJECT_NAME}
+    PRIVATE
+      TFLITE_MICRO_CONCATENATION_DISABLED
+    )
+  endif()
+
 endif()
 
 
@@ -269,13 +288,17 @@ PRIVATE
     ${tflm_sources}
     ${tflm_overidden_kernels}
     all_ops_resolver.cc
-    micro_graph.cc
+    micro_interpreter_graph.cc
     micro_interpreter_override.cc
     micro_log.cc
-    mltk_calculate_op_metrics.cc
-    mltk_tflite_micro_helper.cc
-    mltk_tflite_micro_internal.cc
-    mltk_tflite_micro_recorder.cc
+    mltk_tflite_micro_accelerator.cc 
+    mltk_tflite_micro_kernel_messages.cc 
+    mltk_tflite_micro_logger.cc 
+    mltk_tflite_micro_model_helper.cc 
+    mltk_tflite_micro_profiler.cc 
+    mltk_tflite_micro_profiler_metrics.cc
+    mltk_tflite_micro_recorder.cc 
+    mltk_tflite_micro_accelerator_recorder.cc 
 )
 
 
@@ -400,6 +423,7 @@ PUBLIC
   -Wno-unused-value
   -Wno-psabi
   -Wno-stringop-overflow
+  -Wno-stringop-overread
 )
 
 

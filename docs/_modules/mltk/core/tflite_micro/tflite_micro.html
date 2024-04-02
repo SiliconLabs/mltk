@@ -57,7 +57,7 @@
 <meta name="google-site-verification" content="dsSsmnE2twOnfSAQk5zBBTrjMArsTJj809Bp-8mVlIw" />
   
   
-    <title>mltk.core.tflite_micro.tflite_micro &#8212; MLTK 0.19.0 documentation</title>
+    <title>mltk.core.tflite_micro.tflite_micro &#8212; MLTK 0.20.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/material.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
@@ -101,11 +101,11 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex navheader">
       <div class="md-flex__cell md-flex__cell--shrink">
-        <a href="../../../../index.html" title="MLTK 0.19.0 documentation"
+        <a href="../../../../index.html" title="MLTK 0.20.0 documentation"
            class="md-header-nav__button md-logo">
           
               <img src="../../../../_static/logo.png"
-                   alt="MLTK 0.19.0 documentation logo">
+                   alt="MLTK 0.20.0 documentation logo">
           
         </a>
       </div>
@@ -196,13 +196,13 @@
               <div class="md-sidebar__inner">
                 <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="__drawer">
-    <a href="../../../../index.html" title="MLTK 0.19.0 documentation" class="md-nav__button md-logo">
+    <a href="../../../../index.html" title="MLTK 0.20.0 documentation" class="md-nav__button md-logo">
       
         <img src="../../../../_static/logo.png" alt=" logo" width="48" height="48">
       
     </a>
     <a href="../../../../index.html"
-       title="MLTK 0.19.0 documentation">Machine Learning Toolkit</a>
+       title="MLTK 0.20.0 documentation">Machine Learning Toolkit</a>
   </label>
     <div class="md-nav__source">
       <a href="https://github.com/siliconlabs/mltk" title="Go to repository" class="md-source" data-md-source="github">
@@ -434,14 +434,14 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Callable</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="kn">from</span> <span class="nn">mltk.core.tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span><span class="p">,</span> <span class="n">TfliteLayer</span>
 <span class="kn">from</span> <span class="nn">mltk.core.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="p">(</span><span class="n">as_list</span><span class="p">,</span> <span class="n">get_case_insensitive</span><span class="p">,</span> <span class="n">import_module_at_path</span><span class="p">,</span> <span class="n">append_exception_msg</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">get_user_setting</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..profiling_results</span> <span class="kn">import</span> <span class="n">ProfilingModelResults</span><span class="p">,</span> <span class="n">ProfilingLayerResult</span>
 <span class="kn">from</span> <span class="nn">.tflite_micro_accelerator</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TfliteMicroAccelerator</span><span class="p">,</span> <span class="n">PlaceholderTfliteMicroAccelerator</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.tflite_micro_model</span> <span class="kn">import</span> <span class="n">TfliteMicroModel</span><span class="p">,</span> <span class="n">TfliteMicroModelDetails</span>
 
@@ -552,9 +552,10 @@
         <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
         <span class="n">accelerator</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">enable_profiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">enable_recorder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">enable_tensor_recorder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">force_buffer_overlap</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">runtime_buffer_size</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">runtime_buffer_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteMicroModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Load the TF-Lite Micro interpreter with the given .tflite model</span>
@@ -574,16 +575,23 @@
             <span class="n">tflm_accelerator</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_model_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">_load_tflite_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+            <span class="n">runtime_buffer_sizes</span> <span class="o">=</span> <span class="n">_retrieve_runtime_buffer_sizes</span><span class="p">(</span>
+                <span class="n">tflite_model</span><span class="p">,</span>
+                <span class="n">runtime_buffer_size</span><span class="o">=</span><span class="n">runtime_buffer_size</span><span class="p">,</span>
+                <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span>
+            <span class="p">)</span>
             <span class="n">tflm_model</span> <span class="o">=</span> <span class="n">TfliteMicroModel</span><span class="p">(</span>
                 <span class="n">tflm_wrapper</span><span class="o">=</span><span class="n">wrapper</span><span class="p">,</span>
                 <span class="n">tflm_accelerator</span><span class="o">=</span><span class="n">tflm_accelerator</span><span class="p">,</span>
                 <span class="n">flatbuffer_data</span><span class="o">=</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">flatbuffer_data</span><span class="p">,</span>
                 <span class="n">enable_profiler</span><span class="o">=</span><span class="n">enable_profiler</span><span class="p">,</span>
+                <span class="n">enable_recorder</span><span class="o">=</span><span class="n">enable_recorder</span><span class="p">,</span>
                 <span class="n">enable_tensor_recorder</span><span class="o">=</span><span class="n">enable_tensor_recorder</span><span class="p">,</span>
                 <span class="n">force_buffer_overlap</span><span class="o">=</span><span class="n">force_buffer_overlap</span><span class="p">,</span>
-                <span class="n">runtime_buffer_size</span><span class="o">=</span><span class="n">runtime_buffer_size</span><span class="p">,</span>
+                <span class="n">runtime_buffer_sizes</span><span class="o">=</span><span class="n">runtime_buffer_sizes</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="c1"># Release the model lock if an exception occurred while loading it</span>
@@ -600,6 +608,9 @@
             <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">accelerator</span><span class="p">,</span> <span class="s1">'deinit_variant'</span><span class="p">):</span>
                 <span class="n">accelerator</span><span class="o">.</span><span class="n">deinit_variant</span><span class="p">()</span>
 
+        <span class="c1"># pylint: disable=protected-access</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">_model_wrapper</span><span class="p">:</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">_model_wrapper</span><span class="o">.</span><span class="n">unload</span><span class="p">()</span>
         <span class="k">del</span> <span class="n">model</span>
         <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_model_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span></div>
 
@@ -614,15 +625,18 @@
         <span class="n">runtime_buffer_size</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="c1"># If runtime_buffer_size not given, determine the optimal memory size</span>
         <span class="n">input_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProfilingModelResults</span><span class="p">:</span>
+    <span class="p">):</span> <span class="c1"># -&gt; ProfilingModelResults</span>
 <span class="w">        </span><span class="sd">"""Profile the given model in the simulator and optionally determine metric estimates</span>
 
 <span class="sd">        """</span>
+        <span class="kn">from</span> <span class="nn">mltk.core.profiling_results</span> <span class="kn">import</span> <span class="n">ProfilingModelResults</span><span class="p">,</span> <span class="n">ProfilingLayerResult</span>
+
         <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">_load_tflite_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
         <span class="n">tflm_model</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">load_tflite_model</span><span class="p">(</span>
             <span class="n">model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
             <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">,</span>
             <span class="n">enable_profiler</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">enable_recorder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">runtime_buffer_size</span><span class="o">=</span><span class="n">runtime_buffer_size</span>
         <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
@@ -666,37 +680,58 @@
             <span class="k">if</span> <span class="n">disable_calculate_accelerator_cycles_only</span><span class="p">:</span>
                 <span class="n">tflm_accelerator</span><span class="o">.</span><span class="n">set_calculate_accelerator_cycles_only_enabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
 
+            <span class="n">recorded_layers</span> <span class="o">=</span> <span class="n">recorded_data</span><span class="p">[</span><span class="s1">'layers'</span><span class="p">]</span>
             <span class="n">layer_results</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">layer_index</span><span class="p">,</span> <span class="p">(</span><span class="n">tflm_layer_result</span><span class="p">,</span> <span class="n">recorded_layer_data</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">tflm_results</span><span class="p">,</span> <span class="n">recorded_data</span><span class="p">)):</span>
+            <span class="k">for</span> <span class="n">layer_index</span><span class="p">,</span> <span class="n">tflm_layer_result</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tflm_results</span><span class="p">):</span>
+                <span class="n">tflite_layer</span> <span class="o">=</span> <span class="n">tflite_model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">layer_index</span><span class="p">]</span>
                 <span class="n">layer_err</span> <span class="o">=</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">get_layer_error</span><span class="p">(</span><span class="n">layer_index</span><span class="p">)</span>
                 <span class="n">layer_err_msg</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">layer_err</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">layer_err</span><span class="o">.</span><span class="n">msg</span>
                 <span class="k">del</span> <span class="n">tflm_layer_result</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span>
                 <span class="n">layer_result</span> <span class="o">=</span> <span class="n">ProfilingLayerResult</span><span class="p">(</span>
-                    <span class="n">tflite_layer</span><span class="o">=</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">layer_index</span><span class="p">],</span>
+                    <span class="n">tflite_layer</span><span class="o">=</span><span class="n">tflite_layer</span><span class="p">,</span>
                     <span class="n">error_msg</span><span class="o">=</span><span class="n">layer_err_msg</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">tflm_layer_result</span>
                 <span class="p">)</span>
-                <span class="n">layer_result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">recorded_layer_data</span><span class="p">)</span>
+
+                <span class="n">layer_recorded_data</span> <span class="o">=</span> <span class="n">recorded_layers</span><span class="p">[</span><span class="n">layer_index</span><span class="p">]</span> <span class="k">if</span> <span class="n">layer_index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">recorded_layers</span><span class="p">)</span> <span class="k">else</span> <span class="p">{}</span>
+                <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span> 
+                <span class="k">while</span> <span class="n">updated</span><span class="p">:</span>
+                    <span class="n">updated</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">layer_recorded_data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">,</span><span class="nb">str</span><span class="p">)):</span>
+                            <span class="n">tflite_layer</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+                            <span class="n">layer_recorded_data</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                            <span class="n">updated</span> <span class="o">=</span> <span class="kc">True</span> 
+                            <span class="k">break</span> 
+
+                <span class="n">layer_result</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">layer_recorded_data</span><span class="p">)</span>
                 <span class="n">layer_results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">layer_result</span><span class="p">)</span>
 
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">unload_model</span><span class="p">(</span><span class="n">tflm_model</span><span class="p">)</span>
 
+        <span class="n">model_details</span> <span class="o">=</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">details</span>
+        <span class="n">_add_memory_plan</span><span class="p">(</span>
+            <span class="n">tflite_model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
+            <span class="n">recorded_data</span><span class="o">=</span><span class="n">recorded_data</span><span class="p">,</span>
+            <span class="n">model_details</span><span class="o">=</span><span class="n">model_details</span>
+        <span class="p">)</span>
+
         <span class="n">results</span> <span class="o">=</span> <span class="n">ProfilingModelResults</span><span class="p">(</span>
             <span class="n">model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
             <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">,</span>
             <span class="n">runtime_memory_bytes</span><span class="o">=</span><span class="n">tflm_model_details</span><span class="o">.</span><span class="n">runtime_memory_size</span><span class="p">,</span>
-            <span class="n">layers</span><span class="o">=</span><span class="n">layer_results</span>
+            <span class="n">layers</span><span class="o">=</span><span class="n">layer_results</span><span class="p">,</span>
+            <span class="n">model_details</span><span class="o">=</span><span class="n">model_details</span>
         <span class="p">)</span>
-
 
         <span class="c1"># If we want to return estimates for metrics like:</span>
         <span class="c1"># CPU cycles and energy</span>
         <span class="k">if</span> <span class="n">return_estimates</span><span class="p">:</span>
             <span class="c1"># If accelerator=none</span>
             <span class="c1"># then just use the MVP accelerator's 'none' (i.e. CMSIS-only) estimators</span>
-            <span class="k">if</span> <span class="n">tflm_accelerator</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">'MVP'</span> <span class="ow">in</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_accelerators</span><span class="p">:</span>
-                <span class="n">tflm_accelerator</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_accelerators</span><span class="p">[</span><span class="s1">'MVP'</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">tflm_accelerator</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">'mvp'</span> <span class="ow">in</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_accelerators</span><span class="p">:</span>
+                <span class="n">tflm_accelerator</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">_accelerators</span><span class="p">[</span><span class="s1">'mvp'</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">tflm_accelerator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">tflm_accelerator</span><span class="o">.</span><span class="n">estimate_profiling_results</span><span class="p">(</span>
@@ -712,9 +747,12 @@
         <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
         <span class="n">input_data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">accelerator</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-        <span class="n">enable_accelerator_recorder</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">enable_accelerator_recorder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">disable_simulator_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="n">return_model_details</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">enable_tensor_recorder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">return_model_details</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">update_input_model</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">layer_callback</span><span class="p">:</span><span class="n">Callable</span><span class="p">[[</span><span class="n">TfliteLayer</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TfliteLayer</span><span class="p">],</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">TfliteLayer</span><span class="p">],</span><span class="n">TfliteMicroModelDetails</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Run one inference and record each model layer's input/output tensors</span>
 
@@ -727,30 +765,51 @@
 <span class="sd">                Each layers' recorded data is a dictionary with the entries specific to the hardware accelerator.</span>
 <span class="sd">            disable_simulator_backend: Disable the simulator backend while running the accelerator recorder.</span>
 <span class="sd">                This can greatly improve execution time, however, the generated data output (i.e. output tensors) is invalid</span>
+<span class="sd">            enable_tensor_recorder: Record the input/output tensors of each layer</span>
 <span class="sd">            return_model_details: Also return the recorded model's TfliteMicroModelDetails</span>
 <span class="sd">        Return:</span>
-<span class="sd">            Return a list of TfliteLayers with the tensor data</span>
+<span class="sd">            If return_model_details=False, then return a list of TfliteLayers with the tensor data</span>
 <span class="sd">            updated with the recorded values from the previous inference</span>
+<span class="sd">            If return_model_details=True, then return a tuple(list(TfliteLayers), TfliteMicroModelDetails)</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">update_input_model</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Input model must be a TfliteModel instance to use update_input_model=True'</span><span class="p">)</span>
+
         <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">_load_tflite_model</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
         <span class="n">tflm_model</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">load_tflite_model</span><span class="p">(</span>
             <span class="n">model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
             <span class="n">accelerator</span><span class="o">=</span><span class="n">accelerator</span><span class="p">,</span>
-            <span class="n">enable_tensor_recorder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">enable_recorder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">enable_tensor_recorder</span><span class="o">=</span><span class="n">enable_tensor_recorder</span><span class="p">,</span>
             <span class="n">enable_profiler</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">runtime_buffer_size</span><span class="o">=</span><span class="mi">16</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span> <span class="c1"># 16MB</span>
+            <span class="n">runtime_buffer_size</span><span class="o">=</span><span class="mi">16</span><span class="o">*</span><span class="mi">1024</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="c1"># 16MB</span>
         <span class="p">)</span>
 
-        <span class="n">reenable_simulator_backend</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">disable_program_recorder</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">if</span> <span class="n">enable_accelerator_recorder</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Must provide accelerator when using enable_accelerator_recorder'</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">disable_simulator_backend</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span><span class="p">,</span> <span class="s1">'set_simulator_backend_enabled'</span><span class="p">):</span>
+            <span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">set_program_recorder_enabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">disable_program_recorder</span> <span class="o">=</span> <span class="kc">True</span>
+
+        
+        <span class="n">reenable_simulator_backend</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">reenable_simulator_accelerator_cycles</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="n">disable_simulator_backend</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Must provide accelerator when using disable_simulator_backend'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span><span class="p">,</span> <span class="s1">'set_simulator_backend_enabled'</span><span class="p">):</span>
                 <span class="n">reenable_simulator_backend</span> <span class="o">=</span> <span class="kc">True</span>
                 <span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">set_simulator_backend_enabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
-
-            <span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">enable_program_recorder</span><span class="p">()</span>
-
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span><span class="p">,</span> <span class="s1">'set_calculate_accelerator_cycles_only_enabled'</span><span class="p">):</span>
+                <span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">set_calculate_accelerator_cycles_only_enabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            
+        <span class="k">if</span> <span class="n">layer_callback</span><span class="p">:</span>
+            <span class="n">tflm_model</span><span class="o">.</span><span class="n">set_layer_callback</span><span class="p">(</span><span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+                <span class="n">_layer_callback_handler</span><span class="p">,</span>
+                <span class="n">tflite_model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
+                <span class="n">callback</span><span class="o">=</span><span class="n">layer_callback</span>
+            <span class="p">))</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">input_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -759,24 +818,34 @@
                         <span class="n">tflm_model</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">v</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="n">tflm_model</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">input_data</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">inp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">inputs</span><span class="p">):</span>
+                    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+                    <span class="n">tflm_model</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
 
             <span class="n">tflm_model</span><span class="o">.</span><span class="n">invoke</span><span class="p">()</span>
             <span class="n">recorded_data</span> <span class="o">=</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">get_recorded_data</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">reenable_simulator_backend</span><span class="p">:</span>
                 <span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">set_simulator_backend_enabled</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">reenable_simulator_accelerator_cycles</span><span class="p">:</span>
+                <span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">set_calculate_accelerator_cycles_only_enabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">disable_program_recorder</span><span class="p">:</span>
+                <span class="n">tflm_model</span><span class="o">.</span><span class="n">accelerator</span><span class="o">.</span><span class="n">set_program_recorder_enabled</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
 
             <span class="n">retval</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="k">for</span> <span class="n">layer_index</span><span class="p">,</span> <span class="n">recorded_layer_data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">recorded_data</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">layer_index</span><span class="p">,</span> <span class="n">recorded_layer_data</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">recorded_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'layers'</span><span class="p">,</span> <span class="p">[])):</span>
                 <span class="c1"># pylint: disable=protected-access</span>
-                <span class="n">tf_layer</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">layer_index</span><span class="p">])</span>
+                <span class="n">tf_layer</span> <span class="o">=</span> <span class="n">tflite_model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">layer_index</span><span class="p">]</span> <span class="k">if</span> <span class="n">update_input_model</span> \
+                    <span class="k">else</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">layer_index</span><span class="p">])</span>
                 <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">tf_layer</span><span class="p">)</span>
 
                 <span class="n">layer_err</span> <span class="o">=</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">get_layer_error</span><span class="p">(</span><span class="n">layer_index</span><span class="p">)</span>
                 <span class="n">tf_layer</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">'error_msg'</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">layer_err</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">layer_err</span><span class="o">.</span><span class="n">msg</span>
 
-                <span class="k">for</span> <span class="n">input_index</span><span class="p">,</span> <span class="n">input_bytes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">recorded_layer_data</span><span class="p">[</span><span class="s1">'inputs'</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">input_index</span><span class="p">,</span> <span class="n">input_bytes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">recorded_layer_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'inputs'</span><span class="p">,</span> <span class="p">[])):</span>
                     <span class="k">if</span> <span class="n">input_index</span> <span class="o">&gt;=</span> <span class="n">tf_layer</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">:</span>
                         <span class="k">break</span>
                     <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">tf_layer</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">input_index</span><span class="p">]</span>
@@ -788,7 +857,7 @@
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">tf_layer</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">input_index</span><span class="p">]</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">input_buf</span>
 
-                <span class="k">for</span> <span class="n">output_index</span><span class="p">,</span> <span class="n">output_bytes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">recorded_layer_data</span><span class="p">[</span><span class="s1">'outputs'</span><span class="p">]):</span>
+                <span class="k">for</span> <span class="n">output_index</span><span class="p">,</span> <span class="n">output_bytes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">recorded_layer_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'outputs'</span><span class="p">,</span> <span class="p">[])):</span>
                     <span class="n">output_tensor</span> <span class="o">=</span> <span class="n">tf_layer</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">output_index</span><span class="p">]</span>
                     <span class="n">output_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">output_bytes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">output_tensor</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">flat_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -802,6 +871,11 @@
 
             <span class="k">if</span> <span class="n">return_model_details</span><span class="p">:</span>
                 <span class="n">model_details</span> <span class="o">=</span> <span class="n">tflm_model</span><span class="o">.</span><span class="n">details</span>
+                <span class="n">_add_memory_plan</span><span class="p">(</span>
+                    <span class="n">tflite_model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
+                    <span class="n">recorded_data</span><span class="o">=</span><span class="n">recorded_data</span><span class="p">,</span>
+                    <span class="n">model_details</span><span class="o">=</span><span class="n">model_details</span>
+                <span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">unload_model</span><span class="p">(</span><span class="n">tflm_model</span><span class="p">)</span>
 
@@ -952,9 +1026,13 @@
             <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">accelerator_module</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">TfliteMicroAccelerator</span><span class="p">):</span>
                 <span class="c1"># Create an accelerator instance</span>
-                <span class="n">tflm_accelerator</span> <span class="o">=</span> <span class="n">value</span><span class="p">()</span>
-                <span class="k">break</span>
-
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">tflm_accelerator</span> <span class="o">=</span> <span class="n">value</span><span class="p">()</span>
+                    <span class="k">break</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Accelerator module: </span><span class="si">{</span><span class="n">accelerator_dir</span><span class="si">}</span><span class="s1"> failed to initialize, err: </span><span class="se">\n</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                
         <span class="k">if</span> <span class="n">tflm_accelerator</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Accelerator module: </span><span class="si">{</span><span class="n">accelerator_dir</span><span class="si">}</span><span class="s1"> does not contain a TfliteMicroAccelerator class definition'</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -1023,6 +1101,65 @@
         <span class="k">return</span> <span class="n">TfliteModel</span><span class="o">.</span><span class="n">load_flatbuffer_file</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Must provide TfliteModel or path to .tflite file'</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_add_memory_plan</span><span class="p">(</span>
+    <span class="n">tflite_model</span><span class="p">:</span><span class="n">TfliteModel</span><span class="p">,</span>
+    <span class="n">recorded_data</span><span class="p">:</span><span class="n">List</span><span class="p">,</span>
+    <span class="n">model_details</span><span class="p">:</span><span class="n">TfliteMicroModelDetails</span>
+<span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">.tflite_micro_memory_plan</span> <span class="kn">import</span> <span class="n">TfliteMicroMemoryPlan</span>
+
+    <span class="n">recorded_data_layers</span> <span class="o">=</span> <span class="n">recorded_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'layers'</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="n">model_details</span><span class="o">.</span><span class="n">_memory_plan</span> <span class="o">=</span> <span class="n">TfliteMicroMemoryPlan</span><span class="o">.</span><span class="n">create</span><span class="p">(</span> <span class="c1"># pylint: disable=protected-access</span>
+        <span class="n">memory_plan</span><span class="o">=</span><span class="n">recorded_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'memory_plan'</span><span class="p">,</span> <span class="p">[]),</span>
+        <span class="n">tflite_model</span><span class="o">=</span><span class="n">tflite_model</span><span class="p">,</span>
+        <span class="n">total_persistent_runtime_size</span><span class="o">=</span><span class="n">recorded_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'total_persistent_runtime_size'</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">temp_runtime_sizes</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'temp_memory_used'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">recorded_data_layers</span><span class="p">),</span>
+        <span class="n">persistent_runtime_sizes</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'persistent_memory_used'</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">recorded_data_layers</span><span class="p">)</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_layer_callback_handler</span><span class="p">(</span>
+    <span class="n">tflite_model</span><span class="p">:</span><span class="n">TfliteModel</span><span class="p">,</span>
+    <span class="n">callback</span><span class="p">:</span><span class="n">Callable</span><span class="p">[[</span><span class="n">TfliteLayer</span><span class="p">],</span><span class="nb">bool</span><span class="p">],</span> 
+    <span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> 
+    <span class="n">outputs</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">bytes</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="n">tf_layer</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">tflite_model</span><span class="o">.</span><span class="n">layers</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">output_index</span><span class="p">,</span> <span class="n">output_bytes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">outputs</span><span class="p">):</span>
+        <span class="n">output_tensor</span> <span class="o">=</span> <span class="n">tf_layer</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">output_index</span><span class="p">]</span>
+        <span class="n">output_buf</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">output_bytes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output_tensor</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">flat_size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">tf_layer</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">output_index</span><span class="p">]</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">output_buf</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="n">output_tensor</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="c1"># pylint: disable=protected-access</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">tf_layer</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">output_index</span><span class="p">]</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">output_buf</span> <span class="c1"># pylint: disable=protected-access</span>
+        
+    <span class="k">return</span> <span class="n">callback</span><span class="p">(</span><span class="n">tf_layer</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_retrieve_runtime_buffer_sizes</span><span class="p">(</span>
+    <span class="n">tflite_model</span><span class="p">:</span><span class="n">TfliteModel</span><span class="p">,</span>
+    <span class="n">accelerator</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
+    <span class="n">runtime_buffer_size</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="kn">from</span> <span class="nn">mltk.core.tflite_model_parameters</span> <span class="kn">import</span> <span class="n">TfliteModelParameters</span>
+    <span class="n">runtime_buffer_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">memory_spec</span> <span class="o">=</span> <span class="n">TfliteModelParameters</span><span class="o">.</span><span class="n">load_from_tflite_model</span><span class="p">(</span>
+            <span class="n">tflite_model</span><span class="p">,</span> 
+            <span class="n">tag</span><span class="o">=</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">accelerator</span><span class="si">}</span><span class="s1">_memory_spec'</span>
+        <span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">memory_spec</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">if</span> <span class="n">memory_spec</span><span class="p">:</span>
+        <span class="n">runtime_buffer_sizes</span> <span class="o">=</span> <span class="n">memory_spec</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'sizes'</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">runtime_buffer_size</span><span class="p">:</span>
+        <span class="n">runtime_buffer_sizes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">runtime_buffer_size</span>
+
+    <span class="k">return</span> <span class="n">runtime_buffer_sizes</span>
 </pre></div>
 
           </article>
@@ -1044,11 +1181,11 @@
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2023, Silicon Labs.
+              &#169; Copyright 2024, Silicon Labs.
               
           </div>
             Last updated on
-              Sep 12, 2023.
+              Apr 02, 2024.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
@@ -1056,7 +1193,6 @@
             <a href="https://github.com/bashtage/sphinx-material/">Material for
               Sphinx</a>
         </div>
-        <button id="survey-link" class="feedback-button">Feedback</button>
       </div>
     </div>
   </footer>
@@ -1069,13 +1205,6 @@
       <a class="privacy-banner-accept" href="#">Got it</a>
     </div>
 </div>
-  
-<div class="survey-container" id="dlg-survey"> 
-    <div class="close" id="dlg-survey-close"><i class="md-icon">close</i></div>
-    <div class="msg">Please click the <b>submit</b> button at the end even if you do not answer all of the questions</div>
-    <iframe id="iframe-survey" style="width: 100%; height: 100%;"></iframe>
-</div>
-  
   <script src="../../../../_static/javascripts/application.js"></script>
   <script>app.initialize({version: "1.0.4", url: {base: ".."}})</script>
   </body>
