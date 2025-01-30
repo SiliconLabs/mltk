@@ -33,7 +33,7 @@ from mltk.utils.audio_dataset_generator import (
 
 
 
-DOWNLOAD_URL = 'https://www.dropbox.com/s/mkvbeyjdks28241/sl_synthetic_on_off.7z?dl=1'
+DOWNLOAD_URL = 'https://www.silabs.com/public/files/github/mltk/datasets/sl_synthetic_on_off.7z'
 """Public download URL"""
 VERIFY_SHA1 = 'b20697b82f883e4dc5e0afc4b7dc950d3339e703'
 """SHA1 hash of the downloaded archive file"""

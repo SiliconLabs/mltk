@@ -14,8 +14,8 @@ __No installation required__.
 ## Download
 
 The model profile utility may be downloaded from here:  
-- [Windows](https://www.dropbox.com/s/acz22zktqdet9ww/mltk_model_profiler.exe?dl=1)
-- [Linux](https://www.dropbox.com/s/0vm9zrl4rg2gioy/mltk_model_profiler?dl=1)
+- [Windows](https://www.silabs.com/public/files/github/mltk/model_profiler/mltk_model_profiler.exe)
+- [Linux](https://www.silabs.com/public/files/github/mltk/model_profiler/mltk_model_profiler)
 
 
 ## Usage

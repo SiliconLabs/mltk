@@ -29,7 +29,7 @@ import logging
 from mltk.utils.archive_downloader import download_verify_extract
 
 
-DOWNLOAD_URL = 'https://www.dropbox.com/s/l9uxyr22w3jgenc/common_voice_subset.7z?dl=1'
+DOWNLOAD_URL = 'https://www.silabs.com/public/files/github/mltk/datasets/common_voice_subset.7z'
 """Public download URL"""
 VERIFY_SHA1 = 'ce424afd5d9b754f3ea6b3a4f78304f48e865f93'
 """SHA1 hash of the dataset archive file"""

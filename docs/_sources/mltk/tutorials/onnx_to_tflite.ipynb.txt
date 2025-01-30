@@ -68,7 +68,7 @@
 
     "The basic sequence for this is shown in the following diagram:  \n",
 
-    "![onnx_to_tflite](https://www.dropbox.com/s/hqmwppnypeyfmmp/onnx_to_tflite.png?dl=1)\n",
+    "![onnx_to_tflite](https://www.silabs.com/public/files/github/mltk/misc/onnx_to_tflite.png)\n",
 
     "\n",
 
@@ -390,7 +390,7 @@
 
     "# Install the openvino_dev Python package\n",
 
-    "# This allows for converting the ONNX model to an intermediate \n",
+    "# This allows for converting the ONNX model to an intermediate\n",
 
     "# format so we can then convert it to a TF-Lite model format\n",
 
@@ -418,7 +418,7 @@
 
     "# This allows for converting from the openvino format to the .tflite model format\n",
 
-    "# We primarily need this so we can convert from the NCHW used by .onnx \n",
+    "# We primarily need this so we can convert from the NCHW used by .onnx\n",
 
     "# to the NHWC used by .tflite\n",
 
@@ -486,13 +486,13 @@
 
     "\n",
 
-    "ONNX_MODEL_ARCHIVE_URL = 'https://www.dropbox.com/s/8m72rmxtznvaki6/cifar10_matlab_model.zip?dl=1'\n",
+    "ONNX_MODEL_ARCHIVE_URL = 'https://www.silabs.com/public/files/github/mltk/misc/cifar10_matlab_model.zip'\n",
 
     "ONNX_MODEL_ARCHIVE_SHA1 = 'C53827FC8B765183381CDC338AFB88F735479D97'\n",
 
     "\n",
 
-    "cifar10_matlab_model_example_dir = download_verify_extract( \n",
+    "cifar10_matlab_model_example_dir = download_verify_extract(\n",
 
     "    url=ONNX_MODEL_ARCHIVE_URL,\n",
 
@@ -1178,7 +1178,7 @@
 
     "results = ClassifierEvaluationResults(\n",
 
-    "    name=MODEL_NAME, \n",
+    "    name=MODEL_NAME,\n",
 
     "    classes = mapped_class_labels\n",
 
@@ -1478,9 +1478,9 @@
 
     "print(f'Generating openvino at: {openvino_out_dir}')\n",
 
-    "cmd = [ \n",
+    "cmd = [\n",
 
-    "    sys.executable, mo_main.__file__, \n",
+    "    sys.executable, mo_main.__file__,\n",
 
     "    '--input_model', simplified_onnx_model_path,\n",
 
@@ -1496,7 +1496,7 @@
 
     "retcode, retmsg = run_shell_cmd(cmd,  outfile=sys.stdout)\n",
 
-    "assert retcode == 0, 'Failed to do conversion' "
+    "assert retcode == 0, 'Failed to do conversion'"
 
    ]
 
@@ -1558,7 +1558,7 @@
 
    "source": [
 
-    "import os \n",
+    "import os\n",
 
     "from mltk.utils.shell_cmd import run_shell_cmd\n",
 
@@ -1584,7 +1584,7 @@
 
     "print(f'Generating openvino2tensorflow model at: {openvino2tensorflow_out_dir} ...')\n",
 
-    "cmd = openvino2tensorflow_exe_cmd + [ \n",
+    "cmd = openvino2tensorflow_exe_cmd + [\n",
 
     "    '--model_path', f'{openvino_out_dir}/{openvino_xml_name}',\n",
 
@@ -1674,7 +1674,7 @@
 
    "source": [
 
-    "import tensorflow as tf \n",
+    "import tensorflow as tf\n",
 
     "\n",
 
@@ -1692,7 +1692,7 @@
 
     "        yield [np.expand_dims(sample, axis=0)]\n",
 
-    "        if i >= 1000: # We only need a small portion of the dataset to do the quantization \n",
+    "        if i >= 1000: # We only need a small portion of the dataset to do the quantization\n",
 
     "            break\n",
 

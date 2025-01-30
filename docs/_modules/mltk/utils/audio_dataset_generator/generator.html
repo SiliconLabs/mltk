@@ -832,7 +832,7 @@
                 <span class="k">continue</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_n_config_processing</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">config</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">configs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">out_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_out_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">keyword_group</span><span class="si">}</span><span class="s1">'</span>
+            <span class="n">out_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_out_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">keyword_group_filename</span><span class="si">}</span><span class="s1">'</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="p">(</span>
                 <span class="n">backend</span><span class="o">.</span><span class="n">generate</span><span class="p">,</span>
@@ -846,6 +846,14 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_n_config_processing</span> <span class="o">-=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_condition</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span> <span class="ow">and</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_on_error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Invalid sample: </span><span class="si">{</span><span class="n">sample_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="o">...</span>
+
         <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">callback</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span>
@@ -925,11 +933,11 @@
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2024, Silicon Labs.
+              &#169; Copyright 2025, Silicon Labs.
               
           </div>
             Last updated on
-              Apr 02, 2024.
+              Jan 30, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

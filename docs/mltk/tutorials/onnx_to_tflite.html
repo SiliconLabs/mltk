@@ -681,7 +681,7 @@
 <p><a class="reference external" href="https://onnx.ai/">ONNX</a> is an open data format built to represent machine learning models. Many machine learning frameworks allow for exporting their trained models to this format.<br/>
 Using the process defined in this tutorial, a machine learning model in the <a class="reference external" href="https://onnx.ai/">ONNX</a> can be converted to a int8 quantized <a class="reference external" href="https://www.tensorflow.org/lite/convert">Tensorflow-Lite</a> format which can be executed on an embedded device.</p>
 <p>The basic sequence for this is shown in the following diagram:<br/>
-<img alt="onnx_to_tflite" src="https://www.dropbox.com/s/hqmwppnypeyfmmp/onnx_to_tflite.png?dl=1"/></p>
+<img alt="onnx_to_tflite" src="https://www.silabs.com/public/files/github/mltk/misc/onnx_to_tflite.png"/></p>
 <p>Once the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model is generated, the MLTK’s <a class="reference internal" href="../../docs/guides/model_profiler.html"><span class="doc std std-doc">Model Profiler</span></a> is used to profile the model to ensure it can efficiently run on an embedded target.</p>
 <section id="about-this-tutorial">
 <h3 id="about-this-tutorial">About this Tutorial<a class="headerlink" href="#about-this-tutorial" title="Permalink to this heading">¶</a></h3>
@@ -808,7 +808,7 @@ The notebook can either run locally on your PC <em>or</em> on a remote server li
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the openvino_dev Python package</span>
-<span class="c1"># This allows for converting the ONNX model to an intermediate </span>
+<span class="c1"># This allows for converting the ONNX model to an intermediate</span>
 <span class="c1"># format so we can then convert it to a TF-Lite model format</span>
 <span class="c1"># https://docs.openvino.ai/</span>
 <span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>openvino_dev
@@ -820,7 +820,7 @@ The notebook can either run locally on your PC <em>or</em> on a remote server li
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install the openvino2tensorflow Python package</span>
 <span class="c1"># This allows for converting from the openvino format to the .tflite model format</span>
-<span class="c1"># We primarily need this so we can convert from the NCHW used by .onnx </span>
+<span class="c1"># We primarily need this so we can convert from the NCHW used by .onnx</span>
 <span class="c1"># to the NHWC used by .tflite</span>
 <span class="c1"># https://github.com/PINTO0309/openvino2tensorflow</span>
 <span class="o">!</span>pip<span class="w"> </span>install<span class="w"> </span>openvino2tensorflow<span class="w">  </span>tensorflow_datasets
@@ -838,10 +838,10 @@ If you already have a model then you can skip this step.</p>
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mltk.utils.archive_downloader</span> <span class="kn">import</span> <span class="n">download_verify_extract</span>
 
-<span class="n">ONNX_MODEL_ARCHIVE_URL</span> <span class="o">=</span> <span class="s1">'https://www.dropbox.com/s/8m72rmxtznvaki6/cifar10_matlab_model.zip?dl=1'</span>
+<span class="n">ONNX_MODEL_ARCHIVE_URL</span> <span class="o">=</span> <span class="s1">'https://www.silabs.com/public/files/github/mltk/misc/cifar10_matlab_model.zip'</span>
 <span class="n">ONNX_MODEL_ARCHIVE_SHA1</span> <span class="o">=</span> <span class="s1">'C53827FC8B765183381CDC338AFB88F735479D97'</span>
 
-<span class="n">cifar10_matlab_model_example_dir</span> <span class="o">=</span> <span class="n">download_verify_extract</span><span class="p">(</span> 
+<span class="n">cifar10_matlab_model_example_dir</span> <span class="o">=</span> <span class="n">download_verify_extract</span><span class="p">(</span>
     <span class="n">url</span><span class="o">=</span><span class="n">ONNX_MODEL_ARCHIVE_URL</span><span class="p">,</span>
         <span class="n">dest_subdir</span><span class="o">=</span><span class="s1">'datasets/cifar10_matlab_model'</span><span class="p">,</span>
         <span class="n">file_hash</span><span class="o">=</span><span class="n">ONNX_MODEL_ARCHIVE_SHA1</span><span class="p">,</span>
@@ -1039,7 +1039,7 @@ done
 
 <span class="c1"># Use the MLTK to evaluate the ONNX model predictions</span>
 <span class="n">results</span> <span class="o">=</span> <span class="n">ClassifierEvaluationResults</span><span class="p">(</span>
-    <span class="n">name</span><span class="o">=</span><span class="n">MODEL_NAME</span><span class="p">,</span> 
+    <span class="n">name</span><span class="o">=</span><span class="n">MODEL_NAME</span><span class="p">,</span>
     <span class="n">classes</span> <span class="o">=</span> <span class="n">mapped_class_labels</span>
 <span class="p">)</span>
 
@@ -1155,8 +1155,8 @@ This is done using the tools installed by the <a class="reference external" href
 
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating openvino at: </span><span class="si">{</span><span class="n">openvino_out_dir</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-<span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span> 
-    <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="n">mo_main</span><span class="o">.</span><span class="vm">__file__</span><span class="p">,</span> 
+<span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="n">mo_main</span><span class="o">.</span><span class="vm">__file__</span><span class="p">,</span>
     <span class="s1">'--input_model'</span><span class="p">,</span> <span class="n">simplified_onnx_model_path</span><span class="p">,</span>
     <span class="s1">'--input_shape'</span><span class="p">,</span> <span class="n">input_shape_str</span><span class="p">,</span>
     <span class="s1">'--output_dir'</span><span class="p">,</span> <span class="n">openvino_out_dir</span><span class="p">,</span>
@@ -1164,7 +1164,7 @@ This is done using the tools installed by the <a class="reference external" href
 
 <span class="p">]</span>
 <span class="n">retcode</span><span class="p">,</span> <span class="n">retmsg</span> <span class="o">=</span> <span class="n">run_shell_cmd</span><span class="p">(</span><span class="n">cmd</span><span class="p">,</span>  <span class="n">outfile</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-<span class="k">assert</span> <span class="n">retcode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'Failed to do conversion'</span> 
+<span class="k">assert</span> <span class="n">retcode</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'Failed to do conversion'</span>
 </pre></div>
 </div>
 </div>
@@ -1217,7 +1217,7 @@ The generated model file has all of its weights and tensors in the <strong>float
 <p><strong>NOTE:</strong> You can view the contents of the <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file by dragging and dropping onto the webapge: <a class="reference external" href="https://netron.app/">netron.app</a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">mltk.utils.shell_cmd</span> <span class="kn">import</span> <span class="n">run_shell_cmd</span>
 
 <span class="n">openvino2tensorflow_out_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">WORKING_DIR</span><span class="si">}</span><span class="s1">/openvino2tensorflow'</span>
@@ -1230,7 +1230,7 @@ The generated model file has all of its weights and tensors in the <strong>float
   <span class="n">openvino2tensorflow_exe_cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'openvino2tensorflow'</span><span class="p">]</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Generating openvino2tensorflow model at: </span><span class="si">{</span><span class="n">openvino2tensorflow_out_dir</span><span class="si">}</span><span class="s1"> ...'</span><span class="p">)</span>
-<span class="n">cmd</span> <span class="o">=</span> <span class="n">openvino2tensorflow_exe_cmd</span> <span class="o">+</span> <span class="p">[</span> 
+<span class="n">cmd</span> <span class="o">=</span> <span class="n">openvino2tensorflow_exe_cmd</span> <span class="o">+</span> <span class="p">[</span>
     <span class="s1">'--model_path'</span><span class="p">,</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">openvino_out_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">openvino_xml_name</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span>
     <span class="s1">'--model_output_path'</span><span class="p">,</span> <span class="n">openvino2tensorflow_out_dir</span><span class="p">,</span>
     <span class="s1">'--output_saved_model'</span><span class="p">,</span>
@@ -1261,7 +1261,7 @@ To do the conversion, we use the <a class="reference external" href="https://www
 <p><strong>NOTE:</strong> You can view the contents of the quantized <code class="docutils literal notranslate"><span class="pre">.tflite</span></code> model file by dragging and dropping onto the webapge: <a class="reference external" href="https://netron.app/">netron.app</a></p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span> 
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
 
 <span class="n">tflite_int8_model_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">WORKING_DIR</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">MODEL_NAME</span><span class="si">}</span><span class="s1">.int8.tflite'</span>
 
@@ -1270,7 +1270,7 @@ To do the conversion, we use the <a class="reference external" href="https://www
 <span class="k">def</span> <span class="nf">representative_dataset</span><span class="p">():</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sample</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_test</span><span class="p">):</span>
         <span class="k">yield</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1000</span><span class="p">:</span> <span class="c1"># We only need a small portion of the dataset to do the quantization </span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">1000</span><span class="p">:</span> <span class="c1"># We only need a small portion of the dataset to do the quantization</span>
             <span class="k">break</span>
 
 <span class="n">converter</span><span class="o">.</span><span class="n">optimizations</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="o">.</span><span class="n">lite</span><span class="o">.</span><span class="n">Optimize</span><span class="o">.</span><span class="n">DEFAULT</span><span class="p">]</span>
@@ -1587,11 +1587,11 @@ Class ROC AUC:
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2024, Silicon Labs.
+              &#169; Copyright 2025, Silicon Labs.
               
           </div>
             Last updated on
-              Apr 02, 2024.
+              Jan 30, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

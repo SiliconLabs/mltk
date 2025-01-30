@@ -494,15 +494,25 @@
     <span class="n">low</span> <span class="o">=</span> <span class="s1">'low'</span>
     <span class="n">medium</span> <span class="o">=</span> <span class="s1">'medium'</span>
     <span class="n">high</span> <span class="o">=</span> <span class="s1">'high'</span>
-    <span class="n">default</span> <span class="o">=</span> <span class="s1">'medium'</span></div>
+    <span class="n">default</span> <span class="o">=</span> <span class="s1">'medium'</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div>
 
 
 <div class="viewcode-block" id="VoiceRate"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/voice_rate.html#mltk.utils.audio_dataset_generator.VoiceRate">[docs]</a><span class="k">class</span> <span class="nc">VoiceRate</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span><span class="n">Enum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""The speaking rate of the voice used in the audio sample"""</span>
     <span class="n">xslow</span> <span class="o">=</span> <span class="s1">'x-slow'</span>
+    <span class="n">slow</span> <span class="o">=</span> <span class="s1">'slow'</span>
+    <span class="n">medium_slow</span> <span class="o">=</span> <span class="s1">'medium_slow'</span>
     <span class="n">medium</span> <span class="o">=</span> <span class="s1">'medium'</span>
+    <span class="n">medium_fast</span> <span class="o">=</span> <span class="s1">'medium__fast'</span>
+    <span class="n">fast</span> <span class="o">=</span> <span class="s1">'fast'</span>
     <span class="n">xfast</span> <span class="o">=</span> <span class="s1">'x-fast'</span>
-    <span class="n">default</span> <span class="o">=</span> <span class="s1">'medium'</span></div>
+    <span class="n">default</span> <span class="o">=</span> <span class="s1">'medium'</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">value</span></div>
 
 
 
@@ -552,9 +562,14 @@
 
 <div class="viewcode-block" id="GenerationConfig.copy"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generation_config.html#mltk.utils.audio_dataset_generator.GenerationConfig.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GenerationConfig</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a deep copy of the configuration"""</span>
-        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">keyword_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">keyword</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span>  <span class="s1">''</span><span class="p">)</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">keyword_group_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">keyword_group</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">' '</span><span class="p">,</span>  <span class="s1">''</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">BackendBase</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
@@ -639,11 +654,11 @@
       <div class="md-footer-meta__inner md-grid">
         <div class="md-footer-copyright">
           <div class="md-footer-copyright__highlight">
-              &#169; Copyright 2024, Silicon Labs.
+              &#169; Copyright 2025, Silicon Labs.
               
           </div>
             Last updated on
-              Apr 02, 2024.
+              Jan 30, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

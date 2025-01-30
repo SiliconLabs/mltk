@@ -891,7 +891,7 @@ class MyDataset(mltk_core.MltkDataset):
 
         # Download the synthetic "alexa" dataset and extract into the dataset directory
         download_verify_extract(
-            url='https://www.dropbox.com/s/b6nd8xr7zzwmd6d/sl_synthetic_alexa.7z?dl=1',
+            url='https://www.silabs.com/public/files/github/mltk/datasets/sl_synthetic_alexa.7z',
             dest_dir=dataset_dir,
             file_hash='e657e91d6ea55639ce2e9a4dd8994c112fda2de0',
             show_progress=False,
@@ -901,7 +901,7 @@ class MyDataset(mltk_core.MltkDataset):
 
         # Download the synthetic alexa "unknown" dataset and extract into the dataset sub-directory: '_unknown'
         download_verify_extract(
-            url='https://www.dropbox.com/s/86wh4defrqj0n9r/sl_synthetic_alexa_unknown.7z?dl=1',
+            url='https://www.silabs.com/public/files/github/mltk/datasets/sl_synthetic_alexa_unknown.7z',
             dest_dir=f'{dataset_dir}/_unknown',
             file_hash='2693e5fc72c52f199de2a69ed720644c2c363591',
             show_progress=False,
@@ -911,7 +911,7 @@ class MyDataset(mltk_core.MltkDataset):
 
         # Download the synthetic generic "unknown" dataset and extract into the dataset sub-directory: '_unknown'
         download_verify_extract(
-            url='https://www.dropbox.com/s/zwvztg39a340b5q/sl_synthetic_generic_unknown.7z?dl=1',
+            url='https://www.silabs.com/public/files/github/mltk/datasets/sl_synthetic_generic_unknown.7z',
             dest_dir=f'{dataset_dir}/_unknown',
             file_hash='6729b4763a506e427beb0909069219767f3d0d6f',
             show_progress=False,
@@ -921,7 +921,7 @@ class MyDataset(mltk_core.MltkDataset):
 
         # Download the mlcommons subset and extract into the dataset sub-directory: '_unknown/mlcommons_keywords'
         download_verify_extract(
-            url='https://www.dropbox.com/s/j4p9w4h92e8rruo/mlcommons_keywords_subset_part1.7z?dl=1',
+            url='https://www.silabs.com/public/files/github/mltk/datasets/mlcommons_keywords_subset_part1.7z',
             dest_dir=f'{dataset_dir}/_unknown/mlcommons_keywords',
             file_hash='6f515d8247e2fee70cd0941420918c8fe57a31e8',
             show_progress=False,
@@ -931,7 +931,7 @@ class MyDataset(mltk_core.MltkDataset):
 
         # Download the mlcommons subset and extract into the dataset sub-directory: '_unknown/mlcommons_keywords'
         download_verify_extract(
-            url='https://www.dropbox.com/s/zacujsccjgk92b2/mlcommons_keywords_subset_part2.7z?dl=1',
+            url='https://www.silabs.com/public/files/github/mltk/datasets/mlcommons_keywords_subset_part2.7z',
             dest_dir=f'{dataset_dir}/_unknown/mlcommons_keywords',
             file_hash='7816f5ffa1deeafa9b5b3faae563f44198031796',
             show_progress=False,
@@ -941,7 +941,7 @@ class MyDataset(mltk_core.MltkDataset):
 
         # Download the mlcommons voice and extract into the dataset sub-directory: '_unknown/mlcommons_voice'
         download_verify_extract(
-            url='https://www.dropbox.com/s/l9uxyr22w3jgenc/common_voice_subset.7z?dl=1',
+            url='https://www.silabs.com/public/files/github/mltk/datasets/common_voice_subset.7z',
             dest_dir=f'{dataset_dir}/_unknown/mlcommons_voice',
             file_hash='ce424afd5d9b754f3ea6b3a4f78304f48e865f93',
             show_progress=False,

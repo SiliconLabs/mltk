@@ -38,7 +38,7 @@ from mltk.utils.audio_dataset_generator import (
 
 
 
-DOWNLOAD_URL = 'https://www.dropbox.com/s/ulumv0sxbtcssvr/synthetic_direction_commands.7z?dl=1'
+DOWNLOAD_URL = 'https://www.silabs.com/public/files/github/mltk/datasets/synthetic_direction_commands.7z'
 """Public download URL"""
 VERIFY_SHA1 = '9e9295b4eda3d9da9cd242063c1646b15908da55'
 """SHA1 hash of the downloaded archive file"""

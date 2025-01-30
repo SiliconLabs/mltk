@@ -26,12 +26,12 @@ Read our full paper `here <https://datasets-benchmarks-proceedings.neurips.cc/pa
 import logging
 from mltk.utils.archive_downloader import download_verify_extract
 
-DOWNLOAD_URL1 = 'https://www.dropbox.com/s/j4p9w4h92e8rruo/mlcommons_keywords_subset_part1.7z?dl=1'
+DOWNLOAD_URL1 = 'https://www.silabs.com/public/files/github/mltk/datasets/mlcommons_keywords_subset_part1.7z'
 """Public download URL for the first part of the dataset"""
 VERIFY_URL1_SHA1 = '6f515d8247e2fee70cd0941420918c8fe57a31e8'
 """SHA1 hash of the DOWNLOAD_URL1 archive file"""
 
-DOWNLOAD_URL2 = 'https://www.dropbox.com/s/zacujsccjgk92b2/mlcommons_keywords_subset_part2.7z?dl=1'
+DOWNLOAD_URL2 = 'https://www.silabs.com/public/files/github/mltk/datasets/mlcommons_keywords_subset_part2.7z'
 """Public download URL for the second part of the dataset"""
 VERIFY_URL2_SHA1 = '7816f5ffa1deeafa9b5b3faae563f44198031796'
 """SHA1 hash of the DOWNLOAD_URL2 archive file"""
