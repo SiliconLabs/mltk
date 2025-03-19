@@ -18,12 +18,12 @@ from .. import utils
 
 
 DOWNLOAD_URLS = [
-    'https://assets.mixkit.co/sfx/download/mixkit-very-crowded-pub-or-party-loop-360.wav',
-    'https://assets.mixkit.co/sfx/download/mixkit-big-crowd-talking-loop-364.wav',
-    'https://assets.mixkit.co/sfx/download/mixkit-restaurant-crowd-talking-ambience-444.wav',
-    'https://assets.mixkit.co/sfx/download/mixkit-keyboard-typing-1386.wav',
-    'https://assets.mixkit.co/sfx/download/mixkit-office-ambience-447.wav',
-    'https://assets.mixkit.co/sfx/download/mixkit-hotel-lobby-with-dining-area-ambience-453.wav'
+    'https://assets.mixkit.co/active_storage/sfx/360/360.wav',
+    'https://assets.mixkit.co/active_storage/sfx/364/364.wav',
+    'https://assets.mixkit.co/active_storage/sfx/444/444.wav',
+    'https://assets.mixkit.co/active_storage/sfx/1386/1386.wav',
+    'https://assets.mixkit.co/active_storage/sfx/447/447.wav',
+    'https://assets.mixkit.co/active_storage/sfx/453/453.wav',
 ]
 """The background noise sample download URLs"""
 
