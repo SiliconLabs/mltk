@@ -426,24 +426,24 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-tflite-micro-tflite-micro-accelerator--page-root">Source code for mltk.core.tflite_micro.tflite_micro_accelerator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">mltk.core.tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">get_case_insensitive</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.tflite_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_case_insensitive</span>
 
 
-<div class="viewcode-block" id="TfliteMicroAccelerator"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator">[docs]</a><span class="k">class</span> <span class="nc">TfliteMicroAccelerator</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteMicroAccelerator"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TfliteMicroAccelerator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""TF-Lite Micro Accelerator</span>
 
 <span class="sd">    This class allows for providing hardware-accelerated</span>
 <span class="sd">    kernels to the TFLM interpreter.</span>
 <span class="sd">    """</span>
 
-<div class="viewcode-block" id="TfliteMicroAccelerator.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accelerator_wrapper</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteMicroAccelerator.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">accelerator_wrapper</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span> <span class="o">=</span> <span class="n">accelerator_wrapper</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_active_variant</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">_accelerator_wrapper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span>
@@ -452,12 +452,12 @@
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The name of the accelerator"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">variants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">variants</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List of variants supported by this accelerator"""</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="p">,</span> <span class="s1">'variants'</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="o">.</span><span class="n">variants</span><span class="p">()</span>
@@ -465,18 +465,18 @@
             <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">active_variant</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">active_variant</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The name of the variant actively being used by this accelerator"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_active_variant</span>
     <span class="nd">@active_variant</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">active_variant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">active_variant</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">get_case_insensitive</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">variants</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">v</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Unknown variant'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_active_variant</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">api_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">api_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The API version number this wrapper was built with</span>
 <span class="sd">        This number must match the tflite_micro_wrapper's API version</span>
 <span class="sd">        """</span>
@@ -486,7 +486,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">git_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">git_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the GIT hash of the MLTK repo used to compile the wrapper library"""</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="p">,</span> <span class="s1">'git_hash'</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="o">.</span><span class="n">git_hash</span><span class="p">()</span>
@@ -494,7 +494,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">accelerator_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">accelerator_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">object</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the TfliteMicroAcceleratorWrapper instance</span>
 <span class="sd">        """</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="p">,</span> <span class="s1">'get_accelerator_wrapper'</span><span class="p">):</span>
@@ -504,12 +504,12 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">supports_model_compilation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">supports_model_compilation</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if this accelerator supports model compilation"""</span>
         <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">compile_model</span> <span class="o">!=</span> <span class="n">TfliteMicroAccelerator</span><span class="o">.</span><span class="n">compile_model</span>
 
 
-<div class="viewcode-block" id="TfliteMicroAccelerator.estimate_profiling_results"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.estimate_profiling_results">[docs]</a>    <span class="k">def</span> <span class="nf">estimate_profiling_results</span><span class="p">(</span>
+<div class="viewcode-block" id="TfliteMicroAccelerator.estimate_profiling_results"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.estimate_profiling_results">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">estimate_profiling_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">results</span><span class="p">,</span> <span class="c1"># ProfilingModelResults</span>
         <span class="o">**</span><span class="n">kwargs</span>
@@ -517,14 +517,14 @@
 <span class="w">        </span><span class="sd">"""Update the given ProfilingModelResults with estimated model metrics"""</span></div>
 
 
-<div class="viewcode-block" id="TfliteMicroAccelerator.set_program_recorder_enabled"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.set_program_recorder_enabled">[docs]</a>    <span class="k">def</span> <span class="nf">set_program_recorder_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enabled</span><span class="p">:</span><span class="nb">bool</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteMicroAccelerator.set_program_recorder_enabled"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.set_program_recorder_enabled">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_program_recorder_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enabled</span><span class="p">:</span><span class="nb">bool</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Enable the accelerator instruction recorder"""</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="p">,</span> <span class="s1">'set_program_recorder_enabled'</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="o">.</span><span class="n">set_program_recorder_enabled</span><span class="p">(</span><span class="n">enabled</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="TfliteMicroAccelerator.enable_data_recorder"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.enable_data_recorder">[docs]</a>    <span class="k">def</span> <span class="nf">enable_data_recorder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteMicroAccelerator.enable_data_recorder"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.enable_data_recorder">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">enable_data_recorder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Enable the accelerator data recorder"""</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="p">,</span> <span class="s1">'enable_data_recorder'</span><span class="p">):</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator_wrapper</span><span class="o">.</span><span class="n">enable_data_recorder</span><span class="p">()</span>
@@ -532,7 +532,7 @@
             <span class="k">return</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="TfliteMicroAccelerator.compile_model"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.compile_model">[docs]</a>    <span class="k">def</span> <span class="nf">compile_model</span><span class="p">(</span>
+<div class="viewcode-block" id="TfliteMicroAccelerator.compile_model"><a class="viewcode-back" href="../../../../docs/python_api/tflite_micro_model/accelerator.html#mltk.core.tflite_micro.tflite_micro_accelerator.TfliteMicroAccelerator.compile_model">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">compile_model</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span><span class="n">TfliteModel</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -547,13 +547,13 @@
 
 
 
-<span class="k">class</span> <span class="nc">PlaceholderTfliteMicroAccelerator</span><span class="p">(</span><span class="n">TfliteMicroAccelerator</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PlaceholderTfliteMicroAccelerator</span><span class="p">(</span><span class="n">TfliteMicroAccelerator</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""This accelerator does NOT have a corresponding Python wrapper"""</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__deepcopy__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">memo</span><span class="p">):</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span>
         <span class="n">result</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">_accelerator_wrapper</span> <span class="o">=</span> <span class="kc">None</span>
@@ -563,12 +563,12 @@
         <span class="k">return</span> <span class="n">result</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">api_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">mltk.core.tflite_micro</span> <span class="kn">import</span> <span class="n">TfliteMicro</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">api_version</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.tflite_micro</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteMicro</span>
         <span class="k">return</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">api_version</span><span class="p">()</span>
 </pre></div>
 
@@ -595,7 +595,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

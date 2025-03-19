@@ -426,36 +426,36 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-model-model-utils--page-root">Source code for mltk.core.model.model_utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">collections</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
 
 
-<span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">mltk_version_str</span>
-<span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">MLTK_ROOT_DIR</span>
-<span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">mltk_models</span>
-<span class="kn">from</span> <span class="nn">mltk.core.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">walk_with_depth</span><span class="p">,</span> <span class="n">create_tempdir</span><span class="p">,</span> <span class="n">get_user_setting</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">as_list</span><span class="p">,</span> <span class="n">import_module_at_path</span><span class="p">,</span> <span class="n">prepend_exception_msg</span>
-<span class="kn">from</span> <span class="nn">mltk.utils</span> <span class="kn">import</span> <span class="n">gpu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">mltk_version_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLTK_ROOT_DIR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">models</span> <span class="k">as</span> <span class="n">mltk_models</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_mltk_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">fullpath</span><span class="p">,</span> <span class="n">walk_with_depth</span><span class="p">,</span> <span class="n">create_tempdir</span><span class="p">,</span> <span class="n">get_user_setting</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_list</span><span class="p">,</span> <span class="n">import_module_at_path</span><span class="p">,</span> <span class="n">prepend_exception_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">gpu</span>
 
-<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="n">MltkModel</span><span class="p">,</span> <span class="n">MltkModelEvent</span>
-<span class="kn">from</span> <span class="nn">.mixins.archive_mixin</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model</span><span class="w"> </span><span class="kn">import</span> <span class="n">MltkModel</span><span class="p">,</span> <span class="n">MltkModelEvent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.mixins.archive_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ARCHIVE_EXTENSION</span><span class="p">,</span>
     <span class="n">TEST_ARCHIVE_EXTENSION</span><span class="p">,</span>
     <span class="n">get_archive_extension</span><span class="p">,</span>
     <span class="n">extract_file</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
-<span class="kn">from</span> <span class="nn">..keras</span> <span class="kn">import</span> <span class="p">(</span><span class="n">KerasModel</span><span class="p">,</span> <span class="n">load_keras_model</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..tflite_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..keras</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">KerasModel</span><span class="p">,</span> <span class="n">load_keras_model</span><span class="p">)</span>
 
 
 
 
-<div class="viewcode-block" id="load_mltk_model"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/utilities.html#mltk.core.load_mltk_model">[docs]</a><span class="k">def</span> <span class="nf">load_mltk_model</span><span class="p">(</span>
+<div class="viewcode-block" id="load_mltk_model"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/utilities.html#mltk.core.load_mltk_model">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_mltk_model</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">print_not_found_err</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -521,7 +521,7 @@
     <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_mltk_model_with_path"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/utilities.html#mltk.core.load_mltk_model_with_path">[docs]</a><span class="k">def</span> <span class="nf">load_mltk_model_with_path</span><span class="p">(</span>
+<div class="viewcode-block" id="load_mltk_model_with_path"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/utilities.html#mltk.core.load_mltk_model_with_path">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_mltk_model_with_path</span><span class="p">(</span>
     <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -591,7 +591,7 @@
     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Model specification file: </span><span class="si">{</span><span class="n">model_spec_path</span><span class="si">}</span><span class="s1"> does not define a MltkModel object'</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="load_tflite_or_keras_model"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/utilities.html#mltk.core.load_tflite_or_keras_model">[docs]</a><span class="k">def</span> <span class="nf">load_tflite_or_keras_model</span><span class="p">(</span>
+<div class="viewcode-block" id="load_tflite_or_keras_model"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/utilities.html#mltk.core.load_tflite_or_keras_model">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_tflite_or_keras_model</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MltkModel</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">model_type</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">weights</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -609,7 +609,7 @@
 <span class="sd">    ELSE model should be the file path to a `.tflite` or `.h5` model file.</span>
 <span class="sd">    """</span>
 
-    <span class="kn">from</span> <span class="nn">.mixins.train_mixin</span> <span class="kn">import</span> <span class="n">TrainMixin</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">.mixins.train_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainMixin</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span> <span class="ow">or</span> <span class="n">get_mltk_logger</span><span class="p">()</span>
 
@@ -713,7 +713,7 @@
     <span class="k">return</span> <span class="n">built_model</span></div>
 
 
-<div class="viewcode-block" id="load_tflite_model"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/utilities.html#mltk.core.load_tflite_model">[docs]</a><span class="k">def</span> <span class="nf">load_tflite_model</span><span class="p">(</span>
+<div class="viewcode-block" id="load_tflite_model"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/utilities.html#mltk.core.load_tflite_model">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_tflite_model</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
     <span class="n">build</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">print_not_found_err</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -824,7 +824,7 @@
             <span class="n">tflite_model</span> <span class="o">=</span> <span class="n">TfliteModel</span><span class="o">.</span><span class="n">load_flatbuffer_file</span><span class="p">(</span><span class="n">tflite_path</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">build</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">..quantize_model</span> <span class="kn">import</span> <span class="n">quantize_model</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">..quantize_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">quantize_model</span>
 
         <span class="k">if</span> <span class="n">mltk_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Must provide MltkModel instance, name of MltkModel, other .py path to model specification to use the build option'</span><span class="p">)</span>
@@ -847,7 +847,7 @@
         <span class="k">return</span> <span class="n">tflite_model</span></div>
 
 
-<div class="viewcode-block" id="list_mltk_models"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/utilities.html#mltk.core.list_mltk_models">[docs]</a><span class="k">def</span> <span class="nf">list_mltk_models</span><span class="p">(</span>
+<div class="viewcode-block" id="list_mltk_models"><a class="viewcode-back" href="../../../../docs/python_api/mltk_model/utilities.html#mltk.core.list_mltk_models">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">list_mltk_models</span><span class="p">(</span>
     <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">for_utests</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span>
@@ -864,7 +864,7 @@
     <span class="n">mltk_model_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'.*\s@mltk_model\s.*'</span><span class="p">)</span>
     <span class="n">utest_disable_re</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">'.*\s@mltk_utest_disabled\s.*'</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_process_python_file</span><span class="p">(</span><span class="n">py_path</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_python_file</span><span class="p">(</span><span class="n">py_path</span><span class="p">):</span>
         <span class="n">retval</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">py_path</span><span class="p">,</span> <span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
@@ -905,7 +905,7 @@
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">found_models</span><span class="p">))</span></div>
 
 
-<span class="k">def</span> <span class="nf">find_model_specification_file</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">find_model_specification_file</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -966,7 +966,7 @@
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">py_path</span> <span class="ow">and</span> <span class="n">print_not_found_err</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">mltk.cli</span> <span class="kn">import</span> <span class="n">print_did_you_mean_error</span> <span class="c1"># pylint: disable=import-outside-toplevel</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mltk.cli</span><span class="w"> </span><span class="kn">import</span> <span class="n">print_did_you_mean_error</span> <span class="c1"># pylint: disable=import-outside-toplevel</span>
         <span class="n">all_models</span> <span class="o">=</span> <span class="n">list_mltk_models</span><span class="p">(</span><span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">)</span>
         <span class="n">print_did_you_mean_error</span><span class="p">(</span><span class="s1">'Failed to find model'</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">all_models</span><span class="p">,</span> <span class="n">and_exit</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -974,32 +974,32 @@
 
 
 
-<span class="k">def</span> <span class="nf">push_active_model</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">:</span><span class="n">MltkModel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">push_active_model</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">:</span><span class="n">MltkModel</span><span class="p">):</span>
     <span class="k">if</span> <span class="s1">'_active_model_stack'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
         <span class="nb">globals</span><span class="p">()[</span><span class="s1">'_active_model_stack'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="nb">globals</span><span class="p">()[</span><span class="s1">'_active_model_stack'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">pop_active_model</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MltkModel</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pop_active_model</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MltkModel</span><span class="p">:</span>
     <span class="n">_active_model_stack</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'_active_model_stack'</span><span class="p">,</span> <span class="p">[])</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_active_model_stack</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">'No active model'</span>
     <span class="k">return</span> <span class="n">_active_model_stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">get_active_model</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MltkModel</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_active_model</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MltkModel</span><span class="p">:</span>
     <span class="n">_active_model_stack</span> <span class="o">=</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'_active_model_stack'</span><span class="p">,</span> <span class="p">[])</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_active_model_stack</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">_active_model_stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">trigger_model_event</span><span class="p">(</span><span class="n">event</span><span class="p">:</span><span class="n">MltkModelEvent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trigger_model_event</span><span class="p">(</span><span class="n">event</span><span class="p">:</span><span class="n">MltkModelEvent</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="n">active_model</span> <span class="o">=</span> <span class="n">get_active_model</span><span class="p">()</span>
     <span class="k">assert</span> <span class="n">active_model</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">'No active model'</span>
     <span class="n">active_model</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_model_search_dirs</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_model_search_dirs</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Return list of model search directories</span>
 
 <span class="sd">    This populates the list as follows:</span>
@@ -1028,7 +1028,7 @@
 <span class="n">_Version</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">'_Version'</span><span class="p">,</span> <span class="p">[</span><span class="s1">'major'</span><span class="p">,</span> <span class="s1">'minor'</span><span class="p">,</span> <span class="s1">'patch'</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">_parse_version</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_version</span><span class="p">(</span><span class="n">version</span><span class="p">):</span>
     <span class="n">toks</span> <span class="o">=</span> <span class="n">version</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'.'</span><span class="p">)</span>
     <span class="n">major</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">toks</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">toks</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">minor</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">toks</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="nb">int</span><span class="p">(</span><span class="n">toks</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
@@ -1059,7 +1059,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

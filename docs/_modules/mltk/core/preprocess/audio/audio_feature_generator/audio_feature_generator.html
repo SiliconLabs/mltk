@@ -426,13 +426,13 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-preprocess-audio-audio-feature-generator-audio-feature-generator--page-root">Source code for mltk.core.preprocess.audio.audio_feature_generator.audio_feature_generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">importlib</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">importlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">.audio_feature_generator_settings</span> <span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.audio_feature_generator_settings</span><span class="w"> </span><span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
 
 
-<div class="viewcode-block" id="AudioFeatureGenerator"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator">[docs]</a><span class="k">class</span> <span class="nc">AudioFeatureGenerator</span><span class="p">:</span>
+<div class="viewcode-block" id="AudioFeatureGenerator"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AudioFeatureGenerator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Converts raw audio into a spectrogram (gray-scale 2D image)</span>
 
 <span class="sd">    **Example Usage**</span>
@@ -510,7 +510,7 @@
 <span class="sd">       - `ParallelAudioDataGenerator API docs &lt;https://siliconlabs.github.io/mltk/docs/python_api/data_preprocessing/audio_data_generator.html&gt;`_</span>
 <span class="sd">    """</span>
 
-<div class="viewcode-block" id="AudioFeatureGenerator.__init__"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">AudioFeatureGeneratorSettings</span><span class="p">):</span>
+<div class="viewcode-block" id="AudioFeatureGenerator.__init__"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">AudioFeatureGeneratorSettings</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Args:</span>
 <span class="sd">            settings: The settings to use for processing the audio sample</span>
@@ -519,14 +519,14 @@
             <span class="n">wrapper_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">'mltk.core.preprocess.audio.audio_feature_generator._audio_feature_generator_wrapper'</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">ModuleNotFoundError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to import the AudioFeatureGenerator wrapper C++ shared library, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="se">\n</span><span class="s1">'</span> \
-                            <span class="s1">'This likely means you need to re-build the AudioFeatureGenerator wrapper package</span><span class="se">\n\n</span><span class="s1">'</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                            <span class="s1">'This likely means you need to re-build the AudioFeatureGenerator wrapper package</span><span class="se">\n\n</span><span class="s1">'</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_spectrogram_shape</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">spectrogram_shape</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span> <span class="o">=</span> <span class="n">wrapper_module</span><span class="o">.</span><span class="n">AudioFeatureGeneratorWrapper</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="AudioFeatureGenerator.process_sample"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator.process_sample">[docs]</a>    <span class="k">def</span> <span class="nf">process_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="AudioFeatureGenerator.process_sample"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator.process_sample">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Convert the provided 1D audio sample to a 2D spectrogram using the AudioFeatureGenerator</span>
 
 <span class="sd">        The generated 2D spectrogram dimensions are calculated as follows::</span>
@@ -558,7 +558,7 @@
         <span class="k">return</span> <span class="n">spectrogram</span></div>
 
 
-<div class="viewcode-block" id="AudioFeatureGenerator.activity_was_detected"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator.activity_was_detected">[docs]</a>    <span class="k">def</span> <span class="nf">activity_was_detected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="AudioFeatureGenerator.activity_was_detected"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_feature_generator.html#mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator.activity_was_detected">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">activity_was_detected</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if activity was detected in the previously processed sample"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_wrapper</span><span class="o">.</span><span class="n">activity_was_detected</span><span class="p">()</span></div></div>
 </pre></div>
@@ -586,7 +586,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

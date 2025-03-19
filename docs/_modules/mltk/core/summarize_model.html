@@ -427,18 +427,18 @@
             
   <h1 id="modules-mltk-core-summarize-model--page-root">Source code for mltk.core.summarize_model</h1><div class="highlight"><pre>
 <span></span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 
 
 
-<span class="kn">from</span> <span class="nn">mltk.utils.string_formatting</span> <span class="kn">import</span> <span class="n">format_units</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="n">fullpath</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">append_exception_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.string_formatting</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">fullpath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">append_exception_msg</span>
 
-<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">MltkModelEvent</span><span class="p">,</span>
     <span class="n">KerasModel</span><span class="p">,</span>
@@ -447,11 +447,11 @@
 <span class="p">)</span>
 
 
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">ArchiveFileNotFoundError</span><span class="p">,</span> <span class="n">get_mltk_logger</span>
-<span class="kn">from</span> <span class="nn">.model.metrics</span> <span class="kn">import</span> <span class="n">calculate_model_metrics</span>
-<span class="kn">from</span> <span class="nn">.tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ArchiveFileNotFoundError</span><span class="p">,</span> <span class="n">get_mltk_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">calculate_model_metrics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tflite_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteModel</span>
 
-<div class="viewcode-block" id="summarize_model"><a class="viewcode-back" href="../../../docs/python_api/operations/summarize.html#mltk.core.summarize_model">[docs]</a><span class="k">def</span> <span class="nf">summarize_model</span><span class="p">(</span>
+<div class="viewcode-block" id="summarize_model"><a class="viewcode-back" href="../../../docs/python_api/operations/summarize.html#mltk.core.summarize_model">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">summarize_model</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">,</span> <span class="n">KerasModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
     <span class="n">tflite</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">build</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -524,7 +524,7 @@
     <span class="n">summary</span> <span class="o">=</span> <span class="s1">''</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">built_model</span><span class="p">,</span> <span class="n">KerasModel</span><span class="p">):</span>
         <span class="n">string_buffer</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">StringIO</span><span class="p">()</span>
-        <span class="k">def</span> <span class="nf">_writeln</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_writeln</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
             <span class="n">string_buffer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
         <span class="n">built_model</span><span class="o">.</span><span class="n">summary</span><span class="p">(</span><span class="n">print_fn</span><span class="o">=</span><span class="n">_writeln</span><span class="p">)</span>
         <span class="n">summary</span> <span class="o">+=</span> <span class="n">string_buffer</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span>
@@ -558,7 +558,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_load_or_build_model</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_or_build_model</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">,</span> <span class="n">KerasModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
     <span class="n">built_model</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">KerasModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
     <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span>
@@ -610,8 +610,8 @@
         <span class="c1"># If we want to build keras or .tflite model from the .tflite</span>
         <span class="c1"># (i.e. if the model has not already been trained)</span>
         <span class="k">if</span> <span class="n">build</span><span class="p">:</span>
-            <span class="kn">from</span> <span class="nn">.train_model</span> <span class="kn">import</span> <span class="n">train_model</span>
-            <span class="kn">from</span> <span class="nn">.quantize_model</span> <span class="kn">import</span> <span class="n">quantize_model</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.train_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">train_model</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">.quantize_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">quantize_model</span>
 
             <span class="k">if</span> <span class="n">tflite</span><span class="p">:</span>
                 <span class="n">built_model</span> <span class="o">=</span> <span class="n">quantize_model</span><span class="p">(</span>
@@ -678,7 +678,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

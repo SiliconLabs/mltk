@@ -426,22 +426,22 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-train-model--page-root">Source code for mltk.core.train_model</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">pprint</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pprint</span>
 
-<span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">sklearn.utils.class_weight</span> <span class="kn">import</span> <span class="n">compute_class_weight</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.utils.class_weight</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_class_weight</span>
 
 
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">contains_class_type</span><span class="p">,</span> <span class="n">prepend_exception_msg</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="n">clean_directory</span>
-<span class="kn">from</span> <span class="nn">mltk.utils</span> <span class="kn">import</span> <span class="n">gpu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">contains_class_type</span><span class="p">,</span> <span class="n">prepend_exception_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">clean_directory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">gpu</span>
 
-<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">MltkModelEvent</span><span class="p">,</span>
     <span class="n">KerasModel</span><span class="p">,</span>
@@ -449,16 +449,16 @@
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">load_mltk_model</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
-<span class="kn">from</span> <span class="nn">.summarize_model</span> <span class="kn">import</span> <span class="n">summarize_model</span>
-<span class="kn">from</span> <span class="nn">.quantize_model</span> <span class="kn">import</span> <span class="n">quantize_model</span>
-<span class="kn">from</span> <span class="nn">.training_results</span> <span class="kn">import</span> <span class="n">TrainingResults</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_mltk_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.summarize_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">summarize_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.quantize_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">quantize_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.training_results</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainingResults</span>
 
 
 
 
 
-<div class="viewcode-block" id="train_model"><a class="viewcode-back" href="../../../docs/python_api/operations/train.html#mltk.core.train_model">[docs]</a><span class="k">def</span> <span class="nf">train_model</span><span class="p">(</span>
+<div class="viewcode-block" id="train_model"><a class="viewcode-back" href="../../../docs/python_api/operations/train.html#mltk.core.train_model">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">train_model</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">MltkModel</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">weights</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -674,7 +674,7 @@
     <span class="k">return</span> <span class="n">results</span></div>
 
 
-<span class="k">def</span> <span class="nf">_get_epochs</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_epochs</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span> <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">epochs</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
     <span class="n">callbacks</span><span class="p">:</span><span class="nb">list</span><span class="p">,</span>
@@ -697,7 +697,7 @@
     <span class="k">return</span> <span class="n">epochs</span>
 
 
-<span class="k">def</span> <span class="nf">_get_keras_callbacks</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_keras_callbacks</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span> <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">epochs</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
@@ -778,7 +778,7 @@
     <span class="k">return</span> <span class="n">keras_callbacks</span>
 
 
-<span class="k">def</span> <span class="nf">_try_resume_training</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_try_resume_training</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span> <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">keras_model</span><span class="p">:</span> <span class="n">KerasModel</span><span class="p">,</span>
     <span class="n">epochs</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
@@ -820,7 +820,7 @@
     <span class="k">return</span> <span class="n">checkpoint_epoch</span>
 
 
-<span class="k">def</span> <span class="nf">compute_class_weights</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_class_weights</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span> <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -833,12 +833,12 @@
     <span class="k">return</span> <span class="n">class_weights</span>
 
 
-<span class="k">def</span> <span class="nf">_compute_class_weights_unsafe</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_class_weights_unsafe</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span> <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Compute the given data's class weights"""</span>
-    <span class="k">def</span> <span class="nf">_create_weights_dict</span><span class="p">():</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_weights_dict</span><span class="p">():</span>
         <span class="n">class_weights</span> <span class="o">=</span> <span class="n">mltk_model</span><span class="o">.</span><span class="n">class_weights</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">class_weights</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -924,7 +924,7 @@
     <span class="k">return</span> <span class="n">class_weights</span>
 
 
-<span class="k">def</span> <span class="nf">_save_keras_model_file</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_keras_model_file</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span><span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">keras_model</span><span class="p">:</span><span class="n">KerasModel</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
@@ -977,7 +977,7 @@
     <span class="k">return</span> <span class="n">keras_model</span>
 
 
-<span class="k">def</span> <span class="nf">_save_training_results</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_training_results</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span><span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">keras_model</span><span class="p">:</span><span class="n">KerasModel</span><span class="p">,</span>
     <span class="n">training_history</span><span class="p">,</span>
@@ -1069,7 +1069,7 @@
     <span class="k">return</span> <span class="n">results</span>
 
 
-<span class="k">def</span> <span class="nf">_create_model_archive</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_model_archive</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span> <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
 <span class="p">):</span>
@@ -1097,7 +1097,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_clear_log_directory</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_clear_log_directory</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span> <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span>
     <span class="n">recursive</span><span class="o">=</span><span class="kc">False</span>
@@ -1161,7 +1161,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

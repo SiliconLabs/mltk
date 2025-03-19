@@ -592,23 +592,23 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
 </div></section>
 <section id="model-specification">
 <h2 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">layers</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">import</span> <span class="nn">mltk.core</span> <span class="k">as</span> <span class="nn">mltk_core</span>
-<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mltk_core</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">load_tflite_or_keras_model</span><span class="p">,</span>
     <span class="n">KerasModel</span><span class="p">,</span>
     <span class="n">TfliteModel</span><span class="p">,</span>
     <span class="n">EvaluationResults</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mltk.core.tflite_model.tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
-<span class="kn">from</span> <span class="nn">mltk.datasets.image</span> <span class="kn">import</span> <span class="n">mnist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.tflite_model.tflite_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.datasets.image</span><span class="w"> </span><span class="kn">import</span> <span class="n">mnist</span>
 
 
 
@@ -616,13 +616,13 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
 <span class="c1"># - TrainMixin            - Provides classifier model training operations and settings</span>
 <span class="c1"># - DatasetMixin          - Generic data generation operations and settings</span>
 <span class="c1"># @mltk_model # NOTE: This tag is required for this model be discoverable</span>
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span>
     <span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">mltk_core</span><span class="o">.</span><span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">mltk_core</span><span class="o">.</span><span class="n">DatasetMixin</span><span class="p">,</span>
     <span class="n">mltk_core</span><span class="o">.</span><span class="n">EvaluateMixin</span>
 <span class="p">):</span>
-    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_dataset</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">test</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -677,7 +677,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validation_data</span> <span class="o">=</span> <span class="p">([</span><span class="n">x_val_1</span><span class="p">,</span> <span class="n">x_val_2</span><span class="p">],</span> <span class="n">labels_val</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">make_pairs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">make_pairs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Creates a tuple containing image pairs with corresponding label.</span>
 
 <span class="sd">    Arguments:</span>
@@ -722,8 +722,8 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
 
 
 
-<span class="k">class</span> <span class="nc">ContrastiveLoss</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Loss</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ContrastiveLoss</span><span class="p">(</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">Loss</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">margin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
@@ -744,7 +744,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ContrastiveLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">margin</span> <span class="o">=</span> <span class="n">margin</span>
 
-    <span class="k">def</span> <span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">call</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            y_true: List of labels, each label is of type float32.</span>
@@ -757,7 +757,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
             <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">*</span> <span class="n">square_pred</span> <span class="o">+</span> <span class="p">(</span><span class="n">y_true</span><span class="p">)</span> <span class="o">*</span> <span class="n">margin_square</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Returns the config dictionary for a `Loss` instance."""</span>
         <span class="k">return</span> <span class="p">{</span><span class="s1">'reduction'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">reduction</span><span class="p">,</span> <span class="s1">'name'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">'margin'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">margin</span><span class="p">}</span>
 
@@ -765,7 +765,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
 
 <span class="c1"># Provided two tensors t1 and t2</span>
 <span class="c1"># Euclidean distance = sqrt(sum(square(t1-t2)))</span>
-<span class="k">def</span> <span class="nf">euclidean_distance</span><span class="p">(</span><span class="n">vects</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">euclidean_distance</span><span class="p">(</span><span class="n">vects</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Find the Euclidean distance between two vectors.</span>
 
 <span class="sd">    Arguments:</span>
@@ -782,7 +782,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
     <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">math</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">sum_square</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">epsilon</span><span class="p">()))</span>
 
 
-<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_builder</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
     <span class="nb">input</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">my_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">BatchNormalization</span><span class="p">()(</span><span class="nb">input</span><span class="p">)</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s2">"tanh"</span><span class="p">)(</span><span class="n">x</span><span class="p">)</span>
@@ -829,7 +829,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
     <span class="k">return</span> <span class="n">keras_model</span>
 
 
-<span class="k">def</span> <span class="nf">my_model_evaluator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_evaluator</span><span class="p">(</span>
     <span class="n">my_model</span><span class="p">:</span><span class="n">MyModel</span><span class="p">,</span>
     <span class="n">built_model</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">KerasModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
     <span class="n">eval_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
@@ -926,7 +926,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
  <span class="c1"># generate a representative dataset from the validation data</span>
 <span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'representative_dataset'</span><span class="p">]</span> <span class="o">=</span> <span class="s1">'generate'</span>
 <span class="c1"># generate a representative dataset from the validation data</span>
-<span class="k">def</span> <span class="nf">my_representative_dataset_generator</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_representative_dataset_generator</span><span class="p">():</span>
     <span class="n">batch_size</span> <span class="o">=</span> <span class="n">my_model</span><span class="o">.</span><span class="n">batch_size</span>
     <span class="n">x_1</span><span class="p">,</span> <span class="n">x_2</span> <span class="o">=</span> <span class="n">my_model</span><span class="o">.</span><span class="n">x</span>
     <span class="n">retval</span> <span class="o">=</span> <span class="p">[]</span>
@@ -955,7 +955,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
 
 
 
-<span class="k">def</span> <span class="nf">visualize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">to_show</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">num_col</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">predictions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">visualize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">to_show</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="n">num_col</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">predictions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Creates a plot of pairs and labels, and prediction if it's test dataset.</span>
 
 <span class="sd">    Arguments:</span>
@@ -977,7 +977,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
 <span class="sd">        None.</span>
 <span class="sd">    """</span>
 
-    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
 
     <span class="c1"># Define num_row</span>
@@ -1023,10 +1023,10 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
 
 
 <span class="c1"># Register the "visualize" custom command</span>
-<span class="kn">import</span> <span class="nn">typer</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typer</span>
 
 <span class="nd">@my_model</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">'visualize'</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">visualize_custom_command</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">visualize_custom_command</span><span class="p">(</span>
     <span class="n">predict</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">'--predict'</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'Include the trained model predictions in the displayed results'</span>
     <span class="p">),</span>
@@ -1069,7 +1069,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
 <span class="c1"># mltk train siamese_contrastive</span>
 <span class="c1">#</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
     <span class="c1"># Setup the CLI logger</span>
     <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1145,7 +1145,7 @@ runtime_memory_size:<span class="w"> </span><span class="m">11368</span>
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

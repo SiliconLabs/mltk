@@ -426,25 +426,25 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-profiling-results--page-root">Source code for mltk.core.profiling_results</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">import</span> <span class="nn">csv</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span><span class="p">,</span> <span class="n">defaultdict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
 
-<span class="kn">from</span> <span class="nn">prettytable</span> <span class="kn">import</span> <span class="n">PrettyTable</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.string_formatting</span> <span class="kn">import</span> <span class="n">format_units</span> <span class="k">as</span> <span class="n">format_units_func</span>
-<span class="kn">from</span> <span class="nn">.tflite_model</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TfliteLayer</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">,</span> <span class="n">TfliteOpCode</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.tflite_micro</span> <span class="kn">import</span> <span class="n">TfliteMicroModelDetails</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">prettytable</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrettyTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.string_formatting</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_units</span> <span class="k">as</span> <span class="n">format_units_func</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tflite_model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">TfliteLayer</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">,</span> <span class="n">TfliteOpCode</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tflite_micro</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteMicroModelDetails</span>
 
 
-<div class="viewcode-block" id="ProfilingLayerResult"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingLayerResult">[docs]</a><span class="k">class</span> <span class="nc">ProfilingLayerResult</span><span class="p">(</span><span class="n">defaultdict</span><span class="p">):</span>
+<div class="viewcode-block" id="ProfilingLayerResult"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingLayerResult">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ProfilingLayerResult</span><span class="p">(</span><span class="n">defaultdict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Profiling results for an individual layer of a model"""</span>
     <span class="n">BASIC_KEYS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'tflite_layer'</span><span class="p">,</span> <span class="s1">'ops'</span><span class="p">,</span> <span class="s1">'macs'</span><span class="p">,</span> <span class="s1">'cpu_cycles'</span><span class="p">,</span> <span class="s1">'accelerator_cycles'</span><span class="p">,</span> <span class="s1">'time'</span><span class="p">,</span> <span class="s1">'energy'</span><span class="p">,</span> <span class="s1">'error_msg'</span><span class="p">]</span>
 
-<div class="viewcode-block" id="ProfilingLayerResult.__init__"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingLayerResult.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="ProfilingLayerResult.__init__"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingLayerResult.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">tflite_layer</span><span class="p">:</span><span class="n">TfliteLayer</span><span class="p">,</span>
             <span class="n">ops</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
@@ -468,85 +468,85 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_accelerated</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_accelerated</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return true if this layer was executed on the accelerator"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">accelerator_cycles</span> <span class="o">&gt;</span> <span class="mi">0</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_unsupported</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_unsupported</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return true if this layer should have been accelerated but exceeds the limits of the accelerator"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">error_msg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">error_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">error_msg</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Error message generated by accelerator if layer was not supported"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'error_msg'</span><span class="p">]</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tflite_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteLayer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tflite_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteLayer</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Associated TF-Lite layer"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'tflite_layer'</span><span class="p">]</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Index of this layer in the model"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tflite_layer</span><span class="o">.</span><span class="n">index</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Name of current layer as: Op&lt;index&gt;-&lt;OpCodeStr&gt;"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tflite_layer</span><span class="o">.</span><span class="n">name</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">opcode_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opcode_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""OpCode as a string"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tflite_layer</span><span class="o">.</span><span class="n">opcode_str</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">opcode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteOpCode</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">opcode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteOpCode</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""OpCode"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">tflite_layer</span><span class="o">.</span><span class="n">opcode</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">macs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">macs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Number of Multiple-Accumulate operations required by this layer"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'macs'</span><span class="p">]</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ops</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ops</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Number of operations required by this layer"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'ops'</span><span class="p">]</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">accelerator_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">accelerator_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Number of accelerator clock cycles required by this layer"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'accelerator_cycles'</span><span class="p">]</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cpu_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cpu_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Number of CPU clock cycles required by this layer"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'cpu_cycles'</span><span class="p">]</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Time in seconds required by this layer"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'time'</span><span class="p">]</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Energy in Joules required by this layer</span>
 <span class="sd">        The energy is relative to the 'baseline' energy (i.e. energy used while the device was idling)</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'energy'</span><span class="p">]</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">options_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">options_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Layer configuration options as a string"""</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">tflite_layer</span><span class="o">.</span><span class="n">options</span><span class="si">}</span><span class="s1">'</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">input_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Layer input shape(s) as a string"""</span>
         <span class="k">return</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tflite_layer</span><span class="o">.</span><span class="n">inputs</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">input_dtype_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_dtype_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Layer input data type(s) as a string"""</span>
         <span class="k">return</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">dtype_str</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tflite_layer</span><span class="o">.</span><span class="n">inputs</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">output_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">output_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Layer output shape(s) as a string"""</span>
         <span class="k">return</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tflite_layer</span><span class="o">.</span><span class="n">outputs</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">output_dtype_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">output_dtype_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Layer output data type(s) as a string"""</span>
         <span class="k">return</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype_str</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tflite_layer</span><span class="o">.</span><span class="n">outputs</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
 
-<div class="viewcode-block" id="ProfilingLayerResult.get_summary"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingLayerResult.get_summary">[docs]</a>    <span class="k">def</span> <span class="nf">get_summary</span><span class="p">(</span>
+<div class="viewcode-block" id="ProfilingLayerResult.get_summary"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingLayerResult.get_summary">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_summary</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">include_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">format_units</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -591,10 +591,10 @@
 
 
 
-<div class="viewcode-block" id="ProfilingModelResults"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults">[docs]</a><span class="k">class</span> <span class="nc">ProfilingModelResults</span><span class="p">:</span>
+<div class="viewcode-block" id="ProfilingModelResults"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ProfilingModelResults</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Results from profiling model for specific accelerator"""</span>
 
-<div class="viewcode-block" id="ProfilingModelResults.__init__"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="ProfilingModelResults.__init__"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">model</span><span class="p">:</span><span class="n">TfliteModel</span><span class="p">,</span>
         <span class="n">accelerator</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -616,35 +616,35 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_details</span><span class="p">:</span><span class="n">TfliteMicroModelDetails</span> <span class="o">=</span> <span class="n">model_details</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Name of the profiled model"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tflite_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteModel</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tflite_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Associated TfliteModel"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tflite_micro_model_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteMicroModelDetails</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tflite_micro_model_details</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteMicroModelDetails</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""TF-Lite Micro model-specific details"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_details</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">accelerator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">accelerator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Name of accelerator used for profiling"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accelerator</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">platform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">platform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Platform model was profiled on"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_platform</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_simulated</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_simulated</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""True if the simulator was used to generate the results, else False if an embedded device was used"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_simulated</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cpu_clock_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cpu_clock_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Clock rate in hertz"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cpu_clock_rate</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">runtime_memory_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">runtime_memory_bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Total SRAM in bytes required by ML library</span>
 <span class="sd">        NOTE: This only include the ML run-time memory, it does NOT</span>
 <span class="sd">        include the memory required by the user application or external</span>
@@ -652,61 +652,61 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_runtime_memory_bytes</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">flatbuffer_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatbuffer_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Total size in bytes required by ML model</span>
 <span class="sd">        This is the size the .tflite flatbuffer file</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">flatbuffer_size</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ProfilingLayerResult</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ProfilingLayerResult</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Profiling details of each model layer"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_layers</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Number of layers in model"""</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_layers</span><span class="p">)</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">input_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Model input shape(s) as a string"""</span>
         <span class="k">return</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">inputs</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">input_dtype_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_dtype_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Model input data type(s) as a string"""</span>
         <span class="k">return</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">dtype_str</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">inputs</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">output_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">output_shape_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Model output shape(s) as a string"""</span>
         <span class="k">return</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">outputs</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">output_dtype_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">output_dtype_str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Model output data type(s) as a string"""</span>
         <span class="k">return</span> <span class="s1">','</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype_str</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">outputs</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">ops</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">ops</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The total number of ops to execute one model inference"""</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">ops</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">macs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">macs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The total number of multiply-accumulate operations to execute one model inference"""</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">macs</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">accelerator_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">accelerator_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The total number of accelerator cycles to execute one model inference"""</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">accelerator_cycles</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cpu_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cpu_cycles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The total number of CPU cycles to execute one model inference"""</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">cpu_cycles</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">time</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The total time in seconds required to execute one model inference"""</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">time</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">energy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The total energy required to execute one model inference"""</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">energy</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">])</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cpu_utilization</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cpu_utilization</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Ratio of the CPU used to execute the model</span>
 
 <span class="sd">        cpu_utilization = CPU cycles / Total clock cycles</span>
@@ -719,20 +719,20 @@
         <span class="n">all_cycles</span> <span class="o">=</span> <span class="n">clock_rate</span><span class="o">*</span><span class="n">total_time</span>
         <span class="k">return</span> <span class="mf">0.0</span> <span class="k">if</span> <span class="n">all_cycles</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">min</span><span class="p">(</span><span class="n">used_cpu_cycles</span> <span class="o">/</span> <span class="n">all_cycles</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_unsupported_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_unsupported_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The number of layers not supported by the accelerator"""</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unsupported_layers</span><span class="p">)</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">unsupported_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ProfilingLayerResult</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">unsupported_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ProfilingLayerResult</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return layers not supported by accelerator"""</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">is_unsupported</span><span class="p">]</span>
 
-<div class="viewcode-block" id="ProfilingModelResults.stat_total"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.stat_total">[docs]</a>    <span class="k">def</span> <span class="nf">stat_total</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]:</span>
+<div class="viewcode-block" id="ProfilingModelResults.stat_total"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.stat_total">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">stat_total</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return the total sum of the all the layers for the given stat"""</span>
         <span class="k">return</span> <span class="nb">sum</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="ProfilingModelResults.get_summary"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.get_summary">[docs]</a>    <span class="k">def</span> <span class="nf">get_summary</span><span class="p">(</span>
+<div class="viewcode-block" id="ProfilingModelResults.get_summary"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.get_summary">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_summary</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">include_labels</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">format_units</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -818,7 +818,7 @@
         <span class="k">return</span> <span class="n">summary</span></div>
 
 
-<div class="viewcode-block" id="ProfilingModelResults.generate_report"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.generate_report">[docs]</a>    <span class="k">def</span> <span class="nf">generate_report</span><span class="p">(</span>
+<div class="viewcode-block" id="ProfilingModelResults.generate_report"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.generate_report">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate_report</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">format_units</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span>
@@ -838,7 +838,7 @@
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">format_units</span><span class="o">=</span><span class="n">format_units</span><span class="p">,</span> <span class="n">full_summary</span><span class="o">=</span><span class="n">full_summary</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="ProfilingModelResults.to_dict"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span>
+<div class="viewcode-block" id="ProfilingModelResults.to_dict"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.to_dict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_dict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">format_units</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">exclude_null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -906,7 +906,7 @@
             <span class="n">layer_labels</span><span class="o">=</span><span class="n">layer_labels</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="ProfilingModelResults.to_json"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span>
+<div class="viewcode-block" id="ProfilingModelResults.to_json"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.to_json">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_json</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="n">format_units</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -994,7 +994,7 @@
             <span class="n">indent</span><span class="o">=</span><span class="n">indent</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="ProfilingModelResults.to_csv"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.to_csv">[docs]</a>    <span class="k">def</span> <span class="nf">to_csv</span><span class="p">(</span>
+<div class="viewcode-block" id="ProfilingModelResults.to_csv"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.to_csv">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_csv</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">format_units</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">exclude_null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1042,7 +1042,7 @@
         <span class="k">return</span> <span class="n">summary_buf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">(),</span> <span class="n">layers_buf</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="ProfilingModelResults.to_string"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.to_string">[docs]</a>    <span class="k">def</span> <span class="nf">to_string</span><span class="p">(</span>
+<div class="viewcode-block" id="ProfilingModelResults.to_string"><a class="viewcode-back" href="../../../docs/python_api/operations/profile.html#mltk.core.profiling_results.ProfilingModelResults.to_string">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">to_string</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">format_units</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">exclude_null</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -1084,7 +1084,7 @@
         <span class="k">return</span> <span class="n">s</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_string</span><span class="p">()</span></div>
 </pre></div>
 
@@ -1111,7 +1111,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

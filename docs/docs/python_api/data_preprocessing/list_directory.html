@@ -558,24 +558,24 @@ be added to batches. This specifies the percentage of of samples to generate rel
 of samples of other classes. For instance, if another class has 1000 samples and empty_class_percentage=0.8,
 then the number of ‘empty’ class samples generated will be 800.
 Set this parameter to None to disable this feature</p></li>
-<li><p><strong>empty_class_label</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Class label to be considered “empty”. See the <code class="docutils literal notranslate"><span class="pre">classes</span></code> arg for more details</p></li>
-<li><p><strong>class_counts</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Dictionary which will be populated with the sample counts for each class</p></li>
+<li><p><strong>empty_class_label</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Class label to be considered “empty”. See the <code class="docutils literal notranslate"><span class="pre">classes</span></code> arg for more details</p></li>
+<li><p><strong>class_counts</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – Dictionary which will be populated with the sample counts for each class</p></li>
 <li><p><strong>shuffle</strong> – If true, then shuffle the dataset</p></li>
 <li><p><strong>seed</strong> – The seed to use for shuffling the dataset</p></li>
-<li><p><strong>split</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – A tuple indicating the (start,stop) percentage of the dataset to return,
+<li><p><strong>split</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) – A tuple indicating the (start,stop) percentage of the dataset to return,
 e.g. (.75, 1.0) -&gt; return last 25% of dataset
 If omitted then return the entire dataset</p></li>
 <li><p><strong>max_samples_per_class</strong> – Maximum number of samples to return per class, this can be useful for debug to limit the dataset size</p></li>
 <li><p><strong>return_audio_data</strong> – If true then the audio file data is returned, if false then only the audio file path is returned</p></li>
-<li><p><strong>white_list_formats</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – List of file extensions to include in the search.</p></li>
+<li><p><strong>white_list_formats</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – List of file extensions to include in the search.</p></li>
 <li><p><strong>follow_links</strong> – If true then follow symbolic links when recursively searching the given dataset directory</p></li>
-<li><p><strong>shuffle_index_directory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path to directory to hold generated index of the dataset
+<li><p><strong>shuffle_index_directory</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Path to directory to hold generated index of the dataset
 If omitted, then an index is generated at &lt;directory&gt;/.index</p></li>
 <li><p><strong>return_absolute_paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If true then return absolute paths to samples, if false then paths are relative to the given directory</p></li>
 <li><p><strong>list_valid_filenames_in_directory_function</strong> – <p>This is a custom dataset processing callback.
 It should return a list of valid file names for the given class.
 It has the following function signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">list_valid_filenames_in_directory</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">list_valid_filenames_in_directory</span><span class="p">(</span>
     <span class="n">base_directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">search_class</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">white_list_formats</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -591,7 +591,7 @@ It has the following function signature:</p>
 <li><p><strong>process_samples_function</strong> – <p>This allows for processing the samples BEFORE they’re returned by this API.
 This allows for adding/removing samples.
 It has the following function signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_samples</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_samples</span><span class="p">(</span>
     <span class="n">directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="c1"># The provided directory to this API</span>
     <span class="n">sample_paths</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">],</span> <span class="c1"># A dictionary: &lt;class name&gt;, [&lt;sample paths relative to directory&gt;]</span>
     <span class="n">split</span><span class="p">:</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">float</span><span class="p">],</span>
@@ -632,12 +632,12 @@ It has the following function signature:</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_directory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Search directory for the current class</p></li>
 <li><p><strong>search_class</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Label of class to search</p></li>
-<li><p><strong>white_list_formats</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – List of file extensions to search</p></li>
-<li><p><strong>split</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – A tuple indicating the (start,stop) percentage of the dataset to return,
+<li><p><strong>white_list_formats</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – List of file extensions to search</p></li>
+<li><p><strong>split</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) – A tuple indicating the (start,stop) percentage of the dataset to return,
 e.g. (.75, 1.0) -&gt; return last 25% of dataset
 If omitted then return the entire dataset</p></li>
 <li><p><strong>follow_links</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If true then follow symbolic links when recursively searching the given dataset directory</p></li>
-<li><p><strong>shuffle_index_directory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path to directory to hold generated index of the dataset</p></li>
+<li><p><strong>shuffle_index_directory</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Path to directory to hold generated index of the dataset</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -657,7 +657,7 @@ a tuple of the given <code class="docutils literal notranslate"><span class="pre
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>paths</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – List of file paths</p></li>
-<li><p><strong>split</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – A tuple indicating the (start,stop) percentage of the dataset to return,
+<li><p><strong>split</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) – A tuple indicating the (start,stop) percentage of the dataset to return,
 e.g. (.75, 1.0) -&gt; return last 25% of dataset
 If omitted then return the entire dataset</p></li>
 </ul>
@@ -745,7 +745,7 @@ subsets while ensuring that the same group does not appear in both subsets.</p>
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

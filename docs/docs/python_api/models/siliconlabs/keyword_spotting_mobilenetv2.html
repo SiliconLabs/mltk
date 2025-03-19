@@ -906,16 +906,16 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_mobi
 </div></section>
 <section id="model-specification">
 <h2 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="c1"># Import the Tensorflow packages</span>
 <span class="c1"># required to build the model layout</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
 
 <span class="c1"># Import the MLTK model object</span>
 <span class="c1"># and necessary mixins</span>
 <span class="c1"># Later in this script we configure the various properties</span>
-<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">AudioDatasetMixin</span><span class="p">,</span>
@@ -924,25 +924,25 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_mobi
 
 <span class="c1"># Import the Google speech_commands dataset package</span>
 <span class="c1"># This manages downloading and extracting the dataset</span>
-<span class="kn">from</span> <span class="nn">mltk.datasets.audio.speech_commands</span> <span class="kn">import</span> <span class="n">speech_commands_v2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.datasets.audio.speech_commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">speech_commands_v2</span>
 
 <span class="c1"># Import the ParallelAudioDataGenerator</span>
 <span class="c1"># This has two main jobs:</span>
 <span class="c1"># 1. Process the Google speech_commands dataset and apply random augmentations during training</span>
 <span class="c1"># 2. Generate a spectrogram using the AudioFeatureGenerator from each augmented audio sample</span>
 <span class="c1">#    and give the spectrogram to Tensorflow for model training</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelAudioDataGenerator</span><span class="p">,</span> <span class="n">ParallelProcessParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.audio.parallel_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParallelAudioDataGenerator</span><span class="p">,</span> <span class="n">ParallelProcessParams</span>
 <span class="c1"># Import the AudioFeatureGeneratorSettings which we'll configure</span>
 <span class="c1"># and give to the ParallelAudioDataGenerator</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
-<span class="kn">from</span> <span class="nn">mltk.models.shared</span> <span class="kn">import</span> <span class="n">MobileNetV2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.models.shared</span><span class="w"> </span><span class="kn">import</span> <span class="n">MobileNetV2</span>
 
 <span class="c1"># Define a custom model object with the following 'mixins':</span>
 <span class="c1"># - TrainMixin        - Provides classifier model training operations and settings</span>
 <span class="c1"># - AudioDatasetMixin - Provides audio data generation operations and settings</span>
 <span class="c1"># - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings</span>
 <span class="c1"># @mltk_model # NOTE: This tag is required for this model be discoverable</span>
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">AudioDatasetMixin</span><span class="p">,</span>
@@ -1016,7 +1016,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_mobi
 
 <span class="c1"># https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/LearningRateScheduler</span>
 <span class="c1"># Update the learning rate each epoch based on the given callback</span>
-<span class="k">def</span> <span class="nf">lr_schedule</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lr_schedule</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
     <span class="n">initial_learning_rate</span> <span class="o">=</span> <span class="mf">0.001</span>
     <span class="n">decay_per_epoch</span> <span class="o">=</span> <span class="mf">0.95</span>
     <span class="n">lrate</span> <span class="o">=</span> <span class="n">initial_learning_rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">decay_per_epoch</span> <span class="o">**</span> <span class="n">epoch</span><span class="p">)</span>
@@ -1105,13 +1105,13 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_mobi
 <span class="n">frontend_settings</span><span class="o">.</span><span class="n">log_scale_shift</span> <span class="o">=</span> <span class="mi">6</span>
 
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">librosa</span>
-<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">librosa</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
 
 
 
-<span class="k">def</span> <span class="nf">get_batches_samples</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_batches_samples</span><span class="p">(</span>
     <span class="n">batch_index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
     <span class="n">filenames</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">classes</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
@@ -1298,7 +1298,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_mobi
 <span class="c1"># This way, the various model properties above can be modified</span>
 <span class="c1"># without having to re-write this section.</span>
 <span class="c1">#</span>
-<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
     <span class="n">keras_model</span> <span class="o">=</span> <span class="n">MobileNetV2</span><span class="p">(</span>
         <span class="n">input_shape</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
         <span class="n">classes</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">n_classes</span><span class="p">,</span>
@@ -1360,8 +1360,8 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_mobi
 <span class="c1"># mltk train keyword_spotting_mobilenetv2</span>
 <span class="c1">#</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">mltk.core</span> <span class="k">as</span> <span class="nn">mltk_core</span>
-    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mltk_core</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
     <span class="c1"># Setup the CLI logger</span>
     <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1437,7 +1437,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_mobi
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

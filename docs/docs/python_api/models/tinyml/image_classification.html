@@ -674,18 +674,18 @@ mltk<span class="w"> </span>profile<span class="w"> </span>image_classification<
 </div></section>
 <section id="model-specification">
 <h2 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.utils</span> <span class="kn">import</span> <span class="n">to_categorical</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.image.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelImageDataGenerator</span>
-<span class="kn">from</span> <span class="nn">mltk.core.model</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_categorical</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.image.parallel_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParallelImageDataGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">ImageDatasetMixin</span><span class="p">,</span>
     <span class="n">EvaluateClassifierMixin</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mltk.models.shared</span> <span class="kn">import</span> <span class="n">ResNet10V1</span>
-<span class="kn">from</span> <span class="nn">mltk.datasets.image</span> <span class="kn">import</span> <span class="n">cifar10</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.models.shared</span><span class="w"> </span><span class="kn">import</span> <span class="n">ResNet10V1</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.datasets.image</span><span class="w"> </span><span class="kn">import</span> <span class="n">cifar10</span>
 
 
 <span class="c1"># Instantiate the MltkModel object with the following 'mixins':</span>
@@ -693,7 +693,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>image_classification<
 <span class="c1"># - ImageDatasetMixin     - Provides image data generation operations and settings</span>
 <span class="c1"># - EvaluateClassifierMixin         - Provides classifier evaluation operations and settings</span>
 <span class="c1"># @mltk_model   # NOTE: This tag is required for this model be discoverable</span>
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">ImageDatasetMixin</span><span class="p">,</span>
@@ -748,7 +748,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>image_classification<
 <span class="n">my_model</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="p">[</span><span class="n">input_height</span><span class="p">,</span> <span class="n">input_width</span><span class="p">,</span> <span class="n">input_depth</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">my_dataset_loader</span><span class="p">(</span><span class="n">model</span><span class="p">:</span><span class="n">MyModel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_dataset_loader</span><span class="p">(</span><span class="n">model</span><span class="p">:</span><span class="n">MyModel</span><span class="p">):</span>
     <span class="p">(</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">),</span> <span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span> <span class="o">=</span> <span class="n">cifar10</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
     <span class="c1"># Convert for training</span>
     <span class="n">x_train</span> <span class="o">=</span> <span class="n">x_train</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">'float32'</span><span class="p">)</span>
@@ -786,7 +786,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>image_classification<
 
 <span class="c1">##############################################################</span>
 <span class="c1"># Model Layout</span>
-<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
     <span class="n">keras_model</span> <span class="o">=</span> <span class="n">ResNet10V1</span><span class="p">(</span>
         <span class="n">input_shape</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">,</span>
         <span class="n">num_classes</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">n_classes</span>
@@ -811,8 +811,8 @@ mltk<span class="w"> </span>profile<span class="w"> </span>image_classification<
 <span class="c1"># mltk train image_classification</span>
 <span class="c1">#</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">mltk.core</span> <span class="k">as</span> <span class="nn">mltk_core</span>
-    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mltk_core</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
     <span class="c1"># Setup the CLI logger</span>
     <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -888,7 +888,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>image_classification<
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

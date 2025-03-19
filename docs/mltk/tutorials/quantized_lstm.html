@@ -767,14 +767,14 @@ This will return an output tensor with the shape: <code class="docutils literal 
 <p>During training, we want the batch size to be larger than 1 (e.g. 32) as this helps to improve the training time.
 However, during quantization the batch size must be 1 as the <a class="reference external" href="https://www.tensorflow.org/api_docs/python/tf/lite/TFLiteConverter">TfliteConverter</a> seems to hang if the batch size is not set.</p>
 <p>To account for this, we add the following to our model script:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
     <span class="c1"># If specified, force the model input's batch_size to the given value</span>
     <span class="n">input_layer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Additionally, we add the following <a class="reference external" href="../../docs/python_api/mltk_model/model_event.html#mltk.core.MltkModelEvent">event handlers</a>.
 These are called just before quantization and evaluation so that the batch size can be forced to 1.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_before_save_train_model</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">_before_save_train_model</span><span class="p">(</span>
         <span class="n">mltk_model</span><span class="p">:</span><span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">,</span>
         <span class="n">keras_model</span><span class="p">:</span><span class="n">mltk_core</span><span class="o">.</span><span class="n">KerasModel</span><span class="p">,</span>
         <span class="n">keras_model_dict</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span>
@@ -791,7 +791,7 @@ These are called just before quantization and evaluation so that the batch size 
 <span class="n">my_model</span><span class="o">.</span><span class="n">add_event_handler</span><span class="p">(</span><span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">BEFORE_SAVE_TRAIN_MODEL</span><span class="p">,</span> <span class="n">_before_save_train_model</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_evaluate_startup</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">:</span><span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_evaluate_startup</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">:</span><span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""This is called at the beginning of the model evaluation API.</span>
 <span class="sd">    This forces the batch_size=1 which is necessary as that is how the .h5 and .tflite model files were saved.</span>
 <span class="sd">    """</span>
@@ -1174,7 +1174,7 @@ To help achieve this, data normalization is used. Data normalization involves sc
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

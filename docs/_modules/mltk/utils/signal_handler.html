@@ -426,19 +426,19 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-utils-signal-handler--page-root">Source code for mltk.utils.signal_handler</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">signal</span>
-<span class="kn">import</span> <span class="nn">threading</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">signal</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
 
 
-<div class="viewcode-block" id="SignalHandler"><a class="viewcode-back" href="../../../docs/python_api/utils/signal_handler.html#mltk.utils.signal_handler.SignalHandler">[docs]</a><span class="k">class</span> <span class="nc">SignalHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="SignalHandler"><a class="viewcode-back" href="../../../docs/python_api/utils/signal_handler.html#mltk.utils.signal_handler.SignalHandler">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SignalHandler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Class to detect OS signals</span>
 
 <span class="sd">    e.g. detect when CTRL+C is pressed and issue a callback</span>
 
 <span class="sd">    See the source code on Github: `mltk/utils/signal_handler.py &lt;https://github.com/siliconlabs/mltk/blob/master/mltk/utils/signal_handler.py&gt;`_</span>
 <span class="sd">    """</span>
-<div class="viewcode-block" id="SignalHandler.__init__"><a class="viewcode-back" href="../../../docs/python_api/utils/signal_handler.html#mltk.utils.signal_handler.SignalHandler.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="SignalHandler.__init__"><a class="viewcode-back" href="../../../docs/python_api/utils/signal_handler.html#mltk.utils.signal_handler.SignalHandler.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sig</span><span class="o">=</span><span class="n">signal</span><span class="o">.</span><span class="n">SIGINT</span><span class="p">,</span>
         <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -454,7 +454,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interrupted</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">released</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -465,7 +465,7 @@
         <span class="k">if</span> <span class="n">is_main_thread</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">original_handler</span> <span class="o">=</span> <span class="n">signal</span><span class="o">.</span><span class="n">getsignal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sig</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">_handler</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_handler</span><span class="p">(</span><span class="n">signum</span><span class="p">,</span> <span class="n">frame</span><span class="p">):</span>
             <span class="n">forward_signal</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">interrupted</span><span class="p">:</span>
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback</span><span class="p">:</span>
@@ -485,11 +485,11 @@
         <span class="k">return</span> <span class="bp">self</span>
 
 
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">release</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">released</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
 
@@ -526,7 +526,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

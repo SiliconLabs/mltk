@@ -507,15 +507,15 @@ python<span class="w"> </span>basic_tf_dataset_example.py
 </section>
 <section id="id1">
 <h2 id="id1">Model Specification<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">core</span> <span class="k">as</span> <span class="n">mltk_core</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">core</span> <span class="k">as</span> <span class="n">mltk_core</span>
 
 
 <span class="c1"># For this example we use the Fashion MNIST dataset.</span>
 <span class="c1"># NOTE: The following uses the MLTK Fashion mnist dataset,</span>
 <span class="c1">#       but we could have also used: tf.keras.datasets.fashion_mnist</span>
-<span class="kn">from</span> <span class="nn">mltk.datasets.image</span> <span class="kn">import</span> <span class="n">fashion_mnist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.datasets.image</span><span class="w"> </span><span class="kn">import</span> <span class="n">fashion_mnist</span>
 
 
 <span class="c1">##########################################################################</span>
@@ -531,7 +531,7 @@ python<span class="w"> </span>basic_tf_dataset_example.py
 
 <span class="c1">##########################################################################</span>
 <span class="c1"># Prepare the dataset</span>
-<span class="k">def</span> <span class="nf">my_dataset_loader</span><span class="p">(</span><span class="n">subset</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_dataset_loader</span><span class="p">(</span><span class="n">subset</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Load the dataset subset</span>
 
 <span class="sd">    This is called automatically by the MLTK before training</span>
@@ -581,7 +581,7 @@ python<span class="w"> </span>basic_tf_dataset_example.py
         <span class="k">return</span> <span class="n">evaluation_dataset</span>
 
 
-<span class="k">def</span> <span class="nf">_create_dataset_subset</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_create_dataset_subset</span><span class="p">(</span><span class="n">x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Create a Tensorflow Dataset for the given x,y subset"""</span>
     <span class="n">features_ds</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">labels_ds</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="o">.</span><span class="n">from_tensor_slices</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
@@ -605,7 +605,7 @@ python<span class="w"> </span>basic_tf_dataset_example.py
 
 <span class="c1">##########################################################################</span>
 <span class="c1"># Build the model</span>
-<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span> <span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_builder</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span> <span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Build the Keras model</span>
 
 <span class="sd">    This is called by the MLTK just before training starts.</span>
@@ -641,7 +641,7 @@ python<span class="w"> </span>basic_tf_dataset_example.py
 <span class="c1"># and set the various properties</span>
 
 <span class="c1"># @mltk_model</span>
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span>
     <span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">,</span>    <span class="c1"># We must inherit the MltkModel class</span>
     <span class="n">mltk_core</span><span class="o">.</span><span class="n">TrainMixin</span><span class="p">,</span>   <span class="c1"># We also inherit the TrainMixin since we want to train this model</span>
     <span class="n">mltk_core</span><span class="o">.</span><span class="n">DatasetMixin</span><span class="p">,</span> <span class="c1"># We also need the DatasetMixin mixin to provide the relevant dataset properties</span>
@@ -691,7 +691,7 @@ python<span class="w"> </span>basic_tf_dataset_example.py
 <span class="c1"># that can run on the embedded device.</span>
 
 
-<span class="k">def</span> <span class="nf">my_representative_dataset_generator</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_representative_dataset_generator</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">"""A representative dataset is required generate the .tflite</span>
 <span class="sd">    In this example we just take the first 100 samples from the validation set.</span>
 
@@ -745,7 +745,7 @@ python<span class="w"> </span>basic_tf_dataset_example.py
 <span class="c1"># mltk train basic_tf_dataset_example</span>
 <span class="c1">#</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
     <span class="c1"># Setup the CLI logger</span>
     <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -821,7 +821,7 @@ python<span class="w"> </span>basic_tf_dataset_example.py
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

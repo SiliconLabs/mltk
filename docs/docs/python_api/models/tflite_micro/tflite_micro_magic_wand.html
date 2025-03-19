@@ -605,30 +605,30 @@ mltk<span class="w"> </span>profile<span class="w"> </span>tflite_micro_magic_wa
 </div></section>
 <section id="model-specification">
 <h2 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">mltk.core.model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">DatasetMixin</span><span class="p">,</span>
     <span class="n">EvaluateClassifierMixin</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">mltk.datasets.accelerometer</span> <span class="kn">import</span> <span class="n">tflm_magic_wand</span> <span class="k">as</span> <span class="n">tflm_magic_wand_dataset</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.datasets.accelerometer</span><span class="w"> </span><span class="kn">import</span> <span class="n">tflm_magic_wand</span> <span class="k">as</span> <span class="n">tflm_magic_wand_dataset</span>
 
 <span class="c1"># Instantiate the model object with the following 'mixins':</span>
 <span class="c1"># - TrainMixin        - Provides classifier model training operations and settings</span>
 <span class="c1"># - DatasetMixin      - Provides generic dataset properties</span>
 <span class="c1"># - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings</span>
 <span class="c1"># @mltk_model # NOTE: This tag is required for this model be discoverable</span>
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">DatasetMixin</span><span class="p">,</span>
     <span class="n">EvaluateClassifierMixin</span>
 <span class="p">):</span>
-    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_dataset</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">test</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -645,7 +645,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>tflite_micro_magic_wa
         <span class="n">validation_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_loader</span><span class="o">.</span><span class="n">valid_data</span>
         <span class="n">test_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_loader</span><span class="o">.</span><span class="n">test_data</span>
 
-        <span class="k">def</span> <span class="nf">reshape_function</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">reshape_function</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
             <span class="n">reshaped_data</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">reshaped_data</span><span class="p">,</span> <span class="n">label</span>
 
@@ -666,7 +666,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>tflite_micro_magic_wa
             <span class="bp">self</span><span class="o">.</span><span class="n">_unbatched_validation_data</span> <span class="o">=</span> <span class="n">validation_data</span>
 
 
-    <span class="k">def</span> <span class="nf">summarize_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">summarize_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">train_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_loader</span><span class="o">.</span><span class="n">train_data</span>
         <span class="n">validation_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_loader</span><span class="o">.</span><span class="n">valid_data</span>
         <span class="n">s</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'Train dataset: Found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">train_data</span><span class="p">)</span><span class="si">}</span><span class="s1"> samples belonging to 4 classes</span><span class="se">\n</span><span class="s1">'</span>
@@ -701,7 +701,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>tflite_micro_magic_wa
 <span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_input_type'</span><span class="p">]</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">float32</span>
 <span class="n">my_model</span><span class="o">.</span><span class="n">tflite_converter</span><span class="p">[</span><span class="s1">'inference_output_type'</span><span class="p">]</span> <span class="o">=</span>  <span class="n">tf</span><span class="o">.</span><span class="n">float32</span>
 <span class="c1"># generate a representative dataset from the validation data</span>
-<span class="k">def</span> <span class="nf">_generate_representative_dataset</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_representative_dataset</span><span class="p">():</span>
     <span class="n">retval</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span>  <span class="n">my_model</span><span class="o">.</span><span class="n">_unbatched_validation_data</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span> <span class="c1"># pylint: disable=protected-access</span>
         <span class="n">retval</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">x</span><span class="p">])</span>
@@ -719,7 +719,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>tflite_micro_magic_wa
 
 <span class="c1">#################################################</span>
 <span class="c1"># Model Layout</span>
-<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
     <span class="n">keras_model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">Sequential</span><span class="p">([</span>
         <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span>
             <span class="mi">8</span><span class="p">,</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
@@ -756,8 +756,8 @@ mltk<span class="w"> </span>profile<span class="w"> </span>tflite_micro_magic_wa
 <span class="c1"># mltk train tflite_micro_magic_wand</span>
 <span class="c1">#</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">mltk.core</span> <span class="k">as</span> <span class="nn">mltk_core</span>
-    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mltk_core</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
     <span class="c1"># Setup the CLI logger</span>
     <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -833,7 +833,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>tflite_micro_magic_wa
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

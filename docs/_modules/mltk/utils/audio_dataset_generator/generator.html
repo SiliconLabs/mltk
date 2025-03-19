@@ -426,19 +426,19 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-utils-audio-dataset-generator-generator--page-root">Source code for mltk.utils.audio_dataset_generator.generator</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">multiprocessing.pool</span> <span class="kn">import</span> <span class="n">ThreadPool</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">functools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">multiprocessing.pool</span><span class="w"> </span><span class="kn">import</span> <span class="n">ThreadPool</span>
 
 
 
-<span class="kn">from</span> <span class="nn">mltk.utils.string_formatting</span> <span class="kn">import</span> <span class="n">format_units</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.string_formatting</span><span class="w"> </span><span class="kn">import</span> <span class="n">format_units</span>
 
-<span class="kn">from</span> <span class="nn">.generator_types</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.generator_types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">BackendBase</span><span class="p">,</span>
     <span class="n">Voice</span><span class="p">,</span>
     <span class="n">GenerationConfig</span><span class="p">,</span>
@@ -446,10 +446,10 @@
     <span class="n">Augmentation</span><span class="p">,</span>
     <span class="n">logger</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.backends</span> <span class="kn">import</span> <span class="n">BACKENDS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.backends</span><span class="w"> </span><span class="kn">import</span> <span class="n">BACKENDS</span>
 
 
-<div class="viewcode-block" id="AudioDatasetGenerator"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator">[docs]</a><span class="k">class</span> <span class="nc">AudioDatasetGenerator</span><span class="p">:</span>
+<div class="viewcode-block" id="AudioDatasetGenerator"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AudioDatasetGenerator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Utility for generating synthetic keyword datasets</span>
 
 <span class="sd">    See the `Synthetic Audio Dataset Generation &lt;https://siliconlabs.github.io/mltk/mltk/tutorials/synthetic_audio_dataset_generation.html&gt;`_ tutorial for more details.</span>
@@ -460,7 +460,7 @@
 <span class="sd">        out_dir: Directory where dataset will be generated</span>
 <span class="sd">        n_jobs: Number of parallel processing jobs</span>
 <span class="sd">    """</span>
-<div class="viewcode-block" id="AudioDatasetGenerator.__init__"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.__init__"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_backends</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">BackendBase</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_out_dir</span> <span class="o">=</span> <span class="n">out_dir</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span> <span class="o">=</span> <span class="n">_ProcessingPool</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
@@ -477,21 +477,21 @@
 
 
 <div class="viewcode-block" id="AudioDatasetGenerator.list_supported_backends"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.list_supported_backends">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">list_supported_backends</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_supported_backends</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return a list of the available backends"""</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">BACKENDS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if the processing pool is active"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">is_running</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">out_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">out_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the output directory where the dataset is generated"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_out_dir</span>
 
-<div class="viewcode-block" id="AudioDatasetGenerator.is_backend_loaded"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.is_backend_loaded">[docs]</a>    <span class="k">def</span> <span class="nf">is_backend_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.is_backend_loaded"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.is_backend_loaded">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">is_backend_loaded</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if the given backend has been loaded"""</span>
         <span class="k">if</span> <span class="n">backend</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">BACKENDS</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">raise_exception</span><span class="p">:</span>
@@ -508,7 +508,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="AudioDatasetGenerator.load_backend"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.load_backend">[docs]</a>    <span class="k">def</span> <span class="nf">load_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">install_python_package</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.load_backend"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.load_backend">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_backend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">install_python_package</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Load the specified backend</span>
 
 <span class="sd">        NOTE: The backend's corresponding "credentials" must be provided</span>
@@ -541,7 +541,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_pending_configs</span><span class="p">[</span><span class="n">backend</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 
-<div class="viewcode-block" id="AudioDatasetGenerator.list_languages"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.list_languages">[docs]</a>    <span class="k">def</span> <span class="nf">list_languages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.list_languages"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.list_languages">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">list_languages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return a list of the available language codes</span>
 
 <span class="sd">        Args:</span>
@@ -558,7 +558,7 @@
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AudioDatasetGenerator.list_voices"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.list_voices">[docs]</a>    <span class="k">def</span> <span class="nf">list_voices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language_code</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Voice</span><span class="p">]:</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.list_voices"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.list_voices">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">list_voices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">language_code</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Voice</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return a list of the available "voices"</span>
 
 <span class="sd">        Args:</span>
@@ -576,7 +576,7 @@
         <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">retval</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">backend</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">language_code</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="AudioDatasetGenerator.list_configurations"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.list_configurations">[docs]</a>    <span class="k">def</span> <span class="nf">list_configurations</span><span class="p">(</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.list_configurations"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.list_configurations">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">list_configurations</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">keywords</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Keyword</span><span class="p">],</span>
         <span class="n">augmentations</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="n">Augmentation</span><span class="p">],</span>
@@ -627,7 +627,7 @@
         <span class="k">return</span> <span class="n">retval</span></div>
 
 
-<div class="viewcode-block" id="AudioDatasetGenerator.count_characters"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.count_characters">[docs]</a>    <span class="k">def</span> <span class="nf">count_characters</span><span class="p">(</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.count_characters"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.count_characters">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">count_characters</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="n">Keyword</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="n">GenerationConfig</span><span class="p">]],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Keyword</span><span class="p">,</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">int</span><span class="p">]]:</span>
@@ -654,7 +654,7 @@
         <span class="k">return</span> <span class="n">retval</span></div>
 
 
-<div class="viewcode-block" id="AudioDatasetGenerator.get_summary"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.get_summary">[docs]</a>    <span class="k">def</span> <span class="nf">get_summary</span><span class="p">(</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.get_summary"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.get_summary">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_summary</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="n">Keyword</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="n">GenerationConfig</span><span class="p">]],</span>
         <span class="n">as_dict</span><span class="o">=</span><span class="kc">False</span>
@@ -741,7 +741,7 @@
         <span class="k">return</span> <span class="n">s</span></div>
 
 
-<div class="viewcode-block" id="AudioDatasetGenerator.generate"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.generate"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.generate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">config</span><span class="p">:</span><span class="n">GenerationConfig</span><span class="p">,</span>
         <span class="n">on_finished</span><span class="p">:</span><span class="n">Callable</span><span class="p">[[</span><span class="nb">str</span><span class="p">],</span><span class="kc">None</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span>
@@ -769,7 +769,7 @@
 
 
 
-<div class="viewcode-block" id="AudioDatasetGenerator.join"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.join">[docs]</a>    <span class="k">def</span> <span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.join"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.join">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">join</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Wait for all generation tasks to complete</span>
 
 <span class="sd">        Args:</span>
@@ -797,12 +797,12 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="n">is_processing</span></div>
 
 
-<div class="viewcode-block" id="AudioDatasetGenerator.shutdown"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="AudioDatasetGenerator.shutdown"><a class="viewcode-back" href="../../../../docs/python_api/utils/audio_dataset_generator/generator.html#mltk.utils.audio_dataset_generator.AudioDatasetGenerator.shutdown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Shutdown the underlying thread pool"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_get_backend_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_backend_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">backend</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">backend</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">is_backend_loaded</span><span class="p">(</span><span class="n">backend</span><span class="p">,</span> <span class="n">raise_exception</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -813,7 +813,7 @@
 
 
 
-    <span class="k">def</span> <span class="nf">_generation_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generation_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -823,7 +823,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_process_once</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">_process_once</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_once</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
             <span class="k">return</span>
 
@@ -832,7 +832,7 @@
                 <span class="k">continue</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_n_config_processing</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="n">config</span><span class="p">,</span> <span class="n">callback</span> <span class="o">=</span> <span class="n">configs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-            <span class="n">out_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_out_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">keyword_group_filename</span><span class="si">}</span><span class="s1">'</span>
+            <span class="n">out_dir</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_out_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">config</span><span class="o">.</span><span class="n">keyword_group</span><span class="si">}</span><span class="s1">'</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_pool</span><span class="p">(</span>
                 <span class="n">backend</span><span class="o">.</span><span class="n">generate</span><span class="p">,</span>
@@ -842,55 +842,47 @@
                 <span class="n">_on_error</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_on_error</span>
             <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_on_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_path</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span><span class="n">Callable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_path</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span><span class="n">Callable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_n_config_processing</span> <span class="o">-=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_condition</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
-
-            <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span> <span class="ow">and</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">getsize</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_on_error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Invalid sample: </span><span class="si">{</span><span class="n">sample_path</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-                <span class="o">...</span>
-
         <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">callback</span><span class="p">(</span><span class="n">sample_path</span><span class="p">)</span>
             <span class="k">except</span><span class="p">:</span>
                 <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_on_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_on_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span><span class="ne">Exception</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="n">e</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_n_config_processing</span> <span class="o">-=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_condition</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
 
 
 
-<span class="k">class</span> <span class="nc">_ProcessingPool</span><span class="p">():</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_ProcessingPool</span><span class="p">():</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_jobs</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">ThreadPool</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_running_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_running_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">_on_finished</span><span class="p">,</span> <span class="n">_on_error</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">_on_finished</span><span class="p">,</span> <span class="n">_on_error</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">apply_async</span><span class="p">(</span>
             <span class="n">_process_with_retries</span><span class="p">,</span>
             <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">func</span><span class="p">,),</span>
@@ -900,7 +892,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_process_with_retries</span><span class="p">(</span><span class="n">_func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_with_retries</span><span class="p">(</span><span class="n">_func</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">_func</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
@@ -937,7 +929,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

@@ -427,23 +427,23 @@
             
   <h1 id="modules-mltk-core-preprocess-utils-tf-dataset--page-root">Source code for mltk.core.preprocess.utils.tf_dataset</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Utilities for processing `Tensorflow Datasets &lt;https://www.tensorflow.org/api_docs/python/tf/data/Dataset&gt;`_"""</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">wave</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">wave</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="n">create_tempdir</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.process_pool</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ProcessPool</span><span class="p">,</span> <span class="n">calculate_n_jobs</span><span class="p">,</span> <span class="n">get_cpu_count</span><span class="p">)</span>
-
-
-<span class="kn">from</span> <span class="nn">.list_directory</span> <span class="kn">import</span> <span class="n">list_dataset_directory</span>
-<span class="kn">from</span> <span class="nn">.audio</span> <span class="kn">import</span> <span class="n">read_audio_file</span>
-<span class="kn">from</span> <span class="nn">.image</span> <span class="kn">import</span> <span class="n">read_image_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_mltk_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_tempdir</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.process_pool</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">ProcessPool</span><span class="p">,</span> <span class="n">calculate_n_jobs</span><span class="p">,</span> <span class="n">get_cpu_count</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="load_audio_directory"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.load_audio_directory">[docs]</a><span class="k">def</span> <span class="nf">load_audio_directory</span><span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.list_directory</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_dataset_directory</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.audio</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_audio_file</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.image</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_image_file</span>
+
+
+<div class="viewcode-block" id="load_audio_directory"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.load_audio_directory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_audio_directory</span><span class="p">(</span>
     <span class="n">directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">classes</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">unknown_class_percentage</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
@@ -606,7 +606,7 @@
     <span class="k">return</span> <span class="n">feature_ds</span><span class="p">,</span> <span class="n">label_ds</span></div>
 
 
-<div class="viewcode-block" id="load_image_directory"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.load_image_directory">[docs]</a><span class="k">def</span> <span class="nf">load_image_directory</span><span class="p">(</span>
+<div class="viewcode-block" id="load_image_directory"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.load_image_directory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">load_image_directory</span><span class="p">(</span>
     <span class="n">directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">classes</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">unknown_class_percentage</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
@@ -750,7 +750,7 @@
     <span class="k">return</span> <span class="n">feature_ds</span><span class="p">,</span> <span class="n">label_ds</span></div>
 
 
-<div class="viewcode-block" id="parallel_process"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.parallel_process">[docs]</a><span class="k">def</span> <span class="nf">parallel_process</span><span class="p">(</span>
+<div class="viewcode-block" id="parallel_process"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.parallel_process">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parallel_process</span><span class="p">(</span>
     <span class="n">dataset</span><span class="p">:</span><span class="n">tf</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">,</span>
     <span class="n">callback</span><span class="p">:</span><span class="n">Callable</span><span class="p">,</span>
     <span class="n">dtype</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">]]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span>
@@ -802,7 +802,7 @@
         <span class="n">logger</span><span class="o">=</span><span class="n">get_mltk_logger</span><span class="p">()</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_np_parallel_process</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_np_parallel_process</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="n">pool_batch</span> <span class="o">=</span> <span class="n">process_pool</span><span class="o">.</span><span class="n">create_batch</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -833,7 +833,7 @@
             <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
 
     <span class="nd">@tf</span><span class="o">.</span><span class="n">function</span><span class="c1">#(autograph=False)</span>
-    <span class="k">def</span> <span class="nf">_tf_parallel_process</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_tf_parallel_process</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">tf</span><span class="o">.</span><span class="n">numpy_function</span><span class="p">(</span>
             <span class="n">_np_parallel_process</span><span class="p">,</span>
             <span class="n">args</span><span class="p">,</span>
@@ -848,7 +848,7 @@
     <span class="k">return</span> <span class="n">ds</span><span class="p">,</span> <span class="n">process_pool</span></div>
 
 
-<div class="viewcode-block" id="enable_numpy_behavior"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.enable_numpy_behavior">[docs]</a><span class="k">def</span> <span class="nf">enable_numpy_behavior</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="enable_numpy_behavior"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/tf_dataset.html#mltk.core.preprocess.utils.tf_dataset.enable_numpy_behavior">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">enable_numpy_behavior</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Enable NumPy behavior on Tensors.</span>
 
 <span class="sd">    NOTE: This requires Tensorflow 2.5+</span>
@@ -869,7 +869,7 @@
     <span class="k">if</span> <span class="n">enabled_numpy_behavior</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">enabled_numpy_behavior</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="kn">from</span> <span class="nn">tensorflow.python.ops.numpy_ops</span> <span class="kn">import</span> <span class="n">np_config</span>
+            <span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.python.ops.numpy_ops</span><span class="w"> </span><span class="kn">import</span> <span class="n">np_config</span>
             <span class="n">np_config</span><span class="o">.</span><span class="n">enable_numpy_behavior</span><span class="p">()</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -883,7 +883,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_update_silence_samples</span><span class="p">(</span><span class="n">sample_paths</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">sample_rate_hz</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_update_silence_samples</span><span class="p">(</span><span class="n">sample_paths</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">sample_rate_hz</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""This will create a "silence" audio sample and add it to the dataset where necessary"""</span>
     <span class="k">if</span> <span class="n">sample_rate_hz</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">sample_rate_hz</span><span class="p">:</span>
         <span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="mi">16000</span>
@@ -929,7 +929,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

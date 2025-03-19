@@ -80,7 +80,7 @@
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
     <link rel="next" title="keyword_spotting_pacman" href="keyword_spotting_pacman.html" />
-    <link rel="prev" title="keyword_spotting_on_off_v3" href="keyword_spotting_on_off_v3.html" />
+    <link rel="prev" title="&lt;no title&gt;" href="keyword_spotting_on_off_v3.html" />
   
    
 
@@ -913,17 +913,17 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_with
 </div></section>
 <section id="model-specification">
 <h2 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
 <span class="c1"># Import the Tensorflow packages</span>
 <span class="c1"># required to build the model layout</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">keras</span>
 
 <span class="c1"># Import the MLTK model object</span>
 <span class="c1"># and necessary mixins</span>
 <span class="c1"># Later in this script we configure the various properties</span>
-<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">load_mltk_model</span><span class="p">,</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
@@ -933,18 +933,18 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_with
 
 <span class="c1"># Import the Google speech_commands dataset package</span>
 <span class="c1"># This manages downloading and extracting the dataset</span>
-<span class="kn">from</span> <span class="nn">mltk.datasets.audio.speech_commands</span> <span class="kn">import</span> <span class="n">speech_commands_v2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.datasets.audio.speech_commands</span><span class="w"> </span><span class="kn">import</span> <span class="n">speech_commands_v2</span>
 
 <span class="c1"># Import the ParallelAudioDataGenerator</span>
 <span class="c1"># This has two main jobs:</span>
 <span class="c1"># 1. Process the Google speech_commands dataset and apply random augmentations during training</span>
 <span class="c1"># 2. Generate a spectrogram using the AudioFeatureGenerator from each augmented audio sample</span>
 <span class="c1">#    and give the spectrogram to Tensorflow for model training</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelAudioDataGenerator</span><span class="p">,</span> <span class="n">ParallelProcessParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.audio.parallel_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParallelAudioDataGenerator</span><span class="p">,</span> <span class="n">ParallelProcessParams</span>
 <span class="c1"># Import the AudioFeatureGeneratorSettings which we'll configure</span>
 <span class="c1"># and give to the ParallelAudioDataGenerator</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
-<span class="kn">from</span> <span class="nn">mltk.models.shared</span> <span class="kn">import</span> <span class="n">MobileNetV2</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.models.shared</span><span class="w"> </span><span class="kn">import</span> <span class="n">MobileNetV2</span>
 
 
 <span class="c1"># Define a custom model object with the following 'mixins':</span>
@@ -952,7 +952,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_with
 <span class="c1"># - AudioDatasetMixin - Provides audio data generation operations and settings</span>
 <span class="c1"># - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings</span>
 <span class="c1"># @mltk_model # NOTE: This tag is required for this model be discoverable</span>
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">AudioDatasetMixin</span><span class="p">,</span>
@@ -1012,7 +1012,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_with
 
 <span class="c1"># https://www.tensorflow.org/api_docs/python/tf/keras/callbacks/LearningRateScheduler</span>
 <span class="c1"># Update the learning rate each epoch based on the given callback</span>
-<span class="k">def</span> <span class="nf">lr_schedule</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lr_schedule</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
     <span class="c1"># When using transfer learning, the initial learning rate should start at a fairly small value</span>
     <span class="n">initial_learning_rate</span> <span class="o">=</span> <span class="mf">0.0005</span>
     <span class="n">decay_per_epoch</span> <span class="o">=</span> <span class="mf">0.95</span>
@@ -1142,7 +1142,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_with
 <span class="c1">#</span>
 <span class="c1"># This defines the actual model layout</span>
 <span class="c1"># using the Keras API.</span>
-<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
     <span class="c1"># Create an instance of the MobileNetV2</span>
     <span class="c1"># NOTE: This should have similar parameters to the keyword_spotting_mobilenetv2 model</span>
     <span class="c1">#       since we're transferring weights from it</span>
@@ -1232,8 +1232,8 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_with
 <span class="c1"># mltk train keyword_spotting_with_transfer_learning</span>
 <span class="c1">#</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">mltk.core</span> <span class="k">as</span> <span class="nn">mltk_core</span>
-    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mltk_core</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
     <span class="c1"># Setup the CLI logger</span>
     <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1272,7 +1272,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_with
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
           
-            <a href="keyword_spotting_on_off_v3.html" title="keyword_spotting_on_off_v3"
+            <a href="keyword_spotting_on_off_v3.html" title="&lt;no title&gt;"
                class="md-flex md-footer-nav__link md-footer-nav__link--prev"
                rel="prev">
               <div class="md-flex__cell md-flex__cell--shrink">
@@ -1281,7 +1281,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_with
               <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
                 <span class="md-flex__ellipsis">
                   <span
-                      class="md-footer-nav__direction"> Previous </span> keyword_spotting_on_off_v3 </span>
+                      class="md-footer-nav__direction"> Previous </span> &lt;no title&gt; </span>
               </div>
             </a>
           
@@ -1309,7 +1309,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>keyword_spotting_with
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

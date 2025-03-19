@@ -517,7 +517,7 @@ the Global Interpreter Lock (GIL) which can slow down parallel processing
 when using Python threads.</p>
 <p>There are three ways of using this utility.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Assume we have the processing function at the root of a Python module:</span>
-<span class="k">def</span> <span class="nf">my_processing_func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_processing_func</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span>
     <span class="k">return</span> <span class="n">y</span>
 
@@ -530,7 +530,7 @@ when using Python threads.</p>
 <span class="c1"># Add all of the processing data to the pool and invoke a callback for each result</span>
 
 <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-<span class="k">def</span> <span class="nf">_processing_callback</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_processing_callback</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
     <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
 
 <span class="c1"># Process each entry in a subprocess</span>
@@ -585,9 +585,9 @@ Typically the function will accept one or more arguments, process the data, and 
 <li><p><strong>name</strong> – The name to prefix to the python threads used to monitor the subprocesses</p></li>
 <li><p><strong>start</strong> – Automatically start the subprocesses. If false, then the start() must be called before processing</p></li>
 <li><p><strong>debug</strong> – If true then the entry_point is executed in a single thread instead of multiple subprocesses. This reduces complexity which can aid debugging</p></li>
-<li><p><strong>env</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – The OS environment variables to export in the subprocesses</p></li>
+<li><p><strong>env</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – The OS environment variables to export in the subprocesses</p></li>
 <li><p><strong>disable_gpu_in_subprocesses</strong> – Disables NVidia GPU usage in the subprocesses. This is necessary if the Tensorflow python package is imported in the entry_point’s module</p></li>
-<li><p><strong>logger</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code>) – Optional Python logger</p></li>
+<li><p><strong>logger</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Logger</span></code>]) – Optional Python logger</p></li>
 </ul>
 </dd>
 </dl>
@@ -636,8 +636,8 @@ Typically the function will accept one or more arguments, process the data, and 
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>entry_point</strong> (<em>Callable</em>) – </p></li>
 <li><p><strong>n_jobs</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>float</em><em>]</em>) – </p></li>
-<li><p><strong>env</strong> (<em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em>) – </p></li>
-<li><p><strong>logger</strong> (<em>Logger</em>) – </p></li>
+<li><p><strong>env</strong> (<em>Optional</em><em>[</em><em>Dict</em><em>[</em><em>str</em><em>, </em><em>str</em><em>]</em><em>]</em>) – </p></li>
+<li><p><strong>logger</strong> (<em>Optional</em><em>[</em><em>Logger</em><em>]</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -707,8 +707,8 @@ See this class’s docs for more info</p>
 </dd>
 <dt class="field-even">Parameters<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
-<li><p><strong>pool_callback</strong> (<em>Callable</em>) – </p></li>
-<li><p><strong>pool_batch</strong> (<em>ProcessPoolBatch</em>) – </p></li>
+<li><p><strong>pool_callback</strong> (<em>Optional</em><em>[</em><em>Callable</em><em>]</em>) – </p></li>
+<li><p><strong>pool_batch</strong> (<em>Optional</em><em>[</em><em>ProcessPoolBatch</em><em>]</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -764,7 +764,7 @@ See this class’s docs for more info</p>
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

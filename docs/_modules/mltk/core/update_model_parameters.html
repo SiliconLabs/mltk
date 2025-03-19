@@ -426,24 +426,24 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-update-model-parameters--page-root">Source code for mltk.core.update_model_parameters</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
 
 
-<span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="n">fullpath</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.hasher</span> <span class="kn">import</span> <span class="n">generate_hash</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.string_formatting</span> <span class="kn">import</span> <span class="n">iso_time_str</span>
-<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TfliteModel</span><span class="p">,</span> <span class="n">TfliteModelParameters</span><span class="p">,</span> <span class="n">TFLITE_METADATA_TAG</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">fullpath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.hasher</span><span class="w"> </span><span class="kn">import</span> <span class="n">generate_hash</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.string_formatting</span><span class="w"> </span><span class="kn">import</span> <span class="n">iso_time_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">TfliteModel</span><span class="p">,</span> <span class="n">TfliteModelParameters</span><span class="p">,</span> <span class="n">TFLITE_METADATA_TAG</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span> 
     <span class="n">load_mltk_model</span><span class="p">,</span>
     <span class="n">load_mltk_model_with_path</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_mltk_logger</span>
 
 
-<div class="viewcode-block" id="update_model_parameters"><a class="viewcode-back" href="../../../docs/python_api/operations/update_model_parameters.html#mltk.core.update_model_parameters">[docs]</a><span class="k">def</span> <span class="nf">update_model_parameters</span><span class="p">(</span>
+<div class="viewcode-block" id="update_model_parameters"><a class="viewcode-back" href="../../../docs/python_api/operations/update_model_parameters.html#mltk.core.update_model_parameters">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">update_model_parameters</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">MltkModel</span><span class="p">,</span><span class="n">TfliteModel</span><span class="p">,</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">params</span><span class="p">:</span><span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">description</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -617,7 +617,7 @@
     <span class="k">return</span> <span class="n">retval</span></div>
 
     
-<span class="k">def</span> <span class="nf">add_default_parameters</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">add_default_parameters</span><span class="p">(</span>
     <span class="n">tflite_model</span><span class="p">:</span> <span class="n">TfliteModel</span><span class="p">,</span>
     <span class="n">model_parameters</span><span class="p">:</span> <span class="n">TfliteModelParameters</span><span class="p">,</span>
     <span class="n">forced_params</span><span class="p">:</span><span class="nb">dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -645,7 +645,7 @@
             <span class="k">if</span> <span class="n">add_runtime_memory_size</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">forced_runtime_memory_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">try</span><span class="p">:</span>
-                        <span class="kn">from</span> <span class="nn">mltk.core.tflite_micro</span> <span class="kn">import</span> <span class="n">TfliteMicro</span>
+                        <span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.tflite_micro</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteMicro</span>
 
                         <span class="n">tflm_model</span> <span class="o">=</span> <span class="n">TfliteMicro</span><span class="o">.</span><span class="n">load_tflite_model</span><span class="p">(</span>
                             <span class="n">tflite_model</span><span class="p">,</span> 
@@ -708,7 +708,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

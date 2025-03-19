@@ -426,20 +426,20 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-model-mixins-audio-dataset-mixin--page-root">Source code for mltk.core.model.mixins.audio_dataset_mixin</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span>
-<span class="kn">import</span> <span class="nn">types</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">prepend_exception_msg</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.process_pool_manager</span> <span class="kn">import</span> <span class="n">ProcessPoolManager</span>
-<span class="kn">from</span> <span class="nn">mltk.core.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">prepend_exception_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.process_pool_manager</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPoolManager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_mltk_logger</span>
 
-<span class="kn">from</span> <span class="nn">.data_generator_dataset_mixin</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DataGeneratorDatasetMixin</span><span class="p">,</span> <span class="n">DataGeneratorContext</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">..model_attributes</span> <span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span>
-<span class="kn">from</span> <span class="nn">..model_event</span> <span class="kn">import</span> <span class="n">MltkModelEvent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.data_generator_dataset_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">DataGeneratorDatasetMixin</span><span class="p">,</span> <span class="n">DataGeneratorContext</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..model_attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..model_event</span><span class="w"> </span><span class="kn">import</span> <span class="n">MltkModelEvent</span>
 
 <div class="viewcode-block" id="AudioDatasetMixin"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/audio_dataset_mixin.html#mltk.core.AudioDatasetMixin">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
-<span class="k">class</span> <span class="nc">AudioDatasetMixin</span><span class="p">(</span><span class="n">DataGeneratorDatasetMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AudioDatasetMixin</span><span class="p">(</span><span class="n">DataGeneratorDatasetMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Provides audio dataset properties to the base :py:class:`~MltkModel`</span>
 
 <span class="sd">    .. seealso::</span>
@@ -449,7 +449,7 @@
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="n">Callable</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="n">Callable</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Path to the audio dataset's python module, a function</span>
 <span class="sd">        that manually loads the datset, or the file path to a directory of samples.</span>
 
@@ -468,24 +468,24 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.dataset'</span><span class="p">]</span>
     <span class="nd">@dataset</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.dataset'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">follow_links</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">follow_links</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Whether to follow symlinks inside class subdirectories</span>
 
 <span class="sd">        Default: ``True``</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.follow_links'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="nd">@follow_links</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">follow_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">follow_links</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.follow_links'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">shuffle_dataset_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shuffle_dataset_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Shuffle the dataset directory once</span>
 
 <span class="sd">        Default: ``false``</span>
@@ -499,12 +499,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.shuffle_dataset_enabled'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="nd">@shuffle_dataset_enabled</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">shuffle_dataset_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shuffle_dataset_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.shuffle_dataset_enabled'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">class_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Determines the type of label arrays that are returned.</span>
 
 <span class="sd">        Default: ``categorical``</span>
@@ -517,21 +517,21 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.class_mode'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">'categorical'</span><span class="p">)</span>
     <span class="nd">@class_mode</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">class_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.class_mode'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">audio_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">audio_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return a list of class labels the model should classify"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.classes'</span><span class="p">]</span>
     <span class="nd">@audio_classes</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">audio_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">audio_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.classes'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">audio_input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">audio_input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Get the shape of the spectrogram generated by the :py:class:`mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGenerator` as (height, width, 1)</span>
 
 <span class="sd">        .. note::</span>
@@ -550,39 +550,39 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.manual_in_shape'</span><span class="p">]</span>
     <span class="nd">@audio_input_shape</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">audio_input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">audio_input_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">frontend_enabled</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'mltk_model.input_shape is determined dynamically based on the AudioFeatureGeneratorSettings when datagen.frontend_enabled=True. In this case, it cannot be manually set'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.manual_in_shape'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sample_length_ms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_length_ms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get the data generator sample length in milliseconds"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'You must specify mltk_model.datagen'</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">sample_length_ms</span>
     <span class="nd">@sample_length_ms</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">sample_length_ms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_length_ms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'You must specify mltk_model.datagen'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sample_rate_hz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_rate_hz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get the data generator sample rate in hertz"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'You must specify mltk_model.datagen'</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">sample_rate_hz</span>
     <span class="nd">@sample_rate_hz</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">sample_rate_hz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_rate_hz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'You must specify mltk_model.datagen'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">frontend_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">frontend_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Get the data generator's :py:class:`mltk.core.preprocess.audio.audio_feature_generator.AudioFeatureGeneratorSettingsSettings` """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datagen</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'You must specify mltk_model.datagen'</span><span class="p">)</span>
@@ -590,19 +590,19 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Training data generator.</span>
 
 <span class="sd">        Should be a reference to a :py:attr:`mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator` instance</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.datagen'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@datagen</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.datagen'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">validation_datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Validation/evaluation data generator.</span>
 
 <span class="sd">        If omitted, then :py:attr:`~datagen` is used for validation and evaluation.</span>
@@ -611,12 +611,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'audio.validation_datagen'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@validation_datagen</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">validation_datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_datagen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'audio.validation_datagen'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
 
-<div class="viewcode-block" id="AudioDatasetMixin.load_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/audio_dataset_mixin.html#mltk.core.AudioDatasetMixin.load_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span>
+<div class="viewcode-block" id="AudioDatasetMixin.load_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/audio_dataset_mixin.html#mltk.core.AudioDatasetMixin.load_dataset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_dataset</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">classes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -764,8 +764,8 @@
         <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelAudioDataGenerator</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.audio.parallel_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParallelAudioDataGenerator</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'audio.follow_links'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'audio.shuffle_dataset_enabled'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
@@ -773,7 +773,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'audio.datagen'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ParallelAudioDataGenerator</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'audio.validation_datagen'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ParallelAudioDataGenerator</span><span class="p">)</span>
 
-        <span class="k">def</span> <span class="nf">_set_audio_input_shape</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_set_audio_input_shape</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">audio_input_shape</span> <span class="o">=</span> <span class="n">v</span>
         <span class="c1"># If datagen.frontend_enabled = True then this is used</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'audio.input_shape'</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">audio_input_shape</span><span class="p">,</span> <span class="n">setter</span><span class="o">=</span><span class="n">_set_audio_input_shape</span><span class="p">)</span>
@@ -784,13 +784,13 @@
         <span class="c1"># We cannot call attributes while we're registering them</span>
         <span class="c1"># So we return a function that will be called after</span>
         <span class="c1"># all the attributes are registered</span>
-        <span class="k">def</span> <span class="nf">register_parameters_populator</span><span class="p">():</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">register_parameters_populator</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">add_model_parameter_populate_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_populate_audio_dataset_model_parameters</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">register_parameters_populator</span>
 
 
-    <span class="k">def</span> <span class="nf">_populate_audio_dataset_model_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_populate_audio_dataset_model_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Populate the AudioPipeline parameters required by the device at runtime</span>
 
 <span class="sd">        These parameters will be added to the compiled .tflite ModelParameters metadata.</span>
@@ -806,7 +806,7 @@
             <span class="n">parameters</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">frontend_settings</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_load_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">tuple</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_dataset</span><span class="p">(</span><span class="n">dataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">tuple</span><span class="p">]:</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span><span class="nb">str</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">dataset</span>
 
@@ -830,7 +830,7 @@
     <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">'mltk_model.dataset must either be file path to a dictionary or callback function'</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_list_valid_filenames_function</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_list_valid_filenames_function</span><span class="p">(</span><span class="n">dataset</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span> <span class="nb">object</span><span class="p">)):</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">'list_valid_filenames_in_directory'</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="s1">'list_valid_filenames_in_directory'</span><span class="p">)</span>
@@ -861,7 +861,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

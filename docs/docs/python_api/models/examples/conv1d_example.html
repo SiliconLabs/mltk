@@ -613,18 +613,18 @@ fe.fft_length:<span class="w"> </span><span class="m">16</span>
 </div></section>
 <section id="model-specification">
 <h2 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Activation</span><span class="p">,</span> <span class="n">Flatten</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Conv1D</span><span class="p">,</span> <span class="n">MaxPooling1D</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">regularizers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Activation</span><span class="p">,</span> <span class="n">Flatten</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras.layers</span><span class="w"> </span><span class="kn">import</span> <span class="n">Conv1D</span><span class="p">,</span> <span class="n">MaxPooling1D</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">regularizers</span>
 
-<span class="kn">import</span> <span class="nn">mltk.core</span> <span class="k">as</span> <span class="nn">mltk_core</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelAudioDataGenerator</span><span class="p">,</span> <span class="n">ParallelProcessParams</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.archive_downloader</span> <span class="kn">import</span> <span class="n">download_verify_extract</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mltk_core</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">AudioFeatureGeneratorSettings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.audio.parallel_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParallelAudioDataGenerator</span><span class="p">,</span> <span class="n">ParallelProcessParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.archive_downloader</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_verify_extract</span>
 
 
 <span class="c1"># Instantiate the model object with the following 'mixins':</span>
@@ -632,7 +632,7 @@ fe.fft_length:<span class="w"> </span><span class="m">16</span>
 <span class="c1"># - AudioDatasetMixin - Provides audio data generation operations and settings</span>
 <span class="c1"># - EvaluateClassifierMixin     - Provides classifier evaluation operations and settings</span>
 <span class="c1"># @mltk_model # NOTE: This tag is required for this model be discoverable</span>
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span>
     <span class="n">mltk_core</span><span class="o">.</span><span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">mltk_core</span><span class="o">.</span><span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">mltk_core</span><span class="o">.</span><span class="n">AudioDatasetMixin</span><span class="p">,</span>
@@ -671,7 +671,7 @@ fe.fft_length:<span class="w"> </span><span class="m">16</span>
 <span class="c1"># my_model.early_stopping['monitor'] = 'val_accuracy'</span>
 <span class="c1"># my_model.early_stopping['patience'] = 20</span>
 
-<span class="k">def</span> <span class="nf">lr_schedule</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lr_schedule</span><span class="p">(</span><span class="n">epoch</span><span class="p">):</span>
     <span class="n">initial_learning_rate</span> <span class="o">=</span> <span class="mf">0.001</span>
     <span class="n">decay_per_epoch</span> <span class="o">=</span> <span class="mf">0.99</span>
     <span class="n">lrate</span> <span class="o">=</span> <span class="n">initial_learning_rate</span> <span class="o">*</span> <span class="p">(</span><span class="n">decay_per_epoch</span> <span class="o">**</span> <span class="n">epoch</span><span class="p">)</span>
@@ -694,7 +694,7 @@ fe.fft_length:<span class="w"> </span><span class="m">16</span>
 <span class="c1">#################################################</span>
 <span class="c1"># Audio Data Provider Settings</span>
 
-<span class="k">def</span> <span class="nf">load_dataset</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_dataset</span><span class="p">():</span>
     <span class="n">DOWNLOAD_URL</span> <span class="o">=</span> <span class="s1">'https://github.com/SiliconLabs/mltk_assets/raw/master/datasets/ekg_waveforms.zip'</span>
     <span class="n">VERIFY_SHA1</span> <span class="o">=</span> <span class="s1">'8221333C8ECEF29843D05B6385A4F47074820480'</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">download_verify_extract</span><span class="p">(</span>
@@ -735,7 +735,7 @@ fe.fft_length:<span class="w"> </span><span class="m">16</span>
 <span class="c1">#################################################</span>
 <span class="c1"># ParallelAudioDataGenerator Settings</span>
 
-<span class="k">def</span> <span class="nf">post_processing_callback</span><span class="p">(</span><span class="n">params</span><span class="p">:</span><span class="n">ParallelProcessParams</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">post_processing_callback</span><span class="p">(</span><span class="n">params</span><span class="p">:</span><span class="n">ParallelProcessParams</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    X is an augmented sample as a 1D, float32 (-1., 1.) array</span>
 <span class="sd">    Since the frontend is disabled,</span>
@@ -777,7 +777,7 @@ fe.fft_length:<span class="w"> </span><span class="m">16</span>
 
 <span class="c1">#################################################</span>
 <span class="c1"># Model Layout</span>
-<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
     <span class="n">weight_decay</span> <span class="o">=</span> <span class="mf">1e-4</span>
     <span class="n">regularizer</span> <span class="o">=</span> <span class="n">regularizers</span><span class="o">.</span><span class="n">l2</span><span class="p">(</span><span class="n">weight_decay</span><span class="p">)</span>
     <span class="n">input_shape</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">input_shape</span>
@@ -828,7 +828,7 @@ fe.fft_length:<span class="w"> </span><span class="m">16</span>
 <span class="c1"># mltk train conv1d_example</span>
 <span class="c1">#</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
     <span class="c1"># Setup the CLI logger</span>
     <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -904,7 +904,7 @@ fe.fft_length:<span class="w"> </span><span class="m">16</span>
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

@@ -426,39 +426,39 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-model-mixins-weights-and-biases-mixin--page-root">Source code for mltk.core.model.mixins.weights_and_biases_mixin</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
 
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">wandb</span>
-    <span class="kn">from</span> <span class="nn">wandb.keras</span> <span class="kn">import</span> <span class="n">WandbCallback</span>
-    <span class="kn">from</span> <span class="nn">wandb.keras</span> <span class="kn">import</span> <span class="n">WandbModelCheckpoint</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">wandb</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">wandb.keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">WandbCallback</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">wandb.keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">WandbModelCheckpoint</span>
 <span class="k">except</span><span class="p">:</span>
-    <span class="k">class</span> <span class="nc">WandbCallback</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">WandbCallback</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">'''Placeholder for https://docs.wandb.ai/ref/python/integrations/keras/wandbcallback'''</span>
-    <span class="k">class</span> <span class="nc">WandbModelCheckpoint</span><span class="p">:</span>
+    <span class="k">class</span><span class="w"> </span><span class="nc">WandbModelCheckpoint</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">'''Placeholder for https://docs.wandb.ai/ref/python/integrations/keras/wandbmodelcheckpoint'''</span>
 
 
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">prepend_exception_msg</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.string_formatting</span> <span class="kn">import</span> <span class="n">iso_time_filename_str</span>
-<span class="kn">from</span> <span class="nn">mltk.core.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
-<span class="kn">from</span> <span class="nn">mltk.core.profiling_results</span> <span class="kn">import</span> <span class="n">ProfilingModelResults</span>
-<span class="kn">from</span> <span class="nn">mltk.core.evaluation_results</span> <span class="kn">import</span> <span class="n">EvaluationResults</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">prepend_exception_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.string_formatting</span><span class="w"> </span><span class="kn">import</span> <span class="n">iso_time_filename_str</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_mltk_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.profiling_results</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProfilingModelResults</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.evaluation_results</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvaluationResults</span>
 
-<span class="kn">from</span> <span class="nn">.base_mixin</span> <span class="kn">import</span> <span class="n">BaseMixin</span>
-<span class="kn">from</span> <span class="nn">..model_attributes</span> <span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span>
-<span class="kn">from</span> <span class="nn">..model_event</span> <span class="kn">import</span> <span class="n">MltkModelEvent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..model_attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..model_event</span><span class="w"> </span><span class="kn">import</span> <span class="n">MltkModelEvent</span>
 
 
 <div class="viewcode-block" id="WeightsAndBiasesMixin"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/weights_and_biases_mixin.html#mltk.core.WeightsAndBiasesMixin">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
-<span class="k">class</span> <span class="nc">WeightsAndBiasesMixin</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">WeightsAndBiasesMixin</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Provides various properties to the base :py:class:`~MltkModel` used by `Weights &amp; Biases &lt;https://wandb.ai&gt;`_</span>
 <span class="sd">    3rd-party cloud backend.</span>
 
@@ -470,22 +470,22 @@
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wandb_is_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_is_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if the wandb backend is initialized"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'wandb.is_initialized'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wandb_is_disabled</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_is_disabled</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Manually disable the wandb backend"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'wandb.is_disabled'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="nd">@wandb_is_disabled</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">wandb_is_disabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_is_disabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">bool</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'wandb.is_disabled'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wandb_init_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_init_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Additional arguments to provide to ``wandb.init()``</span>
 
 <span class="sd">        The following argument are automatically populated by this mixin:</span>
@@ -500,12 +500,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'wandb.init_kwargs'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
     <span class="nd">@wandb_init_kwargs</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">wandb_init_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_init_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'wandb.init_kwargs'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wandb_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Additional configuration values</span>
 
 <span class="sd">        This sets the `wandb.config &lt;https://docs.wandb.ai/guides/track/config&gt;`_ object in your script to save your training configuration:</span>
@@ -515,12 +515,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'wandb.config'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
     <span class="nd">@wandb_config</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">wandb_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'wandb.config'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wandb_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WandbCallback</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WandbCallback</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Keras callback to automatically log info to wandb</span>
 
 <span class="sd">        This allows for specifying a custom `wandb.keras.WandbCallback &lt;https://docs.wandb.ai/ref/python/integrations/keras/wandbcallback&gt;`_.</span>
@@ -528,22 +528,22 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'wandb.callback'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@wandb_callback</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">wandb_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="n">WandbCallback</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="n">WandbCallback</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'wandb.callback'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wandb_model_checkpoint_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WandbModelCheckpoint</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_model_checkpoint_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WandbModelCheckpoint</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Callback to periodically save the Keras model or model weights</span>
 
 <span class="sd">        This allows for specifying a custom `wandb.keras.WandbModelCheckpoint &lt;https://docs.wandb.ai/ref/python/integrations/keras/wandbmodelcheckpoint&gt;`_.</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'wandb.model_checkpoint_callback'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@wandb_model_checkpoint_callback</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">wandb_model_checkpoint_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="n">WandbModelCheckpoint</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_model_checkpoint_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="n">WandbModelCheckpoint</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'wandb.model_checkpoint_callback'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">wandb_session_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_session_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The wandb project session or run ID</span>
 
 <span class="sd">        This is the timestamp of when the last `train` command was invoked for the model.</span>
@@ -554,7 +554,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'wandb.session_id'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="WeightsAndBiasesMixin.wandb_save"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/weights_and_biases_mixin.html#mltk.core.WeightsAndBiasesMixin.wandb_save">[docs]</a>    <span class="k">def</span> <span class="nf">wandb_save</span><span class="p">(</span>
+<div class="viewcode-block" id="WeightsAndBiasesMixin.wandb_save"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/weights_and_biases_mixin.html#mltk.core.WeightsAndBiasesMixin.wandb_save">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_save</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">glob_str</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">base_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -590,7 +590,7 @@
            <span class="n">get_mltk_logger</span><span class="p">()</span> <span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to save to wandb cloud, glob_str=</span><span class="si">{</span><span class="n">glob_str</span><span class="si">}</span><span class="s1">, base_path=</span><span class="si">{</span><span class="n">base_path</span><span class="si">}</span><span class="s1">, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="WeightsAndBiasesMixin.wandb_log"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/weights_and_biases_mixin.html#mltk.core.WeightsAndBiasesMixin.wandb_log">[docs]</a>    <span class="k">def</span> <span class="nf">wandb_log</span><span class="p">(</span>
+<div class="viewcode-block" id="WeightsAndBiasesMixin.wandb_log"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/weights_and_biases_mixin.html#mltk.core.WeightsAndBiasesMixin.wandb_log">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wandb_log</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
         <span class="n">step</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -622,12 +622,12 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Failed to log to wandb cloud, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""This is called when the MltkModel properties are first registered,</span>
 <span class="sd">        see _check_attributes_registered_decorator()</span>
 <span class="sd">        """</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">wandb</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">wandb</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="n">get_mltk_logger</span><span class="p">()</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">'Failed import wandb Python package, try running: pip install wandb plotly'</span><span class="p">)</span>
             <span class="k">return</span>
@@ -702,7 +702,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_wandb_upload_profiling_results</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_wandb_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wandb_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""This is called after the MltkModel is loaded"""</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">wandb_session_id_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_archive_file</span><span class="p">(</span><span class="s1">'wandb/session_id.txt'</span><span class="p">)</span>
@@ -714,9 +714,9 @@
             <span class="k">pass</span>
 
 
-    <span class="k">def</span> <span class="nf">_wandb_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_type</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">post_process</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wandb_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">job_type</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">post_process</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""This is called at the beginning of train_model(), evaluate_model(), or quantize_model()"""</span>
-        <span class="kn">import</span> <span class="nn">absl.logging</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">absl.logging</span>
 
         <span class="c1"># Do not initialize if:</span>
         <span class="c1"># - User didn't add the --post arg to the command</span>
@@ -775,7 +775,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">'wandb initialized'</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_wandb_populate_train_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keras_callbacks</span><span class="p">:</span><span class="nb">list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wandb_populate_train_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keras_callbacks</span><span class="p">:</span><span class="nb">list</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""This is called after train_model() populates the various Keras callbacks, but before training starts"""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">wandb_is_initialized</span><span class="p">:</span>
             <span class="k">return</span>
@@ -796,18 +796,18 @@
             <span class="n">keras_callbacks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">checkpoint_callback</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_wandb_log_model_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wandb_log_model_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Log the model summary to wandb if we're training"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">==</span> <span class="s1">'training'</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wandb_log</span><span class="p">({</span><span class="s1">'model_summary'</span><span class="p">:</span> <span class="n">_generate_html</span><span class="p">(</span><span class="n">summary</span><span class="p">)},</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_wandb_log_dataset_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wandb_log_dataset_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Log the dataset summary to wandb"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">wandb_log</span><span class="p">({</span><span class="sa">f</span><span class="s1">'dataset_summary-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="n">_generate_html</span><span class="p">(</span><span class="n">summary</span><span class="p">)},</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_wandb_log_evaluation_summary</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wandb_log_evaluation_summary</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">results</span><span class="p">:</span><span class="n">EvaluationResults</span><span class="p">,</span>
         <span class="n">tflite</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span>
@@ -821,7 +821,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_wandb_save_archive</span><span class="p">(</span><span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_wandb_save_archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wandb_save_archive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Upload the model archive to wandb"""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">wandb_is_initialized</span><span class="p">:</span>
             <span class="k">return</span>
@@ -837,7 +837,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wandb_save</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">dst_dir</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">model_specification_path</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_wandb_save_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">tflite</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wandb_save_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">fig</span><span class="p">,</span> <span class="n">tflite</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Log an evaluation plot to wandb"""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">wandb_is_initialized</span><span class="p">:</span>
             <span class="k">return</span>
@@ -849,7 +849,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">wandb_log</span><span class="p">(</span> <span class="p">{</span><span class="n">name</span> <span class="p">:</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">fig</span><span class="p">)})</span>
 
 
-    <span class="k">def</span> <span class="nf">_wandb_upload_profiling_results</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wandb_upload_profiling_results</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">results</span><span class="p">:</span><span class="n">ProfilingModelResults</span><span class="p">,</span>
         <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span>
@@ -882,7 +882,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">wandb_log</span><span class="p">({</span><span class="sa">f</span><span class="s1">'profiling_layers_table-</span><span class="si">{</span><span class="n">accelerator</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span> <span class="n">layer_table</span><span class="p">})</span></div>
 
 
-<span class="k">def</span> <span class="nf">_generate_html</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_html</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">wandb</span><span class="o">.</span><span class="n">Html</span><span class="p">(</span>
         <span class="sa">f</span><span class="s1">'&lt;pre class="background-white"&gt;</span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s1">&lt;/pre&gt;'</span>
     <span class="p">)</span>
@@ -911,7 +911,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

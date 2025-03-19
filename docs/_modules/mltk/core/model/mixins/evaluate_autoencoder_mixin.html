@@ -427,16 +427,16 @@
             
   <h1 id="modules-mltk-core-model-mixins-evaluate-autoencoder-mixin--page-root">Source code for mltk.core.model.mixins.evaluate_autoencoder_mixin</h1><div class="highlight"><pre>
 <span></span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span>
 
 
-<span class="kn">from</span> <span class="nn">.evaluate_classifier_mixin</span> <span class="kn">import</span> <span class="n">EvaluateClassifierMixin</span>
-<span class="kn">from</span> <span class="nn">..model_attributes</span> <span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span><span class="p">,</span> <span class="n">CallableType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.evaluate_classifier_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvaluateClassifierMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..model_attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span><span class="p">,</span> <span class="n">CallableType</span>
 
 
 
 <div class="viewcode-block" id="EvaluateAutoEncoderMixin"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/evaluate_autoencoder_mixin.html#mltk.core.EvaluateAutoEncoderMixin">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
-<span class="k">class</span> <span class="nc">EvaluateAutoEncoderMixin</span><span class="p">(</span><span class="n">EvaluateClassifierMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EvaluateAutoEncoderMixin</span><span class="p">(</span><span class="n">EvaluateClassifierMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Provides evaluation properties and methods to the base :py:class:`~MltkModel`</span>
 
 <span class="sd">    .. note:: This mixin is specific to "auto-encoder" models</span>
@@ -446,7 +446,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">scoring_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scoring_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The auto-encoder scoring function to use during evaluation</span>
 
 <span class="sd">        If `None`, then use the `mltk_model.loss` function</span>
@@ -455,12 +455,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'eval_autoencoder.scoring_function'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@scoring_function</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">scoring_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">scoring_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'eval_autoencoder.scoring_function'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">eval_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eval_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List if classes to use for evaluation.</span>
 <span class="sd">        The first element should be considered the 'normal' class, every other class is considered abnormal and compared independently.</span>
 <span class="sd">        This is used if the `--classes` argument is not supplied to the `eval` command.</span>
@@ -469,13 +469,13 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'eval_autoencoder.classes'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s1">'normal'</span><span class="p">,</span> <span class="s1">'abnormal'</span><span class="p">]</span> <span class="p">)</span>
     <span class="nd">@eval_classes</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">eval_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">eval_classes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'eval_autoencoder.classes'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
-<div class="viewcode-block" id="EvaluateAutoEncoderMixin.get_scoring_function"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/evaluate_autoencoder_mixin.html#mltk.core.EvaluateAutoEncoderMixin.get_scoring_function">[docs]</a>    <span class="k">def</span> <span class="nf">get_scoring_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<div class="viewcode-block" id="EvaluateAutoEncoderMixin.get_scoring_function"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/evaluate_autoencoder_mixin.html#mltk.core.EvaluateAutoEncoderMixin.get_scoring_function">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_scoring_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the scoring function used during evaluation"""</span>
-        <span class="kn">from</span> <span class="nn">mltk.core.keras.losses</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.keras.losses</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
             <span class="n">Correlation</span><span class="p">,</span>
             <span class="n">MeanSquaredError</span><span class="p">,</span>
             <span class="n">MeanAbsoluteError</span><span class="p">,</span>
@@ -503,7 +503,7 @@
             <span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'eval_autoencoder.scoring_function'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">CallableType</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'eval_autoencoder.classes'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">))</span></div>
 </pre></div>
@@ -531,7 +531,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

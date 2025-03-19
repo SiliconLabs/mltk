@@ -427,19 +427,19 @@
             
   <h1 id="modules-mltk-core-evaluate-autoencoder--page-root">Source code for mltk.core.evaluate_autoencoder</h1><div class="highlight"><pre>
 <span></span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">import</span> <span class="nn">sklearn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">mltk.utils</span> <span class="kn">import</span> <span class="n">gpu</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">prepend_exception_msg</span>
-<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">gpu</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">prepend_exception_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">KerasModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
@@ -447,12 +447,12 @@
     <span class="n">EvaluateAutoEncoderMixin</span><span class="p">,</span>
     <span class="n">load_tflite_or_keras_model</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
-<span class="kn">from</span> <span class="nn">.summarize_model</span> <span class="kn">import</span> <span class="n">summarize_model</span>
-<span class="kn">from</span> <span class="nn">.evaluation_results</span> <span class="kn">import</span> <span class="n">EvaluationResults</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_mltk_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.summarize_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">summarize_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.evaluation_results</span><span class="w"> </span><span class="kn">import</span> <span class="n">EvaluationResults</span>
 
 
-<div class="viewcode-block" id="AutoEncoderEvaluationResults"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.AutoEncoderEvaluationResults">[docs]</a><span class="k">class</span> <span class="nc">AutoEncoderEvaluationResults</span><span class="p">(</span><span class="n">EvaluationResults</span><span class="p">):</span>
+<div class="viewcode-block" id="AutoEncoderEvaluationResults"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.AutoEncoderEvaluationResults">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">AutoEncoderEvaluationResults</span><span class="p">(</span><span class="n">EvaluationResults</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Auto-encoder evaluation results</span>
 
 <span class="sd">    .. seealso::</span>
@@ -461,62 +461,62 @@
 <span class="sd">       - :py:func:`mltk.core.evaluate_model`</span>
 
 <span class="sd">    """</span>
-<div class="viewcode-block" id="AutoEncoderEvaluationResults.__init__"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.AutoEncoderEvaluationResults.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="AutoEncoderEvaluationResults.__init__"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.AutoEncoderEvaluationResults.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">EvaluationResults</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span>  <span class="n">model_type</span><span class="o">=</span><span class="s1">'auto_encoder'</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">classes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List of class labels used by evaluated model"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'classes'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">overall_accuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overall_accuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The overall, model accuracy"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'overall_accuracy'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">overall_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overall_precision</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""The overall, model precision as various thresholds"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'overall_precision'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">overall_recall</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overall_recall</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""The overall, model recall at various thresholds"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'overall_recall'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">overall_pr_accuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overall_pr_accuracy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The overall, precision vs recall"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'overall_pr_accuracy'</span><span class="p">]</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">overall_tpr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overall_tpr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""The overall, true positive rate at various thresholds"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'overall_tpr'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">overall_fpr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overall_fpr</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""The overall, false positive rate at various thresholds"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'overall_fpr'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">overall_roc_auc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overall_roc_auc</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""The overall, area under curve of the receiver operating characteristic"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'overall_roc_auc'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">overall_thresholds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">overall_thresholds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List of thresholds used to calcuate overall stats"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'overall_thresholds'</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">class_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Dictionary of per class statistics"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'class_stats'</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="AutoEncoderEvaluationResults.calculate"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.AutoEncoderEvaluationResults.calculate">[docs]</a>    <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span>
+<div class="viewcode-block" id="AutoEncoderEvaluationResults.calculate"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.AutoEncoderEvaluationResults.calculate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calculate</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">y_pred</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
@@ -546,12 +546,12 @@
         <span class="bp">self</span><span class="p">[</span><span class="s1">'class_stats'</span><span class="p">]</span> <span class="o">=</span> <span class="n">calculate_class_stats</span><span class="p">(</span><span class="n">all_scores</span><span class="p">,</span> <span class="bp">self</span><span class="p">[</span><span class="s1">'classes'</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="AutoEncoderEvaluationResults.generate_summary"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.AutoEncoderEvaluationResults.generate_summary">[docs]</a>    <span class="k">def</span> <span class="nf">generate_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="AutoEncoderEvaluationResults.generate_summary"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.AutoEncoderEvaluationResults.generate_summary">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate_summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Generate and return a summary of the results as a string"""</span>
         <span class="n">s</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">generate_summary</span><span class="p">(</span><span class="n">include_all</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">s</span> <span class="o">+</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span> <span class="o">+</span> <span class="n">summarize_results</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="AutoEncoderEvaluationResults.generate_plots"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.AutoEncoderEvaluationResults.generate_plots">[docs]</a>    <span class="k">def</span> <span class="nf">generate_plots</span><span class="p">(</span>
+<div class="viewcode-block" id="AutoEncoderEvaluationResults.generate_plots"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.AutoEncoderEvaluationResults.generate_plots">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">generate_plots</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">show</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -573,7 +573,7 @@
 
 
 
-<div class="viewcode-block" id="evaluate_autoencoder"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.evaluate_autoencoder">[docs]</a><span class="k">def</span> <span class="nf">evaluate_autoencoder</span><span class="p">(</span>
+<div class="viewcode-block" id="evaluate_autoencoder"><a class="viewcode-back" href="../../../docs/python_api/operations/evaluate.html#mltk.core.evaluate_autoencoder">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">evaluate_autoencoder</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span><span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">tflite</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">weights</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -750,7 +750,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">summarize_results</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="n">AutoEncoderEvaluationResults</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">summarize_results</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="n">AutoEncoderEvaluationResults</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Generate a summary of the evaluation results"""</span>
 
     <span class="n">s</span> <span class="o">=</span> <span class="s1">''</span>
@@ -767,7 +767,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">plot_results</span><span class="p">(</span><span class="n">results</span><span class="p">:</span><span class="n">AutoEncoderEvaluationResults</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_results</span><span class="p">(</span><span class="n">results</span><span class="p">:</span><span class="n">AutoEncoderEvaluationResults</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Use Matlibplot to generate plots of the evaluation results"""</span>
 
     <span class="n">plot_overall_roc</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="n">show</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
@@ -781,7 +781,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">calculate_overall_accuracy</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_overall_accuracy</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">""" Classifier overall accuracy calculation</span>
 <span class="sd">    y_pred contains the outputs of the network for the validation data</span>
 <span class="sd">    y_true are the correct answers (0.0 for normal, 1.0 for anomaly)</span>
@@ -799,7 +799,7 @@
     <span class="k">return</span> <span class="n">accuracy</span>
 
 
-<span class="k">def</span> <span class="nf">calculate_overall_pr_accuracy</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_overall_pr_accuracy</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Classifier overall accuracy calculation</span>
 <span class="sd">    y_pred contains the outputs of the network for the validation data</span>
 <span class="sd">    y_true are the correct answers (0.0 for normal, 1.0 for anomaly)</span>
@@ -832,7 +832,7 @@
     <span class="k">return</span> <span class="n">precision</span><span class="p">,</span> <span class="n">recall</span><span class="p">,</span> <span class="n">accuracy</span>
 
 
-<span class="k">def</span> <span class="nf">calculate_overall_roc_auc</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_overall_roc_auc</span><span class="p">(</span><span class="n">thresholds</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="nb">float</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Autoencoder ROC AUC calculation</span>
 <span class="sd">    y_pred contains the outputs of the network for the validation data</span>
 <span class="sd">    y_true are the correct answers (0.0 for normal, 1.0 for anomaly)</span>
@@ -865,9 +865,9 @@
     <span class="k">return</span> <span class="n">tpr</span><span class="p">,</span> <span class="n">fpr</span><span class="p">,</span> <span class="n">roc_auc</span>
 
 
-<span class="k">def</span> <span class="nf">calculate_class_stats</span><span class="p">(</span><span class="n">all_scores</span><span class="p">,</span> <span class="n">classes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_class_stats</span><span class="p">(</span><span class="n">all_scores</span><span class="p">,</span> <span class="n">classes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Calculate stats for individual stats of each class"""</span>
-    <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="p">(</span><span class="n">precision_recall_curve</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">auc</span><span class="p">)</span> <span class="c1"># pylint: disable=import-outside-toplevel</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">precision_recall_curve</span><span class="p">,</span> <span class="n">roc_curve</span><span class="p">,</span> <span class="n">auc</span><span class="p">)</span> <span class="c1"># pylint: disable=import-outside-toplevel</span>
 
     <span class="n">stats</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">normal_pred</span> <span class="o">=</span> <span class="n">all_scores</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -924,7 +924,7 @@
     <span class="k">return</span> <span class="n">stats</span>
 
 
-<span class="k">def</span> <span class="nf">plot_overall_roc</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_overall_roc</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">show</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Generate a plot of the AUC ROC evaluation results"""</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span>
 
@@ -957,7 +957,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">plot_overall_precision_vs_recall</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_overall_precision_vs_recall</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Generate a plot of the precision vs recall"""</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span>
@@ -988,7 +988,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">plot_histogram</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_histogram</span><span class="p">(</span><span class="n">results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Generate a historgram image diagram from the evaluation scores"""</span>
 
     <span class="n">name</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span>
@@ -1037,7 +1037,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">plot_class_roc</span><span class="p">(</span><span class="n">results</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">plot_class_roc</span><span class="p">(</span><span class="n">results</span><span class="p">:</span><span class="nb">dict</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">show</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Generate a plot of the AUC ROC evaluation results"""</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span>
     <span class="n">classes</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="s1">'classes'</span><span class="p">]</span>
@@ -1088,7 +1088,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_retrieve_data</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_retrieve_data</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">x</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">):</span>
@@ -1118,13 +1118,13 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_save_decoded_image</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">decoded</span><span class="p">,</span> <span class="n">score</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_save_decoded_image</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">orig</span><span class="p">,</span> <span class="n">decoded</span><span class="p">,</span> <span class="n">score</span><span class="p">):</span>
     <span class="c1"># pylint: disable=no-member</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">cv2</span> <span class="kn">import</span> <span class="n">cv2</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">cv2</span><span class="w"> </span><span class="kn">import</span> <span class="n">cv2</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span> <span class="nn">cv2</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">cv2</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Failed import cv2 Python package, try running: pip install opencv-python OR pip install silabs-mltk[full]'</span><span class="p">)</span>
 
@@ -1164,7 +1164,7 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Data shape not supported'</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_encode_ndarray</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_encode_ndarray</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
@@ -1194,7 +1194,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

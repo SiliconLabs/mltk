@@ -426,24 +426,24 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-utils-uart-stream--page-root">Source code for mltk.utils.uart_stream</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">NamedTuple</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">struct</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">binascii</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">NamedTuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">struct</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">binascii</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
-<span class="kn">import</span> <span class="nn">serial</span>
-<span class="kn">import</span> <span class="nn">serial.tools.list_ports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">serial</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">serial.tools.list_ports</span>
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="UartStream"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream">[docs]</a><span class="k">class</span> <span class="nc">UartStream</span><span class="p">:</span>
+<div class="viewcode-block" id="UartStream"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">UartStream</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Allows for streaming binary data between a Python script and embedded device via UART</span>
 
 <span class="sd">    Features:</span>
@@ -467,7 +467,7 @@
 
 <span class="sd">    """</span>
 
-<div class="viewcode-block" id="UartStream.__init__"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="UartStream.__init__"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span><span class="nb">str</span> <span class="o">=</span> <span class="s1">'regex:JLink CDC UART Port'</span><span class="p">,</span>
         <span class="n">baud</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="mi">115200</span><span class="p">,</span>
@@ -496,23 +496,23 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_open_synchronize_timeout</span> <span class="o">=</span> <span class="n">open_synchronize_timeout</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">baud</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">baud</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Serial BAUD rate"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_baud</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">port</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Serial port"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_port</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if the serial connection is opened"""</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rx_thread_active</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="o">.</span><span class="n">is_open</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">rx_bytes_available</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">rx_bytes_available</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The number of received bytes in the RX buffer, ready to read by the application"""</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sync_requested</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_bytes_available</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -521,7 +521,7 @@
                 <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tx_bytes_available</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tx_bytes_available</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The maximum of bytes that may be immediately written by the application"""</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sync_requested</span><span class="p">:</span>
@@ -532,14 +532,14 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_bytes_available</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_synchronized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_synchronized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if the data link is synchronized"""</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sync_requested</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_tx_bytes_available</span> <span class="o">&gt;=</span> <span class="mi">0</span>
 
 
 <div class="viewcode-block" id="UartStream.list_ports"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.list_ports">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">list_ports</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_ports</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Return a list of COM ports"""</span>
         <span class="n">retval</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">port</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">hwid</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">serial</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">list_ports</span><span class="o">.</span><span class="n">comports</span><span class="p">()):</span>
@@ -548,7 +548,7 @@
 
 
 <div class="viewcode-block" id="UartStream.resolve_port"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.resolve_port">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">resolve_port</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_port</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""List the COM ports and try to find the given port in the list"""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">port</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Null port provided'</span><span class="p">)</span>
@@ -583,7 +583,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="UartStream.open"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.open">[docs]</a>    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="UartStream.open"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.open">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Open the a connection to the serial port"""</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
@@ -631,7 +631,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">synchronize_blocking</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="UartStream.close"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="UartStream.close"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Close the serial COM port"""</span>
         <span class="k">if</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_rx_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rx_thread_active</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
@@ -646,7 +646,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="UartStream.synchronize"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.synchronize">[docs]</a>    <span class="k">def</span> <span class="nf">synchronize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ack_read_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="UartStream.synchronize"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.synchronize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">synchronize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ack_read_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Synchronize UART link with other size</span>
 
 <span class="sd">        Before data transfer may behind, both sides need to "synchronize".</span>
@@ -680,7 +680,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="UartStream.synchronize_blocking"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.synchronize_blocking">[docs]</a>    <span class="k">def</span> <span class="nf">synchronize_blocking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="UartStream.synchronize_blocking"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.synchronize_blocking">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">synchronize_blocking</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Synchronize UART link with other size</span>
 
 <span class="sd">        Before data transfer may behind, both sides need to "synchronize".</span>
@@ -704,7 +704,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="UartStream.read"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span>
+<div class="viewcode-block" id="UartStream.read"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.read">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">max_size</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
@@ -740,7 +740,7 @@
         <span class="k">return</span> <span class="n">retval</span></div>
 
 
-<div class="viewcode-block" id="UartStream.read_all"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.read_all">[docs]</a>    <span class="k">def</span> <span class="nf">read_all</span><span class="p">(</span>
+<div class="viewcode-block" id="UartStream.read_all"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.read_all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">read_all</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">length</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -777,7 +777,7 @@
 
         <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">retval</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="UartStream.flush_input"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.flush_input">[docs]</a>    <span class="k">def</span> <span class="nf">flush_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.100</span><span class="p">):</span>
+<div class="viewcode-block" id="UartStream.flush_input"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.flush_input">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">flush_input</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="mf">0.100</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Drop any data in the RX buffer</span>
 
 <span class="sd">        This will block for up to timeout while the data is read and dropped</span>
@@ -785,7 +785,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">read_all</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="UartStream.write"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span>
+<div class="viewcode-block" id="UartStream.write"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.write">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span><span class="nb">bytes</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -818,7 +818,7 @@
         <span class="k">return</span> <span class="n">tx_length</span></div>
 
 
-<div class="viewcode-block" id="UartStream.write_all"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.write_all">[docs]</a>    <span class="k">def</span> <span class="nf">write_all</span><span class="p">(</span>
+<div class="viewcode-block" id="UartStream.write_all"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.write_all">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_all</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span><span class="nb">bytes</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span>
@@ -853,7 +853,7 @@
         <span class="k">return</span> <span class="n">initial_length</span></div>
 
 
-<div class="viewcode-block" id="UartStream.write_command"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.write_command">[docs]</a>    <span class="k">def</span> <span class="nf">write_command</span><span class="p">(</span>
+<div class="viewcode-block" id="UartStream.write_command"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.write_command">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write_command</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">code</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">payload</span><span class="p">:</span><span class="nb">bytes</span><span class="o">=</span><span class="kc">None</span>
@@ -890,7 +890,7 @@
         <span class="k">return</span> <span class="kc">True</span></div>
 
 
-<div class="viewcode-block" id="UartStream.read_command"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.read_command">[docs]</a>    <span class="k">def</span> <span class="nf">read_command</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Command</span><span class="p">:</span>
+<div class="viewcode-block" id="UartStream.read_command"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.read_command">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">read_command</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Command</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Read a command sent from the other side</span>
 
 <span class="sd">        A "command" consists of an unsigned, 8-bit code and an optional, 6-byte payload.</span>
@@ -916,7 +916,7 @@
         <span class="k">return</span> <span class="n">Command</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="UartStream.wait"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">synchronize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="UartStream.wait"><a class="viewcode-back" href="../../../docs/python_api/utils/uart_stream/uart_stream.html#mltk.utils.uart_stream.UartStream.wait">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">synchronize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Wait for a data link event</span>
 
 <span class="sd">        This blocks on a Threading.Condition until an event occurs</span>
@@ -943,15 +943,15 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_condition</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span>
 
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">_write_data_packet_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx_length</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_write_data_packet_header</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tx_length</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_open</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Connection not opened'</span><span class="p">)</span>
@@ -974,7 +974,7 @@
         <span class="k">return</span> <span class="n">header</span><span class="o">.</span><span class="n">id</span>
 
 
-    <span class="k">def</span> <span class="nf">_rx_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_rx_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rx_thread_active</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                 <span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_packet_header</span><span class="p">()</span>
@@ -1015,7 +1015,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_rx_thread_active</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">_parse_packet_header</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PacketHeader</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_packet_header</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PacketHeader</span><span class="p">:</span>
         <span class="n">packet_buffer</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
 
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rx_thread_active</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
@@ -1038,7 +1038,7 @@
         <span class="k">return</span> <span class="kc">None</span>
 
 
-    <span class="k">def</span> <span class="nf">_read_packet_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet_length</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_packet_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet_length</span><span class="p">:</span><span class="nb">int</span><span class="p">):</span>
         <span class="n">activity_timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
         <span class="n">packet_data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
 
@@ -1064,7 +1064,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_condition</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span></div>
 
 
-<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Command</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
     <span class="n">code</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     <span class="n">payload</span><span class="p">:</span><span class="nb">bytes</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1081,7 +1081,7 @@
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">PacketHeader</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PacketHeader</span><span class="p">:</span>
     <span class="nb">id</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">data_ack_id</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">data_tx_length</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1090,15 +1090,15 @@
     <span class="n">cmd_payload</span><span class="p">:</span><span class="nb">bytearray</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_data_packet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_data_packet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_cmd_packet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_cmd_packet</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">&lt;</span> <span class="mi">0</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_data_header</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_data_header</span><span class="p">(</span>
         <span class="nb">id</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="c1"># pylint: disable=redefined-builtin</span>
         <span class="n">ack_id</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">tx_length</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
@@ -1112,7 +1112,7 @@
         <span class="p">)</span>
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">create_cmd_header</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_cmd_header</span><span class="p">(</span>
         <span class="n">code</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span>
         <span class="n">payload</span><span class="p">:</span><span class="nb">bytes</span><span class="o">=</span><span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PacketHeader</span><span class="p">:</span>
@@ -1128,7 +1128,7 @@
 
 
     <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PacketHeader</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize</span><span class="p">(</span><span class="n">data</span><span class="p">:</span><span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PacketHeader</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
             <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="n">PACKET_HEADER_LENGTH</span> <span class="ow">and</span>
             <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">PACKET_DELIMITER1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span>
@@ -1156,7 +1156,7 @@
         <span class="k">return</span> <span class="n">header</span>
 
 
-    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Invalid packet id'</span><span class="p">)</span>
 
@@ -1185,7 +1185,7 @@
             <span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">'Invalid packet header'</span>
 
@@ -1218,7 +1218,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

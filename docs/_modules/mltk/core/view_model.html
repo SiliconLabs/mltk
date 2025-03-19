@@ -426,26 +426,26 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-view-model--page-root">Source code for mltk.core.view_model</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span> 
-<span class="kn">import</span> <span class="nn">os</span> 
-<span class="kn">import</span> <span class="nn">time</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span> 
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 
-<span class="kn">import</span> <span class="nn">http</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.network</span> <span class="kn">import</span> <span class="n">find_listening_port</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.path</span> <span class="kn">import</span> <span class="n">create_tempdir</span><span class="p">,</span> <span class="n">fullpath</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">append_exception_msg</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">http</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.network</span><span class="w"> </span><span class="kn">import</span> <span class="n">find_listening_port</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_tempdir</span><span class="p">,</span> <span class="n">fullpath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">append_exception_msg</span>
 
 
 
-<span class="kn">from</span> <span class="nn">.model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span> 
     <span class="n">KerasModel</span><span class="p">,</span>  
     <span class="n">load_mltk_model</span><span class="p">,</span> 
     <span class="n">load_tflite_or_keras_model</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
-<span class="kn">from</span> <span class="nn">.quantize_model</span> <span class="kn">import</span> <span class="n">quantize_model</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_mltk_logger</span><span class="p">,</span> <span class="n">ArchiveFileNotFoundError</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tflite_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.quantize_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">quantize_model</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">get_mltk_logger</span><span class="p">,</span> <span class="n">ArchiveFileNotFoundError</span><span class="p">)</span>
 
 
 
@@ -454,7 +454,7 @@
 
 
 
-<div class="viewcode-block" id="view_model"><a class="viewcode-back" href="../../../docs/python_api/operations/view.html#mltk.core.view_model">[docs]</a><span class="k">def</span> <span class="nf">view_model</span><span class="p">(</span>
+<div class="viewcode-block" id="view_model"><a class="viewcode-back" href="../../../docs/python_api/operations/view.html#mltk.core.view_model">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">view_model</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">,</span> <span class="n">KerasModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span> 
     <span class="n">host</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">port</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -483,7 +483,7 @@
 <span class="sd">        timeout: Amount of time to wait before terminaing HTTP server</span>
 <span class="sd">    """</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span> <span class="nn">netron</span> 
+        <span class="kn">import</span><span class="w"> </span><span class="nn">netron</span> 
     <span class="k">except</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Failed import netron Python package, try running: pip install netron OR pip install silabs-mltk[full]'</span><span class="p">)</span>
 
@@ -524,7 +524,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_load_or_build_model</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_load_or_build_model</span><span class="p">(</span>
     <span class="n">model</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">MltkModel</span><span class="p">,</span> <span class="n">KerasModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span> 
     <span class="n">test</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> 
     <span class="n">build</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> 
@@ -615,7 +615,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

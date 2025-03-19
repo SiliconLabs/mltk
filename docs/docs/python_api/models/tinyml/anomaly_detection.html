@@ -692,17 +692,17 @@ mltk<span class="w"> </span>profile<span class="w"> </span>anomaly_detection<spa
 </div></section>
 <section id="model-specification">
 <h2 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rnd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.image.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelImageDataGenerator</span><span class="p">,</span> <span class="n">ParallelProcessParams</span>
-<span class="kn">from</span> <span class="nn">mltk.core.model</span> <span class="kn">import</span> <span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">random</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">rnd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.image.parallel_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParallelImageDataGenerator</span><span class="p">,</span> <span class="n">ParallelProcessParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">ImageDatasetMixin</span><span class="p">,</span>
     <span class="n">EvaluateAutoEncoderMixin</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mltk.models.shared</span> <span class="kn">import</span> <span class="n">FullyConnectedAutoEncoder</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.archive_downloader</span> <span class="kn">import</span> <span class="n">download_verify_extract</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.models.shared</span><span class="w"> </span><span class="kn">import</span> <span class="n">FullyConnectedAutoEncoder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.archive_downloader</span><span class="w"> </span><span class="kn">import</span> <span class="n">download_verify_extract</span>
 
 
 <span class="c1"># Instantiate the MltkModel object with the following 'mixins':</span>
@@ -710,7 +710,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>anomaly_detection<spa
 <span class="c1"># - ImageDatasetMixin     - Provides image data generation operations and settings</span>
 <span class="c1"># - EvaluateAutoEncoderMixin  - Provides auto-encoder evaluation operations and settings</span>
 <span class="c1"># @mltk_model   # NOTE: This tag is required for this model be discoverable</span>
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">ImageDatasetMixin</span><span class="p">,</span>
@@ -737,7 +737,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>anomaly_detection<spa
 <span class="c1"># Image Dataset Settings</span>
 
 <span class="c1"># The directory of the training data</span>
-<span class="k">def</span> <span class="nf">download_dataset</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">download_dataset</span><span class="p">():</span>
     <span class="k">return</span> <span class="n">download_verify_extract</span><span class="p">(</span>
         <span class="n">url</span><span class="o">=</span><span class="s1">'https://github.com/SiliconLabs/mltk_assets/raw/master/datasets/features_toy_car_all.7z'</span><span class="p">,</span>
         <span class="n">dest_subdir</span><span class="o">=</span><span class="s1">'datasets/toyadmos/preprocessed/v1'</span><span class="p">,</span>
@@ -775,7 +775,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>anomaly_detection<spa
 <span class="c1">##############################################################</span>
 <span class="c1"># Image data generator settings</span>
 <span class="c1">#</span>
-<span class="k">def</span> <span class="nf">reshape_input_callback</span><span class="p">(</span><span class="n">params</span><span class="p">:</span> <span class="n">ParallelProcessParams</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">reshape_input_callback</span><span class="p">(</span><span class="n">params</span><span class="p">:</span> <span class="n">ParallelProcessParams</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
     <span class="n">input_shape</span> <span class="o">=</span> <span class="n">my_model</span><span class="o">.</span><span class="n">input_shape</span>
     <span class="n">input_height</span> <span class="o">=</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">x_length</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -810,7 +810,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>anomaly_detection<spa
 
 <span class="c1">##############################################################</span>
 <span class="c1"># Model Layout</span>
-<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_builder</span><span class="p">(</span><span class="n">model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
     <span class="n">autoencoder</span> <span class="o">=</span> <span class="n">FullyConnectedAutoEncoder</span><span class="p">(</span>
         <span class="n">input_shape</span><span class="o">=</span><span class="n">model</span><span class="o">.</span><span class="n">input_shape</span>
     <span class="p">)</span>
@@ -834,8 +834,8 @@ mltk<span class="w"> </span>profile<span class="w"> </span>anomaly_detection<spa
 <span class="c1"># mltk train anomaly_detection</span>
 <span class="c1">#</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">mltk.core</span> <span class="k">as</span> <span class="nn">mltk_core</span>
-    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mltk_core</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
     <span class="c1"># Setup the CLI logger</span>
     <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -911,7 +911,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>anomaly_detection<spa
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

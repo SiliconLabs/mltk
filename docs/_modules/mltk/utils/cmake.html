@@ -431,20 +431,20 @@
 <span class="sd">See the source code on Github: `mltk/utils/cmake.py &lt;https://github.com/siliconlabs/mltk/blob/master/mltk/utils/cmake.py&gt;`_</span>
 <span class="sd">"""</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">cmake</span> <span class="kn">import</span> <span class="n">CMAKE_BIN_DIR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">cmake</span><span class="w"> </span><span class="kn">import</span> <span class="n">CMAKE_BIN_DIR</span>
 <span class="n">CMAKE_BIN_DIR</span> <span class="o">=</span> <span class="n">CMAKE_BIN_DIR</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\\</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">MLTK_ROOT_DIR</span>
-<span class="kn">from</span> <span class="nn">.shell_cmd</span> <span class="kn">import</span> <span class="n">run_shell_cmd</span>
-<span class="kn">from</span> <span class="nn">.path</span> <span class="kn">import</span> <span class="n">clean_directory</span><span class="p">,</span> <span class="n">create_tempdir</span>
-<span class="kn">from</span> <span class="nn">.system</span> <span class="kn">import</span> <span class="n">get_current_os</span>
-<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">DummyLogger</span><span class="p">,</span> <span class="n">make_filelike</span>
-<span class="kn">from</span> <span class="nn">.python</span> <span class="kn">import</span> <span class="n">as_list</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">MLTK_ROOT_DIR</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.shell_cmd</span><span class="w"> </span><span class="kn">import</span> <span class="n">run_shell_cmd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.path</span><span class="w"> </span><span class="kn">import</span> <span class="n">clean_directory</span><span class="p">,</span> <span class="n">create_tempdir</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.system</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_current_os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">DummyLogger</span><span class="p">,</span> <span class="n">make_filelike</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_list</span>
 
 
 <span class="n">PLATFORM_TOOLCHAIN_MAPPING</span> <span class="o">=</span> <span class="p">{</span>
@@ -460,7 +460,7 @@
 <span class="p">}</span>
 
 
-<div class="viewcode-block" id="build_mltk_target"><a class="viewcode-back" href="../../../docs/python_api/utils/cmake.html#mltk.utils.cmake.build_mltk_target">[docs]</a><span class="k">def</span> <span class="nf">build_mltk_target</span><span class="p">(</span>
+<div class="viewcode-block" id="build_mltk_target"><a class="viewcode-back" href="../../../docs/python_api/utils/cmake.html#mltk.utils.cmake.build_mltk_target">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">build_mltk_target</span><span class="p">(</span>
     <span class="n">target</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">mltk_target</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">additional_variables</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -612,7 +612,7 @@
     <span class="k">return</span> <span class="n">build_dir</span></div>
 
 
-<div class="viewcode-block" id="invoke_mltk_target"><a class="viewcode-back" href="../../../docs/python_api/utils/cmake.html#mltk.utils.cmake.invoke_mltk_target">[docs]</a><span class="k">def</span> <span class="nf">invoke_mltk_target</span><span class="p">(</span>
+<div class="viewcode-block" id="invoke_mltk_target"><a class="viewcode-back" href="../../../docs/python_api/utils/cmake.html#mltk.utils.cmake.invoke_mltk_target">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">invoke_mltk_target</span><span class="p">(</span>
     <span class="n">target</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">build_target</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">debug</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -652,7 +652,7 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Failed to invoke CMake target'</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">retval</span></div>
 
-<div class="viewcode-block" id="get_build_directory"><a class="viewcode-back" href="../../../docs/python_api/utils/cmake.html#mltk.utils.cmake.get_build_directory">[docs]</a><span class="k">def</span> <span class="nf">get_build_directory</span><span class="p">(</span>
+<div class="viewcode-block" id="get_build_directory"><a class="viewcode-back" href="../../../docs/python_api/utils/cmake.html#mltk.utils.cmake.get_build_directory">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_build_directory</span><span class="p">(</span>
     <span class="n">platform</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">target</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">debug</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -682,7 +682,7 @@
 
 
 
-<div class="viewcode-block" id="parse_variables"><a class="viewcode-back" href="../../../docs/python_api/utils/cmake.html#mltk.utils.cmake.parse_variables">[docs]</a><span class="k">def</span> <span class="nf">parse_variables</span><span class="p">(</span>
+<div class="viewcode-block" id="parse_variables"><a class="viewcode-back" href="../../../docs/python_api/utils/cmake.html#mltk.utils.cmake.parse_variables">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_variables</span><span class="p">(</span>
     <span class="n">cmake_variables</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Convert a list or dictionary of CMake variables into a dictionary"""</span>
@@ -736,7 +736,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

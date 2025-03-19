@@ -564,27 +564,27 @@ be added to batches. This specifies the percentage of of samples to generate rel
 of samples of other classes. For instance, if another class has 1000 samples and silence_class_percentage=0.8,
 then the number of ‘silence’ class samples generated will be 800.
 Set this parameter to None to disable this feature</p></li>
-<li><p><strong>class_counts</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Dictionary which will be populated with the sample counts for each class</p></li>
+<li><p><strong>class_counts</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – Dictionary which will be populated with the sample counts for each class</p></li>
 <li><p><strong>onehot_encode</strong> – If true then the audio labels are onehot-encoded
 If false, then only the class id (corresponding to it index in the <code class="docutils literal notranslate"><span class="pre">classes</span></code> argument) is returned</p></li>
 <li><p><strong>shuffle</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If true, then shuffle the dataset</p></li>
 <li><p><strong>seed</strong> – The seed to use for shuffling the dataset</p></li>
-<li><p><strong>split</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – A tuple indicating the (start,stop) percentage of the dataset to return,
+<li><p><strong>split</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) – A tuple indicating the (start,stop) percentage of the dataset to return,
 e.g. (.75, 1.0) -&gt; return last 25% of dataset
 If omitted then return the entire dataset</p></li>
 <li><p><strong>max_samples_per_class</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum number of samples to return per class, this can be useful for debug to limit the dataset size</p></li>
-<li><p><strong>sample_rate_hz</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Sample rate to convert audio samples, if omitted then return native sample rate</p></li>
+<li><p><strong>sample_rate_hz</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Sample rate to convert audio samples, if omitted then return native sample rate</p></li>
 <li><p><strong>return_audio_data</strong> – If true then the audio file data is returned, if false then only the audio file path is returned</p></li>
 <li><p><strong>return_audio_sample_rate</strong> – If true and return_audio_data is True, then the audio file data and corresponding sample rate is returned, if false then only the audio file data is return</p></li>
-<li><p><strong>white_list_formats</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – List of file extensions to include in the search.
+<li><p><strong>white_list_formats</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – List of file extensions to include in the search.
 If omitted then only return <code class="docutils literal notranslate"><span class="pre">.wav</span></code> files</p></li>
 <li><p><strong>follow_links</strong> – If true then follow symbolic links when recursively searching the given dataset directory</p></li>
-<li><p><strong>shuffle_index_directory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path to directory to hold generated index of the dataset
+<li><p><strong>shuffle_index_directory</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Path to directory to hold generated index of the dataset
 If omitted, then an index is generated at &lt;directory&gt;/.index</p></li>
-<li><p><strong>list_valid_filenames_in_directory_function</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>) – <p>This is a custom dataset processing callback.
+<li><p><strong>list_valid_filenames_in_directory_function</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>]) – <p>This is a custom dataset processing callback.
 It should return a list of valid file names for the given class.
 It has the following function signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">list_valid_filenames_in_directory</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">list_valid_filenames_in_directory</span><span class="p">(</span>
         <span class="n">base_directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">search_class</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">white_list_formats</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -597,10 +597,10 @@ It has the following function signature:</p>
 </pre></div>
 </div>
 </p></li>
-<li><p><strong>process_samples_function</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – <p>This allows for processing the samples BEFORE they’re returned by this API.
+<li><p><strong>process_samples_function</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]]) – <p>This allows for processing the samples BEFORE they’re returned by this API.
 This allows for adding/removing samples.
 It has the following function signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_samples</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_samples</span><span class="p">(</span>
     <span class="n">directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="c1"># The provided directory to this API</span>
     <span class="n">sample_paths</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">],</span> <span class="c1"># A dictionary: &lt;class name&gt;, [&lt;sample paths relative to directory&gt;]</span>
     <span class="n">split</span><span class="p">:</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">float</span><span class="p">],</span>
@@ -663,25 +663,25 @@ be added to batches. This specifies the percentage of of samples to generate rel
 of samples of other classes. For instance, if another class has 1000 samples and unknown_class_percentage=0.8,
 then the number of ‘unknown’ class samples generated will be 800.
 Set this parameter to None to disable this feature</p></li>
-<li><p><strong>class_counts</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – Dictionary which will be populated with the sample counts for each class</p></li>
+<li><p><strong>class_counts</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]]) – Dictionary which will be populated with the sample counts for each class</p></li>
 <li><p><strong>onehot_encode</strong> – If true then the audio labels are onehot-encoded
 If false, then only the class id (corresponding to it index in the <code class="docutils literal notranslate"><span class="pre">classes</span></code> argument) is returned</p></li>
 <li><p><strong>shuffle</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If true, then shuffle the dataset</p></li>
 <li><p><strong>seed</strong> – The seed to use for shuffling the dataset</p></li>
-<li><p><strong>split</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – A tuple indicating the (start,stop) percentage of the dataset to return,
+<li><p><strong>split</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]) – A tuple indicating the (start,stop) percentage of the dataset to return,
 e.g. (.75, 1.0) -&gt; return last 25% of dataset
 If omitted then return the entire dataset</p></li>
 <li><p><strong>max_samples_per_class</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – Maximum number of samples to return per class, this can be useful for debug to limit the dataset size</p></li>
 <li><p><strong>return_image_data</strong> – If true then the image file data is returned, if false then only the image file path is returned</p></li>
-<li><p><strong>white_list_formats</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – List of file extensions to include in the search.
+<li><p><strong>white_list_formats</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – List of file extensions to include in the search.
 If omitted then only return <code class="docutils literal notranslate"><span class="pre">.png</span></code>, <code class="docutils literal notranslate"><span class="pre">.jpg</span></code> files</p></li>
 <li><p><strong>follow_links</strong> – If true then follow symbolic links when recursively searching the given dataset directory</p></li>
-<li><p><strong>shuffle_index_directory</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path to directory to hold generated index of the dataset
+<li><p><strong>shuffle_index_directory</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Path to directory to hold generated index of the dataset
 If omitted, then an index is generated at &lt;directory&gt;/.index</p></li>
 <li><p><strong>list_valid_filenames_in_directory_function</strong> – <p>This is a custom dataset processing callback.
 It should return a list of valid file names for the given class.
 It has the following function signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">list_valid_filenames_in_directory</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">list_valid_filenames_in_directory</span><span class="p">(</span>
         <span class="n">base_directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">search_class</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">white_list_formats</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -697,7 +697,7 @@ It has the following function signature:</p>
 <li><p><strong>process_samples_function</strong> – <p>This allows for processing the samples BEFORE they’re returned by this API.
 This allows for adding/removing samples.
 It has the following function signature:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">process_samples</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">process_samples</span><span class="p">(</span>
     <span class="n">directory</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="c1"># The provided directory to this API</span>
     <span class="n">sample_paths</span><span class="p">:</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">str</span><span class="p">],</span> <span class="c1"># A dictionary: &lt;class name&gt;, [&lt;sample paths relative to directory&gt;]</span>
     <span class="n">split</span><span class="p">:</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">float</span><span class="p">],</span>
@@ -742,11 +742,11 @@ This callback must be at the root of the python module (i.e. it cannot be nested
 this can also be a list of dtypes if the callback returns multiple np.ndarrays</p></li>
 <li><p><strong>n_jobs</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]) – The number of jobs (i.e. CPU cores) to use for processing
 This can either be an integer or a float between (0,1.0]</p></li>
-<li><p><strong>job_batch_size</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – This size of the batches to use for processing
+<li><p><strong>job_batch_size</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>]) – This size of the batches to use for processing
 If omitted, then use the calculated <code class="docutils literal notranslate"><span class="pre">n_jobs</span></code></p></li>
-<li><p><strong>pool</strong> (<a class="reference internal" href="../utils/process_pool.html#mltk.utils.process_pool.ProcessPool" title="mltk.utils.process_pool.pool.ProcessPool"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessPool</span></code></a>) – An existing processing pool. If omitted then create a new pool</p></li>
+<li><p><strong>pool</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<a class="reference internal" href="../utils/process_pool.html#mltk.utils.process_pool.ProcessPool" title="mltk.utils.process_pool.pool.ProcessPool"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessPool</span></code></a>]) – An existing processing pool. If omitted then create a new pool</p></li>
 <li><p><strong>name</strong> – The prefix to use in the model graph</p></li>
-<li><p><strong>env</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – Optional OS environment variables to export in the parallel subprocesses</p></li>
+<li><p><strong>env</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]) – Optional OS environment variables to export in the parallel subprocesses</p></li>
 <li><p><strong>disable_gpu_in_subprocesses</strong> – By default the GPU is disabled in the parallel subprocesses</p></li>
 </ul>
 </dd>
@@ -830,7 +830,7 @@ a tuple of the updated dataset with the parallel processing and the associated p
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

@@ -621,26 +621,26 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
 </div></section>
 <section id="model-specification">
 <h2 id="model-specification">Model Specification<a class="headerlink" href="#model-specification" title="Permalink to this heading">¶</a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">tqdm</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tqdm</span>
 
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
-<span class="kn">from</span> <span class="nn">tensorflow</span> <span class="kn">import</span> <span class="n">keras</span>
-<span class="kn">from</span> <span class="nn">tensorflow.keras</span> <span class="kn">import</span> <span class="n">layers</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">typer</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="kn">import</span> <span class="n">keras</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tensorflow.keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">layers</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">typer</span>
 
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">from</span> <span class="nn">mltk.core.keras</span> <span class="kn">import</span> <span class="p">(</span><span class="n">img_to_array</span><span class="p">,</span> <span class="n">load_img</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mltk.core.model</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.keras</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">img_to_array</span><span class="p">,</span> <span class="n">load_img</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.model</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">ImageDatasetMixin</span><span class="p">,</span>
     <span class="n">EvaluateMixin</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">load_tflite_or_keras_model</span><span class="p">,</span>
     <span class="n">KerasModel</span><span class="p">,</span>
     <span class="n">TfliteModel</span><span class="p">,</span>
@@ -649,17 +649,17 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
     <span class="n">TrainingResults</span>
 <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">mltk.core.tflite_model.tflite_model</span> <span class="kn">import</span> <span class="n">TfliteModel</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.image.parallel_generator</span> <span class="kn">import</span> <span class="n">ParallelImageDataGenerator</span><span class="p">,</span> <span class="n">ParallelProcessParams</span>
-<span class="kn">from</span> <span class="nn">mltk.core.keras.losses</span> <span class="kn">import</span> <span class="n">ContrastiveLoss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.tflite_model.tflite_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.image.parallel_generator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParallelImageDataGenerator</span><span class="p">,</span> <span class="n">ParallelProcessParams</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.keras.losses</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContrastiveLoss</span>
 
-<span class="kn">from</span> <span class="nn">mltk.models.siliconlabs.fingerprint_signature_generator_dataset</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.models.siliconlabs.fingerprint_signature_generator_dataset</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">FingerprintSignatureGeneratorDataset</span><span class="p">,</span>
     <span class="n">euclidean_distance</span>
 <span class="p">)</span>
 
 <span class="c1"># @mltk_model # NOTE: This tag is required for this model be discoverable</span>
-<span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span>
     <span class="n">MltkModel</span><span class="p">,</span>
     <span class="n">TrainMixin</span><span class="p">,</span>
     <span class="n">ImageDatasetMixin</span><span class="p">,</span>
@@ -714,7 +714,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
 <span class="c1">###################################################################################################</span>
 
 
-<span class="k">def</span> <span class="nf">build_model_tower</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">build_model_tower</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Build the one of the "tower's" of the siamese network</span>
 
 <span class="sd">    This is the ML model that is deployed to the device.</span>
@@ -739,7 +739,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
     <span class="k">return</span> <span class="n">keras</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">my_model_builder</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KerasModel</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_builder</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span> <span class="n">MyModel</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KerasModel</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Build the siamese network model """</span>
     <span class="n">input_1</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">my_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span>
     <span class="n">input_2</span> <span class="o">=</span> <span class="n">layers</span><span class="o">.</span><span class="n">Input</span><span class="p">(</span><span class="n">my_model</span><span class="o">.</span><span class="n">input_shape</span><span class="p">)</span>
@@ -788,7 +788,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
 <span class="n">target_size</span> <span class="o">=</span> <span class="n">my_model</span><span class="o">.</span><span class="n">target_size</span>
 <span class="n">h_offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">target_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">//</span> <span class="mi">2</span>
 <span class="n">w_offset</span> <span class="o">=</span> <span class="p">(</span><span class="n">target_size</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">input_shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">//</span> <span class="mi">2</span>
-<span class="k">def</span> <span class="nf">crop_and_convert_from_uint8_to_int8</span><span class="p">(</span><span class="n">params</span><span class="p">:</span><span class="n">ParallelProcessParams</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">crop_and_convert_from_uint8_to_int8</span><span class="p">(</span><span class="n">params</span><span class="p">:</span><span class="n">ParallelProcessParams</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="c1"># x is a float32 dtype but has an uint8 range</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span> <span class="c1"># The data should already been in the uint8 range, but clip it just to be sure</span>
     <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="mi">128</span> <span class="c1"># Convert from uint8 to int8</span>
@@ -878,7 +878,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
 <span class="c1"># TF-Lite converter settings</span>
 <span class="c1">###################################################################################################</span>
 
-<span class="k">def</span> <span class="nf">my_representative_dataset_generator</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_representative_dataset_generator</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">"""This is called by the TfliteConverter</span>
 
 <span class="sd">    The data generator returns tuples of fingerprints</span>
@@ -917,7 +917,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
 <span class="c1">###################################################################################################</span>
 
 
-<span class="k">def</span> <span class="nf">my_keras_model_saver</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_keras_model_saver</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span><span class="n">MyModel</span><span class="p">,</span>
     <span class="n">keras_model</span><span class="p">:</span><span class="n">KerasModel</span><span class="p">,</span>
     <span class="n">logger</span><span class="p">:</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span>
@@ -955,7 +955,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
 <span class="c1"># Model Evaluation</span>
 <span class="c1">###################################################################################################</span>
 
-<span class="k">def</span> <span class="nf">generate_predictions</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_predictions</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span><span class="n">MyModel</span><span class="p">,</span>
     <span class="n">built_model</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">KerasModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
     <span class="n">threshold</span><span class="p">:</span><span class="nb">float</span><span class="p">,</span>
@@ -967,7 +967,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
 <span class="sd">    If the distance is less than threshold then the fingerprints are considered</span>
 <span class="sd">    a match, otherwise they're not matching (i.e. they're not the same finger)</span>
 <span class="sd">    """</span>
-    <span class="k">def</span> <span class="nf">_compare_signatures</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compare_signatures</span><span class="p">(</span><span class="n">s1</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
         <span class="c1"># Calculate the distance (i.e. similarity)</span>
         <span class="c1"># between the two fingerprint signature vectors</span>
         <span class="n">dis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">s1</span> <span class="o">-</span> <span class="n">s2</span><span class="p">)))</span>
@@ -1028,7 +1028,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
     <span class="k">return</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_label</span><span class="p">,</span> <span class="n">y_dis</span>
 
 
-<span class="k">def</span> <span class="nf">collect_samples</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">collect_samples</span><span class="p">(</span><span class="n">my_model</span><span class="p">:</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">list</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">"""Collect the specified number of samples from the dataset"""</span>
     <span class="n">my_model</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">my_model</span><span class="o">.</span><span class="n">datagen</span><span class="o">.</span><span class="n">cores</span> <span class="o">=</span> <span class="mi">1</span>
@@ -1057,7 +1057,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
     <span class="k">return</span> <span class="n">all_x</span><span class="p">,</span> <span class="n">all_y</span>
 
 
-<span class="k">def</span> <span class="nf">my_model_evaluator</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">my_model_evaluator</span><span class="p">(</span>
     <span class="n">mltk_model</span><span class="p">:</span><span class="n">MyModel</span><span class="p">,</span>
     <span class="n">built_model</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">KerasModel</span><span class="p">,</span> <span class="n">TfliteModel</span><span class="p">],</span>
     <span class="n">eval_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
@@ -1178,7 +1178,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
 
 
 <span class="nd">@my_model</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">'dump'</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">datagen_dump_custom_command</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">datagen_dump_custom_command</span><span class="p">(</span>
     <span class="n">tflite</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="s1">'--tflite'</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'Include the trained .tflite model predictions in the displayed results'</span>
     <span class="p">),</span>
@@ -1257,7 +1257,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
 
 
 <span class="nd">@my_model</span><span class="o">.</span><span class="n">cli</span><span class="o">.</span><span class="n">command</span><span class="p">(</span><span class="s1">'preprocess'</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">preprocess_custom_command</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">preprocess_custom_command</span><span class="p">(</span>
     <span class="n">count</span><span class="p">:</span><span class="nb">int</span> <span class="o">=</span> <span class="n">typer</span><span class="o">.</span><span class="n">Option</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="s1">'--count'</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">'Number of samples to dump, -1 to use all images'</span>
     <span class="p">),</span>
@@ -1323,8 +1323,8 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
 <span class="c1"># mltk train fingerprint_signature_generator</span>
 <span class="c1">#</span>
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">mltk.core</span> <span class="k">as</span> <span class="nn">mltk_core</span>
-    <span class="kn">from</span> <span class="nn">mltk</span> <span class="kn">import</span> <span class="n">cli</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mltk_core</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mltk</span><span class="w"> </span><span class="kn">import</span> <span class="n">cli</span>
 
     <span class="c1"># Setup the CLI logger</span>
     <span class="n">cli</span><span class="o">.</span><span class="n">get_logger</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1400,7 +1400,7 @@ mltk<span class="w"> </span>profile<span class="w"> </span>fingerprint_signature
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

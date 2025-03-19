@@ -431,31 +431,31 @@
 <span class="sd">Refer to `ParallelAudioDataGenerator` for more details</span>
 <span class="sd">"""</span>
 
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">append_exception_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">append_exception_msg</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">librosa</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">librosa</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">'nt'</span> <span class="ow">and</span> <span class="s1">'sndfile library not found'</span> <span class="ow">in</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span>
         <span class="n">append_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n\n</span><span class="s1">Try running: sudo apt-get install libsndfile1</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
     <span class="k">raise</span>
 
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AudioFeatureGeneratorSettings</span><span class="p">,</span> 
     <span class="n">AudioFeatureGenerator</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">data_utils</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.utils</span> <span class="kn">import</span> <span class="n">audio</span> <span class="k">as</span> <span class="n">audio_utils</span>
-<span class="kn">from</span> <span class="nn">.directory_iterator</span> <span class="kn">import</span> <span class="n">ParallelDirectoryIterator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">data_utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">audio</span> <span class="k">as</span> <span class="n">audio_utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.directory_iterator</span><span class="w"> </span><span class="kn">import</span> <span class="n">ParallelDirectoryIterator</span>
 
 
-<div class="viewcode-block" id="ParallelAudioDataGenerator"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator">[docs]</a><span class="k">class</span> <span class="nc">ParallelAudioDataGenerator</span><span class="p">:</span>
+<div class="viewcode-block" id="ParallelAudioDataGenerator"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ParallelAudioDataGenerator</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">'''Parallel Audio Data Generator</span>
 <span class="sd">    </span>
 <span class="sd">    This class as a similar functionality to the `Keras ImageDataGenerator &lt;https://keras.io/preprocessing/image&gt;`_</span>
@@ -680,7 +680,7 @@
 <span class="sd">            If false, then generated sample shape is [height, width].</span>
 <span class="sd">    </span>
 <span class="sd">    '''</span>
-<div class="viewcode-block" id="ParallelAudioDataGenerator.__init__"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="ParallelAudioDataGenerator.__init__"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">cores</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
         <span class="n">debug</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -774,42 +774,42 @@
 
 
     <span class="nd">@property</span> 
-    <span class="k">def</span> <span class="nf">sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The shape of the sample as a tuple"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">frontend_enabled</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">spectrogram_shape</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sample_shape</span>
     <span class="nd">@sample_shape</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'The sample_shape is calculated dynamically, it cannot be manually set'</span><span class="p">)</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sample_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the length of the audio sample as the number of individual ADC samples"""</span>
         <span class="k">return</span> <span class="nb">int</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate_hz</span><span class="p">)</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">)</span>
     <span class="nd">@sample_length</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">sample_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'The sample_length is calculated dynamically, it cannot be manually set. Try setting sample_length_ms'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sample_length_ms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_length_ms</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the AudioFeatureGeneratorSettings.sample_length_ms value"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span>
     <span class="nd">@sample_length_ms</span><span class="o">.</span><span class="n">setter</span> 
-    <span class="k">def</span> <span class="nf">sample_length_ms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_length_ms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_length_ms</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sample_rate_hz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_rate_hz</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the AudioFeatureGeneratorSettings.sample_rate_hz value"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span>
     <span class="nd">@sample_rate_hz</span><span class="o">.</span><span class="n">setter</span> 
-    <span class="k">def</span> <span class="nf">sample_rate_hz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_rate_hz</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">frontend_settings</span><span class="o">.</span><span class="n">sample_rate_hz</span> <span class="o">=</span> <span class="n">v</span>
 
 
-<div class="viewcode-block" id="ParallelAudioDataGenerator.flow_from_directory"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.flow_from_directory">[docs]</a>    <span class="k">def</span> <span class="nf">flow_from_directory</span><span class="p">(</span>
+<div class="viewcode-block" id="ParallelAudioDataGenerator.flow_from_directory"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.flow_from_directory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">flow_from_directory</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">directory</span><span class="p">,</span>
         <span class="n">classes</span><span class="p">,</span>
@@ -947,7 +947,7 @@
     
     
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">default_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">default_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Retrun the default augmentations transform settings"""</span>
         <span class="k">return</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">({</span>
             <span class="s1">'offset_percentage'</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>
@@ -962,7 +962,7 @@
         <span class="p">})</span>
     
     
-<div class="viewcode-block" id="ParallelAudioDataGenerator.get_random_transform"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.get_random_transform">[docs]</a>    <span class="k">def</span> <span class="nf">get_random_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="ParallelAudioDataGenerator.get_random_transform"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.get_random_transform">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_random_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Generate random augmentation settings based on the configeration parameters"""</span>
         <span class="n">xform_params</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_transform</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">disable_random_transforms</span><span class="p">:</span>
@@ -1007,7 +1007,7 @@
             <span class="n">xform_params</span><span class="p">[</span><span class="s1">'speed_factor'</span><span class="p">]</span> <span class="o">=</span> <span class="n">speeds</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">speeds</span><span class="p">))]</span>
     
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch_range</span><span class="p">:</span>
-            <span class="k">def</span> <span class="nf">_convert_range</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
+            <span class="k">def</span><span class="w"> </span><span class="nf">_convert_range</span><span class="p">(</span><span class="n">v</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
                     <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">12</span><span class="p">)</span>
                 <span class="k">return</span> <span class="n">v</span>
@@ -1022,7 +1022,7 @@
         <span class="k">return</span> <span class="n">xform_params</span> </div>
     
     
-<div class="viewcode-block" id="ParallelAudioDataGenerator.adjust_length"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.adjust_length">[docs]</a>    <span class="k">def</span> <span class="nf">adjust_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">orignal_sr</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">whole_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ParallelAudioDataGenerator.adjust_length"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.adjust_length">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">adjust_length</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">orignal_sr</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">whole_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out_length</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Adjust the audio sample length to fit the sample_length_seconds parameter</span>
 <span class="sd">        This will pad with zeros or crop the input sample as necessary</span>
 <span class="sd">        """</span>
@@ -1044,7 +1044,7 @@
         <span class="p">)</span></div>
     
 
-<div class="viewcode-block" id="ParallelAudioDataGenerator.apply_transform"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.apply_transform">[docs]</a>    <span class="k">def</span> <span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">orignal_sr</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">whole_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="ParallelAudioDataGenerator.apply_transform"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.apply_transform">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">apply_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">orignal_sr</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">whole_sample</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Apply the given transform parameters to the input audio sample"""</span>
         <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">'speed_factor'</span><span class="p">]</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="s1">'speed_factor'</span><span class="p">]</span> <span class="o">!=</span> <span class="mf">1.0</span><span class="p">:</span>
             <span class="n">rate</span> <span class="o">=</span>  <span class="n">params</span><span class="p">[</span><span class="s1">'speed_factor'</span><span class="p">]</span>
@@ -1079,7 +1079,7 @@
         <span class="k">return</span> <span class="n">sample</span></div>
 
 
-<div class="viewcode-block" id="ParallelAudioDataGenerator.apply_frontend"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.apply_frontend">[docs]</a>    <span class="k">def</span> <span class="nf">apply_frontend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="ParallelAudioDataGenerator.apply_frontend"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.apply_frontend">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">apply_frontend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Send the audio sample through the AudioFeatureGenerator and return the generated spectrogram"""</span>
         <span class="k">return</span> <span class="n">audio_utils</span><span class="o">.</span><span class="n">apply_frontend</span><span class="p">(</span>
             <span class="n">sample</span><span class="o">=</span><span class="n">sample</span><span class="p">,</span>
@@ -1088,7 +1088,7 @@
         <span class="p">)</span></div>
 
     
-<div class="viewcode-block" id="ParallelAudioDataGenerator.standardize"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.standardize">[docs]</a>    <span class="k">def</span> <span class="nf">standardize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
+<div class="viewcode-block" id="ParallelAudioDataGenerator.standardize"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator.html#mltk.core.preprocess.audio.parallel_generator.ParallelAudioDataGenerator.standardize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">standardize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Applies the normalization configuration in-place to a batch of inputs.</span>
 
 <span class="sd">        Args:</span>
@@ -1113,7 +1113,7 @@
 
 
         
-    <span class="k">def</span> <span class="nf">_apply_vtlp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">original_sr</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_apply_vtlp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">original_sr</span><span class="p">,</span> <span class="n">factor</span><span class="p">):</span>
         <span class="n">stft</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">stft</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
         <span class="n">time_dim</span><span class="p">,</span> <span class="n">freq_dim</span> <span class="o">=</span> <span class="n">stft</span><span class="o">.</span><span class="n">shape</span>
         <span class="n">data_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">stft</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
@@ -1137,7 +1137,7 @@
         <span class="k">return</span> <span class="n">librosa</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">istft</span><span class="p">(</span><span class="n">new_stft</span><span class="p">)</span>
         
         
-    <span class="k">def</span> <span class="nf">_get_vtlp_scale_factors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_dim</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">fhi</span><span class="o">=</span><span class="mi">4800</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_vtlp_scale_factors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">freq_dim</span><span class="p">,</span> <span class="n">sampling_rate</span><span class="p">,</span> <span class="n">fhi</span><span class="o">=</span><span class="mi">4800</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.9</span><span class="p">):</span>
         <span class="n">factors</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">freqs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">freq_dim</span><span class="p">)</span>
         
@@ -1158,7 +1158,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">factors</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_get_color_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_color_noise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
         <span class="c1"># https://en.wikipedia.org/wiki/Colors_of_noise</span>
         <span class="n">sample_length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sample</span><span class="p">)</span>
         <span class="n">uneven</span> <span class="o">=</span> <span class="n">sample_length</span> <span class="o">%</span> <span class="mi">2</span>
@@ -1230,7 +1230,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

@@ -428,24 +428,24 @@
   <h1 id="modules-mltk-core-preprocess-audio-parallel-generator-iterator--page-root">Source code for mltk.core.preprocess.audio.parallel_generator.iterator</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Utilities for real-time data augmentation on image data.</span>
 <span class="sd">"""</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">random</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">inspect</span>
-<span class="kn">import</span> <span class="nn">queue</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">random</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">inspect</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">queue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">mltk.core</span> <span class="kn">import</span> <span class="n">get_mltk_logger</span>
-<span class="kn">from</span> <span class="nn">mltk.core.keras</span> <span class="kn">import</span> <span class="n">DataSequence</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.utils</span> <span class="kn">import</span> <span class="n">audio</span> <span class="k">as</span> <span class="n">audio_utils</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.process_pool</span> <span class="kn">import</span> <span class="n">ProcessPool</span><span class="p">,</span> <span class="n">calculate_n_jobs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_mltk_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.keras</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataSequence</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">audio</span> <span class="k">as</span> <span class="n">audio_utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.process_pool</span><span class="w"> </span><span class="kn">import</span> <span class="n">ProcessPool</span><span class="p">,</span> <span class="n">calculate_n_jobs</span>
 
 
 
-<span class="k">class</span> <span class="nc">ParallelIterator</span><span class="p">(</span><span class="n">DataSequence</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ParallelIterator</span><span class="p">(</span><span class="n">DataSequence</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Base class for image data iterators.</span>
 
 <span class="sd">    # Arguments</span>
@@ -456,7 +456,7 @@
 <span class="sd">    """</span>
     <span class="n">white_list_formats</span> <span class="o">=</span> <span class="p">(</span><span class="s1">'wav'</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">process_params</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">process_params</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">n</span>
@@ -502,22 +502,22 @@
 
  
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">is_running</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_shutdown</span>
 
         
-    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_started</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">current_batch_finished</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_index</span> <span class="o">=</span> <span class="mi">0</span>
     
     
-    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">current_batch_finished</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
@@ -525,7 +525,7 @@
        
 
 
-    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s1">'Asked to retrieve element </span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s1">, but the Sequence has length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">'</span>
@@ -550,26 +550,26 @@
         <span class="k">return</span> <span class="n">retval</span>
 
 
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_size</span>  <span class="c1"># round up</span>
 
 
-    <span class="k">def</span> <span class="nf">on_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">pass</span>
 
 
-    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Needed if we want to do something like:</span>
         <span class="c1"># for x, y in data_gen.flow(...):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">batch_index</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="bp">self</span>
 
 
-    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""For python 2.x.</span>
 
 <span class="sd">        # Returns</span>
@@ -593,7 +593,7 @@
         <span class="k">return</span> <span class="n">retval</span>
 
 
-    <span class="k">def</span> <span class="nf">_generate_batch_data_safe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_batch_data_safe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_generate_batch_data</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -603,7 +603,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">(</span><span class="n">wait</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     
     
-    <span class="k">def</span> <span class="nf">_generate_batch_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_batch_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
             <span class="c1"># Wait for training to start</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_generation_started</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">):</span>
@@ -653,7 +653,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_invoke_processing</span><span class="p">(</span><span class="n">current_batch_index</span><span class="p">,</span> <span class="n">batch_filenames</span><span class="p">,</span> <span class="n">batch_classes</span><span class="p">)</span>
     
 
-    <span class="k">def</span> <span class="nf">_invoke_processing</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_invoke_processing</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">batch_index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> 
         <span class="n">batch_filenames</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> 
@@ -672,18 +672,18 @@
                 <span class="k">raise</span>
 
 
-    <span class="k">def</span> <span class="nf">_pool_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_pool_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">results</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             
 
-<div class="viewcode-block" id="ParallelProcessParams"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator_params.html#mltk.core.preprocess.audio.parallel_generator.ParallelProcessParams">[docs]</a><span class="k">class</span> <span class="nc">ParallelProcessParams</span><span class="p">():</span>
+<div class="viewcode-block" id="ParallelProcessParams"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator_params.html#mltk.core.preprocess.audio.parallel_generator.ParallelProcessParams">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ParallelProcessParams</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">"""Adds methods related to getting batches from filenames</span>
 
 <span class="sd">    It includes the logic to transform image files to batches.</span>
 <span class="sd">    """</span>
 
-<div class="viewcode-block" id="ParallelProcessParams.__init__"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator_params.html#mltk.core.preprocess.audio.parallel_generator.ParallelProcessParams.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="ParallelProcessParams.__init__"><a class="viewcode-back" href="../../../../../../docs/python_api/data_preprocessing/audio_data_generator_params.html#mltk.core.preprocess.audio.parallel_generator.ParallelProcessParams.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">audio_data_generator</span><span class="p">,</span>
         <span class="n">sample_rate</span><span class="p">,</span>
@@ -747,7 +747,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">get_batches_of_transformed_samples</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_batches_of_transformed_samples</span><span class="p">(</span>
     <span class="n">batch_index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> 
     <span class="n">filenames</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> 
     <span class="n">classes</span><span class="p">:</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> 
@@ -875,9 +875,9 @@
 
 
 
-<span class="k">class</span> <span class="nc">BatchData</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">BatchData</span><span class="p">:</span>
     
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">n</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> 
         <span class="n">shuffle</span><span class="p">:</span><span class="nb">bool</span><span class="p">,</span> 
@@ -898,23 +898,23 @@
         
     
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">have_more_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">have_more_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices_lock</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span>
     
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">request_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">request_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices_lock</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">)</span>
     
     
-    <span class="k">def</span> <span class="nf">start_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">start_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices_lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_counts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)]</span>
     
     
-    <span class="k">def</span> <span class="nf">next_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">next_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -929,7 +929,7 @@
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         
     
-    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">.1</span><span class="p">):</span>
@@ -937,7 +937,7 @@
         <span class="k">return</span> <span class="kc">False</span>
         
     
-    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">:</span>
             <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
@@ -950,7 +950,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)]</span>
         
     
-    <span class="k">def</span> <span class="nf">qsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">qsize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">qsize</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
@@ -958,7 +958,7 @@
                 <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="p">)</span>
 
      
-    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shuffle</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">batch_data</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -967,7 +967,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">batch_data_lock</span><span class="o">.</span><span class="n">notify_all</span><span class="p">()</span>
     
      
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">save_batch_zero</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">save_batch_zero</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">decrement_batch_count</span> <span class="o">=</span> <span class="kc">True</span> 
 
         <span class="c1"># If we're returning batch zero and we have a saved one,</span>
@@ -1015,7 +1015,7 @@
         <span class="k">return</span> <span class="n">retval</span><span class="p">,</span> <span class="n">is_last_in_batch</span>
 
 
-    <span class="k">def</span> <span class="nf">_decrement_current_batch_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_decrement_current_batch_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="n">is_last_in_batch</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices_lock</span><span class="p">:</span>
             <span class="n">current_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_counts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1029,7 +1029,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_add_optional_callback_arguments</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_add_optional_callback_arguments</span><span class="p">(</span>
     <span class="n">func</span><span class="p">,</span> 
     <span class="n">batch_index</span><span class="p">,</span> 
     <span class="n">class_id</span><span class="p">,</span> 
@@ -1077,7 +1077,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

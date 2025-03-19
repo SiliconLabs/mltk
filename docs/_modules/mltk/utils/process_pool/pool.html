@@ -426,22 +426,22 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-utils-process-pool-pool--page-root">Source code for mltk.utils.process_pool.pool</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span>  <span class="n">Dict</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">atexit</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">queue</span>
-<span class="kn">import</span> <span class="nn">subprocess</span>
-<span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span>  <span class="nn">multiprocessing</span> <span class="kn">import</span> <span class="n">cpu_count</span> <span class="k">as</span> <span class="n">get_cpu_count</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span>  <span class="n">Dict</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">queue</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">subprocess</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w">  </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="kn">import</span> <span class="n">cpu_count</span> <span class="k">as</span> <span class="n">get_cpu_count</span>
 
-<span class="kn">from</span> <span class="nn">._utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">read_data</span><span class="p">,</span> <span class="n">write_data</span><span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">._utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">read_data</span><span class="p">,</span> <span class="n">write_data</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="ProcessPool"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool">[docs]</a><span class="k">class</span> <span class="nc">ProcessPool</span><span class="p">:</span>
+<div class="viewcode-block" id="ProcessPool"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">ProcessPool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Parallel Processing Pool</span>
 
 <span class="sd">    This allows for executing a Python function across multiple CPU cores.</span>
@@ -528,7 +528,7 @@
 <span class="sd">        disable_gpu_in_subprocesses: Disables NVidia GPU usage in the subprocesses. This is necessary if the Tensorflow python package is imported in the entry_point's module</span>
 <span class="sd">        logger: Optional Python logger</span>
 <span class="sd">    """</span>
-<div class="viewcode-block" id="ProcessPool.__init__"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="ProcessPool.__init__"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">entry_point</span><span class="p">:</span><span class="n">Callable</span><span class="p">,</span>
         <span class="n">n_jobs</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span>
@@ -581,32 +581,32 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_jobs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The number of subprocesses used"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_jobs</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The name of this processing pool instance"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_running</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Returns true if the processing pool is actively running"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_running_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">detected_subprocess_error</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">detected_subprocess_error</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detected_subprocess_error</span>
     <span class="nd">@detected_subprocess_error</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">detected_subprocess_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">detected_subprocess_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_detected_subprocess_error</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_detected_subprocess_error</span> <span class="o">=</span> <span class="n">v</span>
 
 
-<div class="viewcode-block" id="ProcessPool.start"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessPool.start"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.start">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Start the processing pool subprocesses"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Process pool: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1"> already running'</span><span class="p">)</span>
@@ -626,7 +626,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_ready_q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">subprocess</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ProcessPool.shutdown"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.shutdown">[docs]</a>    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ProcessPool.shutdown"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.shutdown">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Shutdown the processing pool subprocesses immediately"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_running_event</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -639,17 +639,17 @@
                     <span class="s1">'Trying reducing the n_jobs (or cores) used for parallel processing.</span><span class="se">\n</span><span class="s1">***</span><span class="se">\n\n</span><span class="s1">'</span>
                 <span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_running</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span>
 
 
-    <span class="k">def</span> <span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc_type</span><span class="p">,</span> <span class="n">exc_val</span><span class="p">,</span> <span class="n">exc_tb</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="n">pool_callback</span><span class="p">:</span><span class="n">Callable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -667,14 +667,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
             <span class="k">raise</span>
 
-<div class="viewcode-block" id="ProcessPool.create_batch"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.create_batch">[docs]</a>    <span class="k">def</span> <span class="nf">create_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcessPoolBatch</span><span class="p">:</span>
+<div class="viewcode-block" id="ProcessPool.create_batch"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.create_batch">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">create_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span><span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ProcessPoolBatch</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Create a processing pool batch.</span>
 <span class="sd">        See this class's docs for more info</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="n">ProcessPoolBatch</span><span class="p">(</span><span class="n">pool</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ProcessPool.process"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span>
+<div class="viewcode-block" id="ProcessPool.process"><a class="viewcode-back" href="../../../../docs/python_api/utils/process_pool.html#mltk.utils.process_pool.ProcessPool.process">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">process</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span>
         <span class="n">pool_callback</span><span class="p">:</span><span class="n">Callable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -713,11 +713,11 @@
 
 
 
-<span class="k">class</span> <span class="nc">ProcessPoolBatch</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ProcessPoolBatch</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">""""Processing Pool Batch</span>
 <span class="sd">    This is used to store the results of a processing batch of data.</span>
 <span class="sd">    """</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">pool</span><span class="p">:</span><span class="n">ProcessPool</span><span class="p">,</span>
         <span class="n">pool_callback</span><span class="p">:</span><span class="n">Callable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -733,11 +733,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_results</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_remaining</span><span class="p">)]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The size of the batch"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_size</span>
 
-    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">object</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">object</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Wait for all of the data in the processing batch to complete and return the results.</span>
 
 <span class="sd">        Returns:</span>
@@ -752,7 +752,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_return_scalar</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_results</span>
 
 
-    <span class="k">def</span> <span class="nf">_next_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_next_index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_condition</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remaining</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Batch overflow'</span><span class="p">)</span>
@@ -762,7 +762,7 @@
 
         <span class="k">return</span> <span class="n">retval</span>
 
-    <span class="k">def</span> <span class="nf">_add_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_add_results</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="p">,</span> <span class="n">results</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pool_callback</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
@@ -779,8 +779,8 @@
 
 
 
-<span class="k">class</span> <span class="nc">_Subprocess</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_Subprocess</span><span class="p">(</span><span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">pool</span><span class="p">:</span><span class="n">ProcessPool</span><span class="p">,</span>
@@ -840,7 +840,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">invoke</span><span class="p">(</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">invoke</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">,</span>
         <span class="n">batch</span><span class="p">:</span><span class="n">ProcessPoolBatch</span>
@@ -854,7 +854,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_invoke_sem</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">_process_thread_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_thread_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_process_thread_loop_unsafe</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
@@ -868,7 +868,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">_process_thread_loop_unsafe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_process_thread_loop_unsafe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_invoke_sem</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
 
@@ -920,7 +920,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">_ready_q</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_debug_thread_loop_unsafe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_debug_thread_loop_unsafe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_invoke_sem</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shutdown_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
@@ -944,7 +944,7 @@
 
 
 
-    <span class="k">def</span> <span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shutdown</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># First try to gracefully terminate the subprocess (e.g. issue Ctrl+C)</span>
             <span class="c1"># and wait a moment for it to complete</span>
@@ -986,7 +986,7 @@
             <span class="n">batch</span><span class="o">.</span><span class="n">_add_results</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
 
-    <span class="k">def</span> <span class="nf">_monitor_process_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_monitor_process_logs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="n">line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subprocess</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
@@ -1010,7 +1010,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">calculate_n_jobs</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">calculate_n_jobs</span><span class="p">(</span><span class="n">n_jobs</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Calculate the number of subprocesses to use for the processing pool</span>
 
 <span class="sd">    Args:</span>
@@ -1058,7 +1058,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

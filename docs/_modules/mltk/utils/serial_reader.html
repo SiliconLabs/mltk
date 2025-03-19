@@ -426,20 +426,20 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-utils-serial-reader--page-root">Source code for mltk.utils.serial_reader</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TextIO</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">threading</span>
-<span class="kn">import</span> <span class="nn">queue</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">TextIO</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">threading</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">queue</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 
-<span class="kn">import</span> <span class="nn">serial</span>
-<span class="kn">import</span> <span class="nn">serial.tools.list_ports</span>
-<span class="kn">from</span> <span class="nn">.python</span> <span class="kn">import</span> <span class="n">as_list</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">serial</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">serial.tools.list_ports</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">as_list</span>
 
 
-<div class="viewcode-block" id="SerialReader"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader">[docs]</a><span class="k">class</span> <span class="nc">SerialReader</span><span class="p">:</span>
+<div class="viewcode-block" id="SerialReader"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SerialReader</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Utility for reading data from a serial COM port</span>
 
 <span class="sd">    NOTE: For the regex args below, if a string is provided then it will automatically be converted to an ``re.Pattern``</span>
@@ -457,7 +457,7 @@
 
 <span class="sd">    See the source code on Github: `mltk/utils/serial_reader.py &lt;https://github.com/siliconlabs/mltk/blob/master/mltk/utils/serial_reader.py&gt;`_</span>
 <span class="sd">    """</span>
-<div class="viewcode-block" id="SerialReader.__init__"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+<div class="viewcode-block" id="SerialReader.__init__"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">baud</span><span class="o">=</span><span class="mi">115200</span><span class="p">,</span>
@@ -499,38 +499,38 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_open</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if the serial connection is opened"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="o">.</span><span class="n">is_open</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">started</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">started</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if the start_regex condition has been found"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_started</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">stopped</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">stopped</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if the stop_regex condition has been found"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">failed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">failed</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return if the fail_regex condition has been found"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_failed</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">captured_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">captured_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Data received by read() between the start_regex and stop_regex conditions"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_captured_data</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">error_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">error_message</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Data received after fail_regex was found"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_message</span>
 
 
 <div class="viewcode-block" id="SerialReader.list_ports"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.list_ports">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">list_ports</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">list_ports</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">"""Retrun a list of COM ports"""</span>
         <span class="n">retval</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">port</span><span class="p">,</span> <span class="n">desc</span><span class="p">,</span> <span class="n">hwid</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">serial</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">list_ports</span><span class="o">.</span><span class="n">comports</span><span class="p">()):</span>
@@ -539,7 +539,7 @@
 
 
 <div class="viewcode-block" id="SerialReader.resolve_port"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.resolve_port">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">resolve_port</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">resolve_port</span><span class="p">(</span><span class="n">port</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""List the COM ports and try to find the given port in the list"""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">port</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Null port provided'</span><span class="p">)</span>
@@ -574,7 +574,7 @@
         <span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SerialReader.open"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.open">[docs]</a>    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SerialReader.open"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.open">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Open the a connection to the serial port"""</span>
         <span class="n">port</span> <span class="o">=</span> <span class="n">SerialReader</span><span class="o">.</span><span class="n">resolve_port</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">port</span><span class="p">:</span>
@@ -597,7 +597,7 @@
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
 
-        <span class="k">def</span> <span class="nf">_map_pattern</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">_map_pattern</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="o">|</span><span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span><span class="o">|</span><span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">Pattern</span><span class="p">):</span>
@@ -625,7 +625,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_rx_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="SerialReader.close"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SerialReader.close"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Close the serial COM port"""</span>
         <span class="k">if</span>  <span class="bp">self</span><span class="o">.</span><span class="n">_rx_thread</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_rx_thread_active</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
@@ -640,7 +640,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="SerialReader.flush"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.flush">[docs]</a>    <span class="k">def</span> <span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="SerialReader.flush"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.flush">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">flush</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Flush any received data"""</span>
 
         <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -658,7 +658,7 @@
                 <span class="k">break</span></div>
 
 
-<div class="viewcode-block" id="SerialReader.read"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span>
+<div class="viewcode-block" id="SerialReader.read"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.read">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">activity_timeout</span><span class="p">:</span><span class="nb">float</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -701,9 +701,6 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer_data</span><span class="p">():</span>
                     <span class="n">previous_activity_timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-                <span class="k">if</span> <span class="n">activity_timeout</span> <span class="ow">and</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">previous_activity_timestamp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">activity_timeout</span><span class="p">:</span>
-                    <span class="k">break</span>
-
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_fail_condition</span><span class="p">():</span>
                     <span class="k">return</span> <span class="kc">True</span>
 
@@ -713,6 +710,9 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_stop_condition</span><span class="p">():</span>
                     <span class="k">return</span> <span class="kc">True</span>
 
+                <span class="k">if</span> <span class="n">activity_timeout</span> <span class="ow">and</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">previous_activity_timestamp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">activity_timeout</span><span class="p">:</span>
+                    <span class="k">break</span>
+            
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.250</span><span class="p">)</span>
 
         <span class="k">finally</span><span class="p">:</span>
@@ -722,7 +722,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="SerialReader.write"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span>
+<div class="viewcode-block" id="SerialReader.write"><a class="viewcode-back" href="../../../docs/python_api/utils/serial_reader/serial_reader.html#mltk.utils.serial_reader.SerialReader.write">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">write</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">check_fail_condition</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -753,7 +753,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span> <span class="nf">_buffer_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_buffer_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Receive data from the COM port and write the the outfile and _captured_data buffer</span>
 
 <span class="sd">        """</span>
@@ -788,7 +788,7 @@
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span>
 
 
-    <span class="k">def</span> <span class="nf">_read_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_read_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Thread loop to read the COM port"""</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_handle</span><span class="o">.</span><span class="n">in_waiting</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -798,7 +798,7 @@
                 <span class="k">break</span>
 
 
-    <span class="k">def</span> <span class="nf">_wait_for_start_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_wait_for_start_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Determine if a start condition is found in the _captured_data buffer</span>
 <span class="sd">        If so, reset the _captured_data buffer and set _started=True.</span>
 <span class="sd">        This immediately returns if the start condition was previously found.</span>
@@ -822,7 +822,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 
-    <span class="k">def</span> <span class="nf">_check_for_stop_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_for_stop_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Check if the stop_regex is found in the _captured_data buffer"""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stop_regex</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -843,7 +843,7 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 
-    <span class="k">def</span> <span class="nf">_check_for_fail_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_for_fail_condition</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Check if a fail_regex is found in the _captured_data buffer"""</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fail_regex</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -864,17 +864,17 @@
         <span class="k">return</span> <span class="kc">True</span>
 
 
-    <span class="k">def</span> <span class="fm">__enter__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__enter__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span>
 
 
-    <span class="k">def</span> <span class="fm">__exit__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__exit__</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 
 <span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">_CallbackRegexContext</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_CallbackRegexContext</span><span class="p">:</span>
     <span class="n">regex</span><span class="p">:</span><span class="n">re</span><span class="o">.</span><span class="n">Pattern</span>
     <span class="n">callback</span><span class="p">:</span><span class="n">Callable</span><span class="p">[[</span><span class="n">re</span><span class="o">.</span><span class="n">Match</span><span class="p">],</span><span class="kc">None</span><span class="p">]</span>
     <span class="n">offset</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">0</span>
@@ -903,7 +903,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

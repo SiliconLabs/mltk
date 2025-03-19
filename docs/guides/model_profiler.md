@@ -112,6 +112,13 @@ All returned profiling information is calculated or estimated.
 Estimated numbers are based on the __EFR32xG24__ at 78MHz
 ```
 
+#### Simulator Accuracy
+
+The simulator provides __coarse estimates__ of CPU cycles, latency, energy and are based on the __EFR32xG24__ at 78MHz.
+While the estimates may be considered a starting point for model analysis, the __Physical Device Mode__ should
+be used for accurate profiling numbers.
+
+
 #### Physical Device Mode
 
 The model executes and is profiled on a physical device.  

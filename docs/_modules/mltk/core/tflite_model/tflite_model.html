@@ -426,24 +426,24 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-tflite-model-tflite-model--page-root">Source code for mltk.core.tflite_model.tflite_model</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterator</span>
-<span class="kn">from</span> <span class="nn">prettytable</span> <span class="kn">import</span> <span class="n">PrettyTable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Iterator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">prettytable</span><span class="w"> </span><span class="kn">import</span> <span class="n">PrettyTable</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 <span class="c1"># Disable the "DeprecationWarning" found in the flatbuffer package</span>
 <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">tflite_schema</span> <span class="k">as</span> <span class="n">_tflite_schema_fb</span>
-<span class="kn">from</span> <span class="nn">.tflite_schema</span> <span class="kn">import</span> <span class="n">BuiltinOperator</span> <span class="k">as</span> <span class="n">TfliteOpCode</span> <span class="c1"># pylint: disable=unused-import</span>
-<span class="kn">from</span> <span class="nn">.tflite_schema</span> <span class="kn">import</span> <span class="n">flatbuffers</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">tflite_schema</span> <span class="k">as</span> <span class="n">_tflite_schema_fb</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tflite_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">BuiltinOperator</span> <span class="k">as</span> <span class="n">TfliteOpCode</span> <span class="c1"># pylint: disable=unused-import</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tflite_schema</span><span class="w"> </span><span class="kn">import</span> <span class="n">flatbuffers</span>
 
-<span class="kn">from</span> <span class="nn">.tflite_tensor</span> <span class="kn">import</span> <span class="n">TfliteTensor</span>
-<span class="kn">from</span> <span class="nn">.tflite_layer</span> <span class="kn">import</span> <span class="n">TfliteLayer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tflite_tensor</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteTensor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.tflite_layer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TfliteLayer</span>
 
 
 
@@ -452,7 +452,7 @@
 
 
 
-<div class="viewcode-block" id="TfliteModel"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel">[docs]</a><span class="k">class</span> <span class="nc">TfliteModel</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">TfliteModel</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Class to access a .tflite model flatbuffer's layers and tensors</span>
 
 <span class="sd">    Refer to `schema_v3.fbs &lt;https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/schema/schema_v3.fbs&gt;`_</span>
@@ -507,7 +507,7 @@
 <span class="sd">    """</span>
 
 <div class="viewcode-block" id="TfliteModel.load_flatbuffer_file"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.load_flatbuffer_file">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">load_flatbuffer_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteModel</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_flatbuffer_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteModel</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Load a .tflite flatbuffer file"""</span>
         <span class="n">found_path</span> <span class="o">=</span> <span class="n">_existing_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="n">cwd</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">found_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -519,7 +519,7 @@
         <span class="k">return</span> <span class="n">TfliteModel</span><span class="p">(</span><span class="n">flatbuffer_data</span><span class="o">=</span><span class="n">flatbuffer_data</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">found_path</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flatbuffer_data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteModel.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flatbuffer_data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_interpreter</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_interpreter_batch_size</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
@@ -530,21 +530,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_load_model</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Path to .tflite file</span>
 <span class="sd">        Returns None if no path was specified.</span>
 <span class="sd">        The path is normalized and backslashes are converted to forward slash</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\\</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">)</span>
     <span class="nd">@path</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Path to .tflite file"""</span>
         <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">'</span><span class="se">\\</span><span class="s1">'</span><span class="p">,</span> <span class="s1">'/'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">filename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""File name of associated .tflite model file</span>
 <span class="sd">        Return None if not path is set"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_path</span><span class="p">:</span>
@@ -553,7 +553,7 @@
             <span class="k">return</span> <span class="kc">None</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The name of the model which is the :py:attr:`~filename` without the ``.tflite`` extension or "my_model" if no path is set"""</span>
         <span class="n">filename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">filename</span>
         <span class="k">if</span> <span class="n">filename</span><span class="p">:</span>
@@ -564,14 +564,14 @@
             <span class="k">return</span> <span class="s1">'my_model'</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Get/set model description</span>
 
 <span class="sd">        .. note:: :py:func:`~save` must be called for changes to persist</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="s1">''</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">description</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">'utf-8'</span><span class="p">)</span>
     <span class="nd">@description</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Model not loaded'</span><span class="p">)</span>
         <span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span> <span class="ow">or</span> <span class="s1">''</span>
@@ -579,42 +579,42 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">regenerate_flatbuffer</span><span class="p">()</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">flatbuffer_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatbuffer_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Flatbuffer binary data"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatbuffer_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_flatbuffer_data</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">flatbuffer_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatbuffer_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Size of the model flatbuffer in bytes"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatbuffer_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flatbuffer_data</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatbuffer_size</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">flatbuffer_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">ModelT</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatbuffer_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">ModelT</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Flatbuffer schema Model object"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">flatbuffer_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">SubGraphT</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">flatbuffer_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">SubGraphT</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Flatbuffer schema model subgraph"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">subgraphs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_selected_model_subgraph_index</span><span class="p">]</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">selected_model_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">selected_model_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The index of the selected model subgraph.</span>
 <span class="sd">        Other properties and APIs will return layers/tensors from the selected subgraph</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_model_subgraph_index</span>
     <span class="nd">@selected_model_subgraph</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">selected_model_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">selected_model_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
         <span class="k">if</span> <span class="n">v</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">v</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_subgraphs</span><span class="p">:</span>
@@ -622,21 +622,21 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_selected_model_subgraph_index</span> <span class="o">=</span> <span class="n">v</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_subgraphs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_subgraphs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the number of model subgraphs"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">subgraphs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the number of model inputs"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatbuffer_subgraph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flatbuffer_subgraph</span><span class="o">.</span><span class="n">inputs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteTensor</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteTensor</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List of all input tensors"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatbuffer_subgraph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -647,14 +647,14 @@
         <span class="k">return</span> <span class="n">retval</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">n_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">n_outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the number of model outputs"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatbuffer_subgraph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">flatbuffer_subgraph</span><span class="o">.</span><span class="n">outputs</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteTensor</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">outputs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteTensor</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List of all output tensors"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatbuffer_subgraph</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -665,21 +665,21 @@
         <span class="k">return</span> <span class="n">retval</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteLayer</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteLayer</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List of all model layers for the current subgraph"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_model_subgraph_index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subgraphs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_selected_model_subgraph_index</span><span class="p">]</span><span class="o">.</span><span class="n">layers</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteTensor</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tensors</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteTensor</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List of all model tensors for the current subgraph"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_selected_model_subgraph_index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subgraphs</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_selected_model_subgraph_index</span><span class="p">]</span><span class="o">.</span><span class="n">tensors</span>
 
 
-<div class="viewcode-block" id="TfliteModel.summary"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.summary">[docs]</a>    <span class="k">def</span> <span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel.summary"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.summary">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Generate a summary of the model"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_flatbuffer_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="s1">'Not loaded'</span>
@@ -708,7 +708,7 @@
         <span class="k">return</span> <span class="n">t</span><span class="o">.</span><span class="n">get_string</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.get_flatbuffer_subgraph"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_flatbuffer_subgraph">[docs]</a>    <span class="k">def</span> <span class="nf">get_flatbuffer_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">SubGraphT</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel.get_flatbuffer_subgraph"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_flatbuffer_subgraph">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_flatbuffer_subgraph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">SubGraphT</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Flatbuffer schema model subgraph at the given index</span>
 
 <span class="sd">        If no index is given, then use the selected_model_subgraph</span>
@@ -719,7 +719,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">subgraphs</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.get_tensor"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_tensor">[docs]</a>    <span class="k">def</span> <span class="nf">get_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span> <span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel.get_tensor"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_tensor">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span> <span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a specific model tensor as a TfliteTensor """</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Model not loaded'</span><span class="p">)</span>
@@ -729,7 +729,7 @@
         <span class="k">return</span> <span class="n">subgraph</span><span class="o">.</span><span class="n">tensors</span><span class="p">[</span><span class="n">index</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.get_tensor_data"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_tensor_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_tensor_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span> <span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel.get_tensor_data"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_tensor_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_tensor_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span> <span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a specific model tensor as a np.ndarray """</span>
         <span class="n">tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tensor</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">tensor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -737,7 +737,7 @@
         <span class="k">return</span> <span class="n">tensor</span><span class="o">.</span><span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.get_input_tensor"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_input_tensor">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel.get_input_tensor"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_input_tensor">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a model input tensor as a TfliteTensor"""</span>
         <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Index overflow (</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1"> &gt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
@@ -745,7 +745,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tensor</span><span class="p">(</span><span class="n">tensor_index</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.get_input_data"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_input_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel.get_input_data"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_input_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a model input as a np.ndarray"""</span>
         <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Index overflow (</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1"> &gt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_inputs</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
@@ -753,7 +753,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tensor_data</span><span class="p">(</span><span class="n">tensor_index</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.get_output_tensor"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_output_tensor">[docs]</a>    <span class="k">def</span> <span class="nf">get_output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel.get_output_tensor"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_output_tensor">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_output_tensor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TfliteTensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a model output tensor as a TfliteTensor"""</span>
         <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Index overflow (</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1"> &gt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
@@ -761,7 +761,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tensor</span><span class="p">(</span><span class="n">tensor_index</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.get_output_data"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_output_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel.get_output_data"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_output_data">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_output_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a model output tensor as a np.ndarray"""</span>
         <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Index overflow (</span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s1"> &gt;= </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">n_outputs</span><span class="si">}</span><span class="s1">)'</span><span class="p">)</span>
@@ -769,7 +769,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_tensor_data</span><span class="p">(</span><span class="n">tensor_index</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.get_all_metadata"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_all_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_all_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">bytes</span><span class="p">]:</span>
+<div class="viewcode-block" id="TfliteModel.get_all_metadata"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_all_metadata">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_all_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">bytes</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Return all model metadata as a dictionary"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Model not loaded'</span><span class="p">)</span>
@@ -782,7 +782,7 @@
         <span class="k">return</span> <span class="n">retval</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.get_metadata"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span> <span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel.get_metadata"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.get_metadata">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span> <span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return model metadata with specified tag"""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">'Model not loaded'</span><span class="p">)</span>
@@ -796,7 +796,7 @@
         <span class="k">return</span> <span class="n">metadata_value</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.add_metadata"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.add_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">add_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span> <span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteModel.add_metadata"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.add_metadata">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">add_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span> <span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Set or add metadata to model</span>
 
 <span class="sd">        .. Note::</span>
@@ -838,7 +838,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">regenerate_flatbuffer</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.remove_metadata"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.remove_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">remove_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="viewcode-block" id="TfliteModel.remove_metadata"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.remove_metadata">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">remove_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tag</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Remove model metadata with specified tag</span>
 
 <span class="sd">        .. Note::</span>
@@ -869,7 +869,7 @@
         <span class="k">return</span> <span class="n">removed_metadata</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.save"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteModel.save"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.save">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Save flatbuffer data to file</span>
 <span class="sd">        If output_path is specified then write to new file,</span>
 <span class="sd">        otherwise overwrite existing file</span>
@@ -894,7 +894,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_path</span> <span class="o">=</span> <span class="n">output_path</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.regenerate_flatbuffer"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.regenerate_flatbuffer">[docs]</a>    <span class="k">def</span> <span class="nf">regenerate_flatbuffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reload_model</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteModel.regenerate_flatbuffer"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.regenerate_flatbuffer">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">regenerate_flatbuffer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reload_model</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Re-generate the underlying flatbuffer based on  the information cached in the local ModelT instance</span>
 
 <span class="sd">        .. Note::</span>
@@ -910,7 +910,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_load_model</span><span class="p">()</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.predict"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.predict">[docs]</a>    <span class="k">def</span> <span class="nf">predict</span><span class="p">(</span>
+<div class="viewcode-block" id="TfliteModel.predict"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.predict">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">predict</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">x</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]],</span>
         <span class="n">y_dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1147,7 +1147,7 @@
             <span class="k">return</span> <span class="n">y</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.quantize_to_input_dtype"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.quantize_to_input_dtype">[docs]</a>    <span class="k">def</span> <span class="nf">quantize_to_input_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">input_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteModel.quantize_to_input_dtype"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.quantize_to_input_dtype">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">quantize_to_input_dtype</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">input_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Quantize the input sample(s) to the model's input dtype (if necessary)"""</span>
 
         <span class="n">input_tensor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_input_tensor</span><span class="p">(</span><span class="n">input_index</span><span class="p">)</span>
@@ -1163,7 +1163,7 @@
         <span class="k">return</span> <span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">input_tensor</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TfliteModel.dequantize_output_to_float32"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.dequantize_output_to_float32">[docs]</a>    <span class="k">def</span> <span class="nf">dequantize_output_to_float32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">output_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="TfliteModel.dequantize_output_to_float32"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/model.html#mltk.core.TfliteModel.dequantize_output_to_float32">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">dequantize_output_to_float32</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">output_index</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""De-quantize the model output to float32 (if necessary)"""</span>
         <span class="k">if</span> <span class="n">y</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">y</span>
@@ -1175,10 +1175,10 @@
 
 
 
-    <span class="k">def</span> <span class="nf">_allocate_tflite_interpreter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">interpreter_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_allocate_tflite_interpreter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">interpreter_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpreter</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_interpreter_batch_size</span> <span class="o">!=</span> <span class="n">batch_size</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+                <span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
             <span class="k">except</span> <span class="ne">ModuleNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'You must first install the "tensorflow" Python package to run inference, err: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span> <span class="c1"># pylint: disable=raise-missing-from</span>
 
@@ -1204,7 +1204,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_interpreter</span><span class="o">.</span><span class="n">allocate_tensors</span><span class="p">()</span>
 
 
-    <span class="k">def</span> <span class="nf">_load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_model</span> <span class="o">=</span> <span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">ModelT</span><span class="o">.</span><span class="n">InitFromObj</span><span class="p">(</span><span class="n">_tflite_schema_fb</span><span class="o">.</span><span class="n">Model</span><span class="o">.</span><span class="n">GetRootAsModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_flatbuffer_data</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
             <span class="n">subgraph_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_model</span><span class="o">.</span><span class="n">subgraphs</span><span class="p">)</span>
@@ -1235,7 +1235,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_existing_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_existing_path</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
 
@@ -1249,8 +1249,8 @@
 
     <span class="k">return</span> <span class="kc">None</span>
 
-<span class="k">class</span> <span class="nc">_TfliteSubgraph</span><span class="p">:</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">_TfliteSubgraph</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">layers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteLayer</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tensors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TfliteTensor</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
 
@@ -1279,7 +1279,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

@@ -427,29 +427,29 @@
             
   <h1 id="modules-mltk-core-tflite-model-parameters-flatbuffer-dictionary--page-root">Source code for mltk.core.tflite_model_parameters.flatbuffer_dictionary</h1><div class="highlight"><pre>
 <span></span><span class="c1"># pylint: disable=unused-wildcard-import, wildcard-import</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">import</span> <span class="nn">flatbuffers</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">flatbuffers</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">.schema.Dictionary</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.BinaryValue</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.BoolValue</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.DoubleValue</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Entry</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.FloatValue</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Int16Value</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Int32Value</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Int64Value</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Int8Value</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.StringList</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Int32List</span> <span class="kn">import</span> <span class="o">*</span> 
-<span class="kn">from</span> <span class="nn">.schema.FloatList</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.StringValue</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Uint8Value</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Uint16Value</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Uint32Value</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Uint64Value</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">.schema.Value</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Dictionary</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.BinaryValue</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.BoolValue</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.DoubleValue</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Entry</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.FloatValue</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Int16Value</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Int32Value</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Int64Value</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Int8Value</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.StringList</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Int32List</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span> 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.FloatList</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.StringValue</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Uint8Value</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Uint16Value</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Uint32Value</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Uint64Value</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.schema.Value</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 
 
@@ -457,7 +457,7 @@
 
 
 
-<div class="viewcode-block" id="FlatbufferDictionary"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary">[docs]</a><span class="k">class</span> <span class="nc">FlatbufferDictionary</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+<div class="viewcode-block" id="FlatbufferDictionary"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FlatbufferDictionary</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">""" FlatbufferDictionary</span>
 
 <span class="sd">    This class allows for adding scalar values to a standard Python dictionary,</span>
@@ -475,10 +475,10 @@
 <span class="sd">    .. note:: The FlatbufferDictionary object inherits the standard Python 'dict' class.</span>
 
 <span class="sd">    """</span>
-<div class="viewcode-block" id="FlatbufferDictionary.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="FlatbufferDictionary.__init__"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary.__init__">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">dict</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="FlatbufferDictionary.put"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary.put">[docs]</a>    <span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">,</span><span class="nb">bool</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span><span class="nb">bytes</span><span class="p">],</span> <span class="n">dtype</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="FlatbufferDictionary.put"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary.put">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">put</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">int</span><span class="p">,</span><span class="nb">float</span><span class="p">,</span><span class="nb">bool</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span><span class="nb">bytes</span><span class="p">],</span> <span class="n">dtype</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Put an entry into the dictionary</span>
 <span class="sd">        </span>
 <span class="sd">        This API allows for specifying the value's datatype.</span>
@@ -501,11 +501,11 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">FlatbufferDictionary</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__setitem__</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
 
 
-    <span class="k">def</span> <span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="FlatbufferDictionary.serialize"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary.serialize">[docs]</a>    <span class="k">def</span> <span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<div class="viewcode-block" id="FlatbufferDictionary.serialize"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary.serialize">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">serialize</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Serialize the current dictionary entries into a flatbuffer</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -548,7 +548,7 @@
 
     
 <div class="viewcode-block" id="FlatbufferDictionary.deserialize"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary.deserialize">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">deserialize</span><span class="p">(</span><span class="n">serialized_data</span><span class="p">:</span><span class="nb">bytes</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">deserialize</span><span class="p">(</span><span class="n">serialized_data</span><span class="p">:</span><span class="nb">bytes</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Instantiate a FlatbufferDictionary object with the given serialized flatbuffer binary data"""</span>
 
         <span class="c1"># Load the flatbuffer serialized data</span>
@@ -581,7 +581,7 @@
         <span class="k">return</span> <span class="n">model_parameters</span></div>
 
 
-<div class="viewcode-block" id="FlatbufferDictionary.summary"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary.summary">[docs]</a>    <span class="k">def</span> <span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="FlatbufferDictionary.summary"><a class="viewcode-back" href="../../../../docs/python_api/tflite_model/dictionary.fbs.html#mltk.core.tflite_model_parameters.flatbuffer_dictionary.FlatbufferDictionary.summary">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Generate a summary of the dictionary"""</span>
         <span class="n">s</span> <span class="o">=</span> <span class="s1">''</span>
 
@@ -601,22 +601,22 @@
 
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span></div>
 
 
 
-<span class="k">class</span> <span class="nc">DictionaryValue</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DictionaryValue</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Dictonary entry value</span>
 <span class="sd">    </span>
 <span class="sd">    A dictionary value contains both</span>
 <span class="sd">    the actual scalar value and a corresponding data type</span>
 <span class="sd">    """</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span> 
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
     
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s1">:</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">'</span>
 
 
@@ -651,7 +651,7 @@
 <span class="n">FLOAT_TYPES</span> <span class="o">=</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_dtype_and_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_dtype_and_value</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Return the value's corresponding data type"""</span>
     <span class="c1"># pylint: disable=raise-missing-from</span>
 
@@ -769,7 +769,7 @@
     <span class="k">return</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">value</span> 
 
 
-<span class="k">def</span> <span class="nf">_generate_value</span><span class="p">(</span><span class="n">builder</span><span class="p">:</span><span class="n">flatbuffers</span><span class="o">.</span><span class="n">Builder</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_generate_value</span><span class="p">(</span><span class="n">builder</span><span class="p">:</span><span class="n">flatbuffers</span><span class="o">.</span><span class="n">Builder</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Convert the Python value into a flatbuffer value"""</span>
     <span class="n">dtype</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">_get_dtype_and_value</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     
@@ -872,7 +872,7 @@
     <span class="k">return</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">offset</span>
 
 
-<span class="k">def</span> <span class="nf">_parse_value</span><span class="p">(</span><span class="n">fb_type</span><span class="p">,</span> <span class="n">fb_value</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_parse_value</span><span class="p">(</span><span class="n">fb_type</span><span class="p">,</span> <span class="n">fb_value</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Convert the flatbuffer value into a Python value"""</span>
     <span class="k">if</span> <span class="n">fb_type</span> <span class="o">==</span> <span class="n">Value</span><span class="o">.</span><span class="n">boolean</span><span class="p">:</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">BoolValue</span><span class="p">()</span>
@@ -957,7 +957,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_EndVector_Patched</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_EndVector_Patched</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">l</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""This works around a discrepancy between newer and </span>
 <span class="sd">    older version of the flatbuffers.Builder.EndVector API</span>
 <span class="sd">    """</span>
@@ -992,7 +992,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

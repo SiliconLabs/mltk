@@ -426,28 +426,28 @@
           <article class="md-content__inner md-typeset" role="main">
             
   <h1 id="modules-mltk-core-model-mixins-dataset-mixin--page-root">Source code for mltk.core.model.mixins.dataset_mixin</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
-<span class="kn">import</span> <span class="nn">types</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">types</span>
 
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">prepend_exception_msg</span>
-<span class="kn">from</span> <span class="nn">.base_mixin</span> <span class="kn">import</span> <span class="n">BaseMixin</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">prepend_exception_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseMixin</span>
 
 
-<span class="kn">from</span> <span class="nn">..model_attributes</span> <span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span><span class="p">,</span> <span class="n">CallableType</span>
-<span class="kn">from</span> <span class="nn">..model_event</span> <span class="kn">import</span> <span class="n">MltkModelEvent</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..model_attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span><span class="p">,</span> <span class="n">CallableType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..model_event</span><span class="w"> </span><span class="kn">import</span> <span class="n">MltkModelEvent</span>
 
 
 <div class="viewcode-block" id="DatasetMixin"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/dataset_mixin.html#mltk.core.DatasetMixin">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
-<span class="k">class</span> <span class="nc">DatasetMixin</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DatasetMixin</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Provides generic dataset properties to the base :py:class:`~MltkModel`</span>
 
 <span class="sd">    Refer to te `Model Specification &lt;https://siliconlabs.github.io/mltk/docs/guides/model_specification.html&gt;`_ guide for more details."""</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Input data</span>
 
 <span class="sd">        It could be:</span>
@@ -461,12 +461,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.x'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@x</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.x'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Target data</span>
 
 <span class="sd">        Like the input data x, it could be either Numpy array(s) or TensorFlow tensor(s).</span>
@@ -475,12 +475,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.y'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@y</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">y</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.y'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">validation_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_split</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Float between 0 and 1</span>
 <span class="sd">        Fraction of the training data to be used as validation data.</span>
 <span class="sd">        The model will set apart this fraction of the training data, will not train on it,</span>
@@ -490,12 +490,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.validation_split'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
     <span class="nd">@validation_split</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">validation_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_split</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.validation_split'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">validation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Data on which to evaluate the loss and any model metrics at the end of each epoch.</span>
 <span class="sd">        The model will not be trained on this data. Thus, note the fact that the validation loss of</span>
 <span class="sd">        data provided using validation_split or validation_data is not affected by regularization</span>
@@ -510,24 +510,24 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.validation_data'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@validation_data</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">validation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.validation_data'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""	Boolean (whether to shuffle the training data before each epoch) or str (for 'batch').</span>
 <span class="sd">        This argument is ignored when x is a generator. 'batch' is a special option for dealing with the limitations of HDF5 data;</span>
 <span class="sd">        it shuffles in batch-sized chunks. Has no effect when steps_per_epoch is not None.</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.shuffle'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="nd">@shuffle</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shuffle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.shuffle'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">class_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">dict</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">dict</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Specifies how class weights should be calculated.</span>
 <span class="sd">        Default: `None`</span>
 
@@ -541,12 +541,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.class_weights'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@class_weights</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">class_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">dict</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">dict</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.class_weights'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">class_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Dictionary of samples counts for each class</span>
 
 <span class="sd">        This is used for generating a summary of the dataset or when calculating class weights</span>
@@ -593,12 +593,12 @@
             <span class="n">evaluation</span><span class="o">=</span><span class="p">{}</span>
         <span class="p">))</span>
     <span class="nd">@class_counts</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">class_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">class_counts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.class_counts'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sample_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Optional Numpy array of weights for the training samples,</span>
 <span class="sd">        used for weighting the loss function (during training only).</span>
 <span class="sd">        You can either pass a flat (1D) Numpy array with the same length as the input samples</span>
@@ -609,12 +609,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.sample_weight'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@sample_weight</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">sample_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sample_weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.sample_weight'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">steps_per_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">steps_per_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Integer or None. Total number of steps (batches of samples) before</span>
 <span class="sd">        declaring one epoch finished and starting the next epoch.</span>
 <span class="sd">        When training with input tensors such as TensorFlow data tensors, the default None</span>
@@ -626,12 +626,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.steps_per_epoch'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@steps_per_epoch</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">steps_per_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">steps_per_epoch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.steps_per_epoch'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">validation_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Only relevant if validation_data is provided and is a tf.data dataset.</span>
 <span class="sd">        Total number of steps (batches of samples) to draw before stopping when</span>
 <span class="sd">        performing validation at the end of every epoch. If 'validation_steps' is None,</span>
@@ -643,12 +643,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.validation_steps'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@validation_steps</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">validation_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_steps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.validation_steps'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">validation_batch_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_batch_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Integer or None. Number of samples per validation batch.</span>
 <span class="sd">        If unspecified, will default to batch_size. Do not specify</span>
 <span class="sd">        the validation_batch_size if your data is in the form of datasets, generators,</span>
@@ -656,12 +656,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.validation_batch_size'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@validation_batch_size</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">validation_batch_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_batch_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.validation_batch_size'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">validation_freq</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_freq</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Only relevant if validation data is provided.</span>
 <span class="sd">        Integer or collections_abc.Container instance (e.g. list, tuple, etc.).</span>
 <span class="sd">        If an integer, specifies how many training epochs to run before a new validation run is performed,</span>
@@ -670,16 +670,16 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.validation_freq'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="nd">@validation_freq</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">validation_freq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validation_freq</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.validation_freq'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">loaded_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loaded_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""The currently loaded dataset subset: training, validation, evaluation"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.loaded_subset'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@loaded_subset</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">loaded_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loaded_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">subset</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">subset</span> <span class="o">=</span> <span class="n">subset</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
             <span class="k">if</span> <span class="n">subset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">'training'</span><span class="p">,</span> <span class="s1">'validation'</span><span class="p">,</span> <span class="s1">'evaluation'</span><span class="p">):</span>
@@ -689,7 +689,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="n">Callable</span><span class="p">,</span><span class="nb">str</span><span class="p">,</span><span class="n">MltkDataset</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="n">Callable</span><span class="p">,</span><span class="nb">str</span><span class="p">,</span><span class="n">MltkDataset</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""The model dataset</span>
 
 <span class="sd">        The value of this is dependent on the implementation of this model's :py:meth:`~load_dataset` method.</span>
@@ -723,11 +723,11 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'dataset.dataset'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@dataset</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="n">Callable</span><span class="p">,</span><span class="nb">str</span><span class="p">,</span><span class="n">MltkDataset</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="n">Callable</span><span class="p">,</span><span class="nb">str</span><span class="p">,</span><span class="n">MltkDataset</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'dataset.dataset'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
-<div class="viewcode-block" id="DatasetMixin.load_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/dataset_mixin.html#mltk.core.DatasetMixin.load_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span>
+<div class="viewcode-block" id="DatasetMixin.load_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/dataset_mixin.html#mltk.core.DatasetMixin.load_dataset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_dataset</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">test</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -840,7 +840,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span><span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">AFTER_LOAD_DATASET</span><span class="p">,</span> <span class="n">subset</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="n">test</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatasetMixin.unload_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/dataset_mixin.html#mltk.core.DatasetMixin.unload_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">unload_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DatasetMixin.unload_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/dataset_mixin.html#mltk.core.DatasetMixin.unload_dataset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">unload_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Unload the dataset"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span>
@@ -862,7 +862,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span><span class="n">MltkModelEvent</span><span class="o">.</span><span class="n">AFTER_UNLOAD_DATASET</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DatasetMixin.summarize_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/dataset_mixin.html#mltk.core.DatasetMixin.summarize_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">summarize_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="DatasetMixin.summarize_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/dataset_mixin.html#mltk.core.DatasetMixin.summarize_dataset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">summarize_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Summarize the dataset</span>
 
 <span class="sd">        If my_model.dataset is provided then this attempts to call my_model.dataset.summarize_dataset().</span>
@@ -902,7 +902,7 @@
 
 
 
-    <span class="k">def</span> <span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'dataset.dataset'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">(</span><span class="n">types</span><span class="o">.</span><span class="n">ModuleType</span><span class="p">,</span><span class="nb">str</span><span class="p">,</span><span class="n">CallableType</span><span class="p">,</span><span class="nb">object</span><span class="p">,</span><span class="n">MltkDataset</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'dataset.loaded_subset'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'dataset.x'</span><span class="p">)</span>
@@ -920,12 +920,12 @@
 
 
 
-<div class="viewcode-block" id="MltkDataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/mltk_dataset.html#mltk.core.MltkDataset">[docs]</a><span class="k">class</span> <span class="nc">MltkDataset</span><span class="p">:</span>
+<div class="viewcode-block" id="MltkDataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/mltk_dataset.html#mltk.core.MltkDataset">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">MltkDataset</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Helper class for configuring a training dataset</span>
 
 <span class="sd">    Refer to :py:class:`mltk.core.DatasetMixin` for more details.</span>
 <span class="sd">    """</span>
-<div class="viewcode-block" id="MltkDataset.load_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/mltk_dataset.html#mltk.core.MltkDataset.load_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">load_dataset</span><span class="p">(</span>
+<div class="viewcode-block" id="MltkDataset.load_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/mltk_dataset.html#mltk.core.MltkDataset.load_dataset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">load_dataset</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">subset</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">test</span><span class="p">:</span><span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -951,18 +951,18 @@
 <span class="sd">        """</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="MltkDataset.unload_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/mltk_dataset.html#mltk.core.MltkDataset.unload_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">unload_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="MltkDataset.unload_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/mltk_dataset.html#mltk.core.MltkDataset.unload_dataset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">unload_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Unload the dataset"""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loaded_subset</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="MltkDataset.summarize_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/mltk_dataset.html#mltk.core.MltkDataset.summarize_dataset">[docs]</a>    <span class="k">def</span> <span class="nf">summarize_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="MltkDataset.summarize_dataset"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/mltk_dataset.html#mltk.core.MltkDataset.summarize_dataset">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">summarize_dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return a string summary of the dataset"""</span>
         <span class="k">return</span> <span class="s1">''</span></div>
 
 
 <div class="viewcode-block" id="MltkDataset.summarize_class_counts"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/mltk_dataset.html#mltk.core.MltkDataset.summarize_class_counts">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">summarize_class_counts</span><span class="p">(</span><span class="n">class_counts</span><span class="p">:</span><span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">summarize_class_counts</span><span class="p">(</span><span class="n">class_counts</span><span class="p">:</span><span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Generate a text summary of the given class counts dictionary"""</span>
         <span class="n">summary</span> <span class="o">=</span> <span class="s1">''</span>
         <span class="k">if</span> <span class="s1">'training'</span> <span class="ow">in</span> <span class="n">class_counts</span><span class="p">:</span>
@@ -1007,7 +1007,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

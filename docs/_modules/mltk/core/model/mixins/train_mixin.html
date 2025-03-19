@@ -427,28 +427,28 @@
             
   <h1 id="modules-mltk-core-model-mixins-train-mixin--page-root">Source code for mltk.core.model.mixins.train_mixin</h1><div class="highlight"><pre>
 <span></span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">DefaultDict</span>
-<span class="kn">from</span> <span class="nn">mltk.core.training_results</span> <span class="kn">import</span> <span class="n">TrainingResults</span>
-<span class="kn">from</span> <span class="nn">.base_mixin</span> <span class="kn">import</span> <span class="n">BaseMixin</span>
-<span class="kn">from</span> <span class="nn">..model_attributes</span> <span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span><span class="p">,</span> <span class="n">CallableType</span><span class="p">,</span> <span class="n">DictType</span>
-<span class="kn">from</span> <span class="nn">..model_utils</span> <span class="kn">import</span> <span class="n">KerasModel</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">DefaultDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.training_results</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainingResults</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base_mixin</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseMixin</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..model_attributes</span><span class="w"> </span><span class="kn">import</span> <span class="n">MltkModelAttributesDecorator</span><span class="p">,</span> <span class="n">CallableType</span><span class="p">,</span> <span class="n">DictType</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..model_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">KerasModel</span>
 
 
 <div class="viewcode-block" id="TrainMixin"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin">[docs]</a><span class="nd">@MltkModelAttributesDecorator</span><span class="p">()</span>
-<span class="k">class</span> <span class="nc">TrainMixin</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TrainMixin</span><span class="p">(</span><span class="n">BaseMixin</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Provides training properties and methods to the base :py:class:`~MltkModel`</span>
 
 <span class="sd">    Refer to the `Model Training &lt;https://siliconlabs.github.io/mltk/docs/guides/model_training.html&gt;`_ guide for more details.</span>
 <span class="sd">    """</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">build_model_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_model_function</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Function that builds and returns a compiled :py:attr:`mltk.core.KerasModel` instance</span>
 
 <span class="sd">        Your model definition MUST provide this setting.</span>
@@ -487,12 +487,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.build_model_function'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">_build_model_placeholder</span><span class="p">)</span>
     <span class="nd">@build_model_function</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">build_model_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_model_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Callable</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.build_model_function'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">on_training_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">TrainingResults</span><span class="p">],</span><span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">TrainingResults</span><span class="p">],</span><span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Callback to be invoked after the model has been successfully trained</span>
 
 <span class="sd">        .. highlight:: python</span>
@@ -507,12 +507,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.on_training_complete'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@on_training_complete</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">on_training_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">TrainingResults</span><span class="p">],</span><span class="kc">None</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_training_complete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">TrainingResults</span><span class="p">],</span><span class="kc">None</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.on_training_complete'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">on_save_keras_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">object</span><span class="p">,</span><span class="n">KerasModel</span><span class="p">,</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">],</span><span class="n">KerasModel</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_save_keras_model</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">object</span><span class="p">,</span><span class="n">KerasModel</span><span class="p">,</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">],</span><span class="n">KerasModel</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""Callback to be invoked after the model has been trained to</span>
 <span class="sd">        save the KerasModel.</span>
 
@@ -532,12 +532,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.on_save_keras_model'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@on_save_keras_model</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">on_save_keras_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">object</span><span class="p">,</span><span class="n">KerasModel</span><span class="p">,</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">],</span><span class="n">KerasModel</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">on_save_keras_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="nb">object</span><span class="p">,</span><span class="n">KerasModel</span><span class="p">,</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">],</span><span class="n">KerasModel</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.on_save_keras_model'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Number of epochs to train the model.</span>
 
 <span class="sd">        Default: ``100``</span>
@@ -557,12 +557,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.epochs'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
     <span class="nd">@epochs</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">epochs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.epochs'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">batch_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">batch_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Number of samples per gradient update</span>
 
 <span class="sd">        Default: ``32``</span>
@@ -577,12 +577,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.batch_size'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
     <span class="nd">@batch_size</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">batch_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">batch_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.batch_size'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        String (name of optimizer) or optimizer instance</span>
 
@@ -596,12 +596,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.optimizer'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">'adam'</span><span class="p">)</span>
     <span class="nd">@optimizer</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">optimizer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.optimizer'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">"""List of metrics to be evaluated by the model during training and testing</span>
 
 <span class="sd">        Default: ``['accuracy']``</span>
@@ -613,12 +613,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.metrics'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="s1">'accuracy'</span><span class="p">])</span>
     <span class="nd">@metrics</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.metrics'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""String (name of objective function), objective function</span>
 
 <span class="sd">        Default: ``categorical_crossentropy``</span>
@@ -631,12 +631,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.loss'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">'categorical_crossentropy'</span><span class="p">)</span>
     <span class="nd">@loss</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">loss</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.loss'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">checkpoints_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">checkpoints_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""If true, enable saving a checkpoint after each training epoch.</span>
 
 <span class="sd">        Default: ``True``</span>
@@ -652,12 +652,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.checkpoints_enabled'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="nd">@checkpoints_enabled</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">checkpoints_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">checkpoints_enabled</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.checkpoints_enabled'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">train_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""List of keras.callbacks.Callback instances.</span>
 
 <span class="sd">        Default: ``[]``</span>
@@ -676,12 +676,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.callbacks'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[])</span>
     <span class="nd">@train_callbacks</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">train_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_callbacks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.callbacks'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">lr_schedule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lr_schedule</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Learning rate scheduler</span>
 
 <span class="sd">        Default: ``None``</span>
@@ -714,7 +714,7 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.lr_schedule'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@lr_schedule</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">lr_schedule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span><span class="n">Callable</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">lr_schedule</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span><span class="n">Callable</span><span class="p">]):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.lr_schedule'</span><span class="p">]</span> <span class="o">=</span> <span class="n">DefaultDict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -725,7 +725,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">reduce_lr_on_plateau</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reduce_lr_on_plateau</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Reduce learning rate when a metric has stopped improving</span>
 
 <span class="sd">        Default:  ``None``</span>
@@ -771,12 +771,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.reduce_lr_on_plateau'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@reduce_lr_on_plateau</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">reduce_lr_on_plateau</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reduce_lr_on_plateau</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.reduce_lr_on_plateau'</span><span class="p">]</span> <span class="o">=</span> <span class="n">DefaultDict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tensorboard</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tensorboard</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Enable visualizations for TensorBoard</span>
 
 <span class="sd">        Default: ``None``</span>
@@ -826,12 +826,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.tensorboard'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@tensorboard</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">tensorboard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tensorboard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.tensorboard'</span><span class="p">]</span> <span class="o">=</span> <span class="n">DefaultDict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Callback to save the Keras model or model weights at some frequency</span>
 
 <span class="sd">        Default:</span>
@@ -899,12 +899,12 @@
                 <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
         <span class="p">))</span>
     <span class="nd">@checkpoint</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">checkpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.checkpoint'</span><span class="p">]</span> <span class="o">=</span> <span class="n">DefaultDict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">early_stopping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">early_stopping</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Stop training when a monitored metric has stopped improving</span>
 
 <span class="sd">        Default: ``None``</span>
@@ -951,12 +951,12 @@
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.early_stopping'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="nd">@early_stopping</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">early_stopping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">early_stopping</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.early_stopping'</span><span class="p">]</span> <span class="o">=</span> <span class="n">DefaultDict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">tflite_converter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tflite_converter</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Converts a TensorFlow model into TensorFlow Lite model</span>
 
 <span class="sd">        Default:</span>
@@ -1041,17 +1041,17 @@
                 <span class="n">generate_quantization_report</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="p">))</span>
     <span class="nd">@tflite_converter</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">tflite_converter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">tflite_converter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.tflite_converter'</span><span class="p">]</span> <span class="o">=</span> <span class="n">DefaultDict</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">checkpoints_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">checkpoints_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return path to directory containing training checkpoints"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_log_dir</span><span class="p">(</span><span class="s1">'train/checkpoints'</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TrainMixin.get_checkpoint_path"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin.get_checkpoint_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_checkpoint_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="TrainMixin.get_checkpoint_path"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin.get_checkpoint_path">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_checkpoint_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the file path to the checkpoint weights for the given epoch</span>
 
 <span class="sd">        If no epoch is provided then return the best checkpoint weights file is return.</span>
@@ -1094,12 +1094,12 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">weights_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weights_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return path to directory contianing training weights"""</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_log_dir</span><span class="p">(</span><span class="s1">'train/weights'</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">weights_file_format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">weights_file_format</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the file format used to generate model weights files during training"""</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkpoint</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1108,7 +1108,7 @@
         <span class="k">return</span> <span class="s1">'weights-</span><span class="si">{epoch:03d}</span><span class="s1">-{</span><span class="si">%s</span><span class="s1">:.4f}.h5'</span> <span class="o">%</span> <span class="n">monitor</span>
 
 
-<div class="viewcode-block" id="TrainMixin.get_weights_path"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin.get_weights_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_weights_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<div class="viewcode-block" id="TrainMixin.get_weights_path"><a class="viewcode-back" href="../../../../../docs/python_api/mltk_model/train_mixin.html#mltk.core.TrainMixin.get_weights_path">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_weights_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Return the path to a Keras .h5 weights file"""</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -1146,17 +1146,17 @@
         <span class="k">return</span> <span class="n">best_weights_path</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">train_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Additional arguments to pass the the `model fit &lt;https://www.tensorflow.org/api_docs/python/tf/keras/Model#fit&gt;`_ API.</span>
 <span class="sd">        These keyword arguments will override the other model properties passed to fit().</span>
 <span class="sd">        """</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="s1">'train.kwargs'</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">{})</span>
     <span class="nd">@train_kwargs</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">train_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_kwargs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="p">[</span><span class="s1">'train.kwargs'</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
 
-    <span class="k">def</span> <span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_register_attributes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.build_model_function'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">CallableType</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.epochs'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.batch_size'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
@@ -1176,7 +1176,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_attributes</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">'train.kwargs'</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">_build_model_placeholder</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_model_placeholder</span><span class="p">(</span><span class="n">mltk_model</span><span class="p">):</span>
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
         <span class="s1">'You model must define the property "mltk_model.build_model_function" which '</span>
         <span class="s1">'points to function that returns a compiled Keras model'</span>
@@ -1206,7 +1206,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

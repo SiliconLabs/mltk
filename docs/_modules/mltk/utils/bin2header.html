@@ -430,15 +430,15 @@
 
 <span class="sd">See the source code on Github: `mltk/utils/bin2header.py &lt;https://github.com/siliconlabs/mltk/blob/master/mltk/utils/bin2header.py&gt;`_</span>
 <span class="sd">"""</span>
-<span class="kn">import</span> <span class="nn">argparse</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">io</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">argparse</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">io</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 
 
 
-<div class="viewcode-block" id="bin2header"><a class="viewcode-back" href="../../../docs/python_api/utils/bin2header.html#mltk.utils.bin2header.bin2header">[docs]</a><span class="k">def</span> <span class="nf">bin2header</span><span class="p">(</span>
+<div class="viewcode-block" id="bin2header"><a class="viewcode-back" href="../../../docs/python_api/utils/bin2header.html#mltk.utils.bin2header.bin2header">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">bin2header</span><span class="p">(</span>
     <span class="nb">input</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="nb">bytes</span><span class="p">,</span><span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span><span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]],</span> <span class="c1"># pylint: disable=redefined-builtin</span>
     <span class="n">output_path</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="n">io</span><span class="o">.</span><span class="n">IOBase</span><span class="p">]</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">var_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s1">'DATA'</span><span class="p">,</span>
@@ -465,7 +465,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        Generated header as a string</span>
 <span class="sd">    """</span>
-    <span class="k">def</span> <span class="nf">_get_ascii</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_ascii</span><span class="p">(</span><span class="n">c</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">c</span> <span class="o">&gt;=</span> <span class="mi">32</span> <span class="ow">and</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">127</span> <span class="ow">and</span> <span class="nb">chr</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s1">'*#</span><span class="se">\\</span><span class="s1">'</span><span class="p">:</span>
             <span class="k">return</span> <span class="nb">chr</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
         <span class="k">return</span> <span class="s1">'.'</span>
@@ -540,7 +540,7 @@
 
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../docs/python_api/utils/bin2header.html#mltk.utils.bin2header.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../../../docs/python_api/utils/bin2header.html#mltk.utils.bin2header.main">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
     <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">'Generate C header file from binary input file'</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">'input'</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">'Input file'</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">'-o'</span><span class="p">,</span> <span class="s1">'--output'</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span> <span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">'Output file. Use input with .h appended if omitted'</span><span class="p">)</span>
@@ -592,7 +592,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.

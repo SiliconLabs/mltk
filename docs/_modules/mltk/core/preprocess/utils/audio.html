@@ -428,19 +428,19 @@
   <h1 id="modules-mltk-core-preprocess-utils-audio--page-root">Source code for mltk.core.preprocess.utils.audio</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Utilities for processing audio data"""</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">tensorflow</span> <span class="k">as</span> <span class="nn">tf</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">tensorflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">tf</span>
 
-<span class="kn">from</span> <span class="nn">mltk.utils.python</span> <span class="kn">import</span> <span class="n">append_exception_msg</span>
-<span class="kn">from</span> <span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.utils.python</span><span class="w"> </span><span class="kn">import</span> <span class="n">append_exception_msg</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mltk.core.preprocess.audio.audio_feature_generator</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">AudioFeatureGeneratorSettings</span><span class="p">,</span>
     <span class="n">AudioFeatureGenerator</span>
 <span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">librosa</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">librosa</span>
 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">!=</span> <span class="s1">'nt'</span> <span class="ow">and</span> <span class="s1">'sndfile library not found'</span> <span class="ow">in</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">'</span><span class="p">:</span>
         <span class="n">append_exception_msg</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="s1">'</span><span class="se">\n\n</span><span class="s1">Try running: sudo apt-get install libsndfile1</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
@@ -450,7 +450,7 @@
 <span class="n">resample</span> <span class="o">=</span> <span class="n">librosa</span><span class="o">.</span><span class="n">resample</span>
 
 
-<div class="viewcode-block" id="read_audio_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.read_audio_file">[docs]</a><span class="k">def</span> <span class="nf">read_audio_file</span><span class="p">(</span>
+<div class="viewcode-block" id="read_audio_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.read_audio_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read_audio_file</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
     <span class="n">return_sample_rate</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">return_numpy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -490,7 +490,7 @@
     <span class="k">return</span> <span class="n">sample</span></div>
 
 
-<div class="viewcode-block" id="write_audio_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.write_audio_file">[docs]</a><span class="k">def</span> <span class="nf">write_audio_file</span><span class="p">(</span>
+<div class="viewcode-block" id="write_audio_file"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.write_audio_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">write_audio_file</span><span class="p">(</span>
     <span class="n">path</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span>
     <span class="n">sample</span><span class="p">:</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span><span class="n">tf</span><span class="o">.</span><span class="n">Tensor</span><span class="p">],</span>
     <span class="n">sample_rate</span><span class="p">:</span><span class="nb">int</span>
@@ -535,7 +535,7 @@
     <span class="k">return</span> <span class="n">path</span></div>
 
 
-<div class="viewcode-block" id="adjust_length"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.adjust_length">[docs]</a><span class="k">def</span> <span class="nf">adjust_length</span><span class="p">(</span>
+<div class="viewcode-block" id="adjust_length"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.adjust_length">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">adjust_length</span><span class="p">(</span>
     <span class="n">sample</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">target_sr</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">original_sr</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -611,7 +611,7 @@
     <span class="k">return</span> <span class="n">sample</span></div>
 
 
-<div class="viewcode-block" id="apply_frontend"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.apply_frontend">[docs]</a><span class="k">def</span> <span class="nf">apply_frontend</span><span class="p">(</span>
+<div class="viewcode-block" id="apply_frontend"><a class="viewcode-back" href="../../../../../docs/python_api/data_preprocessing/audio.html#mltk.core.preprocess.utils.audio.apply_frontend">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">apply_frontend</span><span class="p">(</span>
     <span class="n">sample</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
     <span class="n">settings</span><span class="p">:</span><span class="n">AudioFeatureGeneratorSettings</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span>
@@ -669,7 +669,7 @@
               
           </div>
             Last updated on
-              Jan 30, 2025.
+              Mar 19, 2025.
             <br/>
             Created using
             <a href="http://www.sphinx-doc.org/">Sphinx</a> 5.3.0.
