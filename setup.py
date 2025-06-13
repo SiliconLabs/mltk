@@ -146,12 +146,12 @@ else:
     onnx_version = '<1.17'
 
 install_dependencies = [
-    'typer<1.0',
+    'typer>=0.15.4,<0.17.0',
     'pytest',
     'pytest-dependency',
     'pytest-html-reporter',
-    'cmake',
-    'ninja',
+    'cmake<4.0.0',
+    'ninja==1.11.1.1',
     'psutil',
     'pyaml<22.0',
     'tensorflow>=2.3,<2.17',
@@ -225,7 +225,7 @@ setup(
         'Programming Language :: Python :: 3.12',
     ],
     python_requires='>=3.9,<3.13',
-    setup_requires=['wheel', 'cmake', 'ninja', 'patool==1.12', 'pyaml'],
+    setup_requires=['wheel', 'cmake<4.0.0', 'ninja==1.11.1.1', 'patool==1.12', 'pyaml<22.0'],
     install_requires=install_dependencies,
     extras_require=extra_dependencies,
     packages=find_packages(include=['mltk', 'mltk.*']),
