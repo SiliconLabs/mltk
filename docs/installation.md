@@ -219,6 +219,13 @@ git clone https://github.com/siliconlabs/mltk
 
       .. code-block:: shell
 
+         # Optionally install build utils
+         sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+         sudo add-apt-repository -y ppa:deadsnakes/ppa
+         sudo apt update
+         sudo apt-get -y install build-essential g++-13 cmake ninja-build gdb p7zip-full git-lfs python3-dev python3-venv libusb-1.0-0 libgl1
+
+         # Create the MLTK Python venv
          cd mltk
          python3 ./install_mltk.py
 ```

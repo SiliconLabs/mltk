@@ -33,7 +33,7 @@ Before we can build MLTK applications, we need to install a few tools first:
          sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
          sudo add-apt-repository -y ppa:deadsnakes/ppa
          sudo apt update
-         sudo apt-get -y install build-essential g++-9 cmake ninja-build gdb p7zip-full git-lfs python3-dev python3-venv libusb-1.0-0 libgl1
+         sudo apt-get -y install build-essential g++-13 cmake ninja-build gdb p7zip-full git-lfs python3-dev python3-venv libusb-1.0-0 libgl1
 
 ```
 
