@@ -1,5 +1,13 @@
 # Silicon Labs Machine Learning Toolkit (MLTK)
 
+```{warning}
+The MLTK is no longer supported by Silicon Labs. Please use the AI/ML Extension as the official software enablement path for ML on Silicon Labs devices.
+
+- Access [Documentation for Machine Learning](https://docs.silabs.com/machine-learning/latest/aiml-developing-with/)
+- Explore the [Developer Journey](https://www.silabs.com/applications/artificial-intelligence-machine-learning/ai-ml-developer-journey)
+
+We are working on migrating some core features from MLTK to the new extension, but not all functionalities will be carried over. If you’ve used MLTK and have feedback or features that you’d like to see supported in the official extension, we’d love to hear from you! - [Survey link](https://forms.cloud.microsoft/r/MTDWU7M03u)"
+```
 
 ```{warning}
 This package is considered EXPERIMENTAL - SILICON LABS DOES NOT OFFER ANY WARRANTIES AND DISCLAIMS ALL IMPLIED WARRANTIES CONCERNING THIS SOFTWARE. 
