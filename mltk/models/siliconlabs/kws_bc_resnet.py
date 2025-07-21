@@ -439,16 +439,16 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray, augment:bool=
                     transforms=[ 
                     # audiomentations.PitchShift(min_semitones=-1, max_semitones=1, p=0.5),
                     audiomentations.TimeStretch(min_rate=0.9, max_rate=1.1, p=0.5),
-                    #audiomentations.Gain(min_gain_in_db=0.95, max_gain_in_db=1.5, p=0.75),
+                    #audiomentations.Gain(min_gain_db=0.95, max_gain_db=1.5, p=0.75),
                     audiomentations.AddBackgroundNoise(
                         f'{dataset_dir}/_background_noise_', 
-                        min_snr_in_db=20,
-                        max_snr_in_db=40,
+                        min_snr_db=20,
+                        max_snr_db=40,
                         noise_rms="relative",
                         lru_cache_size=10,
                         p=0.75
                     ),
-                    audiomentations.AddGaussianSNR(min_snr_in_db=30, max_snr_in_db=60, p=0.25),
+                    audiomentations.AddGaussianSNR(min_snr_db=30, max_snr_db=60, p=0.25),
                 ])
                 globals()['audio_augmentations'] = audio_augmentations
 

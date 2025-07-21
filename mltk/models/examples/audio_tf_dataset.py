@@ -341,7 +341,7 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
                 transforms=[
                 audiomentations.PitchShift(min_semitones=-1, max_semitones=1, p=0.5),
                 audiomentations.TimeStretch(min_rate=0.9, max_rate=1.1, p=0.5),
-                audiomentations.Gain(min_gain_in_db=0.95, max_gain_in_db=2, p=0.75),
+                audiomentations.Gain(min_gain_db=0.95, max_gain_db=2, p=0.75),
                 audiomentations.AirAbsorption(
                     min_temperature = 10.0,
                     max_temperature = 20.0,
@@ -353,8 +353,8 @@ def audio_augmentation_pipeline(batch:np.ndarray, seed:np.ndarray) -> np.ndarray
                 ),
                 audiomentations.AddBackgroundNoise(
                     f'{dataset_dir}/_background_noise_',
-                    min_snr_in_db=20,
-                    max_snr_in_db=40,
+                    min_snr_db=20,
+                    max_snr_db=40,
                     noise_rms="relative",
                     lru_cache_size=10,
                     p=0.75

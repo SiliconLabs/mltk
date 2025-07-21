@@ -831,24 +831,24 @@ def audio_augmentation_pipeline(
                 transforms=[
                 #audiomentations.PitchShift(min_semitones=-1, max_semitones=1, p=0.5),
                 audiomentations.TimeStretch(min_rate=0.90, max_rate=1.1, p=1.0),
-                audiomentations.Gain(min_gain_in_db=0.95, max_gain_in_db=1.5, p=1.0),
+                audiomentations.Gain(min_gain_db=0.95, max_gain_db=1.5, p=1.0),
                 audiomentations.AddBackgroundNoise(
                     f'{dataset_dir}/_background_noise_/brd2601',
-                    min_absolute_rms_in_db=-75.0,
-                    max_absolute_rms_in_db=-60.0,
+                    min_absolute_rms_db=-75.0,
+                    max_absolute_rms_db=-60.0,
                     noise_rms="absolute",
                     lru_cache_size=50,
                     p=1.0
                 ),
                 audiomentations.AddBackgroundNoise(
                     f'{dataset_dir}/_background_noise_/ambient',
-                    min_snr_in_db=3,
-                    max_snr_in_db=25,
+                    min_snr_db=3,
+                    max_snr_db=25,
                     noise_rms="relative",
                     lru_cache_size=50,
                     p=0.75
                 ),
-                audiomentations.AddGaussianSNR(min_snr_in_db=30, max_snr_in_db=60, p=0.25),
+                audiomentations.AddGaussianSNR(min_snr_db=30, max_snr_db=60, p=0.25),
             ])
             globals()['audio_augmentations'] = audio_augmentations
 
